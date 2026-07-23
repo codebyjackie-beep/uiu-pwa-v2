@@ -1,0 +1,22 @@
+{
+  "name": "uiu-pwa-v2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UseItUp PWA v2 — Next.js + Cloudflare Workers monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build:shared": "npm run build --workspace=@uiu/shared",
+    "build:api": "npm run build --workspace=@uiu/api",
+    "build:web": "npm run build --workspace=@uiu/web",
+    "build": "npm run build:shared && npm run build:api && npm run build:web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "deploy:api": "npm run deploy --workspace=@uiu/api",
+    "deploy:web": "npm run deploy --workspace=@uiu/web"
+  }
+}

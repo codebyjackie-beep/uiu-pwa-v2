@@ -1,0 +1,13 @@
+name = "uiu-web"
+main = ".open-next/worker.js"
+compatibility_date = "2024-12-30"
+compatibility_flags = ["nodejs_compat"]
+
+# OpenNext build output. `opennextjs-cloudflare build` populates .open-next/.
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+[observability]
+enabled = true
+
+[vars]
+NEXT_PUBLIC_APP_ENV = "production"

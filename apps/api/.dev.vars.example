@@ -1,0 +1,3 @@
+# Copy to `.dev.vars` for local `wrangler dev`. NEVER commit the real .dev.vars.
+MONGODB_DATA_API_URL="https://..."
+MONGODB_DATA_API_KEY="..."

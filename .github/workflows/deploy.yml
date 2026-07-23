@@ -1,0 +1,80 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Install · typecheck · build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build (shared → api → web)
+        run: npm run build
+
+  deploy:
+    name: Deploy to Cloudflare Workers
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      # Day-1 pipeline: the deploy job exists from the first commit, but only runs the
+      # actual deploy once Cloudflare secrets are set. Until then it no-ops (green), so the
+      # pipeline is never "we'll add CI later".
+      - name: Check Cloudflare secrets
+        id: gate
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "Cloudflare secrets present — will deploy."
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Cloudflare secrets not set — skipping deploy. Add CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID to enable."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.ready == 'true'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.ready == 'true'
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install
+        if: steps.gate.outputs.ready == 'true'
+        run: npm ci
+
+      - name: Build shared
+        if: steps.gate.outputs.ready == 'true'
+        run: npm run build:shared
+
+      - name: Deploy API (Worker)
+        if: steps.gate.outputs.ready == 'true'
+        run: npm run deploy --workspace=@uiu/api
+
+      - name: Deploy Web (Next.js on Workers)
+        if: steps.gate.outputs.ready == 'true'
+        run: npm run deploy --workspace=@uiu/web

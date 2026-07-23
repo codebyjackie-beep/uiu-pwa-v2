@@ -1,0 +1,35 @@
+# deps
+node_modules/
+.pnp
+.pnp.js
+
+# builds
+dist/
+.next/
+out/
+build/
+.open-next/
+.vercel/
+.wrangler/
+
+# env / secrets — NEVER commit
+.env
+.env.*
+!.env.example
+.dev.vars
+*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# misc
+coverage/
+*.tsbuildinfo

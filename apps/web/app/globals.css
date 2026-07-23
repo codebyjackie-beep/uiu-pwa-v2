@@ -1,0 +1,32 @@
+/* Design tokens — black / white / green (UIU brand). Components read tokens, never hardcode. */
+:root {
+  --uiu-black: #0a0a0a;
+  --uiu-white: #ffffff;
+  --uiu-green: #16a34a;
+  --uiu-green-ink: #052e16;
+  --uiu-surface: #141414;
+  --uiu-muted: #a1a1aa;
+
+  --bg: var(--uiu-black);
+  --fg: var(--uiu-white);
+  --accent: var(--uiu-green);
+  --card: var(--uiu-surface);
+
+  --radius: 14px;
+  --space: 16px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,21 @@
+name = "uiu-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-30"
+compatibility_flags = ["nodejs_compat"]
+
+# Observability so Jack/Edith can read Workers logs (replaces SSH diagnostics).
+[observability]
+enabled = true
+
+# --- Secrets (set via `wrangler secret put` or CI, NEVER committed) ---
+#   MONGODB_DATA_API_URL     Atlas Data API / HTTP driver endpoint
+#   MONGODB_DATA_API_KEY     Atlas Data API key
+#
+# --- Non-secret vars ---
+[vars]
+API_ENV = "production"
+MONGODB_DB = "useitup"
+
+# Example cron trigger (weekly price refresh) — enable when the job exists.
+# [triggers]
+# crons = ["0 3 * * 1"]
