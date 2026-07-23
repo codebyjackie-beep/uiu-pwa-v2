@@ -25,11 +25,15 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Build shared FIRST — api/web typecheck against @uiu/shared's emitted dist/*.d.ts.
+      - name: Build shared (types for downstream)
+        run: npm run build:shared
+
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Build (shared → api → web)
-        run: npm run build
+      - name: Build (api → web)
+        run: npm run build:api && npm run build:web
 
   deploy:
     name: Deploy to Cloudflare Workers
