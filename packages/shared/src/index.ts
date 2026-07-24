@@ -95,6 +95,23 @@ export interface Recipe {
 }
 
 // ---------------------------------------------------------------------------
+// Shared small structures used by price cache / recipe cost below.
+// ---------------------------------------------------------------------------
+
+/** Pack size, e.g. { qty: 500, unit: "ml" }. */
+export interface Pack {
+  qty: number;
+  unit: string;
+}
+
+/** Unit price. unit is "g_or_ml" (metric) or "each" (count); n = listings used to compute it. */
+export interface PerUnit {
+  value: number;
+  unit: "g_or_ml" | "each";
+  n: number;
+}
+
+// ---------------------------------------------------------------------------
 // Canonical ingredients  (collection: canonical_ingredients — 741 docs)
 //
 // Field presence audited 2026-07-24 across all 741 live documents. Field is
@@ -104,20 +121,23 @@ export interface Recipe {
 
 export interface CanonicalIngredient {
   _id: ObjectIdHex;
-  /** Unique key — enforced by unique index `canonical_name_1`. */
+  /** Unique key — enforced by unique index `canonical_name_1`. Join key into price cache / recipe lines. */
   canonical_name: string;
   aliases: string[];
+  /** Observed values: g(627) ml(94) pc(12) g+pc(6) kg(1) leaf(1). */
   display_unit: string;
   is_combo: boolean;
   is_priceable: boolean;
   pantry_staple: boolean;
+  /** Weight per item in grams. Null on 689/741 (93%) — source of the missing_per_item_g cost gap. */
   per_item_g: number | null;
   recipe_count: number;
-  reference_pack: unknown | null;
-  source: string;
-  type: string;
+  reference_pack: Pack | null;
+  source: "seed" | "merge" | "manual_fill";
+  /** S=solid(622) L=liquid(94) C=count(25). */
+  type: "S" | "L" | "C";
   updated_at: ISODate;
-  /** Present on 737/741 docs. */
+  /** Grams per cup. Null on 482/737 — source of the missing_density_cup cost gap. */
   density_cup?: number | null;
   /** Present on 106/741 docs (quarantine workflow from the 2026-07 canonical merge). */
   quarantine?: boolean;
@@ -138,34 +158,126 @@ export interface CanonicalIngredient {
 }
 
 // ---------------------------------------------------------------------------
-// Price cache  (collection: canonical_price_cache — 635, weekly Serper refresh)
+// Price cache  (collection: canonical_price_cache — 635 docs)
+//
+// Field presence audited 2026-07-24 across all 635 live documents (uiu-migration
+// export, same batch imported into the new cluster). The previous version of this
+// type was almost entirely wrong: none of its top-level camelCase fields
+// (canonicalName/price/currency/unit/store/productTitle/fetchedAt) exist on the
+// real document — the actual shape is nested (see below).
 // ---------------------------------------------------------------------------
+
+export interface PriceListing {
+  store: string;
+  title: string;
+  price: number;
+  /** Null on 5296/8354 listings (63.4%) — no pack means no unit price can be derived. */
+  pack: Pack | null;
+  source_of_pack: string;
+  per_unit: number | null;
+}
 
 export interface CanonicalPriceCacheEntry {
   _id: ObjectIdHex;
-  canonicalName: string;
-  /** Unit price in GBP for the normalized unit. */
-  price: number;
-  currency: "GBP";
-  unit: string;
-  store?: string;
-  productTitle?: string;
-  fetchedAt?: ISODate;
+  /** snake_case. Joins to canonical_ingredients.canonical_name. */
+  canonical_name: string;
+  /** Null on 18/635 (2.8%) — no price found at all. */
+  cheapest: {
+    store: string;
+    price: number;
+    /** Present on 312/617 (50.6%) of non-null cheapest entries. */
+    title?: string;
+  } | null;
+  /** high(533) price_only(68) none(18) low(16). */
+  confidence: "high" | "low" | "none" | "price_only";
+  listings: PriceListing[];
+  metadata: {
+    source: string;
+    query_used: string;
+    reference_pack_used: Pack | null;
+    raw_listing_count: number;
+    attempts: number;
+    fetched_at: ISODate;
+  };
+  n_supermarkets: number;
+  needs_review: boolean;
+  /** Null on 561/635 (88.3%). */
+  per_unit_count: PerUnit | null;
+  /** Null on 113/635 (17.8%). */
+  per_unit_metric: PerUnit | null;
 }
 
 // ---------------------------------------------------------------------------
 // Recipe cost  (collection: recipe_cost — computed cache / verification baseline)
+//
+// Field presence audited 2026-07-24 across recipe_cost_NEW.json (197 docs, engine
+// output not yet inserted into DB) and recipe_cost.SNAPSHOT.json (214 docs, already
+// in DB — new cluster has an empty recipe_cost collection, this type was audited
+// from the export files, not a live query). The previous version of this type had
+// only 3 fields, and `coverage` was documented as a 0..1 fraction — the real field
+// is `coveragePct`, a 0..100 percent (sample values: 60, 75, 66.67).
 // ---------------------------------------------------------------------------
 
+export type UnpriceableReason =
+  | "no_price_in_cache" // 149
+  | "missing_per_item_g_and_count_price" // 139
+  | "unit_unconvertible" // 136
+  | "missing_density_cup" // 108
+  | "unresolved" //  84
+  | "known_gap" //  16
+  | "unmapped_unit" //  14
+  | "no_price_for_bucket"; //   6
+
+export interface RecipeCostLine {
+  priceable: boolean;
+  rawName: string;
+  quantity: number;
+  /** May be an empty string. */
+  rawUnit: string;
+  /** Present on 1959/2043 (95.9%) — absent when name resolution failed. */
+  canonical_name?: string;
+  isPantry?: boolean;
+  /** metric(1143) | count(254). Only present when priceable. */
+  bucket?: "metric" | "count";
+  normValue?: number;
+  /** g(822) | ml(315) | pc(254). */
+  normUnit?: "g" | "ml" | "pc";
+  perUnit?: number;
+  lineCost?: number;
+  displayNote?: string | null;
+  /** Only present in the NEW engine output, not SNAPSHOT — engine version drift. */
+  store?: string;
+  /** Same as above, NEW only. */
+  productTitle?: string | null;
+  /** Only present when priceable is false. */
+  reason?: UnpriceableReason;
+}
+
 export interface RecipeCost {
-  _id: ObjectIdHex;
+  /** Absent on fresh engine output (recipe_cost_NEW.json) — populated once inserted into DB. */
+  _id?: ObjectIdHex;
   /** FK to recipes._id. */
   recipeId: ObjectIdHex;
   /** Total basket cost in GBP. */
   basket: number;
-  /** Fraction of ingredients with a resolved price (0..1). */
-  coverage: number;
-  computedAt?: ISODate;
+  currency: "GBP";
+  /** Percent 0..100, NOT a 0..1 fraction. */
+  coveragePct: number;
+  /** Percent 0..100, after excluding pantry/junk lines. */
+  adjustedCoveragePct: number;
+  totalLines: number;
+  priceableCount: number;
+  /** Line counts/totals after excluding pantry/junk lines. */
+  adjustedTotal: number;
+  adjustedPriceable: number;
+  pantryLineCount: number;
+  junkLineCount: number;
+  perServing: number;
+  lines: RecipeCostLine[];
+  /** e.g. { unit_unconvertible: 2, missing_density_cup: 1 }. */
+  unpriceableReasons: Partial<Record<UnpriceableReason, number>>;
+  computedAt: ISODate;
+  priceCacheStamp: number;
 }
 
 // ---------------------------------------------------------------------------
