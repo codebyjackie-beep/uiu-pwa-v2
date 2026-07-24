@@ -1,14 +1,14 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
+import { recipesRouter } from "./routes/recipes";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
   API_ENV: string;
   MONGODB_DB: string;
-  // Secrets (not in repo): MONGODB_DATA_API_URL, MONGODB_DATA_API_KEY
-  MONGODB_DATA_API_URL?: string;
-  MONGODB_DATA_API_KEY?: string;
+  // Secret (not in repo): MONGODB_URI — Atlas connection string, via `wrangler secret put`.
+  MONGODB_URI: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -38,8 +38,9 @@ app.get("/api/version", (c) => {
   return c.json(body);
 });
 
-// Feature routes (recipes, cost engine, health) get mounted here as they land.
-// e.g. app.route("/api/recipes", recipesRouter)
+app.route("/api/recipes", recipesRouter);
+
+// Feature routes (cost engine, health) get mounted here as they land.
 
 app.notFound((c) => {
   const body: ApiResponse<never> = {

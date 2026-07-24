@@ -1,6 +1,8 @@
 name = "uiu-api"
 main = "src/index.ts"
-compatibility_date = "2024-12-30"
+# 2025-09-23+ required for TCP Socket API / TLSSocket (needed by the `mongodb` driver
+# under nodejs_compat). Atlas Data API was fully sunset 2025-09-30 — do not revive it.
+compatibility_date = "2025-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 # Observability so Jack/Edith can read Workers logs (replaces SSH diagnostics).
@@ -8,8 +10,8 @@ compatibility_flags = ["nodejs_compat"]
 enabled = true
 
 # --- Secrets (set via `wrangler secret put` or CI, NEVER committed) ---
-#   MONGODB_DATA_API_URL     Atlas Data API / HTTP driver endpoint
-#   MONGODB_DATA_API_KEY     Atlas Data API key
+#   MONGODB_URI     Atlas connection string (mongodb+srv://...), official `mongodb` driver
+#                   over Workers TCP sockets — no Data API involved.
 #
 # --- Non-secret vars ---
 [vars]
