@@ -24,9 +24,11 @@ MONGODB_DB = "useitup"
 # Serper price-refresh chain once that's also on Workers Cron — for now this
 # just recomputes against whatever's currently in canonical_price_cache.
 #
-# DISABLED (2026-07-25): scheduled() runs with dryRun:false — enabling this
-# trigger means production recipe_cost gets written autonomously on next fire,
-# bypassing the "populate needs Jackie's sign-off" gate. 等 dry-run 對到
-# 71.36%（lineWeightedAdjustedPct）+ Jackie 拍板先開返呢段。
-# [triggers]
-# crons = ["0 3 * * 1"]
+# DISABLED (2026-07-25): scheduled() runs with dryRun:false — a live cron
+# here means production recipe_cost gets written autonomously on next fire,
+# bypassing the "populate needs Jackie's sign-off" gate. Explicitly set to
+# an empty array (not commented out) so a future deploy can't accidentally
+# resurrect the schedule. 等 dry-run 對到 71.36%（lineWeightedAdjustedPct）
+# + Jackie 拍板先填返 "0 3 * * 1"。
+[triggers]
+crons = []
