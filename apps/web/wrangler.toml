@@ -11,3 +11,6 @@ enabled = true
 
 [vars]
 NEXT_PUBLIC_APP_ENV = "production"
+# Server-side only (read in Server Components / route handlers, never sent to the browser
+# bundle). Same-origin once DNS cutover happens; two separate workers.dev hosts for now.
+API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"

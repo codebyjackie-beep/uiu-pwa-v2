@@ -1,7 +1,5 @@
 import { API_VERSION } from "@uiu/shared";
 
-const TABS = ["Home", "Meal Planner", "Recipes", "Shop", "Fridge", "Health"] as const;
-
 export default function Home() {
   return (
     <main
@@ -30,30 +28,6 @@ export default function Home() {
       <p style={{ color: "var(--uiu-muted)", maxWidth: 480, margin: 0 }}>
         Next.js + Cloudflare Workers PWA scaffold. Shared types v{API_VERSION}.
       </p>
-      <nav
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 8,
-          justifyContent: "center",
-          marginTop: "var(--space)",
-        }}
-      >
-        {TABS.map((t) => (
-          <span
-            key={t}
-            style={{
-              padding: "8px 14px",
-              borderRadius: 999,
-              background: "var(--card)",
-              border: "1px solid var(--accent)",
-              fontSize: 14,
-            }}
-          >
-            {t}
-          </span>
-        ))}
-      </nav>
     </main>
   );
 }

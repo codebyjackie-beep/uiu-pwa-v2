@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, Recipe } from "@uiu/shared";
+import type { ApiResponse, Recipe, RecipeListItem, RecipeListPage } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 
 export const recipesRouter = new Hono<{ Bindings: DbEnv }>();
@@ -16,6 +16,20 @@ function toRecipe(doc: Document): Recipe {
     collectionIds: Array.isArray(doc.collectionIds)
       ? doc.collectionIds.map((id: ObjectIdType) => id.toString())
       : [],
+  };
+}
+
+function toListItem(doc: Document, cost: RecipeListItem["cost"]): RecipeListItem {
+  return {
+    _id: (doc._id as ObjectIdType).toString(),
+    title: doc.title as string,
+    description: doc.description as string,
+    imageUrl: doc.imageUrl as string,
+    cookTimeMinutes: doc.cookTimeMinutes as number,
+    prepTimeMinutes: doc.prepTimeMinutes as number,
+    servings: doc.servings as number,
+    tags: Array.isArray(doc.tags) ? (doc.tags as string[]) : [],
+    cost,
   };
 }
 
@@ -41,10 +55,29 @@ recipesRouter.get("/", async (c) => {
           .toArray(),
         collection.countDocuments(filter),
       ]);
-      return { items: docs.map(toRecipe), total: count };
+
+      const ids = docs.map((d) => d._id as ObjectIdType);
+      const costDocs = ids.length
+        ? await db
+            .collection("recipe_cost")
+            .find({ recipeId: { $in: ids } })
+            .toArray()
+        : [];
+      const costByRecipeId = new Map<string, RecipeListItem["cost"]>();
+      for (const costDoc of costDocs) {
+        costByRecipeId.set((costDoc.recipeId as ObjectIdType).toString(), {
+          basket: costDoc.basket as number,
+          currency: "GBP",
+          perServing: costDoc.perServing as number,
+          coveragePct: costDoc.adjustedCoveragePct as number,
+        });
+      }
+
+      const items = docs.map((d) => toListItem(d, costByRecipeId.get((d._id as ObjectIdType).toString()) ?? null));
+      return { items, total: count };
     });
 
-    const body: ApiResponse<{ items: Recipe[]; page: number; limit: number; total: number }> = {
+    const body: ApiResponse<RecipeListPage> = {
       ok: true,
       data: { items, page, limit, total },
     };

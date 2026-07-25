@@ -95,6 +95,37 @@ export interface Recipe {
 }
 
 // ---------------------------------------------------------------------------
+// Recipe list  (GET /api/recipes response shape — trimmed fields + joined cost)
+// ---------------------------------------------------------------------------
+
+/** Cost summary joined from recipe_cost for the list view. Null when not yet computed. */
+export interface RecipeListItemCost {
+  basket: number;
+  currency: "GBP";
+  perServing: number;
+  coveragePct: number;
+}
+
+export interface RecipeListItem {
+  _id: ObjectIdHex;
+  title: string;
+  description: string;
+  imageUrl: string;
+  cookTimeMinutes: number;
+  prepTimeMinutes: number;
+  servings: number;
+  tags: string[];
+  cost: RecipeListItemCost | null;
+}
+
+export interface RecipeListPage {
+  items: RecipeListItem[];
+  page: number;
+  limit: number;
+  total: number;
+}
+
+// ---------------------------------------------------------------------------
 // Shared small structures used by price cache / recipe cost below.
 // ---------------------------------------------------------------------------
 
