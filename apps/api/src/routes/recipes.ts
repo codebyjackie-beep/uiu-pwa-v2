@@ -69,7 +69,7 @@ recipesRouter.get("/", async (c) => {
           basket: costDoc.basket as number,
           currency: "GBP",
           perServing: costDoc.perServing as number,
-          coveragePct: costDoc.adjustedCoveragePct as number,
+          adjustedCoveragePct: costDoc.adjustedCoveragePct as number,
         });
       }
 

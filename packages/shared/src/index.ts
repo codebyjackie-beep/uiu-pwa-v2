@@ -103,7 +103,8 @@ export interface RecipeListItemCost {
   basket: number;
   currency: "GBP";
   perServing: number;
-  coveragePct: number;
+  /** From RecipeCost.adjustedCoveragePct (post pantry/junk-line exclusion) — NOT the raw RecipeCost.coveragePct. */
+  adjustedCoveragePct: number;
 }
 
 export interface RecipeListItem {
