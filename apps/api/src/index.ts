@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { recipesRouter } from "./routes/recipes";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
+import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -46,22 +47,44 @@ app.route("/api/recipes", recipesRouter);
 
 // Feature routes (health) get mounted here as they land.
 
-// Manual trigger for the recipe_cost precompute job — always dry-run (never
-// writes) so it's safe to hit over HTTP for verification. The real,
-// DB-writing run only happens via the `scheduled()` Cron Trigger below.
+// Manual trigger for the recipe_cost precompute job. Defaults to dry-run
+// (never writes) so it's safe to hit over HTTP for verification. Pass
+// ?write=true to opt into a real write — this is the explicit, human-watched
+// path for the first-ever populate (the Cron Trigger stays disabled until
+// that's verified; see wrangler.toml).
 app.post("/api/admin/recompute-costs", async (c) => {
   const token = c.req.header("X-Admin-Token");
   if (!token || token !== c.env.ADMIN_TOKEN) {
     const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
     return c.json(body, 401);
   }
+  const write = c.req.query("write") === "true";
   try {
-    const summary = await precomputeRecipeCosts(c.env, true);
+    const summary = await precomputeRecipeCosts(c.env, !write);
     const body: ApiResponse<PrecomputeSummary> = { ok: true, data: summary };
     return c.json(body);
   } catch (err) {
-    console.error("[uiu-api] recompute-costs dry-run error:", err instanceof Error ? err.message : String(err));
+    console.error("[uiu-api] recompute-costs error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to compute recipe costs" } };
+    return c.json(body, 502);
+  }
+});
+
+// Post-populate sanity check — lets Jackie confirm a write landed without
+// opening the Atlas UI. Same auth as the route above.
+app.get("/api/admin/recipe-cost-stats", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const stats = await recipeCostStats(c.env);
+    const body: ApiResponse<RecipeCostStats> = { ok: true, data: stats };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-cost-stats error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to read recipe_cost stats" } };
     return c.json(body, 502);
   }
 });

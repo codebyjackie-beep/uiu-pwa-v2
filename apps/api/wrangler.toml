@@ -27,8 +27,9 @@ MONGODB_DB = "useitup"
 # DISABLED (2026-07-25): scheduled() runs with dryRun:false — a live cron
 # here means production recipe_cost gets written autonomously on next fire,
 # bypassing the "populate needs Jackie's sign-off" gate. Explicitly set to
-# an empty array (not commented out) so a future deploy can't accidentally
-# resurrect the schedule. 等 dry-run 對到 71.36%（lineWeightedAdjustedPct）
-# + Jackie 拍板先填返 "0 3 * * 1"。
+# an empty array (not commented/omitted — omitting the section doesn't
+# guarantee an already-deployed trigger gets cleared, an explicit [] does).
+# First populate is done manually via POST /api/admin/recompute-costs?write=true
+# with a human watching. 等第一次手動 populate 驗證完先填返 "0 3 * * 1"。
 [triggers]
 crons = []
