@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { recipesRouter } from "./routes/recipes";
+import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -40,7 +41,22 @@ app.get("/api/version", (c) => {
 
 app.route("/api/recipes", recipesRouter);
 
-// Feature routes (cost engine, health) get mounted here as they land.
+// Feature routes (health) get mounted here as they land.
+
+// Manual trigger for the recipe_cost precompute job — always dry-run (never
+// writes) so it's safe to hit over HTTP for verification. The real,
+// DB-writing run only happens via the `scheduled()` Cron Trigger below.
+app.post("/api/admin/recompute-costs", async (c) => {
+  try {
+    const summary = await precomputeRecipeCosts(c.env, true);
+    const body: ApiResponse<PrecomputeSummary> = { ok: true, data: summary };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recompute-costs dry-run error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to compute recipe costs" } };
+    return c.json(body, 502);
+  }
+});
 
 app.notFound((c) => {
   const body: ApiResponse<never> = {
@@ -60,4 +76,22 @@ app.onError((err, c) => {
   return c.json(body, 500);
 });
 
-export default app;
+export default {
+  fetch: app.fetch,
+  /**
+   * Cloudflare Cron Trigger handler — replaces the old repo's long-running
+   * Mongoose precompute_recipe_costs.js. Writes to `recipe_cost` for real
+   * (dryRun:false). Scheduled via wrangler.toml [triggers].
+   */
+  async scheduled(_event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
+    ctx.waitUntil(
+      precomputeRecipeCosts(env, false)
+        .then((summary) => {
+          console.log("[uiu-api] cron precompute recipe_cost:", JSON.stringify(summary));
+        })
+        .catch((err) => {
+          console.error("[uiu-api] cron precompute failed:", err instanceof Error ? err.message : String(err));
+        }),
+    );
+  },
+};

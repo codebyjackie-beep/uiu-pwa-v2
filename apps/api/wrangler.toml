@@ -18,6 +18,8 @@ enabled = true
 API_ENV = "production"
 MONGODB_DB = "useitup"
 
-# Example cron trigger (weekly price refresh) — enable when the job exists.
-# [triggers]
-# crons = ["0 3 * * 1"]
+# Weekly recipe_cost precompute (Mon 03:00 UTC). Should ideally run after the
+# Serper price-refresh chain once that's also on Workers Cron — for now this
+# just recomputes against whatever's currently in canonical_price_cache.
+[triggers]
+crons = ["0 3 * * 1"]
