@@ -12,5 +12,13 @@ enabled = true
 [vars]
 NEXT_PUBLIC_APP_ENV = "production"
 # Server-side only (read in Server Components / route handlers, never sent to the browser
-# bundle). Same-origin once DNS cutover happens; two separate workers.dev hosts for now.
+# bundle). Used only to build the request URL passed to the API service binding below —
+# the actual fetch never touches the public network (see [[services]]).
 API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
+
+# Worker-to-Worker calls to a public *.workers.dev URL are blocked by Cloudflare's
+# same-zone subrequest loop protection (observed as error 1042 / a bare 404). This binding
+# routes apiGet()'s fetch over the internal service-binding channel instead of the public URL.
+[[services]]
+binding = "API"
+service = "uiu-api"
