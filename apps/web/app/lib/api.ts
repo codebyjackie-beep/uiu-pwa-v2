@@ -29,11 +29,9 @@ export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
   try {
     const env = await resolveEnv();
     const url = `${apiBaseUrl(env)}${path}`;
-    console.error("[uiu-web] apiGet diag: binding present =", Boolean(env.API), "url =", url);
     const res = env.API ? await env.API.fetch(url, { cache: "no-store" }) : await fetch(url, { cache: "no-store" });
     if (!res.ok) {
-      const bodyText = await res.text();
-      console.error("[uiu-web] apiGet non-ok response:", path, res.status, bodyText.slice(0, 300));
+      console.error("[uiu-web] apiGet non-ok response:", path, res.status);
       return { ok: false, error: { code: `http_${res.status}`, message: "Upstream error" } };
     }
     return (await res.json()) as ApiResponse<T>;
