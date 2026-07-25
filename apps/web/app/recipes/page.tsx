@@ -5,7 +5,7 @@ import { apiGet } from "../lib/api";
 export const metadata = { title: "Recipes · UseItUp" };
 
 function formatPrice(cost: RecipeListPage["items"][number]["cost"]) {
-  if (!cost) return null;
+  if (!cost || cost.basket <= 0) return null;
   return `£${cost.basket.toFixed(2)}`;
 }
 
@@ -56,7 +56,7 @@ export default async function RecipesPage({
               <p className="recipe-card__description">{recipe.description}</p>
               <div className="recipe-card__meta">
                 <span className="recipe-card__cook-time">{recipe.cookTimeMinutes} min</span>
-                {recipe.cost ? (
+                {formatPrice(recipe.cost) ? (
                   <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
                 ) : (
                   <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
