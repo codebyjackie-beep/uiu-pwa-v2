@@ -8,8 +8,11 @@ import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precompute
 type Bindings = {
   API_ENV: string;
   MONGODB_DB: string;
-  // Secret (not in repo): MONGODB_URI — Atlas connection string, via `wrangler secret put`.
+  // Secrets (not in repo, via `wrangler secret put`):
+  //   MONGODB_URI — Atlas connection string.
+  //   ADMIN_TOKEN — shared secret checked against X-Admin-Token for /api/admin/* routes.
   MONGODB_URI: string;
+  ADMIN_TOKEN: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -47,6 +50,11 @@ app.route("/api/recipes", recipesRouter);
 // writes) so it's safe to hit over HTTP for verification. The real,
 // DB-writing run only happens via the `scheduled()` Cron Trigger below.
 app.post("/api/admin/recompute-costs", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
   try {
     const summary = await precomputeRecipeCosts(c.env, true);
     const body: ApiResponse<PrecomputeSummary> = { ok: true, data: summary };

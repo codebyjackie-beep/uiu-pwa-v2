@@ -25,7 +25,26 @@ import { costRecipe } from "../services/recipeCost";
 export interface PrecomputeSummary {
   dryRun: boolean;
   processed: number;
+  /**
+   * Mean of per-recipe adjustedCoveragePct, averaged only over recipes with
+   * adjustedTotal > 0 (≈70.19% on the NEW 197-recipe dataset). This is NOT
+   * the canonical coverage definition — do NOT use this field to verify
+   * against the 71.36% parity baseline. Use `lineWeightedAdjustedPct` for
+   * any coverage comparison.
+   */
   avgAdjustedCoveragePct: number;
+  /** Σ cost.adjustedPriceable across all recipes (numerator of the canonical metric). */
+  adjustedPriceableTotal: number;
+  /** Σ cost.adjustedTotal across all recipes (denominator of the canonical metric). */
+  adjustedTotalSum: number;
+  /**
+   * Canonical line-weighted adjusted coverage = adjustedPriceableTotal /
+   * adjustedTotalSum * 100. This is the ONLY field that should be compared
+   * against the parity baseline (1278/1791 = 71.36% on the NEW 197-recipe
+   * dataset). A real production dry-run must show 71.36% here before the
+   * cron trigger gets re-enabled.
+   */
+  lineWeightedAdjustedPct: number;
   withBasket: number;
   priceCacheStamp: number;
 }
@@ -83,6 +102,10 @@ export async function precomputeRecipeCosts(env: DbEnv, dryRun = false): Promise
     let coverageSum = 0;
     let withAdjustedDenom = 0;
     let withBasket = 0;
+    // Canonical line-weighted metric: summed across every recipe (not gated
+    // behind adjustedTotal > 0), matching tools/parity_replay.js's at/ap.
+    let adjustedPriceableTotal = 0;
+    let adjustedTotalSum = 0;
     const computedAt = new Date().toISOString();
 
     for (const recipe of allRecipes) {
@@ -97,6 +120,8 @@ export async function precomputeRecipeCosts(env: DbEnv, dryRun = false): Promise
       }
 
       processed += 1;
+      adjustedPriceableTotal += cost.adjustedPriceable;
+      adjustedTotalSum += cost.adjustedTotal;
       // Match the old validate_recipe_cost.js methodology: only average over
       // recipes with a non-zero adjusted denominator.
       if (cost.adjustedTotal > 0) {
@@ -110,6 +135,9 @@ export async function precomputeRecipeCosts(env: DbEnv, dryRun = false): Promise
       dryRun,
       processed,
       avgAdjustedCoveragePct: withAdjustedDenom ? coverageSum / withAdjustedDenom : 0,
+      adjustedPriceableTotal,
+      adjustedTotalSum,
+      lineWeightedAdjustedPct: adjustedTotalSum ? (adjustedPriceableTotal / adjustedTotalSum) * 100 : 0,
       withBasket,
       priceCacheStamp,
     };
