@@ -1,6 +1,14 @@
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, Recipe, RecipeListItem, RecipeListPage } from "@uiu/shared";
+import type {
+  ApiResponse,
+  Recipe,
+  RecipeDetail,
+  RecipeDetailCost,
+  RecipeDetailCostLine,
+  RecipeListItem,
+  RecipeListPage,
+} from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 
 export const recipesRouter = new Hono<{ Bindings: DbEnv }>();
@@ -16,6 +24,27 @@ function toRecipe(doc: Document): Recipe {
     collectionIds: Array.isArray(doc.collectionIds)
       ? doc.collectionIds.map((id: ObjectIdType) => id.toString())
       : [],
+  };
+}
+
+function toDetailCost(costDoc: Document | null): RecipeDetailCost | null {
+  if (!costDoc || (costDoc.basket as number) <= 0) return null;
+  const lines: RecipeDetailCostLine[] = ((costDoc.lines as Document[]) ?? []).map((line) => ({
+    rawName: line.rawName as string,
+    quantity: line.quantity as number,
+    rawUnit: line.rawUnit as string,
+    priceable: line.priceable as boolean,
+    lineCost: line.lineCost as number | undefined,
+    store: line.store as string | undefined,
+    productTitle: line.productTitle as string | null | undefined,
+    canonicalName: line.canonical_name as string | undefined,
+  }));
+  return {
+    basket: costDoc.basket as number,
+    currency: "GBP",
+    perServing: costDoc.perServing as number,
+    adjustedCoveragePct: costDoc.adjustedCoveragePct as number,
+    lines,
   };
 }
 
@@ -98,12 +127,17 @@ recipesRouter.get("/:id", async (c) => {
   }
 
   try {
-    const doc = await withDb(c.env, (db) => db.collection("recipes").findOne({ _id: new ObjectId(id) }));
+    const { doc, costDoc } = await withDb(c.env, async (db) => {
+      const doc = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
+      if (!doc) return { doc: null, costDoc: null };
+      const costDoc = await db.collection("recipe_cost").findOne({ recipeId: doc._id });
+      return { doc, costDoc };
+    });
     if (!doc) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };
       return c.json(body, 404);
     }
-    const body: ApiResponse<Recipe> = { ok: true, data: toRecipe(doc) };
+    const body: ApiResponse<RecipeDetail> = { ok: true, data: { ...toRecipe(doc), cost: toDetailCost(costDoc) } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] recipe get error:", err instanceof Error ? err.message : String(err));

@@ -127,6 +127,33 @@ export interface RecipeListPage {
 }
 
 // ---------------------------------------------------------------------------
+// Recipe detail  (GET /api/recipes/:id response shape — full Recipe + joined cost)
+// ---------------------------------------------------------------------------
+
+/** One priced (or unpriceable) ingredient line for the detail view, trimmed from RecipeCostLine. */
+export interface RecipeDetailCostLine {
+  rawName: string;
+  quantity: number;
+  rawUnit: string;
+  priceable: boolean;
+  /** Present only when priceable. */
+  lineCost?: number;
+  /** Present only when priceable. */
+  store?: string;
+  /** Present only when priceable. */
+  productTitle?: string | null;
+  canonicalName?: string;
+}
+
+export interface RecipeDetailCost extends RecipeListItemCost {
+  lines: RecipeDetailCostLine[];
+}
+
+export interface RecipeDetail extends Recipe {
+  cost: RecipeDetailCost | null;
+}
+
+// ---------------------------------------------------------------------------
 // Shared small structures used by price cache / recipe cost below.
 // ---------------------------------------------------------------------------
 
