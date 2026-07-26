@@ -262,6 +262,89 @@ a {
   margin: var(--space) 0 8px;
 }
 
+.cost-hero {
+  margin-top: var(--space);
+  padding: 16px;
+  background: var(--card);
+  border-radius: var(--radius);
+}
+
+.cost-hero__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cost-hero__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--uiu-muted);
+}
+
+.cost-hero__servings {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.18);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cost-hero__price {
+  margin: 6px 0 14px;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.cost-hero__price--pending {
+  font-size: 16px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--uiu-muted);
+}
+
+.macro-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.macro-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  border-radius: calc(var(--radius) - 4px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.macro-tile__value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.macro-tile__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--uiu-muted);
+}
+
+.recipe-detail__meta-row {
+  display: flex;
+  gap: 16px;
+  margin-top: var(--space);
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
 .recipe-detail ul,
 .recipe-detail ol {
   margin: 0;

@@ -29,7 +29,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   const recipe = res.data;
   const mealBadge = mealTypeBadge(recipe);
   const dietBadgeList = dietaryBadges(recipe);
-  const totalTime = recipe.cookTimeMinutes + recipe.prepTimeMinutes;
+  const hasCost = recipe.cost && recipe.cost.basket > 0;
 
   return (
     <div className="recipe-detail">
@@ -45,6 +45,46 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           <span className="badge">{mealBadge}</span>
         </div>
       )}
+
+      <h1 className="recipe-detail__title">{recipe.title}</h1>
+
+      <div className="cost-hero">
+        <div className="cost-hero__header">
+          <span className="cost-hero__label">Cost per serving</span>
+          <span className="cost-hero__servings">
+            {recipe.servings} serving{recipe.servings === 1 ? "" : "s"}
+          </span>
+        </div>
+        {hasCost ? (
+          <p className="cost-hero__price">£{recipe.cost!.perServing.toFixed(2)}</p>
+        ) : (
+          <p className="cost-hero__price cost-hero__price--pending">price calculating…</p>
+        )}
+        <div className="macro-tiles">
+          <div className="macro-tile">
+            <span className="macro-tile__value">{Math.round(recipe.nutrition.calories)}</span>
+            <span className="macro-tile__label">Cal</span>
+          </div>
+          <div className="macro-tile">
+            <span className="macro-tile__value">{Math.round(recipe.nutrition.protein)}g</span>
+            <span className="macro-tile__label">Protein</span>
+          </div>
+          <div className="macro-tile">
+            <span className="macro-tile__value">{Math.round(recipe.nutrition.carbs)}g</span>
+            <span className="macro-tile__label">Carbs</span>
+          </div>
+          <div className="macro-tile">
+            <span className="macro-tile__value">{Math.round(recipe.nutrition.fat)}g</span>
+            <span className="macro-tile__label">Fat</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="recipe-detail__meta-row">
+        <span>{recipe.prepTimeMinutes} min prep</span>
+        <span>{recipe.cookTimeMinutes} min cook</span>
+      </div>
+
       {dietBadgeList.length > 0 && (
         <div className="badges badges--dietary">
           {dietBadgeList.map((b) => (
@@ -54,22 +94,6 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           ))}
         </div>
       )}
-
-      <h1 className="recipe-detail__title">{recipe.title}</h1>
-
-      <div className="macro-row">
-        <span>{Math.round(recipe.nutrition.calories)} kcal</span>
-        <span>{totalTime} min</span>
-        <span>{recipe.servings} serves</span>
-        <span>
-          P{Math.round(recipe.nutrition.protein)} · C{Math.round(recipe.nutrition.carbs)} · F{Math.round(recipe.nutrition.fat)}
-        </span>
-        {recipe.cost && recipe.cost.basket > 0 ? (
-          <span className="price-badge">£{recipe.cost.basket.toFixed(2)} total</span>
-        ) : (
-          <span className="price-badge price-badge--pending">price calculating…</span>
-        )}
-      </div>
 
       <h2>Ingredients</h2>
       <ul className="recipe-detail__ingredients">

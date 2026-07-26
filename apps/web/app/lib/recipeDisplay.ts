@@ -8,7 +8,9 @@ interface MealTagged {
 const MEAL_TYPES = ["breakfast", "brunch", "lunch", "dinner", "snack", "dessert", "appetizer", "side dish"];
 
 export function mealTypeBadge(recipe: MealTagged): string | null {
-  if (recipe.mealType) return capitalize(recipe.mealType);
+  if (recipe.mealType && MEAL_TYPES.includes(recipe.mealType.toLowerCase())) {
+    return capitalize(recipe.mealType);
+  }
   const match = recipe.tags.map((t) => t.toLowerCase()).find((t) => MEAL_TYPES.includes(t));
   return match ? capitalize(match) : null;
 }
