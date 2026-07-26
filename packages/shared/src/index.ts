@@ -120,6 +120,8 @@ export interface RecipeListItem {
   mealType?: string;
   nutrition: RecipeNutrition;
   cost: RecipeListItemCost | null;
+  /** ingredients.length — trimmed count for the list-card meta line, not the full array. */
+  ingredientCount: number;
 }
 
 export interface RecipeListPage {

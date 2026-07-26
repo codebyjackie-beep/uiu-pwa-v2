@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { RecipeListPage } from "@uiu/shared";
 import { apiGet } from "../lib/api";
-import { dietaryBadges, mealTypeBadge } from "../lib/recipeDisplay";
+import { mealTypeBadge } from "../lib/recipeDisplay";
 
 export const metadata = { title: "Recipes · UseItUp" };
 
@@ -46,7 +46,6 @@ export default async function RecipesPage({
       <div className="recipe-list">
         {items.map((recipe) => {
           const mealBadge = mealTypeBadge(recipe);
-          const dietBadgeList = dietaryBadges(recipe);
           return (
             <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card">
               {recipe.imageUrl ? (
@@ -56,36 +55,18 @@ export default async function RecipesPage({
                 <div className="recipe-card__image" />
               )}
               <div className="recipe-card__body">
-                {mealBadge && (
-                  <div className="recipe-card__badges">
-                    <span className="badge">{mealBadge}</span>
-                  </div>
-                )}
-                {dietBadgeList.length > 0 && (
-                  <div className="recipe-card__badges recipe-card__badges--dietary">
-                    {dietBadgeList.map((b) => (
-                      <span key={b} className="badge badge--dietary">
-                        {b}
-                      </span>
-                    ))}
-                  </div>
-                )}
-                <p className="recipe-card__title">{recipe.title}</p>
-                <div className="recipe-card__macros">
-                  <span>{Math.round(recipe.nutrition.calories)} kcal</span>
-                  <span>{recipe.cookTimeMinutes + recipe.prepTimeMinutes} min</span>
-                  <span>{recipe.servings} serves</span>
-                  <span>
-                    P{Math.round(recipe.nutrition.protein)} · C{Math.round(recipe.nutrition.carbs)} · F
-                    {Math.round(recipe.nutrition.fat)}
-                  </span>
-                </div>
-                <div className="recipe-card__meta">
+                <div className="recipe-card__header">
+                  {mealBadge ? <span className="badge">{mealBadge}</span> : <span />}
                   {formatPrice(recipe.cost) ? (
                     <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
                   ) : (
                     <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
                   )}
+                </div>
+                <p className="recipe-card__title">{recipe.title}</p>
+                <div className="recipe-card__macros">
+                  <span>{Math.round(recipe.nutrition.calories)} cal</span>
+                  <span>{recipe.ingredientCount} items</span>
                 </div>
               </div>
             </Link>

@@ -63,6 +63,7 @@ function toListItem(doc: Document, cost: RecipeListItem["cost"]): RecipeListItem
     mealType: doc.mealType as string | undefined,
     nutrition: doc.nutrition as RecipeListItem["nutrition"],
     cost,
+    ingredientCount: Array.isArray(doc.ingredients) ? doc.ingredients.length : 0,
   };
 }
 
