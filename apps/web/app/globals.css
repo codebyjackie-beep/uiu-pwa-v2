@@ -153,14 +153,19 @@ a {
   letter-spacing: 0.02em;
 }
 
-.recipe-card__badges--dietary,
-.badges--dietary {
+.recipe-card__badges--dietary {
   margin-top: -2px;
 }
 
+.badges--dietary {
+  margin-top: 12px;
+}
+
 .badge--dietary {
-  border-color: rgba(22, 163, 74, 0.4);
+  border-color: transparent;
+  background: rgba(22, 163, 74, 0.14);
   color: var(--accent);
+  font-weight: 700;
 }
 
 .recipe-card__title {
