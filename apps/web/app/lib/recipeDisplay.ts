@@ -106,7 +106,7 @@ export interface IngredientStoreLine {
 /** Line 2: store name (mapped, left) + price (right), or a "no price data" fallback when unpriceable. */
 export function formatIngredientStorePrice(line: RecipeDetailCostLine | undefined): IngredientStoreLine {
   if (!line || !line.priceable || line.lineCost == null || !line.store) {
-    return { label: "未有價格資料", price: null, unpriceable: true };
+    return { label: "Price unavailable", price: null, unpriceable: true };
   }
   return { label: displayStoreName(line.store), price: `£${line.lineCost.toFixed(2)}`, unpriceable: false };
 }
