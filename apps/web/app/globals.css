@@ -265,7 +265,7 @@ a {
 .cost-hero {
   margin-top: var(--space);
   padding: 16px;
-  background: var(--card);
+  background: var(--uiu-white);
   border-radius: var(--radius);
 }
 
@@ -281,14 +281,14 @@ a {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--uiu-muted);
+  color: rgba(10, 10, 10, 0.55);
 }
 
 .cost-hero__servings {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(22, 163, 74, 0.18);
+  background: rgba(22, 163, 74, 0.14);
   color: var(--accent);
   font-size: 11px;
   font-weight: 700;
@@ -298,14 +298,14 @@ a {
   margin: 6px 0 14px;
   font-size: 32px;
   font-weight: 700;
-  color: var(--fg);
+  color: var(--uiu-black);
 }
 
 .cost-hero__price--pending {
   font-size: 16px;
   font-weight: 400;
   font-style: italic;
-  color: var(--uiu-muted);
+  color: rgba(10, 10, 10, 0.45);
 }
 
 .macro-tiles {
@@ -321,20 +321,20 @@ a {
   gap: 2px;
   padding: 10px 4px;
   border-radius: calc(var(--radius) - 4px);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(10, 10, 10, 0.05);
 }
 
 .macro-tile__value {
   font-size: 16px;
   font-weight: 700;
-  color: var(--fg);
+  color: var(--uiu-black);
 }
 
 .macro-tile__label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--uiu-muted);
+  color: rgba(10, 10, 10, 0.5);
 }
 
 .recipe-detail__meta-row {
