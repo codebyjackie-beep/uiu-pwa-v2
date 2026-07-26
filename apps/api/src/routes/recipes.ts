@@ -38,6 +38,8 @@ function toDetailCost(costDoc: Document | null): RecipeDetailCost | null {
     store: line.store as string | undefined,
     productTitle: line.productTitle as string | null | undefined,
     canonicalName: line.canonical_name as string | undefined,
+    normValue: line.normValue as number | undefined,
+    normUnit: line.normUnit as "g" | "ml" | "pc" | undefined,
   }));
   return {
     basket: costDoc.basket as number,

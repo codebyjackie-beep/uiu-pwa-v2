@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { RecipeListPage } from "@uiu/shared";
 import { apiGet } from "../lib/api";
-import { dietBadges, mealTypeBadge, stripUsdMentions } from "../lib/recipeDisplay";
+import { dietaryBadges, mealTypeBadge } from "../lib/recipeDisplay";
 
 export const metadata = { title: "Recipes · UseItUp" };
 
@@ -45,7 +45,8 @@ export default async function RecipesPage({
 
       <div className="recipe-list">
         {items.map((recipe) => {
-          const badges = [mealTypeBadge(recipe), ...dietBadges(recipe)].filter((b): b is string => Boolean(b));
+          const mealBadge = mealTypeBadge(recipe);
+          const dietBadgeList = dietaryBadges(recipe);
           return (
             <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card">
               {recipe.imageUrl ? (
@@ -55,17 +56,21 @@ export default async function RecipesPage({
                 <div className="recipe-card__image" />
               )}
               <div className="recipe-card__body">
-                {badges.length > 0 && (
+                {mealBadge && (
                   <div className="recipe-card__badges">
-                    {badges.map((b) => (
-                      <span key={b} className="badge">
+                    <span className="badge">{mealBadge}</span>
+                  </div>
+                )}
+                {dietBadgeList.length > 0 && (
+                  <div className="recipe-card__badges recipe-card__badges--dietary">
+                    {dietBadgeList.map((b) => (
+                      <span key={b} className="badge badge--dietary">
                         {b}
                       </span>
                     ))}
                   </div>
                 )}
                 <p className="recipe-card__title">{recipe.title}</p>
-                <p className="recipe-card__description">{stripUsdMentions(recipe.description)}</p>
                 <div className="recipe-card__macros">
                   <span>{Math.round(recipe.nutrition.calories)} kcal</span>
                   <span>{recipe.cookTimeMinutes + recipe.prepTimeMinutes} min</span>

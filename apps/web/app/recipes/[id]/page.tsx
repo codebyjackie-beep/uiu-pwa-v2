@@ -1,6 +1,12 @@
 import type { RecipeDetail, RecipeDetailCostLine } from "@uiu/shared";
 import { apiGet } from "../../lib/api";
-import { dietBadges, formatIngredientLabel, formatIngredientPrice, mealTypeBadge, stripUsdMentions } from "../../lib/recipeDisplay";
+import {
+  dietaryBadges,
+  formatIngredientQuantity,
+  formatIngredientStorePrice,
+  ingredientName,
+  mealTypeBadge,
+} from "../../lib/recipeDisplay";
 
 function lineFor(recipe: RecipeDetail, ingredient: RecipeDetail["ingredients"][number]): RecipeDetailCostLine | undefined {
   return recipe.cost?.lines.find(
@@ -21,7 +27,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   }
 
   const recipe = res.data;
-  const badges = [mealTypeBadge(recipe), ...dietBadges(recipe)].filter((b): b is string => Boolean(b));
+  const mealBadge = mealTypeBadge(recipe);
+  const dietBadgeList = dietaryBadges(recipe);
   const totalTime = recipe.cookTimeMinutes + recipe.prepTimeMinutes;
 
   return (
@@ -33,10 +40,15 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         <div className="recipe-detail__image" />
       )}
 
-      {badges.length > 0 && (
+      {mealBadge && (
         <div className="badges" style={{ marginTop: "var(--space)" }}>
-          {badges.map((b) => (
-            <span key={b} className="badge">
+          <span className="badge">{mealBadge}</span>
+        </div>
+      )}
+      {dietBadgeList.length > 0 && (
+        <div className="badges badges--dietary">
+          {dietBadgeList.map((b) => (
+            <span key={b} className="badge badge--dietary">
               {b}
             </span>
           ))}
@@ -59,19 +71,31 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         )}
       </div>
 
-      <p className="recipe-detail__description">{stripUsdMentions(recipe.description)}</p>
-
       <h2>Ingredients</h2>
       <ul className="recipe-detail__ingredients">
         {recipe.ingredients.map((ing, i) => {
           const line = lineFor(recipe, ing);
-          const priceLabel = line ? formatIngredientPrice(line) : null;
+          const storeLine = formatIngredientStorePrice(line);
           return (
             <li key={i}>
-              <span className="recipe-detail__ingredient-label">
-                {line ? formatIngredientLabel(line) : `${ing.quantity} ${ing.unit} ${ing.name}`}
-              </span>
-              {priceLabel && <span className="recipe-detail__ingredient-price">{priceLabel}</span>}
+              <div className="recipe-detail__ingredient-row">
+                <span className="recipe-detail__ingredient-name">{ingredientName(line, ing.name)}</span>
+                <span className="recipe-detail__ingredient-qty">
+                  {formatIngredientQuantity(line, { quantity: ing.quantity, unit: ing.unit })}
+                </span>
+              </div>
+              <div className="recipe-detail__ingredient-row">
+                <span
+                  className={
+                    storeLine.unpriceable
+                      ? "recipe-detail__ingredient-store recipe-detail__ingredient-store--unpriceable"
+                      : "recipe-detail__ingredient-store"
+                  }
+                >
+                  {storeLine.label}
+                </span>
+                {storeLine.price && <span className="recipe-detail__ingredient-price">{storeLine.price}</span>}
+              </div>
             </li>
           );
         })}

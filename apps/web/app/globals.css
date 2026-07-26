@@ -140,20 +140,20 @@ a {
   letter-spacing: 0.02em;
 }
 
+.recipe-card__badges--dietary,
+.badges--dietary {
+  margin-top: -2px;
+}
+
+.badge--dietary {
+  border-color: rgba(22, 163, 74, 0.4);
+  color: var(--accent);
+}
+
 .recipe-card__title {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
-}
-
-.recipe-card__description {
-  font-size: 13px;
-  color: var(--uiu-muted);
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .recipe-card__macros,
@@ -230,11 +230,6 @@ a {
   margin: var(--space) 0 4px;
 }
 
-.recipe-detail__description {
-  color: var(--uiu-muted);
-  margin: 0 0 var(--space);
-}
-
 .recipe-detail h2 {
   font-size: 16px;
   margin: var(--space) 0 8px;
@@ -258,20 +253,44 @@ a {
 
 .recipe-detail__ingredients li {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
+  flex-direction: column;
+  gap: 2px;
   padding: 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.recipe-detail__ingredient-label {
+.recipe-detail__ingredient-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.recipe-detail__ingredient-name {
   font-size: 14px;
+  font-weight: 600;
+}
+
+.recipe-detail__ingredient-qty {
+  font-size: 13px;
+  color: var(--uiu-muted);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.recipe-detail__ingredient-store {
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+
+.recipe-detail__ingredient-store--unpriceable {
+  font-style: italic;
 }
 
 .recipe-detail__ingredient-price {
   font-size: 12px;
-  color: var(--uiu-muted);
+  color: var(--accent);
+  font-weight: 600;
   white-space: nowrap;
   text-align: right;
 }

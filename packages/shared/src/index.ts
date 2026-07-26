@@ -146,6 +146,10 @@ export interface RecipeDetailCostLine {
   /** Present only when priceable. */
   productTitle?: string | null;
   canonicalName?: string;
+  /** Converted value in normUnit — present only when priceable (conversion succeeded). */
+  normValue?: number;
+  /** g | ml | pc — matches RecipeCostLine.normUnit. Present only when priceable. */
+  normUnit?: "g" | "ml" | "pc";
 }
 
 export interface RecipeDetailCost extends RecipeListItemCost {
