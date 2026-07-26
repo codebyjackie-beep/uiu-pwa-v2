@@ -116,6 +116,9 @@ export interface RecipeListItem {
   prepTimeMinutes: number;
   servings: number;
   tags: string[];
+  /** Present on 37/197 recipes — falls back to a tags[] match on the client when absent. */
+  mealType?: string;
+  nutrition: RecipeNutrition;
   cost: RecipeListItemCost | null;
 }
 

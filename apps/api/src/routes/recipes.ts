@@ -58,6 +58,8 @@ function toListItem(doc: Document, cost: RecipeListItem["cost"]): RecipeListItem
     prepTimeMinutes: doc.prepTimeMinutes as number,
     servings: doc.servings as number,
     tags: Array.isArray(doc.tags) ? (doc.tags as string[]) : [],
+    mealType: doc.mealType as string | undefined,
+    nutrition: doc.nutrition as RecipeListItem["nutrition"],
     cost,
   };
 }

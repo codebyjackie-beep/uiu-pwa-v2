@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { RecipeListPage } from "@uiu/shared";
 import { apiGet } from "../lib/api";
+import { dietBadges, mealTypeBadge, stripUsdMentions } from "../lib/recipeDisplay";
 
 export const metadata = { title: "Recipes · UseItUp" };
 
@@ -43,28 +44,48 @@ export default async function RecipesPage({
       </div>
 
       <div className="recipe-list">
-        {items.map((recipe) => (
-          <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card">
-            {recipe.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img className="recipe-card__image" src={recipe.imageUrl} alt="" />
-            ) : (
-              <div className="recipe-card__image" />
-            )}
-            <div className="recipe-card__body">
-              <p className="recipe-card__title">{recipe.title}</p>
-              <p className="recipe-card__description">{recipe.description}</p>
-              <div className="recipe-card__meta">
-                <span className="recipe-card__cook-time">{recipe.cookTimeMinutes} min</span>
-                {formatPrice(recipe.cost) ? (
-                  <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
-                ) : (
-                  <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
+        {items.map((recipe) => {
+          const badges = [mealTypeBadge(recipe), ...dietBadges(recipe)].filter((b): b is string => Boolean(b));
+          return (
+            <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card">
+              {recipe.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="recipe-card__image" src={recipe.imageUrl} alt="" />
+              ) : (
+                <div className="recipe-card__image" />
+              )}
+              <div className="recipe-card__body">
+                {badges.length > 0 && (
+                  <div className="recipe-card__badges">
+                    {badges.map((b) => (
+                      <span key={b} className="badge">
+                        {b}
+                      </span>
+                    ))}
+                  </div>
                 )}
+                <p className="recipe-card__title">{recipe.title}</p>
+                <p className="recipe-card__description">{stripUsdMentions(recipe.description)}</p>
+                <div className="recipe-card__macros">
+                  <span>{Math.round(recipe.nutrition.calories)} kcal</span>
+                  <span>{recipe.cookTimeMinutes + recipe.prepTimeMinutes} min</span>
+                  <span>{recipe.servings} serves</span>
+                  <span>
+                    P{Math.round(recipe.nutrition.protein)} · C{Math.round(recipe.nutrition.carbs)} · F
+                    {Math.round(recipe.nutrition.fat)}
+                  </span>
+                </div>
+                <div className="recipe-card__meta">
+                  {formatPrice(recipe.cost) ? (
+                    <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
+                  ) : (
+                    <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
+                  )}
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
 
       <div className="recipes-page__pagination">
