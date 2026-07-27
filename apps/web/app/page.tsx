@@ -1,33 +1,61 @@
-import { API_VERSION } from "@uiu/shared";
+import Link from "next/link";
+
+const QUICK_ACTIONS = [
+  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices" },
+  { href: "/fridge", icon: "🧊", label: "Scan Fridge", hint: "Track what you've got" },
+  { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices" },
+  { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI" },
+] as const;
 
 export default function Home() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "var(--space)",
-        padding: "calc(var(--space) * 2)",
-        textAlign: "center",
-      }}
-    >
-      <div
-        style={{
-          fontSize: 12,
-          letterSpacing: 2,
-          textTransform: "uppercase",
-          color: "var(--accent)",
-        }}
-      >
-        UseItUp · v2
-      </div>
-      <h1 style={{ fontSize: 40, margin: 0 }}>Rebuild in progress</h1>
-      <p style={{ color: "var(--uiu-muted)", maxWidth: 480, margin: 0 }}>
-        Next.js + Cloudflare Workers PWA scaffold. Shared types v{API_VERSION}.
-      </p>
-    </main>
+    <div className="home-page">
+      <section className="home-hero">
+        <p className="home-hero__eyebrow">UseItUp · v2</p>
+        <h1 className="home-hero__title">Welcome back</h1>
+        <p className="home-hero__subtitle">
+          Plan meals, track your fridge, shop smart, and stay healthy — all in one place.
+        </p>
+      </section>
+
+      <section>
+        <p className="home-section__label">This week&apos;s meal plan</p>
+        <div className="home-summary-card">
+          <h2 className="home-summary-card__title">No meal plan yet</h2>
+          <p className="home-summary-card__body">
+            Build a weekly plan to see it summarised here.
+          </p>
+          <Link href="/meal-planner" className="home-summary-card__cta">
+            Start planning →
+          </Link>
+        </div>
+      </section>
+
+      <section>
+        <p className="home-section__label">This week&apos;s cost</p>
+        <div className="home-summary-card">
+          <h2 className="home-summary-card__title">No cost data yet</h2>
+          <p className="home-summary-card__body">
+            Once you&apos;ve got a meal plan, we&apos;ll total up the cost here.
+          </p>
+          <Link href="/meal-planner" className="home-summary-card__cta">
+            Start planning →
+          </Link>
+        </div>
+      </section>
+
+      <section>
+        <p className="home-section__label">Quick actions</p>
+        <div className="home-quick-actions">
+          {QUICK_ACTIONS.map((action) => (
+            <Link key={action.href} href={action.href} className="home-quick-action">
+              <span className="home-quick-action__icon">{action.icon}</span>
+              <span className="home-quick-action__label">{action.label}</span>
+              <span className="home-quick-action__hint">{action.hint}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
