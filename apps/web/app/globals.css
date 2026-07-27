@@ -510,13 +510,37 @@ a {
 }
 
 .home-quick-action {
+  position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: 4px;
+  min-height: 148px;
   padding: 14px;
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.home-quick-action--fridge {
+  background-image:
+    linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),
+    url("/images/home/Fridge.jpg");
+}
+
+.home-quick-action--shop {
+  background-image:
+    linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),
+    url("/images/home/Shop.jpg");
+}
+
+.home-quick-action--health {
+  background-image:
+    linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),
+    url("/images/home/Health.jpg");
 }
 
 .home-quick-action__icon {

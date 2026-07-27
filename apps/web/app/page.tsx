@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const QUICK_ACTIONS = [
-  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices" },
-  { href: "/fridge", icon: "🧊", label: "Scan Fridge", hint: "Track what you've got" },
-  { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices" },
-  { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI" },
+  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices", modifier: null },
+  { href: "/fridge", icon: "🧊", label: "Scan Fridge", hint: "Track what you've got", modifier: "fridge" },
+  { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices", modifier: "shop" },
+  { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI", modifier: "health" },
 ] as const;
 
 export default function Home() {
@@ -48,7 +48,15 @@ export default function Home() {
         <p className="home-section__label">Quick actions</p>
         <div className="home-quick-actions">
           {QUICK_ACTIONS.map((action) => (
-            <Link key={action.href} href={action.href} className="home-quick-action">
+            <Link
+              key={action.href}
+              href={action.href}
+              className={
+                action.modifier
+                  ? `home-quick-action home-quick-action--${action.modifier}`
+                  : "home-quick-action"
+              }
+            >
               <span className="home-quick-action__icon">{action.icon}</span>
               <span className="home-quick-action__label">{action.label}</span>
               <span className="home-quick-action__hint">{action.hint}</span>
