@@ -675,7 +675,14 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 8px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
 }
 
 .meal-planner-day__label {
@@ -683,24 +690,61 @@ a {
   font-size: 14px;
 }
 
+.meal-planner-day__header-right {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .meal-planner-day__totals {
   font-size: 12px;
   color: var(--uiu-muted);
 }
 
+.meal-planner-day__chevron {
+  display: inline-block;
+  color: var(--uiu-muted);
+  font-size: 12px;
+  transition: transform 0.15s ease;
+}
+
+.meal-planner-day__chevron--open {
+  transform: rotate(180deg);
+}
+
 .meal-planner-slots {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .meal-planner-slot {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   padding: 8px;
   border-radius: 10px;
   background: var(--uiu-surface-2);
+}
+
+.meal-planner-slot__label {
+  padding-top: 8px;
+}
+
+.meal-planner-slot__card {
+  flex: 1;
+  min-width: 0;
+  padding: 6px;
+}
+
+.meal-planner-slot__card .recipe-card__image {
+  width: 56px;
+  height: 56px;
+}
+
+.meal-planner-slot__card .recipe-card__title {
+  white-space: normal;
 }
 
 .meal-planner-slot__label {
@@ -710,30 +754,6 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--uiu-muted);
-}
-
-.meal-planner-slot__entry {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.meal-planner-slot__title {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.meal-planner-slot__meta {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--accent);
 }
 
 .meal-planner-slot__remove {
@@ -830,31 +850,15 @@ a {
 }
 
 .meal-picker__result {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: var(--uiu-surface-2);
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  font: inherit;
   color: var(--fg);
   text-align: left;
-  cursor: pointer;
 }
 
-.meal-picker__result-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.meal-picker__result-meta {
-  flex-shrink: 0;
-  font-size: 12px;
-  color: var(--accent);
+.meal-picker__result:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

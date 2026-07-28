@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ApiResponse, MealPlanDaySummary, MealSlot, RecipeListItem, RecipeListPage } from "@uiu/shared";
-import { dayLabel } from "../lib/dates";
+import { dayLabel, toDateKey } from "../lib/dates";
+import { mealTypeBadge } from "../lib/recipeDisplay";
+
+function formatRecipePrice(cost: RecipeListItem["cost"]) {
+  if (!cost || cost.basket <= 0) return null;
+  return `£${cost.basket.toFixed(2)}`;
+}
 
 const MEAL_SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 const SLOT_LABEL: Record<MealSlot, string> = {
@@ -29,8 +35,18 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
   const [results, setResults] = useState<RecipeListItem[]>([]);
   const [searching, setSearching] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(() => new Set([toDateKey(new Date())]));
 
   const dayByDate = new Map(days.map((d) => [d.date, d]));
+
+  function toggleDate(date: string) {
+    setExpandedDates((prev) => {
+      const next = new Set(prev);
+      if (next.has(date)) next.delete(date);
+      else next.add(date);
+      return next;
+    });
+  }
 
   useEffect(() => {
     if (!picker) return;
@@ -89,49 +105,77 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
         const summary = dayByDate.get(date);
         const entriesBySlot = new Map((summary?.entries ?? []).map((e) => [e.mealSlot, e]));
 
+        const expanded = expandedDates.has(date);
+
         return (
           <div key={date} className="meal-planner-day">
-            <div className="meal-planner-day__header">
+            <button
+              type="button"
+              className="meal-planner-day__header"
+              onClick={() => toggleDate(date)}
+              aria-expanded={expanded}
+            >
               <span className="meal-planner-day__label">{dayLabel(date, index)}</span>
-              {summary ? (
-                <span className="meal-planner-day__totals">
-                  {formatCost(summary.totalCost)} · {Math.round(summary.totalCalories)} cal
-                </span>
-              ) : null}
-            </div>
+              <span className="meal-planner-day__header-right">
+                {summary ? (
+                  <span className="meal-planner-day__totals">
+                    {formatCost(summary.totalCost)} · {Math.round(summary.totalCalories)} cal
+                  </span>
+                ) : null}
+                <span className={`meal-planner-day__chevron${expanded ? " meal-planner-day__chevron--open" : ""}`}>▾</span>
+              </span>
+            </button>
 
-            <div className="meal-planner-slots">
-              {MEAL_SLOTS.map((slot) => {
-                const entry = entriesBySlot.get(slot);
-                return (
-                  <div key={slot} className="meal-planner-slot">
-                    <span className="meal-planner-slot__label">{SLOT_LABEL[slot]}</span>
-                    {entry ? (
-                      <div className="meal-planner-slot__entry">
-                        <span className="meal-planner-slot__title">{entry.recipe.title}</span>
-                        <span className="meal-planner-slot__meta">
-                          {entry.recipe.costPerServing != null ? formatCost(entry.recipe.costPerServing * entry.servings) : "—"}
-                          {entry.recipe.calories != null ? ` · ${Math.round(entry.recipe.calories * entry.servings)} cal` : ""}
-                        </span>
-                        <button
-                          type="button"
-                          className="meal-planner-slot__remove"
-                          disabled={pendingId === entry._id}
-                          onClick={() => removeMeal(entry._id)}
-                          aria-label={`Remove ${entry.recipe.title}`}
-                        >
-                          ×
+            {expanded ? (
+              <div className="meal-planner-slots">
+                {MEAL_SLOTS.map((slot) => {
+                  const entry = entriesBySlot.get(slot);
+                  return (
+                    <div key={slot} className="meal-planner-slot">
+                      <span className="meal-planner-slot__label">{SLOT_LABEL[slot]}</span>
+                      {entry ? (
+                        <div className="recipe-card meal-planner-slot__card">
+                          {entry.recipe.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img className="recipe-card__image" src={entry.recipe.imageUrl} alt="" />
+                          ) : (
+                            <div className="recipe-card__image" />
+                          )}
+                          <div className="recipe-card__body">
+                            <div className="recipe-card__header">
+                              <p className="recipe-card__title">{entry.recipe.title}</p>
+                              <button
+                                type="button"
+                                className="meal-planner-slot__remove"
+                                disabled={pendingId === entry._id}
+                                onClick={() => removeMeal(entry._id)}
+                                aria-label={`Remove ${entry.recipe.title}`}
+                              >
+                                ×
+                              </button>
+                            </div>
+                            <div className="recipe-card__macros">
+                              <span className="recipe-card__price">
+                                {entry.recipe.costPerServing != null
+                                  ? formatCost(entry.recipe.costPerServing * entry.servings)
+                                  : "—"}
+                              </span>
+                              {entry.recipe.calories != null ? (
+                                <span>{Math.round(entry.recipe.calories * entry.servings)} cal</span>
+                              ) : null}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <button type="button" className="meal-planner-slot__add" onClick={() => setPicker({ date, slot })}>
+                          + Add
                         </button>
-                      </div>
-                    ) : (
-                      <button type="button" className="meal-planner-slot__add" onClick={() => setPicker({ date, slot })}>
-                        + Add
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         );
       })}
@@ -158,20 +202,41 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
             <div className="meal-picker__results">
               {searching ? <p className="meal-picker__status">Searching…</p> : null}
               {!searching && results.length === 0 ? <p className="meal-picker__status">No recipes found.</p> : null}
-              {results.map((recipe) => (
-                <button
-                  key={recipe._id}
-                  type="button"
-                  className="meal-picker__result"
-                  disabled={pendingId === recipe._id}
-                  onClick={() => addMeal(recipe._id)}
-                >
-                  <span className="meal-picker__result-title">{recipe.title}</span>
-                  <span className="meal-picker__result-meta">
-                    {recipe.cost ? formatCost(recipe.cost.basket) : "calculating…"} · {Math.round(recipe.nutrition.calories)} cal
-                  </span>
-                </button>
-              ))}
+              {results.map((recipe) => {
+                const mealBadge = mealTypeBadge(recipe);
+                const price = formatRecipePrice(recipe.cost);
+                return (
+                  <button
+                    key={recipe._id}
+                    type="button"
+                    className="recipe-card meal-picker__result"
+                    disabled={pendingId === recipe._id}
+                    onClick={() => addMeal(recipe._id)}
+                  >
+                    {recipe.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img className="recipe-card__image" src={recipe.imageUrl} alt="" />
+                    ) : (
+                      <div className="recipe-card__image" />
+                    )}
+                    <div className="recipe-card__body">
+                      <div className="recipe-card__header">
+                        {mealBadge ? <span className="badge">{mealBadge}</span> : <span />}
+                        {price ? (
+                          <span className="recipe-card__price">{price}</span>
+                        ) : (
+                          <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
+                        )}
+                      </div>
+                      <p className="recipe-card__title">{recipe.title}</p>
+                      <div className="recipe-card__macros">
+                        <span>{Math.round(recipe.nutrition.calories)} cal</span>
+                        <span>{recipe.ingredientCount} items</span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
