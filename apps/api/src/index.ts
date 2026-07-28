@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { recipesRouter } from "./routes/recipes";
+import { mealPlanRouter } from "./routes/mealPlan";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 
@@ -44,6 +45,7 @@ app.get("/api/version", (c) => {
 });
 
 app.route("/api/recipes", recipesRouter);
+app.route("/api/meal-plan", mealPlanRouter);
 
 // Feature routes (health) get mounted here as they land.
 

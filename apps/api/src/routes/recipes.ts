@@ -16,6 +16,10 @@ export const recipesRouter = new Hono<{ Bindings: DbEnv }>();
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function toRecipe(doc: Document): Recipe {
   return {
     ...(doc as unknown as Recipe),
@@ -73,9 +77,11 @@ recipesRouter.get("/", async (c) => {
   const pageParam = Number(c.req.query("page"));
   const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
   const tag = c.req.query("tag");
+  const q = c.req.query("q");
 
   const filter: Document = { isPublic: true };
   if (tag) filter.tags = tag;
+  if (q) filter.title = { $regex: escapeRegex(q), $options: "i" };
 
   try {
     const { items, total } = await withDb(c.env, async (db) => {

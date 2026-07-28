@@ -40,3 +40,33 @@ export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
     return { ok: false, error: { code: "fetch_failed", message: "Upstream unreachable" } };
   }
 }
+
+async function apiSend<T>(method: "POST" | "DELETE", path: string, jsonBody?: unknown): Promise<ApiResponse<T>> {
+  try {
+    const env = await resolveEnv();
+    const url = `${apiBaseUrl(env)}${path}`;
+    const init: RequestInit = {
+      method,
+      headers: jsonBody !== undefined ? { "Content-Type": "application/json" } : undefined,
+      body: jsonBody !== undefined ? JSON.stringify(jsonBody) : undefined,
+    };
+    const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
+    const parsed = (await res.json().catch(() => null)) as ApiResponse<T> | null;
+    if (!parsed) {
+      console.error("[uiu-web] apiSend non-JSON response:", method, path, res.status);
+      return { ok: false, error: { code: `http_${res.status}`, message: "Upstream error" } };
+    }
+    return parsed;
+  } catch (err) {
+    console.error("[uiu-web] apiSend failed:", method, path, err instanceof Error ? err.message : String(err));
+    return { ok: false, error: { code: "fetch_failed", message: "Upstream unreachable" } };
+  }
+}
+
+export function apiPost<T>(path: string, jsonBody: unknown): Promise<ApiResponse<T>> {
+  return apiSend<T>("POST", path, jsonBody);
+}
+
+export function apiDelete<T>(path: string): Promise<ApiResponse<T>> {
+  return apiSend<T>("DELETE", path);
+}

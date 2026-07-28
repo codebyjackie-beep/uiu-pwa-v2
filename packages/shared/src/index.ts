@@ -349,6 +349,53 @@ export interface RecipeCost {
 }
 
 // ---------------------------------------------------------------------------
+// Meal plan  (collection: meal_plans — one document per planned meal slot)
+// ---------------------------------------------------------------------------
+
+export type MealSlot = "breakfast" | "lunch" | "dinner" | "snack";
+
+export interface MealPlanEntry {
+  _id: ObjectIdHex;
+  /** Calendar day the meal is planned for, e.g. "2026-08-03" (no time component). */
+  date: string;
+  mealSlot: MealSlot;
+  recipeId: ObjectIdHex;
+  /** Planned serving count — defaults to the recipe's own servings when added. */
+  servings: number;
+  createdAt: ISODate;
+}
+
+/** MealPlanEntry joined with the fields the board needs to render a card, without the full Recipe. */
+export interface MealPlanEntryView {
+  _id: ObjectIdHex;
+  date: string;
+  mealSlot: MealSlot;
+  recipeId: ObjectIdHex;
+  servings: number;
+  recipe: {
+    title: string;
+    imageUrl: string;
+    calories: number | null;
+    costPerServing: number | null;
+  };
+}
+
+export interface MealPlanDaySummary {
+  date: string;
+  totalCost: number;
+  totalCalories: number;
+  entries: MealPlanEntryView[];
+}
+
+export interface MealPlanWeekResponse {
+  start: string;
+  end: string;
+  days: MealPlanDaySummary[];
+  weekTotalCost: number;
+  weekTotalCalories: number;
+}
+
+// ---------------------------------------------------------------------------
 // Health  (collection: user_health — encrypted at rest, secret-tier, never logged)
 // ---------------------------------------------------------------------------
 

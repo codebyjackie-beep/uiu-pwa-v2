@@ -600,3 +600,261 @@ a {
   margin: 0;
   color: var(--uiu-muted);
 }
+
+/* --- Meal Planner tab --- */
+
+.meal-planner-page {
+  padding: var(--space);
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+}
+
+.meal-planner-page__header h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.meal-planner-page__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.meal-planner-page__nav a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.meal-planner-summary {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.meal-planner-summary__stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meal-planner-summary__value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.meal-planner-summary__label {
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+
+.meal-planner-board {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meal-planner-day {
+  padding: 12px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.meal-planner-day__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.meal-planner-day__label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.meal-planner-day__totals {
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+
+.meal-planner-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meal-planner-slot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--uiu-surface-2);
+}
+
+.meal-planner-slot__label {
+  width: 64px;
+  flex-shrink: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--uiu-muted);
+}
+
+.meal-planner-slot__entry {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.meal-planner-slot__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meal-planner-slot__meta {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.meal-planner-slot__remove {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--uiu-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.meal-planner-slot__remove:hover {
+  color: var(--uiu-white);
+}
+
+.meal-planner-slot__add {
+  flex: 1;
+  text-align: left;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.meal-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  z-index: 20;
+}
+
+.meal-picker {
+  width: 100%;
+  max-height: 80vh;
+  background: var(--uiu-surface);
+  border-radius: 18px 18px 0 0;
+  padding: var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.meal-picker__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meal-picker__header h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.meal-picker__close {
+  border: none;
+  background: transparent;
+  color: var(--uiu-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.meal-picker__search {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.meal-picker__results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.meal-picker__status {
+  color: var(--uiu-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.meal-picker__result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  text-align: left;
+  cursor: pointer;
+}
+
+.meal-picker__result-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meal-picker__result-meta {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--accent);
+}
