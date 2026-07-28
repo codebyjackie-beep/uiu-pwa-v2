@@ -525,26 +525,43 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
 }
 
-.home-quick-action--fridge {
+.home-quick-action::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.home-quick-action--fridge::before {
   background-image:
     linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),
     url("/images/home/Fridge.jpg");
 }
 
-.home-quick-action--shop {
+.home-quick-action--shop::before {
   background-image:
     linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),
     url("/images/home/Shop.jpg");
 }
 
-.home-quick-action--health {
+.home-quick-action--health::before {
   background-image:
     linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),
     url("/images/home/Health.jpg");
+}
+
+.home-quick-action__icon,
+.home-quick-action__label,
+.home-quick-action__hint {
+  position: relative;
+  z-index: 1;
 }
 
 .home-quick-action__icon {
