@@ -396,6 +396,97 @@ export interface MealPlanWeekResponse {
 }
 
 // ---------------------------------------------------------------------------
+// AI meal plan generator  (HANDOFF_ai-meal-plan-generator.md Part A)
+//
+// V1 scope: reads existing recipes/recipe_cost/nutrition, never recomputes cost
+// or nutrition. Output is a preview only — nothing is written to meal_plans
+// until the caller (Part B UI) confirms and posts each entry individually via
+// the existing POST /api/meal-plan route.
+// ---------------------------------------------------------------------------
+
+/** How aggressively the generator avoids repeating the same recipe across the plan. */
+export type MealPlanVariation = "low" | "medium" | "high";
+
+/**
+ * UK FSA 14 allergens. Matching is keyword-based against ingredient names
+ * (see ALLERGEN_KEYWORDS in mealPlanGenerator.ts) — NOT a medical-grade
+ * check. `canonical_ingredients` has no allergen field (audited 2026-07-29,
+ * 0/741 docs), so this is deliberately best-effort for V1.
+ */
+export const UK_ALLERGENS = [
+  "celery",
+  "cereals_gluten",
+  "crustaceans",
+  "eggs",
+  "fish",
+  "lupin",
+  "milk",
+  "molluscs",
+  "mustard",
+  "tree_nuts",
+  "peanuts",
+  "sesame",
+  "soybeans",
+  "sulphites",
+] as const;
+export type UkAllergen = (typeof UK_ALLERGENS)[number];
+
+export interface MealPlanGeneratorInput {
+  /** Number of days to generate (1 for a day, 7 for a week, 28-31 for a month). */
+  lengthDays: number;
+  /** Budget expressed as "per week", scaled internally to lengthDays. */
+  weeklyBudgetGBP: number;
+  mealSlots: MealSlot[];
+  variation: MealPlanVariation;
+  /** Free-text cuisine keywords matched against tags/cuisineType. Empty = no preference. */
+  cuisines: string[];
+  /** Keys into DIETARY_FILTERS (mealPlanGenerator.ts) e.g. "vegetarian", "high-protein". */
+  dietary: string[];
+  allergens: UkAllergen[];
+  /** Free-text dislikes (e.g. "garlic", "onion", "spicy"), matched the same way as allergens. */
+  excludeKeywords: string[];
+  /** V1: recorded but not used to filter/sort — see handoff "未包" section. */
+  marketPriority?: string;
+  /** Computed client-side from the wizard's body-goal step, used once and never stored. */
+  calorieTargetPerDay?: number;
+  /** YYYY-MM-DD; defaults to today (UTC) when omitted. */
+  startDate?: string;
+}
+
+export interface GeneratedMealSlotEntry {
+  mealSlot: MealSlot;
+  recipeId: ObjectIdHex;
+  title: string;
+  imageUrl: string;
+  servings: number;
+  calories: number | null;
+  costPerServing: number | null;
+}
+
+export interface GeneratedMealPlanDay {
+  date: string;
+  entries: GeneratedMealSlotEntry[];
+  totalCost: number;
+  totalCalories: number;
+}
+
+export interface GeneratedMealPlanSummary {
+  totalMeals: number;
+  totalCost: number;
+  avgCaloriesPerDay: number;
+  /** Total budget for the requested lengthDays (weeklyBudgetGBP scaled), not the weekly figure. */
+  budgetGBP: number;
+  lengthDays: number;
+  /** True if the cuisine preference had to be dropped for at least one slot (pool would've been empty). */
+  cuisineFilterRelaxed: boolean;
+}
+
+export interface GeneratedMealPlan {
+  days: GeneratedMealPlanDay[];
+  summary: GeneratedMealPlanSummary;
+}
+
+// ---------------------------------------------------------------------------
 // Health  (collection: user_health — encrypted at rest, secret-tier, never logged)
 // ---------------------------------------------------------------------------
 
