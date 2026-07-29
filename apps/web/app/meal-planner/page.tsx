@@ -50,6 +50,9 @@ export default async function MealPlannerPage({
           </span>
           <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
         </div>
+        <Link href="/meal-planner/generate" className="wizard-primary-button">
+          Build a plan for me
+        </Link>
       </div>
 
       <div className="meal-planner-summary">

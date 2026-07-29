@@ -2,17 +2,24 @@ import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import type {
   ApiResponse,
+  GeneratedMealPlan,
   MealPlanDaySummary,
   MealPlanEntry,
   MealPlanEntryView,
+  MealPlanGeneratorInput,
+  MealPlanVariation,
   MealPlanWeekResponse,
   MealSlot,
+  UkAllergen,
 } from "@uiu/shared";
+import { UK_ALLERGENS } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
+import { generateMealPlan } from "../services/mealPlanGenerator";
 
 export const mealPlanRouter = new Hono<{ Bindings: DbEnv }>();
 
 const MEAL_SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
+const VARIATIONS: MealPlanVariation[] = ["low", "medium", "high"];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function isValidDate(value: string | undefined): value is string {
@@ -150,6 +157,76 @@ mealPlanRouter.post("/", async (c) => {
   } catch (err) {
     console.error("[uiu-api] meal-plan create error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to add meal plan entry" } };
+    return c.json(body, 502);
+  }
+});
+
+/**
+ * Wizard-driven preview (HANDOFF_ai-meal-plan-generator.md Part B). Read-only —
+ * builds a candidate plan via the Part A service but writes nothing. The
+ * wizard UI posts each chosen entry to POST /api/meal-plan individually once
+ * the user confirms (existing route above), so this endpoint has no write
+ * path of its own.
+ */
+mealPlanRouter.post("/generate", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  if (!payload || typeof payload !== "object") {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "JSON body required" } };
+    return c.json(body, 400);
+  }
+
+  const lengthDays = Number(payload.lengthDays);
+  const weeklyBudgetGBP = Number(payload.weeklyBudgetGBP);
+  const mealSlots = Array.isArray(payload.mealSlots) ? (payload.mealSlots as unknown[]).filter((s): s is MealSlot => MEAL_SLOTS.includes(s as MealSlot)) : [];
+  const variation = VARIATIONS.includes(payload.variation) ? (payload.variation as MealPlanVariation) : null;
+  const cuisines = Array.isArray(payload.cuisines) ? (payload.cuisines as unknown[]).filter((s): s is string => typeof s === "string") : [];
+  const dietary = Array.isArray(payload.dietary) ? (payload.dietary as unknown[]).filter((s): s is string => typeof s === "string") : [];
+  const allergens = Array.isArray(payload.allergens)
+    ? (payload.allergens as unknown[]).filter((s): s is UkAllergen => UK_ALLERGENS.includes(s as UkAllergen))
+    : [];
+  const excludeKeywords = Array.isArray(payload.excludeKeywords) ? (payload.excludeKeywords as unknown[]).filter((s): s is string => typeof s === "string") : [];
+  const marketPriority = typeof payload.marketPriority === "string" ? payload.marketPriority : undefined;
+  const calorieTargetPerDay = payload.calorieTargetPerDay != null && Number.isFinite(Number(payload.calorieTargetPerDay)) ? Number(payload.calorieTargetPerDay) : undefined;
+  const startDate = isValidDate(payload.startDate) ? payload.startDate : undefined;
+
+  if (!Number.isFinite(lengthDays) || lengthDays < 1 || lengthDays > 31) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "lengthDays must be between 1 and 31" } };
+    return c.json(body, 400);
+  }
+  if (!Number.isFinite(weeklyBudgetGBP) || weeklyBudgetGBP <= 0) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "weeklyBudgetGBP must be a positive number" } };
+    return c.json(body, 400);
+  }
+  if (mealSlots.length === 0) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "mealSlots must include at least one of breakfast/lunch/dinner/snack" } };
+    return c.json(body, 400);
+  }
+  if (!variation) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "variation must be one of low/medium/high" } };
+    return c.json(body, 400);
+  }
+
+  const input: MealPlanGeneratorInput = {
+    lengthDays,
+    weeklyBudgetGBP,
+    mealSlots,
+    variation,
+    cuisines,
+    dietary,
+    allergens,
+    excludeKeywords,
+    marketPriority,
+    calorieTargetPerDay,
+    startDate,
+  };
+
+  try {
+    const plan = await generateMealPlan(c.env, input);
+    const body: ApiResponse<GeneratedMealPlan> = { ok: true, data: plan };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] meal-plan generate error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to generate meal plan" } };
     return c.json(body, 502);
   }
 });
