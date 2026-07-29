@@ -134,22 +134,40 @@ export const DIETARY_FILTERS: Record<string, (r: PoolRecipe) => boolean> = {
  * ingredient names. NOT a medical-grade check (no allergen field exists on
  * canonical_ingredients to check against instead). The wizard UI must
  * disclose this limitation; do not surface this list as authoritative.
+ *
+ * French terms added 2026-07-29 after `scripts/audit_ingredient_language.cjs`
+ * found 2/191 public recipes (both source=open_food_facts — packaged-food
+ * label text) with French-only ingredient names; raw findings at
+ * summaries/2026-07-29_ingredient-language-audit.json. `ingredientNames` is
+ * only lowercased, not diacritic-stripped (see toPoolRecipe), so both the
+ * accented and unaccented spelling are listed where they differ (e.g.
+ * "céleri"/"celeri") — except "blé", where only the accented form is kept:
+ * an unaccented "ble" is a substring of "vegetable" and was found to
+ * wrongly match 37 unrelated recipes during verification, so it was
+ * dropped. No other language was found in the 191-recipe scan, so no
+ * further expansion beyond French is grounded in evidence yet.
  */
 export const ALLERGEN_KEYWORDS: Record<UkAllergen, string[]> = {
-  celery: ["celery", "celeriac"],
-  cereals_gluten: ["wheat", "flour", "bread", "pasta", "noodle", "barley", "rye", "oats", "oat", "breadcrumb", "couscous", "semolina"],
-  crustaceans: ["prawn", "shrimp", "crab", "lobster", "crayfish", "langoustine"],
-  eggs: ["egg"],
-  fish: ["fish", "salmon", "tuna", "cod", "anchov", "haddock", "trout", "sardine", "mackerel"],
+  celery: ["celery", "celeriac", "céleri", "celeri"],
+  cereals_gluten: [
+    "wheat", "flour", "bread", "pasta", "noodle", "barley", "rye", "oats", "oat", "breadcrumb", "couscous", "semolina",
+    "blé", "farine", "gluten", "avoine", "orge", "seigle",
+  ],
+  crustaceans: ["prawn", "shrimp", "crab", "lobster", "crayfish", "langoustine", "crevette", "crevettes", "crabe", "homard"],
+  eggs: ["egg", "œuf", "oeuf", "oeufs"],
+  fish: ["fish", "salmon", "tuna", "cod", "anchov", "haddock", "trout", "sardine", "mackerel", "poisson"],
   lupin: ["lupin"],
-  milk: ["milk", "cheese", "butter", "cream", "yoghurt", "yogurt", "dairy", "mozzarella", "parmesan", "ricotta", "paneer"],
-  molluscs: ["mussel", "oyster", "squid", "octopus", "clam", "scallop", "snail", "cockle"],
-  mustard: ["mustard"],
-  tree_nuts: ["almond", "hazelnut", "walnut", "cashew", "pecan", "pistachio", "brazil nut", "macadamia"],
-  peanuts: ["peanut", "groundnut"],
-  sesame: ["sesame", "tahini"],
-  soybeans: ["soy", "soya", "tofu", "edamame"],
-  sulphites: ["sulphite", "sulfite"],
+  milk: ["milk", "cheese", "butter", "cream", "yoghurt", "yogurt", "dairy", "mozzarella", "parmesan", "ricotta", "paneer", "lait", "beurre", "fromage"],
+  molluscs: ["mussel", "oyster", "squid", "octopus", "clam", "scallop", "snail", "cockle", "moule", "moules", "huître", "huitre", "calmar", "poulpe"],
+  mustard: ["mustard", "moutarde"],
+  tree_nuts: [
+    "almond", "hazelnut", "walnut", "cashew", "pecan", "pistachio", "brazil nut", "macadamia",
+    "amande", "amandes", "noisette", "noisettes",
+  ],
+  peanuts: ["peanut", "groundnut", "arachide", "arachides"],
+  sesame: ["sesame", "tahini", "sésame"],
+  soybeans: ["soy", "soya", "tofu", "edamame", "soja"],
+  sulphites: ["sulphite", "sulfite", "sulfites"],
 };
 
 function matchesCuisine(r: PoolRecipe, cuisine: string): boolean {
