@@ -203,24 +203,63 @@ function addDaysUtc(base: Date, days: number): Date {
   return d;
 }
 
-function chooseBest(candidates: PoolRecipe[], targetCost: number, targetCalories: number | null): PoolRecipe | null {
+/**
+ * Score band treated as "tied" for rotation purposes. Scores are normalized
+ * (relative cost/calorie difference, roughly 0-1), so 3% is a "practically
+ * the same fit" band, not an exact-equality requirement — real recipe costs
+ * rarely match to the penny, but two recipes both ~3% off target should
+ * still rotate rather than always losing to whichever happens to come first.
+ */
+const TIE_SCORE_EPSILON = 0.03;
+
+/**
+ * Picks the candidate with the lowest cost/calorie-fit score. Among
+ * candidates within TIE_SCORE_EPSILON of the best score, prefers whichever
+ * has been used least often (usageCount) so that variation="low" (repeatCap
+ * = Infinity) still rotates across a week when the pool has 3+ eligible
+ * recipes, instead of deterministically picking the same first candidate
+ * every time. When usage is also tied, keeps the earlier candidate in
+ * `candidates` order — preserves the "run twice, same result" stability
+ * guarantee.
+ */
+function scoreOf(r: PoolRecipe, targetCost: number, targetCalories: number | null): number {
+  const cost = r.costPerServing ?? targetCost;
+  const costDiff = targetCost > 0 ? Math.abs(cost - targetCost) / targetCost : 0;
+  let calDiff = 0;
+  if (targetCalories != null && r.calories != null) {
+    calDiff = Math.abs(r.calories - targetCalories) / targetCalories;
+  }
+  return targetCalories != null ? costDiff * 0.5 + calDiff * 0.5 : costDiff;
+}
+
+function chooseBest(
+  candidates: PoolRecipe[],
+  targetCost: number,
+  targetCalories: number | null,
+  usageCount: Map<string, number>,
+): PoolRecipe | null {
   if (candidates.length === 0) return null;
-  let best = candidates[0]!;
+
   let bestScore = Infinity;
   for (const r of candidates) {
-    const cost = r.costPerServing ?? targetCost;
-    const costDiff = targetCost > 0 ? Math.abs(cost - targetCost) / targetCost : 0;
-    let calDiff = 0;
-    if (targetCalories != null && r.calories != null) {
-      calDiff = Math.abs(r.calories - targetCalories) / targetCalories;
-    }
-    const score = targetCalories != null ? costDiff * 0.5 + calDiff * 0.5 : costDiff;
-    if (score < bestScore) {
-      bestScore = score;
-      best = r;
+    const score = scoreOf(r, targetCost, targetCalories);
+    if (score < bestScore) bestScore = score;
+  }
+
+  // Among candidates within the tie band of bestScore, pick the one used
+  // least often so far; ties within that go to whichever comes first in
+  // `candidates` (keeps selection deterministic run-to-run).
+  let chosen: PoolRecipe | null = null;
+  let chosenUsage = Infinity;
+  for (const r of candidates) {
+    if (scoreOf(r, targetCost, targetCalories) - bestScore > TIE_SCORE_EPSILON) continue;
+    const usage = usageCount.get(r.id) ?? 0;
+    if (chosen === null || usage < chosenUsage) {
+      chosen = r;
+      chosenUsage = usage;
     }
   }
-  return best;
+  return chosen;
 }
 
 /**
@@ -306,7 +345,7 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
       }
 
       const targetCost = remainingSlots > 0 ? remainingBudget / remainingSlots : 0;
-      const chosen = chooseBest(candidates, targetCost, perMealCalorieTarget);
+      const chosen = chooseBest(candidates, targetCost, perMealCalorieTarget, usageCount);
       remainingSlots -= 1;
 
       if (chosen) {

@@ -10,6 +10,10 @@
 //   2. poolTooSmallWarning: when literally only 1 recipe is eligible for
 //      every slot, the generator still has to repeat it (correctly), but
 //      must set poolTooSmallWarning=true so the UI can explain why.
+//   3. cross-day rotation (2026-07-30 follow-up): with 3+ eligible recipes
+//      for a slot, variation="low" (repeatCap=Infinity) must still rotate
+//      across a week instead of picking the same recipe every day — see
+//      Case D.
 //
 // Usage: node apps/api/scripts/test_meal_plan_same_day_dedup.mjs
 import { build } from "esbuild";
@@ -133,6 +137,35 @@ async function main() {
     console.log("  CASE C: FAIL");
   } else {
     console.log("  CASE C: PASS");
+  }
+
+  // --- Case D: 2026-07-30 regression — chooseBest()'s tie-break used to
+  // deterministically keep the first candidate on a tied/near-tied score,
+  // so with variation="low" (repeatCap=Infinity) a slot with 3+ eligible
+  // recipes still picked the same one every day of a 7-day plan (Jackie's
+  // real report: same lunch/dinner recipe all week). chooseBest() now
+  // breaks ties by preferring the least-used candidate so far, so with 3+
+  // recipes available it must rotate across a week even at variation="low".
+  // (Distinguishes from Case B: pool too small to rotate MUST still repeat.)
+  console.log("\n=== Case D: 4 near-tied recipes, single lunch slot, variation=low, 7 days ===");
+  const poolD = [
+    makeRecipe("D0", "Recipe D0", 2.0),
+    makeRecipe("D1", "Recipe D1", 2.0),
+    makeRecipe("D2", "Recipe D2", 2.0),
+    makeRecipe("D3", "Recipe D3", 2.0),
+  ];
+  const inputD = { ...baseInput, lengthDays: 7, mealSlots: ["lunch"] };
+  const planD = selectMealPlan(poolD, inputD);
+  const lunchIdsD = planD.days.map((day) => day.entries.find((e) => e.mealSlot === "lunch")?.recipeId);
+  const distinctLunchD = new Set(lunchIdsD);
+  console.log(`  lunch across 7 days: [${lunchIdsD.join(", ")}] distinct=${distinctLunchD.size}`);
+  console.log(`  poolTooSmallWarning: ${planD.summary.poolTooSmallWarning} (expected false — 4 recipes, 1 slot/day, no forced repeat needed)`);
+  const caseDOk = distinctLunchD.size >= 2 && planD.summary.poolTooSmallWarning === false;
+  if (!caseDOk) {
+    failed = true;
+    console.log("  CASE D: FAIL");
+  } else {
+    console.log("  CASE D: PASS");
   }
 
   fs.unlinkSync(outfile);

@@ -617,6 +617,13 @@ a {
   font-size: 24px;
 }
 
+/* Scoped, not on .wizard-primary-button itself — that class is also used
+   inside .wizard__nav's flex row (MealPlanWizard.tsx), where its own gap
+   handles spacing and an added margin would throw that row off. */
+.meal-planner-page__header .wizard-primary-button {
+  margin: 4px 0 12px;
+}
+
 .meal-planner-page__nav {
   display: flex;
   justify-content: space-between;

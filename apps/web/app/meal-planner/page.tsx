@@ -43,6 +43,9 @@ export default async function MealPlannerPage({
     <div className="meal-planner-page">
       <div className="meal-planner-page__header">
         <h1>Meal Planner</h1>
+        <Link href="/meal-planner/generate" className="wizard-primary-button">
+          Build a plan for me
+        </Link>
         <div className="meal-planner-page__nav">
           <Link href={`/meal-planner?week=${prevWeekKey}`}>← Prev week</Link>
           <span>
@@ -50,9 +53,6 @@ export default async function MealPlannerPage({
           </span>
           <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
         </div>
-        <Link href="/meal-planner/generate" className="wizard-primary-button">
-          Build a plan for me
-        </Link>
       </div>
 
       <div className="meal-planner-summary">
