@@ -76,8 +76,12 @@ const ALLERGEN_LABELS: Record<UkAllergen, string> = {
   sulphites: "Sulphites",
 };
 
+// "George at ASDA" deliberately excluded: it's ASDA's clothing/homeware sub-brand, not a food
+// aisle — it only shows up in canonical_price_cache via two junk canonical_ingredients entries
+// ("iron" -> a steam iron, "each" -> a Toy Story figure), both pre-existing CoFID audit flags,
+// not real grocery data. See summaries/2026-07-30_meal-plan-wizard-fixes-raw.md.
 const STORE_OPTIONS = [
-  "Tesco", "sainsburys.co.uk", "Asda Groceries", "George at ASDA", "Morrisons.com",
+  "Tesco", "sainsburys.co.uk", "Asda Groceries", "Morrisons.com",
   "Waitrose & Partners", "Ocado", "Iceland", "Aldiss", "Sunshine Co-operative",
 ];
 
@@ -625,6 +629,9 @@ function PlanReview({
       </div>
       {plan.summary.cuisineFilterRelaxed ? (
         <p className="wizard__sub">We couldn&apos;t find enough matches for your cuisine choices on some days, so those days include other cuisines too.</p>
+      ) : null}
+      {plan.summary.poolTooSmallWarning ? (
+        <p className="wizard__sub">Your filters left a small pool of recipes to choose from, so some meals repeat more than we&apos;d like on the same day. Loosening a filter should give you more variety.</p>
       ) : null}
 
       <div className="meal-planner-board">

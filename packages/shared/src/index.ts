@@ -479,6 +479,12 @@ export interface GeneratedMealPlanSummary {
   lengthDays: number;
   /** True if the cuisine preference had to be dropped for at least one slot (pool would've been empty). */
   cuisineFilterRelaxed: boolean;
+  /**
+   * True if at least one slot's filtered candidate pool was so small the
+   * generator had to repeat a recipe already used earlier the same day
+   * (see selectMealPlan's same-day dedup rule in mealPlanGenerator.ts).
+   */
+  poolTooSmallWarning: boolean;
 }
 
 export interface GeneratedMealPlan {

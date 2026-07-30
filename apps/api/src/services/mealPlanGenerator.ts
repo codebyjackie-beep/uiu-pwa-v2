@@ -266,6 +266,7 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
   const slotPools = new Map(slots.map((s) => [s, poolForSlot(s)]));
   const repeatCap = REPEAT_CAP[input.variation];
   const usageCount = new Map<string, number>();
+  let poolTooSmallWarning = false;
 
   const totalSlots = input.lengthDays * slots.length;
   const totalBudget = (input.weeklyBudgetGBP / 7) * input.lengthDays;
@@ -280,6 +281,11 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
   for (let d = 0; d < input.lengthDays; d++) {
     const date = formatDate(addDaysUtc(startDate, d));
     const entries: GeneratedMealSlotEntry[] = [];
+    // Same-day dedup floor: independent of `variation`, which only governs
+    // cross-day repeat frequency. Without this, a tied/near-tied chooseBest()
+    // score plus a permissive repeatCap (e.g. "low" = Infinity) can pick the
+    // same recipe for every slot in one day.
+    const usedToday = new Set<string>();
 
     for (const slot of slots) {
       const slotPool = slotPools.get(slot) ?? [];
@@ -288,12 +294,24 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
       // for this slot, allow reuse rather than leaving the slot empty.
       if (candidates.length === 0) candidates = slotPool;
 
+      const notUsedToday = candidates.filter((r) => !usedToday.has(r.id));
+      if (notUsedToday.length > 0) {
+        candidates = notUsedToday;
+      } else if (candidates.length > 0) {
+        // Every remaining candidate for this slot was already used earlier
+        // today — the pool is too small to honour the same-day dedup rule,
+        // so fall back to repeating and surface it via the warning flag
+        // rather than silently producing a monotonous plan.
+        poolTooSmallWarning = true;
+      }
+
       const targetCost = remainingSlots > 0 ? remainingBudget / remainingSlots : 0;
       const chosen = chooseBest(candidates, targetCost, perMealCalorieTarget);
       remainingSlots -= 1;
 
       if (chosen) {
         usageCount.set(chosen.id, (usageCount.get(chosen.id) ?? 0) + 1);
+        usedToday.add(chosen.id);
         remainingBudget -= chosen.costPerServing ?? targetCost;
         entries.push({
           mealSlot: slot,
@@ -328,6 +346,7 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
       budgetGBP: round2(totalBudget),
       lengthDays: input.lengthDays,
       cuisineFilterRelaxed,
+      poolTooSmallWarning,
     },
   };
 }
