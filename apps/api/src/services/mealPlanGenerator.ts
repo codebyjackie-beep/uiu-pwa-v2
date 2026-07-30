@@ -307,6 +307,19 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
   const usageCount = new Map<string, number>();
   let poolTooSmallWarning = false;
 
+  // Structural check, independent of the day-loop's same-day dedup trigger
+  // below: a slot whose eligible pool can't even cover half the plan's days
+  // with distinct recipes is guaranteed to repeat heavily regardless of
+  // variation/repeatCap, even if same-day dedup never fires (e.g. only one
+  // slot/day). Half the length (not the full length) is the threshold so a
+  // pool that already supports reasonable rotation (e.g. 4 recipes over 7
+  // days) doesn't spuriously warn.
+  for (const slot of slots) {
+    if ((slotPools.get(slot) ?? []).length < input.lengthDays / 2) {
+      poolTooSmallWarning = true;
+    }
+  }
+
   const totalSlots = input.lengthDays * slots.length;
   const totalBudget = (input.weeklyBudgetGBP / 7) * input.lengthDays;
   let remainingBudget = totalBudget;

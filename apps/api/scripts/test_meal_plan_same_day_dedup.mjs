@@ -168,6 +168,28 @@ async function main() {
     console.log("  CASE D: PASS");
   }
 
+  // --- Case E: 2026-07-31 — structural poolTooSmallWarning. 1 recipe,
+  // single slot, 7 days, variation=low. Same-day dedup never fires (only 1
+  // slot/day, nothing to dedup against within a day), so before this fix
+  // poolTooSmallWarning stayed false even though the plan is forced to repeat
+  // the same recipe all 7 days. The new check (pool size < lengthDays/2)
+  // must catch this. Distinguishes from Case D: 1 recipe can't cover even
+  // half of 7 days, 4 recipes can. ---
+  console.log("\n=== Case E: 1 recipe, single lunch slot, variation=low, 7 days ===");
+  const poolE = [makeRecipe("E0", "Recipe E0", 2.0)];
+  const inputE = { ...baseInput, lengthDays: 7, mealSlots: ["lunch"] };
+  const planE = selectMealPlan(poolE, inputE);
+  const lunchIdsE = planE.days.map((day) => day.entries.find((e) => e.mealSlot === "lunch")?.recipeId);
+  console.log(`  lunch across 7 days: [${lunchIdsE.join(", ")}]`);
+  console.log(`  poolTooSmallWarning: ${planE.summary.poolTooSmallWarning} (expected true)`);
+  const caseEOk = lunchIdsE.every((id) => id === "E0") && planE.summary.poolTooSmallWarning === true;
+  if (!caseEOk) {
+    failed = true;
+    console.log("  CASE E: FAIL");
+  } else {
+    console.log("  CASE E: PASS");
+  }
+
   fs.unlinkSync(outfile);
   if (failed) {
     console.log("\nOVERALL: FAIL");
