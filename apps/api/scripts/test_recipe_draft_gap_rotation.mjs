@@ -98,36 +98,42 @@ async function main() {
   if (!caseCOk) { failed = true; console.log("  CASE C: FAIL"); } else { console.log("  CASE C: PASS"); }
 
   // --- Case D: buildIdeaSpecs quota split — exactly 5 gap specs + 15 rotation
-  // specs = 20 total, and rotation indices advance from the given state. ---
+  // specs = 20 total, and the *persisted* rotation indices advance by exactly
+  // +1 (mod length) per call, decoupled from rotationCount (2026-07-31 fix:
+  // rotationCount used to equal ROTATION_CUISINES.length, 15 === 15, so
+  // advancing the persisted index by the loop's own increments left
+  // lastCuisineIndex mathematically stuck — see buildIdeaSpecs doc comment). ---
   console.log("\n=== Case D: buildIdeaSpecs 5:15 quota split + rotation index advance ===");
   const priorityTargets5 = tiedMatrix.slice(0, 5); // 5 entries, no ties triggered here
   const state0 = { lastCuisineIndex: -1, lastDietIndex: -1, gapTargetHistory: [] };
   const { specs, nextState, draftedTargets } = buildIdeaSpecs(priorityTargets5, state0);
   const gapSpecs = specs.filter((s) => s.kind === "gap");
   const rotationSpecs = specs.filter((s) => s.kind === "rotation");
-  const caseDOk =
-    specs.length === 20 &&
-    gapSpecs.length === 5 &&
-    rotationSpecs.length === 15 &&
-    draftedTargets.length === 5 &&
-    nextState.lastCuisineIndex === (14) % ROTATION_CUISINES.length && // advanced 15 times from -1: (-1+15) % 15 = 14
-    nextState.lastDietIndex === (14) % ROTATION_DIETS.length; // (-1+15) % 10 = 4... check below instead of hardcoding
   console.log(`  total=${specs.length} gap=${gapSpecs.length} rotation=${rotationSpecs.length} nextCuisineIdx=${nextState.lastCuisineIndex} nextDietIdx=${nextState.lastDietIndex}`);
-  const expectedCuisineIdx = (state0.lastCuisineIndex + 15) % ROTATION_CUISINES.length;
-  const expectedDietIdx = (state0.lastDietIndex + 15) % ROTATION_DIETS.length;
+  const expectedCuisineIdx = (state0.lastCuisineIndex + 1) % ROTATION_CUISINES.length;
+  const expectedDietIdx = (state0.lastDietIndex + 1) % ROTATION_DIETS.length;
   const caseDOk2 =
     specs.length === 20 && gapSpecs.length === 5 && rotationSpecs.length === 15 && draftedTargets.length === 5 &&
     nextState.lastCuisineIndex === expectedCuisineIdx && nextState.lastDietIndex === expectedDietIdx;
   if (!caseDOk2) { failed = true; console.log("  CASE D: FAIL"); } else { console.log("  CASE D: PASS"); }
 
-  // --- Case D2: a second call starting from nextState must advance further
-  // still (proves rotation state actually changes call-over-call, not just
-  // that it looks non-default once — direct guard against the "Max pillar
-  // rotation never actually rotated" class of bug at the pure-logic level). ---
-  console.log("\n=== Case D2: rotation indices keep advancing on a second call ===");
-  const second = buildIdeaSpecs(priorityTargets5, nextState);
-  const caseD2Ok = second.nextState.lastCuisineIndex !== nextState.lastCuisineIndex || second.nextState.lastDietIndex !== nextState.lastDietIndex;
-  console.log(`  round1 cuisineIdx=${nextState.lastCuisineIndex} round2 cuisineIdx=${second.nextState.lastCuisineIndex} ${caseD2Ok ? "OK" : "FAIL"}`);
+  // --- Case D2: three consecutive calls must each advance the persisted
+  // cuisine index by exactly +1 (mod length) — strict per-call check (not an
+  // OR with dietIdx), since the OR form is exactly what let the 2026-07-31
+  // stuck-cuisine-index bug slip past this test originally: dietIdx moving
+  // masked cuisineIdx being stuck. ---
+  console.log("\n=== Case D2: cuisine index advances by exactly +1 every call, 3 calls running ===");
+  let state = nextState;
+  let caseD2Ok = true;
+  for (let call = 0; call < 3; call++) {
+    const prevCuisineIdx = state.lastCuisineIndex;
+    const result = buildIdeaSpecs(priorityTargets5, state);
+    const expected = (prevCuisineIdx + 1) % ROTATION_CUISINES.length;
+    const ok = result.nextState.lastCuisineIndex === expected;
+    console.log(`  call ${call + 1}: ${prevCuisineIdx} -> ${result.nextState.lastCuisineIndex} (expected ${expected}) ${ok ? "OK" : "FAIL"}`);
+    if (!ok) caseD2Ok = false;
+    state = result.nextState;
+  }
   if (!caseD2Ok) { failed = true; console.log("  CASE D2: FAIL"); } else { console.log("  CASE D2: PASS"); }
 
   // --- Case E: isTooSimilarTitle dedup — exact match (case-insensitive) and

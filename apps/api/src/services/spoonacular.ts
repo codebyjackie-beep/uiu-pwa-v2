@@ -27,23 +27,39 @@ export interface SpoonacularQuery {
   diet?: string;
   cuisine?: string;
   number?: number;
+  offset?: number;
 }
 
-/** Raw response is used once and discarded by the caller — this function itself holds nothing after returning. */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Raw response is used once and discarded by the caller — this function itself
+ * holds nothing after returning. Retries once on 429 (RapidAPI free-tier
+ * per-second throttling, observed live 2026-07-31 — distinct from the 40/day
+ * quota) after a short backoff, since the daily cron fires ~20 of these in a
+ * tight loop.
+ */
 export async function fetchSpoonacularIdeas(env: SpoonacularEnv, q: SpoonacularQuery): Promise<SpoonacularIdea[]> {
   const url = new URL(`https://${env.RAPIDAPI_HOST}/recipes/complexSearch`);
   url.searchParams.set("query", q.query);
   if (q.diet) url.searchParams.set("diet", q.diet);
   if (q.cuisine) url.searchParams.set("cuisine", q.cuisine);
   url.searchParams.set("number", String(q.number ?? 5));
+  if (q.offset) url.searchParams.set("offset", String(q.offset));
   url.searchParams.set("addRecipeInformation", "true");
 
-  const res = await fetch(url, {
-    headers: {
-      "X-RapidAPI-Key": env.RAPIDAPI_KEY,
-      "X-RapidAPI-Host": env.RAPIDAPI_HOST,
-    },
-  });
+  const headers = {
+    "X-RapidAPI-Key": env.RAPIDAPI_KEY,
+    "X-RapidAPI-Host": env.RAPIDAPI_HOST,
+  };
+
+  let res = await fetch(url, { headers });
+  if (res.status === 429) {
+    await sleep(1500);
+    res = await fetch(url, { headers });
+  }
   if (!res.ok) {
     throw new Error(`Spoonacular request failed: ${res.status} ${res.statusText}`);
   }

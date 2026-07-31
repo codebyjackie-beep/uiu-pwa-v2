@@ -120,8 +120,20 @@ export type IdeaSpec = GapIdeaSpec | RotationIdeaSpec;
  * combo, front-sliced deterministically when ties push the priority list
  * past 5) + the remainder (always 15, since the gap quota never exceeds 5)
  * from general cuisine x diet rotation, cycling lastCuisineIndex/lastDietIndex
- * forward by one per rotation draft so consecutive cron fires don't repeat
+ * forward within the call so consecutive specs in the same run don't repeat
  * the same combo.
+ *
+ * The persisted resume pointer (nextState) advances by exactly +1 (mod
+ * length) per *call*, independent of rotationCount — NOT by however many
+ * times the in-call loop incremented it. Confirmed live 2026-07-31:
+ * rotationCount (15) happened to equal ROTATION_CUISINES.length (15), so
+ * advancing the persisted index by the loop's own running total meant
+ * lastCuisineIndex silently returned to its starting value on every call
+ * (15 increments mod 15 = 0 net movement) — the exact "rotation never
+ * actually rotates" bug class the addendum calls out for Max's pillar
+ * rotation, reproduced here by numeric coincidence rather than a missing
+ * increment. Decoupling the persisted advance from the in-call cycle length
+ * makes it immune to any future coincidence between quota size and array length.
  */
 export function buildIdeaSpecs(
   priorityTargets: GapMatrixCell[],
@@ -142,9 +154,12 @@ export function buildIdeaSpecs(
 
   const draftedTargets: GapTarget[] = gapTargets.map((t) => ({ slot: t.slot, dietary: t.dietary, countBefore: t.count }));
 
+  const nextCuisineIdx = (state.lastCuisineIndex + 1) % ROTATION_CUISINES.length;
+  const nextDietIdx = (state.lastDietIndex + 1) % ROTATION_DIETS.length;
+
   return {
     specs: [...gapSpecs, ...rotationSpecs],
-    nextState: { ...state, lastCuisineIndex: cuisineIdx, lastDietIndex: dietIdx },
+    nextState: { ...state, lastCuisineIndex: nextCuisineIdx, lastDietIndex: nextDietIdx },
     draftedTargets,
   };
 }

@@ -77,41 +77,56 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     const spec = specs[i]!;
     const gapTarget = spec.kind === "gap" ? { slot: spec.slot as MealSlot, dietary: spec.dietary, countBefore: spec.countBefore } : undefined;
 
+    // "Skip too-similar ideas, substitute another" (handoff) — up to
+    // MAX_ATTEMPTS attempts per spec, each pulling a fresh Spoonacular batch
+    // at a different offset, before this spec's slot in today's 20 is given
+    // up on. Observed live 2026-07-31: raising this from 3->5 did not close
+    // the gap (16/20 -> 15/20) — the shortfall is corpus/model variance for
+    // niche gap combos, not an attempt-count problem.
     let idea: { title: string; summary: string } | null = null;
-    try {
-      const q = ideaQuery(spec);
-      const ideas = await fetchSpoonacularIdeas(env, { ...q, number: 5 });
-      for (const candidate of ideas) {
-        if (!isTooSimilarTitle(candidate.title, usedTitlesThisRun)) {
-          idea = candidate;
-          break;
+    let drafted: Awaited<ReturnType<typeof draftRecipe>> | null = null;
+
+    const MAX_ATTEMPTS = 5;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS && !drafted; attempt++) {
+      // Spacing calls out avoids RapidAPI's free-tier per-second throttling
+      // (observed live 2026-07-31 as 429s when requests fire back-to-back) —
+      // distinct from fetchSpoonacularIdeas' own single-retry-on-429 backoff.
+      if (i > 0 || attempt > 0) await new Promise((resolve) => setTimeout(resolve, 400));
+
+      idea = null;
+      try {
+        const q = ideaQuery(spec);
+        const ideas = await fetchSpoonacularIdeas(env, { ...q, number: 5, offset: attempt * 5 });
+        for (const candidate of ideas) {
+          if (!isTooSimilarTitle(candidate.title, usedTitlesThisRun)) {
+            idea = candidate;
+            break;
+          }
         }
+        if (!idea && ideas.length > 0 && attempt === MAX_ATTEMPTS - 1) idea = ideas[0]!; // last attempt: best-effort fallback, still logged as a real inspiration
+      } catch (err) {
+        console.error("[uiu-api] spoonacular fetch failed for spec", JSON.stringify(spec), "attempt", attempt, err instanceof Error ? err.message : String(err));
       }
-      if (!idea && ideas.length > 0) idea = ideas[0]!; // best-effort fallback, still logged as a real inspiration
-    } catch (err) {
-      console.error("[uiu-api] spoonacular fetch failed for spec", JSON.stringify(spec), err instanceof Error ? err.message : String(err));
-    }
-    if (!idea) {
-      skippedDuplicates += 1;
-      continue;
+      if (!idea) continue;
+
+      try {
+        const candidate = await draftRecipe(env, {
+          dishIdea: idea.title,
+          cuisineHint: spec.kind === "rotation" ? spec.cuisine : undefined,
+          dietHint: spec.kind === "rotation" ? spec.diet : undefined,
+          canonicalNames,
+          gapConstraint: spec.kind === "gap" ? { slot: spec.slot, dietary: spec.dietary } : undefined,
+        });
+        if (isTooSimilarTitle(candidate.title, usedTitlesThisRun)) {
+          continue; // substitute another idea next attempt, per handoff
+        }
+        drafted = candidate;
+      } catch (err) {
+        console.error("[uiu-api] OpenRouter draft failed for idea", idea.title, "attempt", attempt, err instanceof Error ? err.message : String(err));
+      }
     }
 
-    let drafted;
-    try {
-      drafted = await draftRecipe(env, {
-        dishIdea: idea.title,
-        cuisineHint: spec.kind === "rotation" ? spec.cuisine : undefined,
-        dietHint: spec.kind === "rotation" ? spec.diet : undefined,
-        canonicalNames,
-        gapConstraint: spec.kind === "gap" ? { slot: spec.slot, dietary: spec.dietary } : undefined,
-      });
-    } catch (err) {
-      console.error("[uiu-api] OpenRouter draft failed for idea", idea.title, err instanceof Error ? err.message : String(err));
-      skippedDuplicates += 1;
-      continue;
-    }
-
-    if (isTooSimilarTitle(drafted.title, usedTitlesThisRun)) {
+    if (!idea || !drafted) {
       skippedDuplicates += 1;
       continue;
     }

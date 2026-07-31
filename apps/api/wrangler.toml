@@ -27,8 +27,10 @@ API_ENV = "production"
 MONGODB_DB = "useitup"
 # HANDOFF_daily-recipe-draft-agent.md Part B — Jackie 2026-07-28 拍板嘅最平 model
 # (~$0.09/day for 20 drafts). A [vars] entry, not a secret, so it can change
-# without touching secrets.
-OPENROUTER_MODEL = "openai/gpt-mini-latest"
+# without touching secrets. Leading "~" is OpenRouter's auto-updating alias
+# syntax (confirmed live 2026-07-31 — bare "openai/gpt-mini-latest" 400s;
+# "~openai/gpt-mini-latest" resolves, currently to openai/gpt-5.4-mini).
+OPENROUTER_MODEL = "~openai/gpt-mini-latest"
 
 # Two independent crons — scheduled() in index.ts branches on event.cron, the
 # two jobs are NOT merged:
