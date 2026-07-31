@@ -172,17 +172,29 @@ function normalizeTitle(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
 }
 
-/** True if `candidate` is too similar to any of `existingTitles` (exact match after normalizing, or one is a substring of the other). */
-export function isTooSimilarTitle(candidate: string, existingTitles: string[]): boolean {
+export interface TitleMatch {
+  matchedTitle: string;
+  rule: "exact" | "substring";
+}
+
+/** Finds the existing title (if any) that makes `candidate` too similar, and which rule tripped. */
+export function findTitleMatch(candidate: string, existingTitles: string[]): TitleMatch | null {
   const norm = normalizeTitle(candidate);
-  if (!norm) return true;
+  if (!norm) return { matchedTitle: "", rule: "exact" };
   for (const existing of existingTitles) {
     const existingNorm = normalizeTitle(existing);
     if (!existingNorm) continue;
-    if (norm === existingNorm) return true;
-    if (norm.length > 8 && (existingNorm.includes(norm) || norm.includes(existingNorm))) return true;
+    if (norm === existingNorm) return { matchedTitle: existing, rule: "exact" };
+    if (norm.length > 8 && (existingNorm.includes(norm) || norm.includes(existingNorm))) {
+      return { matchedTitle: existing, rule: "substring" };
+    }
   }
-  return false;
+  return null;
+}
+
+/** True if `candidate` is too similar to any of `existingTitles` (exact match after normalizing, or one is a substring of the other). */
+export function isTooSimilarTitle(candidate: string, existingTitles: string[]): boolean {
+  return findTitleMatch(candidate, existingTitles) !== null;
 }
 
 export async function fetchExistingTitles(env: DbEnv): Promise<string[]> {

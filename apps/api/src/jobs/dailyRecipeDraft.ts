@@ -13,7 +13,7 @@ import {
   buildIdeaSpecs,
   computeGapMatrix,
   fetchExistingTitles,
-  isTooSimilarTitle,
+  findTitleMatch,
   readDraftState,
   selectPriorityGapTargets,
   writeDraftState,
@@ -98,10 +98,12 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
         const q = ideaQuery(spec);
         const ideas = await fetchSpoonacularIdeas(env, { ...q, number: 5, offset: attempt * 5 });
         for (const candidate of ideas) {
-          if (!isTooSimilarTitle(candidate.title, usedTitlesThisRun)) {
+          const match = findTitleMatch(candidate.title, usedTitlesThisRun);
+          if (!match) {
             idea = candidate;
             break;
           }
+          console.log("[uiu-api] dedup skip (idea):", JSON.stringify({ candidate: candidate.title, matchedTitle: match.matchedTitle, rule: match.rule }));
         }
         if (!idea && ideas.length > 0 && attempt === MAX_ATTEMPTS - 1) idea = ideas[0]!; // last attempt: best-effort fallback, still logged as a real inspiration
       } catch (err) {
@@ -117,7 +119,9 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
           canonicalNames,
           gapConstraint: spec.kind === "gap" ? { slot: spec.slot, dietary: spec.dietary } : undefined,
         });
-        if (isTooSimilarTitle(candidate.title, usedTitlesThisRun)) {
+        const draftedMatch = findTitleMatch(candidate.title, usedTitlesThisRun);
+        if (draftedMatch) {
+          console.log("[uiu-api] dedup skip (drafted):", JSON.stringify({ candidate: candidate.title, matchedTitle: draftedMatch.matchedTitle, rule: draftedMatch.rule }));
           continue; // substitute another idea next attempt, per handoff
         }
         drafted = candidate;
