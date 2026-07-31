@@ -3,18 +3,26 @@ import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { recipesRouter } from "./routes/recipes";
 import { mealPlanRouter } from "./routes/mealPlan";
+import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
+import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
   API_ENV: string;
   MONGODB_DB: string;
+  OPENROUTER_MODEL: string;
   // Secrets (not in repo, via `wrangler secret put`):
   //   MONGODB_URI — Atlas connection string.
   //   ADMIN_TOKEN — shared secret checked against X-Admin-Token for /api/admin/* routes.
+  //   OPENROUTER_API_KEY — Jackie's own OpenRouter key (HANDOFF_daily-recipe-draft-agent.md Part B).
+  //   RAPIDAPI_KEY / RAPIDAPI_HOST — Spoonacular via RapidAPI, same pair as tools/recipe_ideas/spoonacular_browse.cjs.
   MONGODB_URI: string;
   ADMIN_TOKEN: string;
+  OPENROUTER_API_KEY: string;
+  RAPIDAPI_KEY: string;
+  RAPIDAPI_HOST: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -46,6 +54,7 @@ app.get("/api/version", (c) => {
 
 app.route("/api/recipes", recipesRouter);
 app.route("/api/meal-plan", mealPlanRouter);
+app.route("/api/admin/recipe-drafts", adminRecipeDraftsRouter);
 
 // Feature routes (health) get mounted here as they land.
 
@@ -112,11 +121,23 @@ app.onError((err, c) => {
 export default {
   fetch: app.fetch,
   /**
-   * Cloudflare Cron Trigger handler — replaces the old repo's long-running
-   * Mongoose precompute_recipe_costs.js. Writes to `recipe_cost` for real
-   * (dryRun:false). Scheduled via wrangler.toml [triggers].
+   * Cloudflare Cron Trigger handler — branches on event.cron since two
+   * independent jobs now share this Worker (weekly cost recompute vs. the
+   * daily recipe draft agent). Keep the two logics separate, not merged.
    */
-  async scheduled(_event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
+  async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
+    if (event.cron === "0 6 * * *") {
+      ctx.waitUntil(
+        dailyRecipeDraft(env, false)
+          .then((summary) => {
+            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates }));
+          })
+          .catch((err) => {
+            console.error("[uiu-api] cron dailyRecipeDraft failed:", err instanceof Error ? err.message : String(err));
+          }),
+      );
+      return;
+    }
     ctx.waitUntil(
       precomputeRecipeCosts(env, false)
         .then((summary) => {

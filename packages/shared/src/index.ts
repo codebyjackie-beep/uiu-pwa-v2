@@ -223,6 +223,13 @@ export interface CanonicalIngredient {
   is_pantry?: boolean;
   /** Present on 9/741 docs. */
   query_alias?: string;
+  /** CoFID lookup (HANDOFF_recipe-expansion.md Part A). Present on 247/741 docs — verified against production Atlas 2026-07-31; the rest have no matched CoFID row yet. */
+  nutrition_per_100g?: {
+    kcal: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -536,6 +543,64 @@ export interface HealthCheck {
   service: string;
   version: string;
   time: ISODate;
+}
+
+// ---------------------------------------------------------------------------
+// Recipe drafts  (HANDOFF_daily-recipe-draft-agent.md + gap-aware addendum)
+//
+// New collection `recipe_drafts` — AI-authored candidates awaiting human
+// review. Never a source for /api/recipes until approved (copied into
+// `recipes`+`recipe_cost` at that point, see adminRecipeDrafts.ts).
+// ---------------------------------------------------------------------------
+
+export type RecipeDraftStatus = "pending" | "approved" | "rejected";
+
+/** Which slot×dietary gap (if any) this draft was generated to fill — shown on the admin review card so Jackie can eyeball tag-correctness before approving. */
+export interface GapTarget {
+  slot: MealSlot;
+  dietary: string;
+  countBefore: number;
+}
+
+export interface RecipeDraft {
+  _id: ObjectIdHex;
+  title: string;
+  description: string;
+  ingredients: RecipeIngredient[];
+  steps: string[];
+  tags: string[];
+  mealType?: string;
+  servings: number;
+  prepTimeMinutes: number;
+  cookTimeMinutes: number;
+  nutrition: RecipeNutrition;
+  status: RecipeDraftStatus;
+  createdAt: ISODate;
+  /** Dish name from the Spoonacular inspiration, debug-only — never the full Spoonacular text. */
+  sourceInspiration: string;
+  /** Present only for the 5/20 daily drafts generated to target a specific pool gap. */
+  gapTarget?: GapTarget;
+  /** Cost preview computed at draft time (same engine as recipe_cost), so the admin card can show adjustedCoveragePct before approval. */
+  costPreview?: RecipeListItemCost | null;
+}
+
+/** One cell of the 4 (meal slot) x 10 (DIETARY_FILTERS key) gap matrix. */
+export interface GapMatrixCell {
+  slot: MealSlot;
+  dietary: string;
+  count: number;
+}
+
+/** Rotation + gap-verification state (collection: recipe_draft_state — single doc). */
+export interface RecipeDraftState {
+  _id: ObjectIdHex;
+  lastCuisineIndex: number;
+  lastDietIndex: number;
+  gapTargetHistory: Array<{
+    date: string;
+    targets: GapTarget[];
+  }>;
+  updatedAt: ISODate;
 }
 
 export const API_VERSION = "0.1.0" as const;

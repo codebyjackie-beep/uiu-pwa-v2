@@ -1094,3 +1094,97 @@ a {
   margin: 0;
   color: var(--uiu-muted);
 }
+
+/* --- Admin: recipe drafts review (HANDOFF_daily-recipe-draft-agent.md Part D) --- */
+
+.admin-drafts-page {
+  padding: var(--space);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.admin-drafts-token-form {
+  display: flex;
+  gap: 8px;
+  margin-top: var(--space);
+}
+
+.admin-drafts-token-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--card);
+  color: var(--fg);
+}
+
+.admin-drafts-token-form button,
+.admin-drafts-actions button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: var(--uiu-white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-drafts-actions button:last-child {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.admin-drafts-error {
+  color: #ef4444;
+}
+
+.admin-drafts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+  margin-top: var(--space);
+}
+
+.admin-drafts-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: var(--space);
+}
+
+.admin-drafts-card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.admin-drafts-gap-badge {
+  display: inline-block;
+  background: var(--uiu-green-ink);
+  color: var(--uiu-green);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.admin-drafts-meta {
+  margin: 4px 0;
+  color: var(--uiu-muted);
+  font-size: 13px;
+}
+
+.admin-drafts-ingredients {
+  margin: 8px 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.admin-drafts-tags {
+  font-size: 12px;
+  color: var(--uiu-muted);
+  margin-bottom: 8px;
+}
+
+.admin-drafts-actions {
+  display: flex;
+  gap: 8px;
+}

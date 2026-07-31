@@ -25,11 +25,12 @@ function apiBaseUrl(env: ServiceBindingEnv): string {
   return base;
 }
 
-export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
+export async function apiGet<T>(path: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
   try {
     const env = await resolveEnv();
     const url = `${apiBaseUrl(env)}${path}`;
-    const res = env.API ? await env.API.fetch(url, { cache: "no-store" }) : await fetch(url, { cache: "no-store" });
+    const init: RequestInit = { cache: "no-store", headers };
+    const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
     if (!res.ok) {
       console.error("[uiu-web] apiGet non-ok response:", path, res.status);
       return { ok: false, error: { code: `http_${res.status}`, message: "Upstream error" } };
@@ -41,13 +42,18 @@ export async function apiGet<T>(path: string): Promise<ApiResponse<T>> {
   }
 }
 
-async function apiSend<T>(method: "POST" | "DELETE", path: string, jsonBody?: unknown): Promise<ApiResponse<T>> {
+async function apiSend<T>(
+  method: "POST" | "DELETE",
+  path: string,
+  jsonBody?: unknown,
+  headers?: Record<string, string>,
+): Promise<ApiResponse<T>> {
   try {
     const env = await resolveEnv();
     const url = `${apiBaseUrl(env)}${path}`;
     const init: RequestInit = {
       method,
-      headers: jsonBody !== undefined ? { "Content-Type": "application/json" } : undefined,
+      headers: { ...(jsonBody !== undefined ? { "Content-Type": "application/json" } : {}), ...headers },
       body: jsonBody !== undefined ? JSON.stringify(jsonBody) : undefined,
     };
     const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
@@ -63,8 +69,8 @@ async function apiSend<T>(method: "POST" | "DELETE", path: string, jsonBody?: un
   }
 }
 
-export function apiPost<T>(path: string, jsonBody: unknown): Promise<ApiResponse<T>> {
-  return apiSend<T>("POST", path, jsonBody);
+export function apiPost<T>(path: string, jsonBody: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  return apiSend<T>("POST", path, jsonBody, headers);
 }
 
 export function apiDelete<T>(path: string): Promise<ApiResponse<T>> {

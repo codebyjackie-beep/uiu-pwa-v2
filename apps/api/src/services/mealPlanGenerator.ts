@@ -29,7 +29,7 @@ import { withDb, type DbEnv } from "../db";
 // Pool: one flattened, filter-ready record per public recipe.
 // ---------------------------------------------------------------------------
 
-interface PoolRecipe {
+export interface PoolRecipe {
   id: string;
   title: string;
   imageUrl: string;
@@ -180,7 +180,7 @@ function matchesCuisine(r: PoolRecipe, cuisine: string): boolean {
 // Selection
 // ---------------------------------------------------------------------------
 
-const SLOT_ORDER: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
+export const SLOT_ORDER: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 
 /** Infinity for "low" (Basic) means "repeat as often as needed" — smaller shopping list. */
 const REPEAT_CAP: Record<MealPlanGeneratorInput["variation"], number> = {

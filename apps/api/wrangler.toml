@@ -10,24 +10,38 @@ compatibility_flags = ["nodejs_compat"]
 enabled = true
 
 # --- Secrets (set via `wrangler secret put` or CI, NEVER committed) ---
-#   MONGODB_URI     Atlas connection string (mongodb+srv://...), official `mongodb` driver
-#                   over Workers TCP sockets — no Data API involved.
-#   ADMIN_TOKEN     Shared secret checked against the X-Admin-Token header on
-#                   /api/admin/* routes (e.g. POST /api/admin/recompute-costs).
+#   MONGODB_URI        Atlas connection string (mongodb+srv://...), official `mongodb` driver
+#                       over Workers TCP sockets — no Data API involved.
+#   ADMIN_TOKEN         Shared secret checked against the X-Admin-Token header on
+#                       /api/admin/* routes (e.g. POST /api/admin/recompute-costs).
+#   OPENROUTER_API_KEY  HANDOFF_daily-recipe-draft-agent.md Part B — Jackie's own OpenRouter
+#                       key, set by Jackie herself via `wrangler secret put`, never read by
+#                       any agent context. Raw value: Key\openrouter-api-key-recipe.txt.
+#   RAPIDAPI_KEY        Spoonacular via RapidAPI (same pair as
+#   RAPIDAPI_HOST       tools/recipe_ideas/spoonacular_browse.cjs, moved server-side for the
+#                       daily cron). Raw values: Key\spoonacular-rapidapi-key.txt.
 #
 # --- Non-secret vars ---
 [vars]
 API_ENV = "production"
 MONGODB_DB = "useitup"
+# HANDOFF_daily-recipe-draft-agent.md Part B — Jackie 2026-07-28 拍板嘅最平 model
+# (~$0.09/day for 20 drafts). A [vars] entry, not a secret, so it can change
+# without touching secrets.
+OPENROUTER_MODEL = "openai/gpt-mini-latest"
 
-# Weekly recipe_cost precompute (Mon 03:00 UTC). Should ideally run after the
-# Serper price-refresh chain once that's also on Workers Cron — for now this
-# just recomputes against whatever's currently in canonical_price_cache.
+# Two independent crons — scheduled() in index.ts branches on event.cron, the
+# two jobs are NOT merged:
+#   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC).
 #
-# RE-ENABLED (2026-07-25): first populate done manually via
-# POST /api/admin/recompute-costs?write=true, human-watched, 2026-07-25
-# 11:55 UTC — count 0 -> 197, verified against golden reference digit-for-
-# digit (1278/1791 = 71.35678%). scheduled() runs with dryRun:false, so this
-# weekly refresh now recomputes over real production data going forward.
+#   RE-ENABLED (2026-07-25): first populate done manually via
+#   POST /api/admin/recompute-costs?write=true, human-watched, 2026-07-25
+#   11:55 UTC — count 0 -> 197, verified against golden reference digit-for-
+#   digit (1278/1791 = 71.35678%). scheduled() runs with dryRun:false, so this
+#   weekly refresh now recomputes over real production data going forward.
+#
+#   "0 6 * * *"  Daily recipe draft agent (HANDOFF_daily-recipe-draft-agent.md).
+#   Only ever writes to `recipe_drafts` (status:"pending") — never touches
+#   `recipes`/`recipe_cost` until a human clicks Approve in the admin page.
 [triggers]
-crons = ["0 3 * * 1"]
+crons = ["0 3 * * 1", "0 6 * * *"]

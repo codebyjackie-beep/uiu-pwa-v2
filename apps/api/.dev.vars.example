@@ -1,2 +1,6 @@
 # Copy to `.dev.vars` for local `wrangler dev`. NEVER commit the real .dev.vars.
 MONGODB_URI="mongodb+srv://<user>:<password>@uiu-pwa-v2.tcemmht.mongodb.net/?retryWrites=true&w=majority"
+ADMIN_TOKEN="<shared admin token, see Key/admin-token.txt>"
+OPENROUTER_API_KEY="<see Key/openrouter-api-key-recipe.txt>"
+RAPIDAPI_KEY="<see Key/spoonacular-rapidapi-key.txt>"
+RAPIDAPI_HOST="<see Key/spoonacular-rapidapi-key.txt>"
