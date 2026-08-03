@@ -56,21 +56,61 @@ const MEAL_SLOT_TAGS: Record<string, MealSlot[]> = {
 };
 
 /**
+ * Dessert/soup keyword lists (HANDOFF_meal-planner-slot-scoring-fix.md Bug 1,
+ * 2026-08-03). Keyword-based against title+tags, not calorie-threshold-based
+ * — some desserts exceed 500 kcal, so calories can't distinguish them.
+ * Deliberately no "broth" in SOUP_KEYWORDS: some pasta dishes are "with
+ * broth" and would be wrongly caught.
+ */
+const DESSERT_KEYWORDS = [
+  "cookie", "macaron", "cake", "brownie", "pastry", "tart", "pie", "muffin",
+  "donut", "doughnut", "pudding", "mousse", "cheesecake", "ice cream",
+  "biscuit", "scone", "cupcake",
+];
+const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
+
+function matchesAny(text: string, keywords: string[]): boolean {
+  return keywords.some((k) => text.includes(k));
+}
+
+/**
  * Tags-based, not mealType-based (see file header). Recipes with no
  * recognizable meal-slot tag default to lunch+dinner — a product judgment
  * call for the 58/197 recipes with zero signal (mostly savoury mains),
- * not a hard rule.
+ * not a hard rule. Soup and dessert overrides below apply regardless of
+ * whether the slots came from a tag or the fallback (a recipe tagged
+ * "dinner" that's actually soup still shouldn't show up at dinner).
  */
-function deriveMealSlots(tagsLower: string[]): Set<MealSlot> {
+function deriveMealSlots(titleLower: string, tagsLower: string[]): Set<MealSlot> {
+  const isDessert =
+    matchesAny(titleLower, DESSERT_KEYWORDS) || tagsLower.some((t) => matchesAny(t, DESSERT_KEYWORDS));
+  const isSoup = matchesAny(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAny(t, SOUP_KEYWORDS));
+
   const slots = new Set<MealSlot>();
   for (const tag of tagsLower) {
     const mapped = MEAL_SLOT_TAGS[tag];
     if (mapped) for (const s of mapped) slots.add(s);
   }
+
   if (slots.size === 0) {
-    slots.add("lunch");
-    slots.add("dinner");
+    if (isDessert) {
+      slots.add("snack");
+    } else if (isSoup) {
+      slots.add("lunch");
+    } else {
+      slots.add("lunch");
+      slots.add("dinner");
+    }
   }
+
+  // Soup is never dinner-eligible (lunch is fine); dessert is never
+  // lunch/dinner-eligible — regardless of tag vs fallback origin above.
+  if (isSoup) slots.delete("dinner");
+  if (isDessert) {
+    slots.delete("lunch");
+    slots.delete("dinner");
+  }
+
   return slots;
 }
 
@@ -78,6 +118,7 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
   const tags: string[] = Array.isArray(doc.tags) ? (doc.tags as string[]).map((t) => String(t).toLowerCase()) : [];
   const ingredients: Document[] = Array.isArray(doc.ingredients) ? (doc.ingredients as Document[]) : [];
   const nutrition = doc.nutrition as Document | undefined;
+  const titleLower = String(doc.title ?? "").toLowerCase();
   return {
     id: (doc._id as ObjectIdType).toString(),
     title: doc.title as string,
@@ -90,7 +131,7 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
     calories: nutrition?.calories != null ? Math.round(nutrition.calories as number) : null,
     protein: (nutrition?.protein as number | undefined) ?? null,
     costPerServing: costDoc && (costDoc.perServing as number) > 0 ? (costDoc.perServing as number) : null,
-    mealSlots: deriveMealSlots(tags),
+    mealSlots: deriveMealSlots(titleLower, tags),
   };
 }
 
@@ -222,9 +263,17 @@ const TIE_SCORE_EPSILON = 0.03;
  * `candidates` order — preserves the "run twice, same result" stability
  * guarantee.
  */
+/**
+ * Null cost is penalized as maximally off-target, not treated as a perfect
+ * budget match (HANDOFF_meal-planner-slot-scoring-fix.md Bug 2,
+ * 2026-08-03) — otherwise unpriced recipes systematically win selection
+ * over priced ones ("only breakfast shows a price" bug).
+ */
+const NULL_COST_PENALTY = 1;
+
 function scoreOf(r: PoolRecipe, targetCost: number, targetCalories: number | null): number {
-  const cost = r.costPerServing ?? targetCost;
-  const costDiff = targetCost > 0 ? Math.abs(cost - targetCost) / targetCost : 0;
+  const costDiff =
+    r.costPerServing != null && targetCost > 0 ? Math.abs(r.costPerServing - targetCost) / targetCost : NULL_COST_PENALTY;
   let calDiff = 0;
   if (targetCalories != null && r.calories != null) {
     calDiff = Math.abs(r.calories - targetCalories) / targetCalories;
