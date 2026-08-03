@@ -362,6 +362,12 @@ a {
   line-height: 1.6;
 }
 
+.recipe-detail__ingredients-note {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--uiu-muted);
+}
+
 .recipe-detail__ingredients {
   list-style: none;
   padding-left: 0;

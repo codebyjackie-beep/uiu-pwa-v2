@@ -95,7 +95,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         </div>
       )}
 
-      <h2>Ingredients</h2>
+      <h2>
+        Ingredients <span className="recipe-detail__ingredients-note">(makes {recipe.servings} serving{recipe.servings === 1 ? "" : "s"})</span>
+      </h2>
       <ul className="recipe-detail__ingredients">
         {recipe.ingredients.map((ing, i) => {
           const line = lineFor(recipe, ing);
