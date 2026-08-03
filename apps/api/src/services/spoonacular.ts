@@ -55,6 +55,11 @@ export async function fetchSpoonacularIdeas(env: SpoonacularEnv, q: SpoonacularQ
     "X-RapidAPI-Host": env.RAPIDAPI_HOST,
   };
 
+  console.log(
+    "[debug] rapidapi host=" + env.RAPIDAPI_HOST +
+    " keyLen=" + (env.RAPIDAPI_KEY ? env.RAPIDAPI_KEY.length : 0) +
+    " keyLast4=" + (env.RAPIDAPI_KEY ? env.RAPIDAPI_KEY.slice(-4) : "none")
+  );
   let res = await fetch(url, { headers });
   if (res.status === 429) {
     await sleep(1500);
