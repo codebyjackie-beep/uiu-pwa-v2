@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ApiResponse, RecipeDraft, RecipeIngredient, RecipeDraftStatus } from "@uiu/shared";
 
-const TOKEN_KEY = "uiu_admin_token";
+type Session = "loading" | "authed" | "anon";
 
 type StatusFilter = RecipeDraftStatus | "all";
 
@@ -55,19 +55,18 @@ function formatCost(v: number | null | undefined): string {
   return v != null ? `£${v.toFixed(2)}/serving` : "未計到價";
 }
 
-async function fetchWithToken<T>(path: string, token: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
-  const res = await fetch(path, {
-    ...init,
-    headers: { ...(init?.headers ?? {}), "X-Admin-Token": token },
-  });
+async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
+  const res = await fetch(path, init);
   const parsed = (await res.json().catch(() => null)) as ApiResponse<T> | null;
   return { res, parsed };
 }
 
 export function RecipeDraftsAdmin() {
-  const [token, setToken] = useState<string | null>(null);
-  const [tokenInput, setTokenInput] = useState("");
-  const [tokenError, setTokenError] = useState<string | null>(null);
+  const [session, setSession] = useState<Session>("loading");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [sessionNotice, setSessionNotice] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending");
   const [drafts, setDrafts] = useState<RecipeDraft[]>([]);
@@ -82,16 +81,18 @@ export function RecipeDraftsAdmin() {
   const [staleIds, setStaleIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
 
+// Probes the session on mount by attempting the pending-list fetch itself — a valid
+  // admin_session cookie makes it succeed, a missing/expired one returns 401.
   useEffect(() => {
-    const saved = sessionStorage.getItem(TOKEN_KEY);
-    if (saved) setToken(saved);
+    void loadDrafts("pending");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (!token) return;
+    if (session !== "authed") return;
     void loadDrafts(statusFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, statusFilter]);
+  }, [statusFilter]);
 
   useEffect(() => {
     if (!toast) return;
@@ -100,17 +101,15 @@ export function RecipeDraftsAdmin() {
   }, [toast]);
 
   async function loadDrafts(status: StatusFilter) {
-    if (!token) return;
     setLoading(true);
     setListError(null);
-    const { res, parsed } = await fetchWithToken<RecipeDraft[]>(`/api/admin/recipe-drafts?status=${status}`, token);
+    const { res, parsed } = await fetchJson<RecipeDraft[]>(`/api/admin/recipe-drafts?status=${status}`);
     if (res.status === 401) {
-      setTokenError("Token 錯誤或已失效 — 請重新輸入。");
-      setToken(null);
-      sessionStorage.removeItem(TOKEN_KEY);
+      setSession("anon");
       setLoading(false);
       return;
     }
+    setSession("authed");
     if (!parsed || !parsed.ok) {
       setListError(parsed && !parsed.ok ? parsed.error.message : "讀取失敗，請重試。");
       setLoading(false);
@@ -120,12 +119,24 @@ export function RecipeDraftsAdmin() {
     setLoading(false);
   }
 
-  function submitToken() {
-    const trimmed = tokenInput.trim();
+  async function login() {
+    const trimmed = password.trim();
     if (!trimmed) return;
-    sessionStorage.setItem(TOKEN_KEY, trimmed);
-    setToken(trimmed);
-    setTokenError(null);
+    setLoggingIn(true);
+    setLoginError(null);
+    const res = await fetch("/api/admin/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: trimmed }),
+    });
+    setLoggingIn(false);
+    if (!res.ok) {
+      setLoginError("密碼錯誤，請重試。");
+      return;
+    }
+    setPassword("");
+    setSession("authed");
+    void loadDrafts(statusFilter);
   }
 
   function startEdit(d: RecipeDraft) {
@@ -140,19 +151,18 @@ export function RecipeDraftsAdmin() {
   }
 
   async function saveEdit(id: string) {
-    if (!token || !edit) return;
+    if (!edit) return;
     setSavingId(id);
     const ingredientsChanged = true; // any save that reaches here may have touched ingredients — flag conservatively
-    const { res, parsed } = await fetchWithToken<RecipeDraft>(`/api/admin/recipe-drafts/${id}`, token, {
+    const { res, parsed } = await fetchJson<RecipeDraft>(`/api/admin/recipe-drafts/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(edit),
     });
     setSavingId(null);
     if (res.status === 401) {
-      setTokenError("Token 錯誤或已失效 — 請重新輸入。");
-      setToken(null);
-      sessionStorage.removeItem(TOKEN_KEY);
+      setSession("anon");
+      setSessionNotice("Session 已過期，請重新登入。");
       return;
     }
     if (!parsed || !parsed.ok) {
@@ -167,19 +177,17 @@ export function RecipeDraftsAdmin() {
   }
 
   async function decide(id: string, action: "approve" | "reject") {
-    if (!token) return;
     if (action === "reject" && !window.confirm("確定要 reject 呢條 draft？呢個動作唔會再顯示喺 pending 列表。")) {
       return;
     }
     setDecidingId(id);
-    const { res, parsed } = await fetchWithToken<{ recipeId: string } | { id: string }>(`/api/admin/recipe-drafts/${id}/${action}`, token, {
+    const { res, parsed } = await fetchJson<{ recipeId: string } | { id: string }>(`/api/admin/recipe-drafts/${id}/${action}`, {
       method: "POST",
     });
     setDecidingId(null);
     if (res.status === 401) {
-      setTokenError("Token 錯誤或已失效 — 請重新輸入。");
-      setToken(null);
-      sessionStorage.removeItem(TOKEN_KEY);
+      setSession("anon");
+      setSessionNotice("Session 已過期，請重新登入。");
       return;
     }
     if (!parsed || !parsed.ok) {
@@ -190,27 +198,38 @@ export function RecipeDraftsAdmin() {
     setToast(action === "approve" ? "已 approve，已加入 recipes。" : "已 reject。");
   }
 
-  if (!token) {
+  if (session === "loading") {
     return (
       <div className="admin-drafts-page">
         <h1>Recipe Drafts Admin</h1>
-        <p className="admin-drafts-page__sub">輸入 ADMIN_TOKEN 先可以睇 pending draft（存喺 sessionStorage，關咗 tab 就要重新輸入）。</p>
+        <p className="admin-drafts-page__sub">載入緊…</p>
+      </div>
+    );
+  }
+
+  if (session === "anon") {
+    return (
+      <div className="admin-drafts-page">
+        <h1>Recipe Drafts Admin</h1>
+        <p className="admin-drafts-page__sub">輸入密碼登入先可以睇 draft。</p>
         <div className="admin-drafts-token-form">
           <label className="wizard-field">
-            <span>ADMIN_TOKEN</span>
+            <span>密碼</span>
             <input
               type="password"
-              value={tokenInput}
-              onChange={(e) => setTokenInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submitToken()}
-              placeholder="貼上 admin token"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && login()}
+              placeholder="輸入密碼"
+              autoFocus
             />
           </label>
-          <button type="button" className="wizard-primary-button" onClick={submitToken}>
-            提交
+          <button type="button" className="wizard-primary-button" disabled={loggingIn} onClick={login}>
+            {loggingIn ? "登入緊…" : "登入"}
           </button>
         </div>
-        {tokenError ? <p className="admin-drafts-error">{tokenError}</p> : null}
+        {sessionNotice ? <p className="admin-drafts-page__sub">{sessionNotice}</p> : null}
+        {loginError ? <p className="admin-drafts-error">{loginError}</p> : null}
       </div>
     );
   }
@@ -232,7 +251,6 @@ export function RecipeDraftsAdmin() {
       </div>
 
       {toast ? <p className="admin-drafts-toast">{toast}</p> : null}
-      {tokenError ? <p className="admin-drafts-error">{tokenError}</p> : null}
       {listError ? <p className="admin-drafts-error">{listError}</p> : null}
       {loading ? <p className="admin-drafts-page__sub">載入緊…</p> : null}
       {!loading && drafts.length === 0 && !listError ? <p className="admin-drafts-page__sub">冇 {statusFilter} 嘅 draft。</p> : null}
