@@ -1188,3 +1188,228 @@ a {
   display: flex;
   gap: 8px;
 }
+
+/* --- Admin: recipe drafts edit UI (HANDOFF_recipe-drafts-admin-ui.md) --- */
+
+.admin-drafts-page h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+
+.admin-drafts-page__sub {
+  color: var(--uiu-muted);
+  font-size: 13px;
+  margin: 4px 0 var(--space);
+}
+
+.admin-drafts-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: var(--space);
+}
+
+.admin-drafts-toast {
+  background: var(--uiu-green-ink);
+  color: var(--uiu-green);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.admin-drafts-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.admin-drafts-card__header-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-drafts-card__title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.admin-drafts-card__meta,
+.admin-drafts-card__sub {
+  margin: 2px 0;
+  color: var(--uiu-muted);
+  font-size: 12.5px;
+}
+
+.admin-drafts-card__price {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.admin-drafts-stale {
+  color: var(--uiu-muted);
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.admin-drafts-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.admin-drafts-detail {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13.5px;
+}
+
+.admin-drafts-detail h4 {
+  margin: 12px 0 6px;
+  font-size: 13px;
+  color: var(--uiu-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-drafts-ingredient-list,
+.admin-drafts-step-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.admin-drafts-ingredient-list li,
+.admin-drafts-step-list li {
+  margin-bottom: 4px;
+}
+
+.admin-drafts-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: var(--space);
+  flex-wrap: wrap;
+}
+
+.admin-drafts-reject-button {
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid #ef4444;
+  background: transparent;
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-drafts-reject-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.admin-drafts-edit-form {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-drafts-edit-form h4 {
+  margin: 8px 0 2px;
+  font-size: 13px;
+  color: var(--uiu-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-drafts-edit-form textarea {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.admin-drafts-ingredient-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-drafts-ingredient-row input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  font-size: 13px;
+}
+
+.admin-drafts-ingredient-row input:first-child {
+  flex: 2;
+}
+
+.admin-drafts-ingredient-row input:not(:first-child):not(:last-child) {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-drafts-step-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.admin-drafts-step-row__num {
+  color: var(--uiu-muted);
+  font-size: 13px;
+  padding-top: 10px;
+}
+
+.admin-drafts-step-row textarea {
+  flex: 1;
+}
+
+.admin-drafts-step-row__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-drafts-icon-button {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.admin-drafts-tag-add input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  font-size: 13px;
+  width: 100%;
+}
