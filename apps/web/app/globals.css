@@ -234,14 +234,111 @@ a {
   color: var(--uiu-muted);
 }
 
-.recipes-page__pagination a {
+.recipes-page__pagination a,
+.recipes-page__pagination button {
   color: var(--accent);
   font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .recipes-page__pagination span[aria-disabled="true"] {
   color: var(--uiu-muted);
   opacity: 0.4;
+}
+
+/* --- Recipes filters --- */
+
+.recipes-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: var(--space);
+}
+
+.recipes-filters__search {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 14px;
+  font-family: var(--font);
+}
+
+.recipes-filters__search::placeholder {
+  color: var(--uiu-muted);
+}
+
+.recipes-filters__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recipes-filters__group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--uiu-muted);
+}
+
+.recipes-filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--fg);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+.chip--active {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--uiu-white);
+  font-weight: 600;
+}
+
+.recipes-filters__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.recipes-filters__clear {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+.recipes-filters__empty {
+  color: var(--uiu-muted);
+  font-size: 14px;
+  text-align: center;
+  padding: 24px 0;
 }
 
 /* --- Recipe detail --- */

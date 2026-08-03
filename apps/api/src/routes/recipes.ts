@@ -14,7 +14,9 @@ import { withDb, getMongoModule, type DbEnv } from "../db";
 export const recipesRouter = new Hono<{ Bindings: DbEnv }>();
 
 const DEFAULT_LIMIT = 20;
-const MAX_LIMIT = 100;
+// Raised from 100 so the Recipes page filter UI (HANDOFF_recipes-page-filters.md) can fetch
+// the full 198-recipe set in one call for client-side filtering.
+const MAX_LIMIT = 250;
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
