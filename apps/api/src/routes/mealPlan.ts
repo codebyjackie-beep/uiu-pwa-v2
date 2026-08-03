@@ -87,8 +87,12 @@ mealPlanRouter.get("/", async (c) => {
       .map(([date, entries]) => ({
         date,
         entries,
-        totalCost: entries.reduce((sum, e) => sum + (e.recipe.costPerServing ?? 0) * e.servings, 0),
-        totalCalories: entries.reduce((sum, e) => sum + (e.recipe.calories ?? 0) * e.servings, 0),
+        // Per-serving values, not multiplied by entry.servings — the app has no "how many
+        // people are eating this meal" setting, so a recipe's own servings count (how many
+        // portions the recipe yields) is meaningless here. Matches the wizard preview's
+        // totals (mealPlanGenerator.ts), which also sum costPerServing/calories directly.
+        totalCost: entries.reduce((sum, e) => sum + (e.recipe.costPerServing ?? 0), 0),
+        totalCalories: entries.reduce((sum, e) => sum + (e.recipe.calories ?? 0), 0),
       }));
 
     const body: ApiResponse<MealPlanWeekResponse> = {
@@ -139,7 +143,10 @@ mealPlanRouter.post("/", async (c) => {
         date,
         mealSlot,
         recipeId: new ObjectId(recipeId),
-        servings: typeof payload?.servings === "number" && payload.servings > 0 ? payload.servings : (recipe.servings as number),
+        // Always 1 — a meal-plan entry is one planned portion of this recipe for this
+        // slot, not "how many servings the recipe yields" (recipe.servings). The app
+        // has no per-meal headcount setting, so cost/calories are never scaled by it.
+        servings: typeof payload?.servings === "number" && payload.servings > 0 ? payload.servings : 1,
         createdAt: now,
       };
       const inserted = await db.collection("meal_plans").insertOne(doc);

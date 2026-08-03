@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ApiResponse, MealPlanDaySummary, MealSlot, RecipeListItem, RecipeListPage } from "@uiu/shared";
 import { dayLabel, toDateKey } from "../lib/dates";
@@ -115,7 +116,7 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
               onClick={() => toggleDate(date)}
               aria-expanded={expanded}
             >
-              <span className="meal-planner-day__label">{dayLabel(date, index)}</span>
+              <span className="meal-planner-day__label">Day {index + 1} · {dayLabel(date, index)}</span>
               <span className="meal-planner-day__header-right">
                 {summary ? (
                   <span className="meal-planner-day__totals">
@@ -134,7 +135,7 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
                     <div key={slot} className="meal-planner-slot">
                       <span className="meal-planner-slot__label">{SLOT_LABEL[slot]}</span>
                       {entry ? (
-                        <div className="recipe-card meal-planner-slot__card">
+                        <Link href={`/recipes/${entry.recipeId}`} className="recipe-card meal-planner-slot__card">
                           {entry.recipe.imageUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img className="recipe-card__image" src={entry.recipe.imageUrl} alt="" />
@@ -148,7 +149,11 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
                                 type="button"
                                 className="meal-planner-slot__remove"
                                 disabled={pendingId === entry._id}
-                                onClick={() => removeMeal(entry._id)}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  removeMeal(entry._id);
+                                }}
                                 aria-label={`Remove ${entry.recipe.title}`}
                               >
                                 ×
@@ -156,16 +161,14 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
                             </div>
                             <div className="recipe-card__macros">
                               <span className="recipe-card__price">
-                                {entry.recipe.costPerServing != null
-                                  ? formatCost(entry.recipe.costPerServing * entry.servings)
-                                  : "—"}
+                                {entry.recipe.costPerServing != null ? formatCost(entry.recipe.costPerServing) : "—"}
                               </span>
                               {entry.recipe.calories != null ? (
-                                <span>{Math.round(entry.recipe.calories * entry.servings)} cal</span>
+                                <span>{Math.round(entry.recipe.calories)} cal</span>
                               ) : null}
                             </div>
                           </div>
-                        </div>
+                        </Link>
                       ) : (
                         <button type="button" className="meal-planner-slot__add" onClick={() => setPicker({ date, slot })}>
                           + Add

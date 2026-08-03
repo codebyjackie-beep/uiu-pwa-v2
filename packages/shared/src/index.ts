@@ -367,7 +367,9 @@ export interface MealPlanEntry {
   date: string;
   mealSlot: MealSlot;
   recipeId: ObjectIdHex;
-  /** Planned serving count — defaults to the recipe's own servings when added. */
+  /** Always 1 unless the client explicitly overrides it — the app has no per-meal
+   * headcount setting, so cost/calories are never scaled by this (they're stored
+   * and displayed as the recipe's own per-serving values). */
   servings: number;
   createdAt: ISODate;
 }

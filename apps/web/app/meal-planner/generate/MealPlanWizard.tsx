@@ -221,7 +221,10 @@ export function MealPlanWizard() {
           const res = await fetch("/api/meal-plan", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ date: day.date, mealSlot: entry.mealSlot, recipeId: entry.recipeId, servings: entry.servings }),
+            // Don't pass entry.servings through — that's the recipe's own yield count
+            // (how many portions the recipe makes), not a per-meal headcount. The app
+            // has no such setting, so POST /api/meal-plan always stores/uses 1.
+            body: JSON.stringify({ date: day.date, mealSlot: entry.mealSlot, recipeId: entry.recipeId }),
           });
           const parsed = (await res.json()) as ApiResponse<unknown>;
           if (parsed.ok) ok += 1;
