@@ -69,8 +69,21 @@ const DESSERT_KEYWORDS = [
 ];
 const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
 
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Word-boundary match, not raw substring (HANDOFF_dessert-keyword-substring-fix.md,
+ * 2026-08-04) — plain .includes() let the "starter" tag false-match "tart" in
+ * DESSERT_KEYWORDS, misclassifying starter/soup recipes as dessert. \b boundaries
+ * still match "tart" as a whole word (e.g. a recipe/tag literally called "tart").
+ * Trailing `s?` keeps plural titles/tags matching (e.g. "Cookies", "Muffins") —
+ * without it \b...\b stops matching once a plural "s" is appended, which would
+ * be a regression (verified against all 200 recipes, see the summary's diff).
+ */
 function matchesAny(text: string, keywords: string[]): boolean {
-  return keywords.some((k) => text.includes(k));
+  return keywords.some((k) => new RegExp(`\\b${escapeRegex(k)}s?\\b`, "i").test(text));
 }
 
 /**

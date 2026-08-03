@@ -26,8 +26,17 @@ const DESSERT_KEYWORDS = [
 ];
 const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
 
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Word-boundary match, not raw substring (HANDOFF_dessert-keyword-substring-fix.md,
+ * 2026-08-04) — kept in sync with mealPlanGenerator.ts's matchesAny(); see file header.
+ * Trailing `s?` keeps plural titles/tags matching (e.g. "Cookies", "Muffins").
+ */
 function matchesAny(text: string, keywords: string[]): boolean {
-  return keywords.some((k) => text.includes(k));
+  return keywords.some((k) => new RegExp(`\\b${escapeRegex(k)}s?\\b`, "i").test(text));
 }
 
 /** Same fallback/soup/dessert-override rules as deriveMealSlots(); see file header. */
