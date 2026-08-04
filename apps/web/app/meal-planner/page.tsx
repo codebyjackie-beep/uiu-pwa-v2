@@ -59,10 +59,12 @@ export default async function MealPlannerPage({
         <div className="meal-planner-summary__stat">
           <span className="meal-planner-summary__value">{formatCost(weekTotalCost)}</span>
           <span className="meal-planner-summary__label">Week cost</span>
+          <span className="meal-planner-summary__subtitle">{formatCost(weekTotalCost / 7)} average per day</span>
         </div>
         <div className="meal-planner-summary__stat">
           <span className="meal-planner-summary__value">{Math.round(weekTotalCalories)}</span>
           <span className="meal-planner-summary__label">Week calories</span>
+          <span className="meal-planner-summary__subtitle">{Math.round(weekTotalCalories / 7)} average per day</span>
         </div>
       </div>
 

@@ -768,6 +768,11 @@ a {
   color: var(--uiu-muted);
 }
 
+.meal-planner-summary__subtitle {
+  font-size: 11px;
+  color: var(--uiu-muted);
+}
+
 .meal-planner-board {
   display: flex;
   flex-direction: column;
