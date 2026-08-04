@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ApiResponse, RecipeDraft, RecipeIngredient, RecipeDraftStatus } from "@uiu/shared";
+import { MealTagPicker } from "../_shared/MealTagPicker";
 
 type Session = "loading" | "authed" | "anon";
 
@@ -395,16 +396,6 @@ function EditForm({
     setEdit({ ...edit, steps: next });
   }
 
-  function addTag(tag: string) {
-    if (!tag.trim() || edit.tags.includes(tag.trim())) return;
-    setEdit({ ...edit, tags: [...edit.tags, tag.trim()] });
-  }
-  function removeTag(tag: string) {
-    setEdit({ ...edit, tags: edit.tags.filter((t) => t !== tag) });
-  }
-
-  const [tagInput, setTagInput] = useState("");
-
   return (
     <div className="admin-drafts-edit-form">
       <label className="wizard-field">
@@ -484,28 +475,7 @@ function EditForm({
       </button>
 
       <h4>Tags</h4>
-      <div className="admin-drafts-card__chips">
-        {edit.tags.map((t) => (
-          <button key={t} type="button" className="wizard-chip wizard-chip--selected" onClick={() => removeTag(t)}>
-            {t} ✕
-          </button>
-        ))}
-      </div>
-      <div className="admin-drafts-tag-add">
-        <input
-          type="text"
-          placeholder="加 tag 之後按 Enter"
-          value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              addTag(tagInput);
-              setTagInput("");
-            }
-          }}
-        />
-      </div>
+      <MealTagPicker tags={edit.tags} onChange={(next) => setEdit({ ...edit, tags: next })} />
 
       <p className="admin-drafts-page__sub">如果改咗食材，價錢預覽可能未反映最新內容 — approve 之後可以等 weekly cron 重新計算。</p>
 

@@ -1521,3 +1521,21 @@ a {
   font-size: 13px;
   width: 100%;
 }
+
+.tag-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tag-picker__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tag-picker__group-label {
+  font-size: 12px;
+  color: var(--uiu-muted);
+  font-weight: 600;
+}
