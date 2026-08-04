@@ -4,6 +4,7 @@ import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { recipesRouter } from "./routes/recipes";
 import { mealPlanRouter } from "./routes/mealPlan";
 import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
+import { adminRecipesRouter } from "./routes/adminRecipes";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
@@ -55,6 +56,7 @@ app.get("/api/version", (c) => {
 app.route("/api/recipes", recipesRouter);
 app.route("/api/meal-plan", mealPlanRouter);
 app.route("/api/admin/recipe-drafts", adminRecipeDraftsRouter);
+app.route("/api/admin/recipes", adminRecipesRouter);
 
 // Feature routes (health) get mounted here as they land.
 
