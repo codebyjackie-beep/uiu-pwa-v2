@@ -5,7 +5,16 @@ import { useEffect, useState } from "react";
 import type { ApiResponse } from "@uiu/shared";
 
 type Session = "loading" | "authed" | "anon";
-type RecipeSummary = { _id: string; title: string; tags: string[] };
+type RecipeSummary = { _id: string; title: string; tags: string[]; createdAt?: string };
+
+const NEW_BADGE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+function isNew(createdAt: string | undefined): boolean {
+  if (!createdAt) return false;
+  const t = new Date(createdAt).getTime();
+  if (Number.isNaN(t)) return false;
+  return Date.now() - t < NEW_BADGE_WINDOW_MS;
+}
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -124,7 +133,10 @@ export function LiveRecipesAdmin() {
         {filtered.map((r) => (
           <Link key={r._id} href={`/admin/recipes/${r._id}/edit`} className="admin-drafts-card admin-drafts-card__header">
             <div className="admin-drafts-card__header-main">
-              <p className="admin-drafts-card__title">{r.title}</p>
+              <p className="admin-drafts-card__title">
+                {r.title}
+                {isNew(r.createdAt) ? <span className="admin-recipes-new-badge">NEW</span> : null}
+              </p>
               <p className="admin-drafts-card__meta">{r.tags.join(", ") || "冇 tag"}</p>
             </div>
           </Link>

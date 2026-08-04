@@ -1372,6 +1372,19 @@ a {
   font-size: 11px;
 }
 
+.admin-recipes-new-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
 .admin-drafts-card__chips {
   display: flex;
   flex-wrap: wrap;
