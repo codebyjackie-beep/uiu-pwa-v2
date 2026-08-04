@@ -8,6 +8,7 @@ type Session = "loading" | "authed" | "anon";
 type RecipeSummary = { _id: string; title: string; tags: string[]; createdAt?: string };
 
 const NEW_BADGE_WINDOW_MS = 24 * 60 * 60 * 1000;
+const PAGE_SIZE = 25;
 
 function isNew(createdAt: string | undefined): boolean {
   if (!createdAt) return false;
@@ -32,6 +33,7 @@ export function LiveRecipesAdmin() {
   const [loading, setLoading] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     void loadRecipes();
@@ -116,13 +118,27 @@ export function LiveRecipesAdmin() {
     ? recipes.filter((r) => r.title.toLowerCase().includes(search.trim().toLowerCase()))
     : recipes;
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const hasPrev = page > 1;
+  const hasNext = page < totalPages;
+  const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  function updateSearch(value: string) {
+    setSearch(value);
+    setPage(1);
+  }
+
   return (
     <div className="admin-drafts-page">
       <h1>Live Recipes Admin</h1>
       <p className="admin-drafts-page__sub">直接編輯已上架嘅 recipe（updateOne，_id 唔會變，同 meal_plans/recipe_cost 嘅 reference 唔受影響）。</p>
 
+      <p className="admin-drafts-page__sub">
+        {search.trim() ? `${filtered.length} 條相符（全部 ${recipes.length} 條）` : `共 ${recipes.length} 條 recipe`}
+      </p>
+
       <div className="wizard-field">
-        <input type="text" placeholder="搜尋 recipe title…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <input type="text" placeholder="搜尋 recipe title…" value={search} onChange={(e) => updateSearch(e.target.value)} />
       </div>
 
       {listError ? <p className="admin-drafts-error">{listError}</p> : null}
@@ -130,7 +146,7 @@ export function LiveRecipesAdmin() {
       {!loading && filtered.length === 0 && !listError ? <p className="admin-drafts-page__sub">冇搵到相符嘅 recipe。</p> : null}
 
       <div className="admin-drafts-list">
-        {filtered.map((r) => (
+        {visible.map((r) => (
           <Link key={r._id} href={`/admin/recipes/${r._id}/edit`} className="admin-drafts-card admin-drafts-card__header">
             <div className="admin-drafts-card__header-main">
               <p className="admin-drafts-card__title">
@@ -142,6 +158,28 @@ export function LiveRecipesAdmin() {
           </Link>
         ))}
       </div>
+
+      {filtered.length > 0 ? (
+        <div className="recipes-page__pagination">
+          {hasPrev ? (
+            <button type="button" onClick={() => setPage((p) => p - 1)}>
+              ← Prev
+            </button>
+          ) : (
+            <span aria-disabled="true">← Prev</span>
+          )}
+          <span>
+            Page {page} / {totalPages}
+          </span>
+          {hasNext ? (
+            <button type="button" onClick={() => setPage((p) => p + 1)}>
+              Next →
+            </button>
+          ) : (
+            <span aria-disabled="true">Next →</span>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
