@@ -1,17 +1,34 @@
 import type { RecipeDetailCostLine } from "@uiu/shared";
+import { classifyMealTypes, type FilterMealType } from "./recipeFilters";
 
 interface MealTagged {
   mealType?: string;
+  title: string;
   tags: string[];
 }
 
 const MEAL_TYPES = ["breakfast", "brunch", "lunch", "dinner", "snack", "dessert", "appetizer", "side dish"];
 
+/**
+ * Fixed display priority when classifyMealTypes() returns multiple slots (e.g. a "brunch"
+ * tag maps to both breakfast+lunch) — picks the one closest to "this is mainly a morning
+ * meal" intent rather than depending on DB tag array order (HANDOFF, 2026-08-04 badge fix).
+ */
+const BADGE_PRIORITY: FilterMealType[] = ["breakfast", "lunch", "dinner", "snack", "dessert"];
+
+/**
+ * Derived from classifyMealTypes() (recipeFilters.ts) — the same logic that decides which
+ * meal-type filter a recipe matches — so the badge shown always agrees with the filter that
+ * surfaced it. Previously this independently `.find()`-ed the recipe's own `tags` array,
+ * which picked whatever meal-type tag happened to be stored first and could show e.g. "Brunch"
+ * on a recipe the Breakfast filter matched (2026-08-04 Task B bug).
+ */
 export function mealTypeBadge(recipe: MealTagged): string | null {
   if (recipe.mealType && MEAL_TYPES.includes(recipe.mealType.toLowerCase())) {
     return capitalize(recipe.mealType);
   }
-  const match = recipe.tags.map((t) => t.toLowerCase()).find((t) => MEAL_TYPES.includes(t));
+  const slots = classifyMealTypes(recipe);
+  const match = BADGE_PRIORITY.find((slot) => slots.has(slot));
   return match ? capitalize(match) : null;
 }
 
