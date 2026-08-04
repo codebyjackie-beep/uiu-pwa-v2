@@ -19,11 +19,16 @@ const MEAL_SLOT_TAGS: Record<string, Array<"breakfast" | "lunch" | "dinner" | "s
   snack: ["snack"],
 };
 
-const DESSERT_KEYWORDS = [
-  "cookie", "macaron", "cake", "brownie", "pastry", "tart", "pie", "muffin",
-  "donut", "doughnut", "pudding", "mousse", "cheesecake", "ice cream",
-  "biscuit", "scone", "cupcake",
-];
+/**
+ * Dessert used to be keyword-matched (DESSERT_KEYWORDS incl. "cake"/"pie"/
+ * "tart"/"pudding"/"muffin") but a full production scan
+ * (HANDOFF_dessert-keyword-savory-fix.md, 2026-08-04) found that produced 35
+ * false positives — genuine savory dishes whose name/tags happen to contain
+ * a dessert word (Crab Cakes Eggs Benedict, Fish Pie, Shepherd's Pie, Yorkshire
+ * Puddings, Flamiche, Cream Cheese Tart, etc.) — and 0 true positives it
+ * caught beyond what the "dessert" tag already covers. Dessert detection is
+ * now tag-based only (see isDessert below), consistent with mealPlanGenerator.ts.
+ */
 const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
 
 function escapeRegex(value: string): string {
@@ -44,7 +49,7 @@ export function classifyMealTypes(recipe: Pick<RecipeListItem, "title" | "tags">
   const titleLower = recipe.title.toLowerCase();
   const tagsLower = recipe.tags.map((t) => t.toLowerCase());
 
-  const isDessert = matchesAny(titleLower, DESSERT_KEYWORDS) || tagsLower.some((t) => matchesAny(t, DESSERT_KEYWORDS));
+  const isDessert = tagsLower.includes("dessert");
   const isSoup = matchesAny(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAny(t, SOUP_KEYWORDS));
 
   const slots = new Set<"breakfast" | "lunch" | "dinner" | "snack">();

@@ -56,17 +56,25 @@ const MEAL_SLOT_TAGS: Record<string, MealSlot[]> = {
 };
 
 /**
- * Dessert/soup keyword lists (HANDOFF_meal-planner-slot-scoring-fix.md Bug 1,
+ * Soup keyword list (HANDOFF_meal-planner-slot-scoring-fix.md Bug 1,
  * 2026-08-03). Keyword-based against title+tags, not calorie-threshold-based
  * — some desserts exceed 500 kcal, so calories can't distinguish them.
  * Deliberately no "broth" in SOUP_KEYWORDS: some pasta dishes are "with
  * broth" and would be wrongly caught.
+ *
+ * Dessert used to be keyword-matched the same way (DESSERT_KEYWORDS incl.
+ * "cake"/"pie"/"tart"/"pudding"/"muffin") but a full production scan
+ * (HANDOFF_dessert-keyword-savory-fix.md, 2026-08-04) found that produced 35
+ * false positives — genuine savory dishes whose name/tags happen to contain
+ * a dessert word (Crab Cakes Eggs Benedict, Fish Pie, Shepherd's Pie, Yorkshire
+ * Puddings, Flamiche, Cream Cheese Tart, etc.) — and 0 true positives it
+ * caught that the "dessert" tag didn't already cover (all 77 dessert-tagged
+ * recipes without a keyword match, e.g. Churros/Flan/Tiramisu-style dishes,
+ * were being silently mis-slotted into lunch/dinner anyway). Dessert
+ * detection is now tag-based only (see isDessert below), consistent with
+ * how every other meal slot (breakfast/lunch/dinner/snack) is already
+ * determined via MEAL_SLOT_TAGS.
  */
-const DESSERT_KEYWORDS = [
-  "cookie", "macaron", "cake", "brownie", "pastry", "tart", "pie", "muffin",
-  "donut", "doughnut", "pudding", "mousse", "cheesecake", "ice cream",
-  "biscuit", "scone", "cupcake",
-];
 const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
 
 function escapeRegex(value: string): string {
@@ -95,8 +103,7 @@ function matchesAny(text: string, keywords: string[]): boolean {
  * "dinner" that's actually soup still shouldn't show up at dinner).
  */
 function deriveMealSlots(titleLower: string, tagsLower: string[]): Set<MealSlot> {
-  const isDessert =
-    matchesAny(titleLower, DESSERT_KEYWORDS) || tagsLower.some((t) => matchesAny(t, DESSERT_KEYWORDS));
+  const isDessert = tagsLower.includes("dessert");
   const isSoup = matchesAny(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAny(t, SOUP_KEYWORDS));
 
   const slots = new Set<MealSlot>();
