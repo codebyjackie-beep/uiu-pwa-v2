@@ -42,15 +42,16 @@ adminRecipesRouter.get("/", async (c) => {
   }
   try {
     const docs = await withDb(c.env, (db) =>
-      db.collection("recipes").find({}, { projection: { title: 1, tags: 1, createdAt: 1 } }).sort({ title: 1 }).toArray(),
+      db.collection("recipes").find({}, { projection: { title: 1, tags: 1, createdAt: 1, imageUrl: 1 } }).sort({ title: 1 }).toArray(),
     );
-    const body: ApiResponse<Array<{ _id: string; title: string; tags: string[]; createdAt?: string }>> = {
+    const body: ApiResponse<Array<{ _id: string; title: string; tags: string[]; createdAt?: string; imageUrl?: string }>> = {
       ok: true,
       data: docs.map((d) => ({
         _id: (d._id as ObjectIdType).toString(),
         title: d.title as string,
         tags: (d.tags as string[]) ?? [],
         createdAt: d.createdAt as string | undefined,
+        imageUrl: d.imageUrl as string | undefined,
       })),
     };
     return c.json(body);

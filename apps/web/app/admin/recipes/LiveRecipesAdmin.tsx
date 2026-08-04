@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { ApiResponse } from "@uiu/shared";
 
 type Session = "loading" | "authed" | "anon";
-type RecipeSummary = { _id: string; title: string; tags: string[]; createdAt?: string };
+type RecipeSummary = { _id: string; title: string; tags: string[]; createdAt?: string; imageUrl?: string };
 
 const NEW_BADGE_WINDOW_MS = 24 * 60 * 60 * 1000;
 const PAGE_SIZE = 25;
@@ -149,11 +149,17 @@ export function LiveRecipesAdmin() {
         {visible.map((r) => (
           <Link key={r._id} href={`/admin/recipes/${r._id}/edit`} className="admin-drafts-card admin-drafts-card__header">
             <div className="admin-drafts-card__header-main">
-              <p className="admin-drafts-card__title">
-                {r.title}
-                {isNew(r.createdAt) ? <span className="admin-recipes-new-badge">NEW</span> : null}
-              </p>
-              <p className="admin-drafts-card__meta">{r.tags.join(", ") || "冇 tag"}</p>
+              {r.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={r.imageUrl} alt="" className="admin-drafts-card__thumb" />
+              ) : null}
+              <div>
+                <p className="admin-drafts-card__title">
+                  {r.title}
+                  {isNew(r.createdAt) ? <span className="admin-recipes-new-badge">NEW</span> : null}
+                </p>
+                <p className="admin-drafts-card__meta">{r.tags.join(", ") || "冇 tag"}</p>
+              </div>
             </div>
           </Link>
         ))}
