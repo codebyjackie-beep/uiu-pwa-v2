@@ -42,8 +42,18 @@ OPENROUTER_MODEL = "~openai/gpt-mini-latest"
 #   digit (1278/1791 = 71.35678%). scheduled() runs with dryRun:false, so this
 #   weekly refresh now recomputes over real production data going forward.
 #
-#   "0 6 * * *"  Daily recipe draft agent (HANDOFF_daily-recipe-draft-agent.md).
+#   "0 4,7,10,13,16,19,22 * * *"  Daily recipe draft agent
+#   (HANDOFF_daily-recipe-draft-agent.md). Fires 7x/day (every 3h) instead of
+#   once — 2026-08-05 subrequest-cap fix: dailyRecipeDraft() now only attempts
+#   BATCH_SIZE(3) idea specs per invocation and persists the rest of the day's
+#   20-spec queue in `recipe_draft_state`, so 7 fires * 3 = 21 >= 20 specs
+#   guarantees the queue drains within a day even if a batch mostly fails.
+#   Once today's queue is empty, later same-day fires are a cheap no-op
+#   (single Mongo read, returns immediately). Cron string is a single
+#   comma-hour-list entry (Cloudflare fires it 7x, event.cron reports back
+#   the exact same string each time), not 7 separate array entries — keeps
+#   the event.cron === match in index.ts a single string comparison.
 #   Only ever writes to `recipe_drafts` (status:"pending") — never touches
 #   `recipes`/`recipe_cost` until a human clicks Approve in the admin page.
 [triggers]
-crons = ["0 3 * * 1", "0 6 * * *"]
+crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *"]

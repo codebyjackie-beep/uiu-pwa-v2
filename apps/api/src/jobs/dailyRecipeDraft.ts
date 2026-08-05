@@ -14,9 +14,11 @@ import {
   computeGapMatrix,
   fetchExistingTitles,
   findTitleMatch,
+  finalizeDraftQueue,
   readDraftState,
+  savePendingQueue,
   selectPriorityGapTargets,
-  writeDraftState,
+  type DraftQueue,
   type IdeaSpec,
 } from "../services/recipeDraftGenerator";
 import { fetchSpoonacularIdeas, type SpoonacularEnv } from "../services/spoonacular";
@@ -34,7 +36,25 @@ export interface DailyRecipeDraftSummary {
   created: number;
   skippedDuplicates: number;
   drafts: Array<{ title: string; sourceInspiration: string; gapTarget?: GapTarget }>;
+  /** Batching status (see BATCH_SIZE below) — each invocation only attempts a slice of the day's 20 specs to stay well under Cloudflare's per-invocation subrequest cap. */
+  batch: { attempted: number; remainingAfterThisRun: number; queueDate: string; alreadyCompletedToday: boolean };
 }
+
+/**
+ * How many idea specs a single invocation attempts. Cloudflare enforces a
+ * per-invocation subrequest cap (observed live 2026-08-04: exactly 50,
+ * "Too many subrequests by single Worker invocation" fired 50 times when all
+ * 20 specs + their retries ran in one go). Each spec can burn up to
+ * MAX_ATTEMPTS * 2 subrequests (1 Spoonacular fetch, occasionally doubled by
+ * its own 429 retry, + 1 OpenRouter draft call), plus a handful of Mongo
+ * queries shared across the whole invocation — so BATCH_SIZE=3 with
+ * MAX_ATTEMPTS=3 caps a single run at roughly 3*(3*2)=18 idea/draft
+ * subrequests, leaving comfortable headroom under 50. The remaining specs
+ * stay queued in `recipe_draft_state` and are picked up by the next cron
+ * fire (wrangler.toml now fires this job several times a day instead of
+ * once) until the day's 20 are done, then rotation state commits once.
+ */
+const BATCH_SIZE = 3;
 
 function ideaQuery(spec: IdeaSpec): { query: string; diet?: string; cuisine?: string } {
   if (spec.kind === "gap") {
@@ -44,12 +64,49 @@ function ideaQuery(spec: IdeaSpec): { query: string; diet?: string; cuisine?: st
 }
 
 export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false): Promise<DailyRecipeDraftSummary> {
+  const today = new Date().toISOString().slice(0, 10);
   const pool = await buildPool(env);
   const gapMatrix = computeGapMatrix(pool);
   const priorityTargets = selectPriorityGapTargets(gapMatrix, 5);
 
   const state = await readDraftState(env);
-  const { specs, nextState, draftedTargets } = buildIdeaSpecs(priorityTargets, state);
+
+  // Live 2026-08-04: 20 specs in one invocation reliably blew Cloudflare's
+  // per-invocation subrequest cap (50/50 "Too many subrequests" failures).
+  // A day's specs are now built once and drained BATCH_SIZE-at-a-time across
+  // however many cron fires it takes — resume an in-progress queue for today
+  // if one exists, otherwise build a fresh one (or no-op if today's already done).
+  let queue: DraftQueue;
+  if (!dryRun && state.completedDate === today) {
+    return {
+      dryRun,
+      gapMatrix,
+      priorityTargets,
+      draftedTargets: [],
+      created: 0,
+      skippedDuplicates: 0,
+      drafts: [],
+      batch: { attempted: 0, remainingAfterThisRun: 0, queueDate: today, alreadyCompletedToday: true },
+    };
+  } else if (!dryRun && state.queue && state.queue.date === today && state.queue.specs.length > 0) {
+    queue = state.queue;
+  } else {
+    const built = buildIdeaSpecs(priorityTargets, state);
+    queue = {
+      date: today,
+      specs: built.specs,
+      draftedTargets: built.draftedTargets,
+      nextCuisineIndex: built.nextState.lastCuisineIndex,
+      nextDietIndex: built.nextState.lastDietIndex,
+    };
+  }
+
+  // dryRun previews always run the full first batch of a fresh queue (never
+  // resumes/persists) so a manual `?write=false` check still shows a
+  // representative slice, same as before this batching change.
+  const specs = queue.specs.slice(0, BATCH_SIZE);
+  const remainingAfterThisRun = queue.specs.slice(BATCH_SIZE);
+  const draftedTargets = queue.draftedTargets;
 
   const existingTitles = await fetchExistingTitles(env);
   const usedTitlesThisRun = [...existingTitles];
@@ -82,11 +139,14 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     // at a different offset, before this spec's slot in today's 20 is given
     // up on. Observed live 2026-07-31: raising this from 3->5 did not close
     // the gap (16/20 -> 15/20) — the shortfall is corpus/model variance for
-    // niche gap combos, not an attempt-count problem.
+    // niche gap combos, not an attempt-count problem. Reverted 5->3 on
+    // 2026-08-05 as part of the subrequest-cap fix (each attempt costs up to
+    // 2 subrequests; 3 attempts * BATCH_SIZE(3) keeps a single invocation
+    // well under Cloudflare's 50 subrequest cap — see BATCH_SIZE comment).
     let idea: { title: string; summary: string } | null = null;
     let drafted: Awaited<ReturnType<typeof draftRecipe>> | null = null;
 
-    const MAX_ATTEMPTS = 5;
+    const MAX_ATTEMPTS = 3;
     for (let attempt = 0; attempt < MAX_ATTEMPTS && !drafted; attempt++) {
       // Spacing calls out avoids RapidAPI's free-tier per-second throttling
       // (observed live 2026-07-31 as 429s when requests fire back-to-back) —
@@ -195,7 +255,15 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     });
   }
   if (!dryRun) {
-    await writeDraftState(env, nextState, { date: new Date().toISOString().slice(0, 10), targets: draftedTargets });
+    if (remainingAfterThisRun.length > 0) {
+      await savePendingQueue(env, { ...queue, specs: remainingAfterThisRun });
+    } else {
+      await finalizeDraftQueue(
+        env,
+        { lastCuisineIndex: queue.nextCuisineIndex, lastDietIndex: queue.nextDietIndex },
+        { date: today, targets: draftedTargets },
+      );
+    }
   }
 
   return {
@@ -206,5 +274,6 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     created: drafts.length,
     skippedDuplicates,
     drafts: summaryDrafts,
+    batch: { attempted: specs.length, remainingAfterThisRun: remainingAfterThisRun.length, queueDate: today, alreadyCompletedToday: false },
   };
 }

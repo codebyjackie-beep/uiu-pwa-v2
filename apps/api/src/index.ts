@@ -128,11 +128,11 @@ export default {
    * daily recipe draft agent). Keep the two logics separate, not merged.
    */
   async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
-    if (event.cron === "0 6 * * *") {
+    if (event.cron === "0 4,7,10,13,16,19,22 * * *") {
       ctx.waitUntil(
         dailyRecipeDraft(env, false)
           .then((summary) => {
-            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates }));
+            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates, batch: summary.batch }));
           })
           .catch((err) => {
             console.error("[uiu-api] cron dailyRecipeDraft failed:", err instanceof Error ? err.message : String(err));

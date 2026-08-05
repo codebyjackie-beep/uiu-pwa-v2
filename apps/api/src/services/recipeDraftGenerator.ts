@@ -54,10 +54,25 @@ export const ROTATION_DIETS = [
   "ketogenic", "balanced", "high protein", "low fat",
 ];
 
+/**
+ * A day's worth of idea specs (20), persisted so a single cron fire only has
+ * to burn Spoonacular/OpenRouter subrequests on a small slice of them —
+ * see `DraftQueue` below and the batching logic in dailyRecipeDraft.ts.
+ */
+export interface DraftQueue {
+  date: string; // YYYY-MM-DD (UTC) the queue was built for
+  specs: IdeaSpec[]; // remaining, not-yet-attempted specs
+  draftedTargets: GapTarget[]; // the day's 5 gap targets, fixed when the queue was built
+  nextCuisineIndex: number; // rotation indices to commit once the queue drains to empty
+  nextDietIndex: number;
+}
+
 export interface DraftStateDoc {
   lastCuisineIndex: number;
   lastDietIndex: number;
   gapTargetHistory: Array<{ date: string; targets: GapTarget[] }>;
+  queue?: DraftQueue;
+  completedDate?: string; // YYYY-MM-DD of the last day whose queue fully drained
 }
 
 const DEFAULT_STATE: DraftStateDoc = { lastCuisineIndex: -1, lastDietIndex: -1, gapTargetHistory: [] };
@@ -70,13 +85,27 @@ export async function readDraftState(env: DbEnv): Promise<DraftStateDoc> {
       lastCuisineIndex: (doc.lastCuisineIndex as number) ?? -1,
       lastDietIndex: (doc.lastDietIndex as number) ?? -1,
       gapTargetHistory: (doc.gapTargetHistory as DraftStateDoc["gapTargetHistory"]) ?? [],
+      queue: (doc.queue as DraftQueue | undefined) ?? undefined,
+      completedDate: (doc.completedDate as string | undefined) ?? undefined,
     };
   });
 }
 
-export async function writeDraftState(
+/** Persists the remaining queue for today without touching rotation indices or gapTargetHistory — those only commit once the queue fully drains (see `finalizeDraftQueue`). */
+export async function savePendingQueue(env: DbEnv, queue: DraftQueue): Promise<void> {
+  await withDb(env, async (db) => {
+    await db.collection("recipe_draft_state").updateOne(
+      {},
+      { $set: { queue, updatedAt: new Date().toISOString() } },
+      { upsert: true },
+    );
+  });
+}
+
+/** Called once, when a day's queue has just drained to zero specs remaining: commits the rotation indices, appends the gapTargetHistory entry, marks today complete, and clears the queue. */
+export async function finalizeDraftQueue(
   env: DbEnv,
-  state: DraftStateDoc,
+  nextState: { lastCuisineIndex: number; lastDietIndex: number },
   gapTargetHistoryEntry: { date: string; targets: GapTarget[] },
 ): Promise<void> {
   await withDb(env, async (db) => {
@@ -84,10 +113,12 @@ export async function writeDraftState(
       {},
       {
         $set: {
-          lastCuisineIndex: state.lastCuisineIndex,
-          lastDietIndex: state.lastDietIndex,
+          lastCuisineIndex: nextState.lastCuisineIndex,
+          lastDietIndex: nextState.lastDietIndex,
+          completedDate: gapTargetHistoryEntry.date,
           updatedAt: new Date().toISOString(),
         },
+        $unset: { queue: "" },
         $push: { gapTargetHistory: gapTargetHistoryEntry } as unknown as Document,
       },
       { upsert: true },
