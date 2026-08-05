@@ -1,0 +1,215 @@
+/**
+ * HANDOFF_fridge.md — fridge_stock CRUD. No auth (same convention as
+ * recipes/meal_plans — this isn't an admin-only surface).
+ */
+import { Hono } from "hono";
+import type { Document, ObjectId as ObjectIdType } from "mongodb";
+import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
+import { withDb, getMongoModule, type DbEnv } from "../db";
+import { estimateExpiresAt } from "../services/shelfLife";
+
+export const fridgeStockRouter = new Hono<{ Bindings: DbEnv }>();
+
+const VALID_SOURCES: FridgeStockSource[] = ["manual", "ocr", "shop-auto"];
+
+function toFridgeStockItem(doc: Document): FridgeStockItem {
+  return {
+    _id: (doc._id as ObjectIdType).toString(),
+    ingredientName: doc.ingredientName as string,
+    canonicalIngredientId: doc.canonicalIngredientId ? (doc.canonicalIngredientId as ObjectIdType).toString() : null,
+    quantity: doc.quantity as number,
+    unit: doc.unit as string,
+    addedAt: doc.addedAt as string,
+    expiresAt: doc.expiresAt as string,
+    expiresAtIsManualOverride: !!doc.expiresAtIsManualOverride,
+    source: doc.source as FridgeStockSource,
+    needsRestock: !!doc.needsRestock,
+  };
+}
+
+/** For the manual-add form's ingredient picker — name + is_pantry only, matches
+ * MealTagPicker's "small enough to fetch once, filter client-side" approach
+ * (canonical_ingredients is 741 docs). */
+fridgeStockRouter.get("/ingredient-options", async (c) => {
+  try {
+    const options = await withDb(c.env, (db) =>
+      db
+        .collection("canonical_ingredients")
+        .find({}, { projection: { canonical_name: 1, is_pantry: 1 } })
+        .toArray(),
+    );
+    const body: ApiResponse<{ id: string; name: string; isPantry: boolean }[]> = {
+      ok: true,
+      data: options.map((d) => ({ id: (d._id as ObjectIdType).toString(), name: d.canonical_name as string, isPantry: !!d.is_pantry })),
+    };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] fridge-stock ingredient-options error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to fetch ingredient options" } };
+    return c.json(body, 502);
+  }
+});
+
+fridgeStockRouter.get("/", async (c) => {
+  try {
+    const docs = await withDb(c.env, (db) => db.collection("fridge_stock").find({}).sort({ expiresAt: 1 }).toArray());
+    const body: ApiResponse<FridgeStockItem[]> = { ok: true, data: docs.map(toFridgeStockItem) };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] fridge-stock list error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to fetch fridge_stock" } };
+    return c.json(body, 502);
+  }
+});
+
+fridgeStockRouter.post("/", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const ingredientName = payload?.ingredientName as string | undefined;
+  const quantity = Number(payload?.quantity);
+  const unit = payload?.unit as string | undefined;
+  const source = payload?.source as string | undefined;
+  const canonicalIngredientId = payload?.canonicalIngredientId as string | null | undefined;
+
+  if (
+    typeof ingredientName !== "string" ||
+    !ingredientName.trim() ||
+    !Number.isFinite(quantity) ||
+    quantity <= 0 ||
+    typeof unit !== "string" ||
+    !unit.trim() ||
+    !source ||
+    !VALID_SOURCES.includes(source as FridgeStockSource)
+  ) {
+    const body: ApiResponse<never> = {
+      ok: false,
+      error: { code: "bad_request", message: `ingredientName, quantity (>0), unit, and source (one of ${VALID_SOURCES.join(", ")}) are required` },
+    };
+    return c.json(body, 400);
+  }
+
+  try {
+    const { ObjectId } = await getMongoModule();
+    let canonicalId: ObjectIdType | null = null;
+    let isPantry = false;
+    if (typeof canonicalIngredientId === "string" && canonicalIngredientId) {
+      if (!ObjectId.isValid(canonicalIngredientId)) {
+        const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid canonicalIngredientId" } };
+        return c.json(body, 400);
+      }
+      canonicalId = new ObjectId(canonicalIngredientId);
+    }
+
+    const now = new Date();
+    const inserted = await withDb(c.env, async (db) => {
+      if (canonicalId) {
+        const canonicalDoc = await db.collection("canonical_ingredients").findOne({ _id: canonicalId });
+        isPantry = !!canonicalDoc?.is_pantry;
+      }
+      const doc = {
+        ingredientName: ingredientName.trim(),
+        canonicalIngredientId: canonicalId,
+        quantity,
+        unit: unit.trim(),
+        addedAt: now.toISOString(),
+        expiresAt: estimateExpiresAt(isPantry, now),
+        expiresAtIsManualOverride: false,
+        source,
+        needsRestock: false,
+      };
+      const result = await db.collection("fridge_stock").insertOne(doc);
+      return { ...doc, _id: result.insertedId };
+    });
+
+    const body: ApiResponse<FridgeStockItem> = { ok: true, data: toFridgeStockItem(inserted) };
+    return c.json(body, 201);
+  } catch (err) {
+    console.error("[uiu-api] fridge-stock create error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to add fridge_stock item" } };
+    return c.json(body, 502);
+  }
+});
+
+fridgeStockRouter.patch("/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid fridge_stock id" } };
+    return c.json(body, 400);
+  }
+
+  const payload = await c.req.json().catch(() => null);
+  if (!payload || typeof payload !== "object") {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "JSON body required" } };
+    return c.json(body, 400);
+  }
+
+  const update: Document = {};
+  if (payload.quantity !== undefined) {
+    const quantity = Number(payload.quantity);
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "quantity must be a positive number" } };
+      return c.json(body, 400);
+    }
+    update.quantity = quantity;
+  }
+  if (payload.expiresAt !== undefined) {
+    if (typeof payload.expiresAt !== "string" || Number.isNaN(new Date(payload.expiresAt).getTime())) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "expiresAt must be a valid ISO date string" } };
+      return c.json(body, 400);
+    }
+    update.expiresAt = payload.expiresAt;
+    update.expiresAtIsManualOverride = true;
+  }
+  if (payload.needsRestock !== undefined) {
+    update.needsRestock = !!payload.needsRestock;
+  }
+  if (Object.keys(update).length === 0) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "No editable fields in body (quantity, expiresAt, needsRestock)" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const result = await withDb(c.env, async (db) => {
+      const updated = await db
+        .collection("fridge_stock")
+        .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: update }, { returnDocument: "after" });
+      return updated;
+    });
+    if (!result) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "fridge_stock item not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<FridgeStockItem> = { ok: true, data: toFridgeStockItem(result) };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] fridge-stock patch error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to update fridge_stock item" } };
+    return c.json(body, 502);
+  }
+});
+
+fridgeStockRouter.delete("/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid fridge_stock id" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const deleted = await withDb(c.env, async (db) => {
+      const result = await db.collection("fridge_stock").deleteOne({ _id: new ObjectId(id) });
+      return result.deletedCount > 0;
+    });
+    if (!deleted) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "fridge_stock item not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<{ deleted: true }> = { ok: true, data: { deleted: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] fridge-stock delete error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to delete fridge_stock item" } };
+    return c.json(body, 502);
+  }
+});

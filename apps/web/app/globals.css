@@ -7,6 +7,8 @@
   --uiu-surface: #141414;
   --uiu-surface-2: #232326;
   --uiu-muted: #a1a1aa;
+  --uiu-red: #dc2626;
+  --uiu-yellow: #ca8a04;
 
   --bg: #2a2a2e;
   --fg: var(--uiu-white);
@@ -1562,4 +1564,149 @@ a {
   font-size: 12px;
   color: var(--uiu-muted);
   font-weight: 600;
+}
+
+/* Fridge tab (HANDOFF_fridge.md) */
+
+.fridge-page {
+  padding: var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fridge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fridge-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-left: 4px solid transparent;
+}
+
+.fridge-card--soon {
+  border-left-color: var(--uiu-yellow);
+}
+
+.fridge-card--expired {
+  border-left-color: var(--uiu-red);
+}
+
+.fridge-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fridge-card__name {
+  font-weight: 600;
+}
+
+.fridge-card__meta {
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.fridge-card__expiry {
+  font-size: 13px;
+}
+
+.fridge-card__expiry--soon {
+  color: var(--uiu-yellow);
+  font-weight: 600;
+}
+
+.fridge-card__expiry--expired {
+  color: var(--uiu-red);
+  font-weight: 600;
+}
+
+.fridge-card__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.fridge-card__restock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.fridge-card__delete {
+  background: none;
+  border: none;
+  color: var(--uiu-muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+}
+
+.fridge-card__delete:hover {
+  color: var(--uiu-red);
+}
+
+.fridge-add-form {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fridge-add-form__picker {
+  position: relative;
+}
+
+.fridge-add-form__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--uiu-surface-2);
+  border-radius: 10px;
+  margin-top: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.fridge-add-form__suggestion {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.fridge-add-form__suggestion:hover {
+  background: var(--uiu-surface);
+}
+
+.fridge-ocr-button {
+  align-self: flex-start;
+  background: none;
+  border: 1px dashed var(--uiu-muted);
+  color: var(--uiu-muted);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
 }

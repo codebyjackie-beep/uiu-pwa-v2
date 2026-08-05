@@ -587,6 +587,27 @@ export interface RecipeDraft {
 }
 
 /** One cell of the 4 (meal slot) x 10 (DIETARY_FILTERS key) gap matrix. */
+// ---------------------------------------------------------------------------
+// Fridge stock  (HANDOFF_fridge.md — collection: fridge_stock)
+//
+// Single-user app, no userId field (same convention as meal_plans/recipe_drafts).
+// ---------------------------------------------------------------------------
+
+export type FridgeStockSource = "manual" | "ocr" | "shop-auto";
+
+export interface FridgeStockItem {
+  _id: ObjectIdHex;
+  ingredientName: string;
+  canonicalIngredientId: ObjectIdHex | null;
+  quantity: number;
+  unit: string;
+  addedAt: ISODate;
+  expiresAt: ISODate;
+  expiresAtIsManualOverride: boolean;
+  source: FridgeStockSource;
+  needsRestock: boolean;
+}
+
 export interface GapMatrixCell {
   slot: MealSlot;
   dietary: string;
