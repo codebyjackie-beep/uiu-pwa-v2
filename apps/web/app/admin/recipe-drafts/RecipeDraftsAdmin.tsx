@@ -15,6 +15,8 @@ const STATUS_TABS: { value: StatusFilter; label: string }[] = [
   { value: "all", label: "All" },
 ];
 
+const PAGE_SIZE = 25;
+
 interface DraftEdit {
   title: string;
   description: string;
@@ -70,6 +72,7 @@ export function RecipeDraftsAdmin() {
   const [sessionNotice, setSessionNotice] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending");
+  const [page, setPage] = useState(1);
   const [drafts, setDrafts] = useState<RecipeDraft[]>([]);
   const [loading, setLoading] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
@@ -117,6 +120,7 @@ export function RecipeDraftsAdmin() {
       return;
     }
     setDrafts(parsed.data);
+    setPage(1);
     setLoading(false);
   }
 
@@ -255,9 +259,10 @@ export function RecipeDraftsAdmin() {
       {listError ? <p className="admin-drafts-error">{listError}</p> : null}
       {loading ? <p className="admin-drafts-page__sub">載入緊…</p> : null}
       {!loading && drafts.length === 0 && !listError ? <p className="admin-drafts-page__sub">冇 {statusFilter} 嘅 draft。</p> : null}
+      {!loading && drafts.length > 0 ? <p className="admin-drafts-page__sub">共 {drafts.length} 條 draft</p> : null}
 
       <div className="admin-drafts-list">
-        {drafts.map((d) => {
+        {drafts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((d) => {
           const expanded = expandedId === d._id;
           const isEditing = editingId === d._id;
           return (
@@ -351,6 +356,28 @@ export function RecipeDraftsAdmin() {
           );
         })}
       </div>
+
+      {drafts.length > 0 ? (
+        <div className="recipes-page__pagination">
+          {page > 1 ? (
+            <button type="button" onClick={() => setPage((p) => p - 1)}>
+              ← Prev
+            </button>
+          ) : (
+            <span aria-disabled="true">← Prev</span>
+          )}
+          <span>
+            Page {page} / {Math.max(1, Math.ceil(drafts.length / PAGE_SIZE))}
+          </span>
+          {page < Math.ceil(drafts.length / PAGE_SIZE) ? (
+            <button type="button" onClick={() => setPage((p) => p + 1)}>
+              Next →
+            </button>
+          ) : (
+            <span aria-disabled="true">Next →</span>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
