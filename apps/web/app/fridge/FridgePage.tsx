@@ -1,13 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import type { ApiResponse, FridgeStockItem } from "@uiu/shared";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
 
 interface IngredientOption {
   id: string;
   name: string;
   isPantry: boolean;
 }
+
+interface ScannedItem {
+  name: string;
+  quantity: number | null;
+}
+
+interface ScanReviewItem extends ScannedItem {
+  unit: string;
+  include: boolean;
+}
+
+type ScanKind = "ocr" | "photo-scan";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -22,9 +34,9 @@ function daysUntil(iso: string): number {
 }
 
 function expiryLabel(days: number): string {
-  if (days < 0) return "已過期";
-  if (days === 0) return "今日過期";
-  return `${days}日後過期`;
+  if (days < 0) return "Expired";
+  if (days === 0) return "Expires today";
+  return `Expires in ${days}d`;
 }
 
 function expiryClass(days: number): { card: string; text: string } {
@@ -32,6 +44,11 @@ function expiryClass(days: number): { card: string; text: string } {
   if (days < 5) return { card: "fridge-card--soon", text: "fridge-card__expiry--soon" };
   return { card: "", text: "" };
 }
+
+const SCAN_LABELS: Record<ScanKind, { button: string; endpoint: string; source: FridgeStockSource; heading: string }> = {
+  ocr: { button: "📷 Scan receipt", endpoint: "/api/fridge-stock/ocr", source: "ocr", heading: "Confirm scanned receipt items" },
+  "photo-scan": { button: "📷 Scan fridge", endpoint: "/api/fridge-stock/scan-fridge", source: "photo-scan", heading: "Confirm scanned fridge items" },
+};
 
 export function FridgePage() {
   const [items, setItems] = useState<FridgeStockItem[]>([]);
@@ -45,8 +62,15 @@ export function FridgePage() {
   const [selectedOption, setSelectedOption] = useState<IngredientOption | null>(null);
   const [quantity, setQuantity] = useState("1");
   const [unit, setUnit] = useState("");
-  const [showOcrNotice, setShowOcrNotice] = useState(false);
   const [adding, setAdding] = useState(false);
+
+  const [scanKind, setScanKind] = useState<ScanKind | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [reviewItems, setReviewItems] = useState<ScanReviewItem[] | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const ocrInputRef = useRef<HTMLInputElement>(null);
+  const photoScanInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     void loadItems();
@@ -64,7 +88,7 @@ export function FridgePage() {
     setError(null);
     const { parsed } = await fetchJson<FridgeStockItem[]>("/api/fridge-stock");
     if (!parsed || !parsed.ok) {
-      setError(parsed && !parsed.ok ? parsed.error.message : "讀取失敗，請重試。");
+      setError(parsed && !parsed.ok ? parsed.error.message : "Failed to load, please try again.");
       setLoading(false);
       return;
     }
@@ -87,7 +111,7 @@ export function FridgePage() {
     const trimmedName = (selectedOption?.name ?? nameInput).trim();
     const qty = Number(quantity);
     if (!trimmedName || !Number.isFinite(qty) || qty <= 0 || !unit.trim()) {
-      setToast("請填寫食材名、份量同單位。");
+      setToast("Please fill in item name, quantity, and unit.");
       return;
     }
     setAdding(true);
@@ -104,7 +128,7 @@ export function FridgePage() {
     });
     setAdding(false);
     if (!parsed || !parsed.ok) {
-      setToast(parsed && !parsed.ok ? `加入失敗：${parsed.error.message}` : "加入失敗，請重試。");
+      setToast(parsed && !parsed.ok ? `Failed to add: ${parsed.error.message}` : "Failed to add, please try again.");
       return;
     }
     setItems((prev) => [...prev, parsed.data].sort((a, b) => a.expiresAt.localeCompare(b.expiresAt)));
@@ -112,7 +136,7 @@ export function FridgePage() {
     setSelectedOption(null);
     setQuantity("1");
     setUnit("");
-    setToast("已加入雪櫃。");
+    setToast("Added to fridge.");
   }
 
   async function toggleRestock(item: FridgeStockItem) {
@@ -124,7 +148,7 @@ export function FridgePage() {
     });
     setPendingId(null);
     if (!parsed || !parsed.ok) {
-      setToast(parsed && !parsed.ok ? `更新失敗：${parsed.error.message}` : "更新失敗，請重試。");
+      setToast(parsed && !parsed.ok ? `Update failed: ${parsed.error.message}` : "Update failed, please try again.");
       return;
     }
     setItems((prev) => prev.map((i) => (i._id === item._id ? parsed.data : i)));
@@ -135,11 +159,75 @@ export function FridgePage() {
     const { res } = await fetchJson<{ deleted: true }>(`/api/fridge-stock/${item._id}`, { method: "DELETE" });
     setPendingId(null);
     if (!res.ok) {
-      setToast("刪除失敗，請重試。");
+      setToast("Delete failed, please try again.");
       return;
     }
     setItems((prev) => prev.filter((i) => i._id !== item._id));
-    setToast("已刪除。");
+    setToast("Deleted.");
+  }
+
+  function triggerScan(kind: ScanKind) {
+    setScanKind(kind);
+    (kind === "ocr" ? ocrInputRef : photoScanInputRef).current?.click();
+  }
+
+  async function handleScanFile(kind: ScanKind, file: File) {
+    setScanKind(kind);
+    setScanning(true);
+    setScanError(null);
+    setReviewItems(null);
+    const form = new FormData();
+    form.append("image", file);
+    const { parsed } = await fetchJson<ScannedItem[]>(SCAN_LABELS[kind].endpoint, { method: "POST", body: form });
+    setScanning(false);
+    if (!parsed || !parsed.ok) {
+      setScanError(parsed && !parsed.ok ? parsed.error.message : "Scan failed, please try again.");
+      return;
+    }
+    if (parsed.data.length === 0) {
+      setScanError("No items recognized in that photo. Please enter manually.");
+      return;
+    }
+    setReviewItems(parsed.data.map((item) => ({ ...item, unit: "pc", include: true })));
+  }
+
+  function updateReviewItem(index: number, patch: Partial<ScanReviewItem>) {
+    setReviewItems((prev) => (prev ? prev.map((item, i) => (i === index ? { ...item, ...patch } : item)) : prev));
+  }
+
+  function cancelScan() {
+    setScanKind(null);
+    setReviewItems(null);
+    setScanError(null);
+  }
+
+  async function confirmScan() {
+    if (!reviewItems || !scanKind) return;
+    const toAdd = reviewItems.filter((item) => item.include && item.name.trim() && item.unit.trim());
+    if (toAdd.length === 0) {
+      setToast("No items selected to add.");
+      return;
+    }
+    setConfirming(true);
+    let addedCount = 0;
+    for (const item of toAdd) {
+      const { parsed } = await fetchJson<FridgeStockItem>("/api/fridge-stock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ingredientName: item.name.trim(),
+          canonicalIngredientId: null,
+          quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
+          unit: item.unit.trim(),
+          source: SCAN_LABELS[scanKind].source,
+        }),
+      });
+      if (parsed && parsed.ok) addedCount += 1;
+    }
+    setConfirming(false);
+    cancelScan();
+    setToast(`Added ${addedCount} of ${toAdd.length} item(s).`);
+    void loadItems();
   }
 
   const sortedItems = useMemo(() => [...items].sort((a, b) => daysUntil(a.expiresAt) - daysUntil(b.expiresAt)), [items]);
@@ -147,13 +235,13 @@ export function FridgePage() {
   return (
     <div className="fridge-page">
       <h1>Fridge</h1>
-      <p className="admin-drafts-page__sub">你雪櫃入面存貨，按過期日排先。標記「要補貨」嘅嘢會喺 Shop 度顯示。</p>
+      <p className="admin-drafts-page__sub">Your fridge stock, sorted by expiry date. Items marked &quot;Restock&quot; show up in Shop.</p>
 
       {toast ? <p className="admin-drafts-toast">{toast}</p> : null}
 
       <div className="fridge-add-form">
         <label className="wizard-field fridge-add-form__picker">
-          <span>食材</span>
+          <span>Item</span>
           <input
             type="text"
             value={selectedOption ? selectedOption.name : nameInput}
@@ -161,7 +249,7 @@ export function FridgePage() {
               setSelectedOption(null);
               setNameInput(e.target.value);
             }}
-            placeholder="打食材名（例如 chicken breast）"
+            placeholder="Type an item name (e.g. chicken breast)"
           />
           {suggestions.length > 0 ? (
             <div className="fridge-add-form__suggestions">
@@ -184,30 +272,102 @@ export function FridgePage() {
 
         <div className="wizard-field-row">
           <label className="wizard-field">
-            <span>份量</span>
+            <span>Quantity</span>
             <input type="number" min={0} step="any" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
           </label>
           <label className="wizard-field">
-            <span>單位</span>
+            <span>Unit</span>
             <input type="text" placeholder="g / ml / pc" value={unit} onChange={(e) => setUnit(e.target.value)} />
           </label>
         </div>
 
         <button type="button" className="wizard-primary-button" disabled={adding} onClick={addItem}>
-          {adding ? "加入緊…" : "加入雪櫃"}
+          {adding ? "Adding…" : "Add to fridge"}
         </button>
 
-        <button type="button" className="fridge-ocr-button" onClick={() => setShowOcrNotice(true)}>
-          📷 影收據加入
-        </button>
-        {showOcrNotice ? (
-          <p className="admin-drafts-page__sub">呢個功能未接通，請手動輸入。（等揀定 OCR vendor 先接真嘢）</p>
-        ) : null}
+        <div className="fridge-scan-buttons">
+          <button type="button" className="fridge-ocr-button" onClick={() => triggerScan("ocr")} disabled={scanning}>
+            {SCAN_LABELS.ocr.button}
+          </button>
+          <button type="button" className="fridge-ocr-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
+            {SCAN_LABELS["photo-scan"].button}
+          </button>
+        </div>
+        <input
+          ref={ocrInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) void handleScanFile("ocr", file);
+          }}
+        />
+        <input
+          ref={photoScanInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) void handleScanFile("photo-scan", file);
+          }}
+        />
+        {scanning ? <p className="admin-drafts-page__sub">Analyzing photo…</p> : null}
+        {scanError ? <p className="admin-drafts-error">{scanError}</p> : null}
       </div>
 
+      {reviewItems ? (
+        <div className="fridge-scan-review">
+          <h2>{scanKind ? SCAN_LABELS[scanKind].heading : "Confirm scanned items"}</h2>
+          <p className="admin-drafts-page__sub">Review before adding — nothing is saved until you confirm.</p>
+          {reviewItems.map((item, index) => (
+            <div key={index} className="fridge-scan-review__row">
+              <input
+                type="checkbox"
+                checked={item.include}
+                onChange={(e) => updateReviewItem(index, { include: e.target.checked })}
+              />
+              <input
+                type="text"
+                value={item.name}
+                onChange={(e) => updateReviewItem(index, { name: e.target.value })}
+                placeholder="Item name"
+              />
+              <input
+                type="number"
+                min={0}
+                step="any"
+                value={item.quantity ?? ""}
+                onChange={(e) => updateReviewItem(index, { quantity: e.target.value ? Number(e.target.value) : null })}
+                placeholder="Qty"
+              />
+              <input
+                type="text"
+                value={item.unit}
+                onChange={(e) => updateReviewItem(index, { unit: e.target.value })}
+                placeholder="unit"
+              />
+            </div>
+          ))}
+          <div className="fridge-scan-review__actions">
+            <button type="button" className="wizard-primary-button" disabled={confirming} onClick={confirmScan}>
+              {confirming ? "Adding…" : "Confirm and add"}
+            </button>
+            <button type="button" onClick={cancelScan} disabled={confirming}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {error ? <p className="admin-drafts-error">{error}</p> : null}
-      {loading ? <p className="admin-drafts-page__sub">載入緊…</p> : null}
-      {!loading && sortedItems.length === 0 && !error ? <p className="admin-drafts-page__sub">雪櫃暫時冇存貨。</p> : null}
+      {loading ? <p className="admin-drafts-page__sub">Loading…</p> : null}
+      {!loading && sortedItems.length === 0 && !error ? <p className="admin-drafts-page__sub">Your fridge is empty.</p> : null}
 
       <div className="fridge-list">
         {sortedItems.map((item) => {
@@ -230,10 +390,10 @@ export function FridgePage() {
                     disabled={pendingId === item._id}
                     onChange={() => toggleRestock(item)}
                   />
-                  要補貨
+                  Restock
                 </label>
                 <button type="button" className="fridge-card__delete" disabled={pendingId === item._id} onClick={() => deleteItem(item)}>
-                  刪除
+                  Delete
                 </button>
               </div>
             </div>

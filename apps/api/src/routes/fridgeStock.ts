@@ -2,15 +2,53 @@
  * HANDOFF_fridge.md — fridge_stock CRUD. No auth (same convention as
  * recipes/meal_plans — this isn't an admin-only surface).
  */
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { estimateExpiresAt } from "../services/shelfLife";
+import { scanImageForItems, type OpenRouterVisionEnv, type ScannedItem } from "../services/openrouterVision";
 
-export const fridgeStockRouter = new Hono<{ Bindings: DbEnv }>();
+type FridgeStockEnv = DbEnv & OpenRouterVisionEnv;
 
-const VALID_SOURCES: FridgeStockSource[] = ["manual", "ocr", "shop-auto"];
+export const fridgeStockRouter = new Hono<{ Bindings: FridgeStockEnv }>();
+
+const VALID_SOURCES: FridgeStockSource[] = ["manual", "ocr", "shop-auto", "photo-scan"];
+
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+
+async function fileToDataUrl(file: File): Promise<string> {
+  const buf = await file.arrayBuffer();
+  let binary = "";
+  const bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]!);
+  const base64 = btoa(binary);
+  const mime = file.type || "image/jpeg";
+  return `data:${mime};base64,${base64}`;
+}
+
+async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt: string) {
+  const form = await c.req.parseBody().catch(() => null);
+  const file = form?.image;
+  if (!(file instanceof File)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "multipart/form-data with an 'image' file field is required" } };
+    return c.json(body, 400);
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Image too large (max 8MB)" } };
+    return c.json(body, 400);
+  }
+  try {
+    const dataUrl = await fileToDataUrl(file);
+    const items = await scanImageForItems(c.env, dataUrl, prompt);
+    const body: ApiResponse<ScannedItem[]> = { ok: true, data: items };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] fridge-stock image scan error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "vision_error", message: "Failed to analyze image" } };
+    return c.json(body, 502);
+  }
+}
 
 function toFridgeStockItem(doc: Document): FridgeStockItem {
   return {
@@ -213,3 +251,28 @@ fridgeStockRouter.delete("/:id", async (c) => {
     return c.json(body, 502);
   }
 });
+
+/**
+ * HANDOFF_fridge-followup.md #2 — receipt OCR. Analysis-only: returns the
+ * scanned items for the client to review/edit, does NOT write to fridge_stock.
+ * The client confirms via the normal POST / (one call per confirmed item).
+ */
+fridgeStockRouter.post("/ocr", (c) =>
+  handleImageScan(
+    c,
+    "Read this shopping receipt. List each purchased item with its name and quantity if visible. " +
+      'Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null}].',
+  ),
+);
+
+/**
+ * HANDOFF_fridge-followup.md #4 — fridge photo scan. Same analysis-only,
+ * confirm-before-write contract as /ocr above, just a different prompt.
+ */
+fridgeStockRouter.post("/scan-fridge", (c) =>
+  handleImageScan(
+    c,
+    "List the distinct food items visible in this fridge photo. For each, give a short name and, if visible, " +
+      'an approximate quantity. Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null}].',
+  ),
+);

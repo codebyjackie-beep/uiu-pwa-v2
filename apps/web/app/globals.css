@@ -1710,3 +1710,41 @@ a {
   cursor: pointer;
   font-size: 14px;
 }
+
+.fridge-scan-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fridge-scan-review {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--uiu-surface);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.fridge-scan-review__row {
+  display: grid;
+  grid-template-columns: auto 1fr 70px 70px;
+  gap: 8px;
+  align-items: center;
+}
+
+.fridge-scan-review__row input[type="text"],
+.fridge-scan-review__row input[type="number"] {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--uiu-muted);
+  background: var(--uiu-white);
+  color: var(--uiu-black);
+}
+
+.fridge-scan-review__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}

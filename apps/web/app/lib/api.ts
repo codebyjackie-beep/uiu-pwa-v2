@@ -80,3 +80,23 @@ export function apiPatch<T>(path: string, jsonBody: unknown, headers?: Record<st
 export function apiDelete<T>(path: string): Promise<ApiResponse<T>> {
   return apiSend<T>("DELETE", path);
 }
+
+/** Same as apiSend but forwards a multipart/form-data body (image uploads) — no JSON.stringify,
+ * no Content-Type header (fetch sets the multipart boundary itself). */
+export async function apiPostForm<T>(path: string, form: FormData): Promise<ApiResponse<T>> {
+  try {
+    const env = await resolveEnv();
+    const url = `${apiBaseUrl(env)}${path}`;
+    const init: RequestInit = { method: "POST", body: form };
+    const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
+    const parsed = (await res.json().catch(() => null)) as ApiResponse<T> | null;
+    if (!parsed) {
+      console.error("[uiu-web] apiPostForm non-JSON response:", path, res.status);
+      return { ok: false, error: { code: `http_${res.status}`, message: "Upstream error" } };
+    }
+    return parsed;
+  } catch (err) {
+    console.error("[uiu-web] apiPostForm failed:", path, err instanceof Error ? err.message : String(err));
+    return { ok: false, error: { code: "fetch_failed", message: "Upstream unreachable" } };
+  }
+}

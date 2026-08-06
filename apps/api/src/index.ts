@@ -15,10 +15,12 @@ type Bindings = {
   API_ENV: string;
   MONGODB_DB: string;
   OPENROUTER_MODEL: string;
+  OPENROUTER_VISION_MODEL: string;
   // Secrets (not in repo, via `wrangler secret put`):
   //   MONGODB_URI — Atlas connection string.
   //   ADMIN_TOKEN — shared secret checked against X-Admin-Token for /api/admin/* routes.
-  //   OPENROUTER_API_KEY — Jackie's own OpenRouter key (HANDOFF_daily-recipe-draft-agent.md Part B).
+  //   OPENROUTER_API_KEY — Jackie's own OpenRouter key, shared between the daily recipe
+  //     draft agent (OPENROUTER_MODEL) and fridge-stock OCR/photo-scan (OPENROUTER_VISION_MODEL).
   //   RAPIDAPI_KEY / RAPIDAPI_HOST — Spoonacular via RapidAPI, same pair as tools/recipe_ideas/spoonacular_browse.cjs.
   MONGODB_URI: string;
   ADMIN_TOKEN: string;

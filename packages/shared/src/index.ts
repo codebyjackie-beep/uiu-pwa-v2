@@ -593,7 +593,7 @@ export interface RecipeDraft {
 // Single-user app, no userId field (same convention as meal_plans/recipe_drafts).
 // ---------------------------------------------------------------------------
 
-export type FridgeStockSource = "manual" | "ocr" | "shop-auto";
+export type FridgeStockSource = "manual" | "ocr" | "shop-auto" | "photo-scan";
 
 export interface FridgeStockItem {
   _id: ObjectIdHex;
