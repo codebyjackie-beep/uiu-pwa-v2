@@ -8,7 +8,7 @@ import { useState } from "react";
  * has to be recognised by the meal-plan generator / Recipes-page filters
  * (apps/web/app/lib/recipeFilters.ts), which read the same tag strings.
  */
-const MEAL_TYPE_KEYS = ["breakfast", "brunch", "lunch", "dinner", "snack"] as const;
+const MEAL_TYPE_KEYS = ["breakfast", "brunch", "lunch", "dinner", "snack", "appetizer"] as const;
 const DIETARY_KEYS = ["vegetarian", "vegan", "pescatarian", "gluten-free", "dairy-free", "keto", "paleo"] as const;
 
 /** Copied from recipeFilters.ts's DIETARY_PREDICATES — used to detect pre-existing

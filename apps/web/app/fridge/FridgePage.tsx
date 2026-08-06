@@ -286,10 +286,10 @@ export function FridgePage() {
         </button>
 
         <div className="fridge-scan-buttons">
-          <button type="button" className="fridge-ocr-button" onClick={() => triggerScan("ocr")} disabled={scanning}>
+          <button type="button" className="wizard-secondary-button" onClick={() => triggerScan("ocr")} disabled={scanning}>
             {SCAN_LABELS.ocr.button}
           </button>
-          <button type="button" className="fridge-ocr-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
+          <button type="button" className="wizard-secondary-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
             {SCAN_LABELS["photo-scan"].button}
           </button>
         </div>
