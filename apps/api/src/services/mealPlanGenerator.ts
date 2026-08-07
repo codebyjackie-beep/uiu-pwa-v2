@@ -44,6 +44,11 @@ export interface PoolRecipe {
   protein: number | null;
   /** Null when recipe_cost has no basket yet (cost engine gap, not this generator's job to fill). */
   costPerServing: number | null;
+  /** Total basket cost in GBP, same null-when-uncomputed convention as costPerServing. */
+  basket: number | null;
+  /** RecipeCost.adjustedCoveragePct, null when recipe_cost has no doc yet. Added for meal-suggestions'
+   * coverage-threshold filter (HANDOFF_tonight-suggestion.md) — read-only, doesn't change selectMealPlan. */
+  adjustedCoveragePct: number | null;
   mealSlots: Set<MealSlot>;
 }
 
@@ -151,6 +156,8 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
     calories: nutrition?.calories != null ? Math.round(nutrition.calories as number) : null,
     protein: (nutrition?.protein as number | undefined) ?? null,
     costPerServing: costDoc && (costDoc.perServing as number) > 0 ? (costDoc.perServing as number) : null,
+    basket: costDoc && (costDoc.basket as number) > 0 ? (costDoc.basket as number) : null,
+    adjustedCoveragePct: costDoc ? (costDoc.adjustedCoveragePct as number) : null,
     mealSlots: deriveMealSlots(titleLower, tags),
   };
 }

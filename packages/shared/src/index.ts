@@ -626,4 +626,30 @@ export interface RecipeDraftState {
   updatedAt: ISODate;
 }
 
+// ---------------------------------------------------------------------------
+// Meal suggestions  (HANDOFF_tonight-suggestion.md — GET /api/meal-suggestions)
+//
+// Instant, single-meal, fridge-aware suggestions. Query-only, never calls AI
+// and never writes meal_plans (the caller POSTs to the existing /api/meal-plan
+// route itself if the user chooses to add one).
+// ---------------------------------------------------------------------------
+
+export interface MealSuggestion {
+  recipeId: ObjectIdHex;
+  title: string;
+  imageUrl: string;
+  /** Null only in the (expected-empty) case a >=80%-coverage candidate somehow lacks a cost doc. */
+  cost: RecipeListItemCost | null;
+  calories: number | null;
+  /** Sum of expiry-weighted fridge_stock matches (see HANDOFF for the 3/2/1 weighting). */
+  fridgeMatchScore: number;
+  /** Fridge item names that matched this recipe's ingredients, for the "uses N items expiring soon" UI hint. */
+  matchedFridgeItems: string[];
+}
+
+export interface MealSuggestionsResponse {
+  mealType: MealSlot;
+  suggestions: MealSuggestion[];
+}
+
 export const API_VERSION = "0.1.0" as const;

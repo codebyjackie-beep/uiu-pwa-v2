@@ -1737,3 +1737,73 @@ a {
   gap: 10px;
   margin-top: 6px;
 }
+
+/* --- Meal Planner: "What should I eat?" (HANDOFF_tonight-suggestion.md) --- */
+
+.tonight-suggestion {
+  padding: 14px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tonight-suggestion__heading {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tonight-suggestion__controls {
+  display: flex;
+  gap: 10px;
+}
+
+.tonight-suggestion__select {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.tonight-suggestion__status {
+  margin: 0;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.tonight-suggestion__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tonight-suggestion__card {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tonight-suggestion__card-link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.tonight-suggestion__match {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tonight-suggestion__add {
+  margin-top: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+}

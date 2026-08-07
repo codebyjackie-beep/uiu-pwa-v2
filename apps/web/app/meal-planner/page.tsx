@@ -3,6 +3,7 @@ import type { MealPlanWeekResponse } from "@uiu/shared";
 import { apiGet } from "../lib/api";
 import { addDays, dayLabel, mondayOf, toDateKey, weekDates } from "../lib/dates";
 import { MealPlannerBoard } from "./MealPlannerBoard";
+import { TonightSuggestion } from "./TonightSuggestion";
 
 export const metadata = { title: "Meal Planner · UseItUp" };
 
@@ -54,6 +55,8 @@ export default async function MealPlannerPage({
           <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
         </div>
       </div>
+
+      <TonightSuggestion />
 
       <div className="meal-planner-summary">
         <div className="meal-planner-summary__stat">

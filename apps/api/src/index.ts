@@ -6,6 +6,7 @@ import { mealPlanRouter } from "./routes/mealPlan";
 import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { adminRecipesRouter } from "./routes/adminRecipes";
 import { fridgeStockRouter } from "./routes/fridgeStock";
+import { mealSuggestionsRouter } from "./routes/mealSuggestions";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
@@ -61,6 +62,7 @@ app.route("/api/meal-plan", mealPlanRouter);
 app.route("/api/admin/recipe-drafts", adminRecipeDraftsRouter);
 app.route("/api/admin/recipes", adminRecipesRouter);
 app.route("/api/fridge-stock", fridgeStockRouter);
+app.route("/api/meal-suggestions", mealSuggestionsRouter);
 
 // Feature routes (health) get mounted here as they land.
 
