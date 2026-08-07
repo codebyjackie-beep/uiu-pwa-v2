@@ -23,11 +23,13 @@ type Bindings = {
   //   OPENROUTER_API_KEY — Jackie's own OpenRouter key, shared between the daily recipe
   //     draft agent (OPENROUTER_MODEL) and fridge-stock OCR/photo-scan (OPENROUTER_VISION_MODEL).
   //   RAPIDAPI_KEY / RAPIDAPI_HOST — Spoonacular via RapidAPI, same pair as tools/recipe_ideas/spoonacular_browse.cjs.
+  //   PEXELS_API_KEY — recipe photo lookup for approved AI drafts (services/pexels.ts).
   MONGODB_URI: string;
   ADMIN_TOKEN: string;
   OPENROUTER_API_KEY: string;
   RAPIDAPI_KEY: string;
   RAPIDAPI_HOST: string;
+  PEXELS_API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();

@@ -1,6 +1,7 @@
-// Kill-switch: removes whatever service worker previously controlled this origin
-// (the old Flutter/Workbox build) plus its caches, then unregisters itself.
-// Do NOT add real PWA behavior here — that lands in a separate, later commit.
+// Real PWA service worker, chained after the original kill-switch (which unregistered
+// itself and cleared old Flutter/Workbox caches). Kept the same cache-clearing safety
+// net here in case a client never ran the earlier kill-switch version, but this one
+// stays registered permanently — Chrome's installability check requires a persistent SW.
 self.addEventListener("install", () => {
   self.skipWaiting();
 });
@@ -8,12 +9,13 @@ self.addEventListener("install", () => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      await self.registration.unregister();
       const cacheKeys = await caches.keys();
       await Promise.all(cacheKeys.map((key) => caches.delete(key)));
       await self.clients.claim();
-      const clientList = await self.clients.matchAll({ type: "window" });
-      clientList.forEach((client) => client.navigate(client.url));
     })()
   );
+});
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(fetch(event.request));
 });

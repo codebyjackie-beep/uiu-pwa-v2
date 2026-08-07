@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { MealPlanWeekResponse } from "@uiu/shared";
 import { apiGet } from "./lib/api";
 import { mondayOf, toDateKey, weekDates } from "./lib/dates";
+import { InstallButton } from "./InstallButton";
 
 const QUICK_ACTIONS = [
   { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices", modifier: null },
@@ -35,6 +36,7 @@ export default async function Home() {
         <p className="home-hero__subtitle">
           Plan meals, track your fridge, shop smart, and stay healthy — all in one place.
         </p>
+        <InstallButton />
       </section>
 
       <section>

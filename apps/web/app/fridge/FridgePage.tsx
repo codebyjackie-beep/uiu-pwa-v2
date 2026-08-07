@@ -46,9 +46,31 @@ function expiryClass(days: number): { card: string; text: string } {
 }
 
 const SCAN_LABELS: Record<ScanKind, { button: string; endpoint: string; source: FridgeStockSource; heading: string }> = {
-  ocr: { button: "📷 Scan receipt", endpoint: "/api/fridge-stock/ocr", source: "ocr", heading: "Confirm scanned receipt items" },
-  "photo-scan": { button: "📷 Scan fridge", endpoint: "/api/fridge-stock/scan-fridge", source: "photo-scan", heading: "Confirm scanned fridge items" },
+  ocr: { button: "Scan receipt", endpoint: "/api/fridge-stock/ocr", source: "ocr", heading: "Confirm scanned receipt items" },
+  "photo-scan": { button: "Scan fridge", endpoint: "/api/fridge-stock/scan-fridge", source: "photo-scan", heading: "Confirm scanned fridge items" },
 };
+
+function ReceiptIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2h12a1 1 0 0 1 1 1v18l-2.5-1.5L14 21l-2.5-1.5L9 21l-2.5-1.5L4 21V3a1 1 0 0 1 1-1z" />
+      <line x1="8" y1="7" x2="16" y2="7" />
+      <line x1="8" y1="11" x2="16" y2="11" />
+      <line x1="8" y1="15" x2="13" y2="15" />
+    </svg>
+  );
+}
+
+function FridgeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" />
+      <line x1="5" y1="9" x2="19" y2="9" />
+      <line x1="8" y1="5" x2="8" y2="7" />
+      <line x1="8" y1="12" x2="8" y2="14" />
+    </svg>
+  );
+}
 
 export function FridgePage() {
   const [items, setItems] = useState<FridgeStockItem[]>([]);
@@ -286,11 +308,11 @@ export function FridgePage() {
         </button>
 
         <div className="fridge-scan-buttons">
-          <button type="button" className="wizard-secondary-button" onClick={() => triggerScan("ocr")} disabled={scanning}>
-            {SCAN_LABELS.ocr.button}
+          <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => triggerScan("ocr")} disabled={scanning}>
+            <ReceiptIcon /> {SCAN_LABELS.ocr.button}
           </button>
-          <button type="button" className="wizard-secondary-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
-            {SCAN_LABELS["photo-scan"].button}
+          <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
+            <FridgeIcon /> {SCAN_LABELS["photo-scan"].button}
           </button>
         </div>
         <input

@@ -7,8 +7,9 @@ import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import type { ApiResponse, Recipe, RecipeCost, RecipeDraft, RecipeDraftStatus } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { dailyRecipeDraft, type DailyRecipeDraftEnv, type DailyRecipeDraftSummary } from "../jobs/dailyRecipeDraft";
+import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
-export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & { ADMIN_TOKEN: string } }>();
+export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
 
 function checkAdminToken(token: string | undefined, expected: string): boolean {
   return !!token && token === expected;
@@ -143,6 +144,8 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       if (draft.status !== "pending") return { alreadyDecided: true as const };
 
       const now = new Date().toISOString();
+      // Best-effort — never fail approval on a Pexels error (HANDOFF: graceful fallback).
+      const imageUrl = await findRecipePhoto(c.env, draft.title as string).catch(() => null);
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: draft.title as string,
         description: (draft.description as string) ?? "",
@@ -154,7 +157,7 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
         servings: draft.servings as number,
         prepTimeMinutes: draft.prepTimeMinutes as number,
         cookTimeMinutes: draft.cookTimeMinutes as number,
-        imageUrl: "",
+        imageUrl: imageUrl ?? "",
         nutrition: draft.nutrition as Recipe["nutrition"],
         source: "ai_daily_draft",
         sourcePlatform: null,

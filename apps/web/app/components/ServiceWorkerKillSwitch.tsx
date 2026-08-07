@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 
-// Registers the kill-switch SW (public/sw.js) so it replaces whatever service
-// worker previously controlled this origin. Remove this once the old SW is
-// confirmed dead everywhere and before a real PWA SW is introduced.
+// Registers public/sw.js — originally a pure kill-switch for the old Flutter/Workbox
+// SW, now upgraded in place to a persistent real SW (still clears stale caches on
+// activate as a safety net) so the origin passes Chrome's PWA installability check.
 export function ServiceWorkerKillSwitch() {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
