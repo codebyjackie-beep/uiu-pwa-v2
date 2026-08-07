@@ -3,13 +3,9 @@ import type { MealPlanWeekResponse } from "@uiu/shared";
 import { apiGet } from "../lib/api";
 import { addDays, dayLabel, mondayOf, toDateKey, weekDates } from "../lib/dates";
 import { MealPlannerBoard } from "./MealPlannerBoard";
-import { TonightSuggestion } from "./TonightSuggestion";
+import { MealPlannerView } from "./MealPlannerView";
 
 export const metadata = { title: "Meal Planner · UseItUp" };
-
-function formatCost(value: number): string {
-  return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
-}
 
 export default async function MealPlannerPage({
   searchParams,
@@ -44,34 +40,24 @@ export default async function MealPlannerPage({
     <div className="meal-planner-page">
       <div className="meal-planner-page__header">
         <h1>Meal Planner</h1>
-        <Link href="/meal-planner/generate" className="wizard-primary-button">
-          Build a plan for me
-        </Link>
-        <div className="meal-planner-page__nav">
-          <Link href={`/meal-planner?week=${prevWeekKey}`}>← Prev week</Link>
-          <span>
-            {dayLabel(mondayKey, 0)} – {dayLabel(sunday, 6)}
-          </span>
-          <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
-        </div>
       </div>
 
-      <TonightSuggestion />
-
-      <div className="meal-planner-summary">
-        <div className="meal-planner-summary__stat">
-          <span className="meal-planner-summary__value">{formatCost(weekTotalCost)}</span>
-          <span className="meal-planner-summary__label">Week cost</span>
-          <span className="meal-planner-summary__subtitle">{formatCost(weekTotalCost / 7)} average per day</span>
-        </div>
-        <div className="meal-planner-summary__stat">
-          <span className="meal-planner-summary__value">{Math.round(weekTotalCalories)}</span>
-          <span className="meal-planner-summary__label">Week calories</span>
-          <span className="meal-planner-summary__subtitle">{Math.round(weekTotalCalories / 7)} average per day</span>
-        </div>
-      </div>
-
-      <MealPlannerBoard weekDates={dates} days={days} />
+      <MealPlannerView
+        weekTotalCost={weekTotalCost}
+        weekTotalCalories={weekTotalCalories}
+        board={
+          <>
+            <div className="meal-planner-page__nav">
+              <Link href={`/meal-planner?week=${prevWeekKey}`}>← Prev week</Link>
+              <span>
+                {dayLabel(mondayKey, 0)} – {dayLabel(sunday, 6)}
+              </span>
+              <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
+            </div>
+            <MealPlannerBoard weekDates={dates} days={days} />
+          </>
+        }
+      />
     </div>
   );
 }

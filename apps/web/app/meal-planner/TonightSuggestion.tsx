@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ApiResponse, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
 
 const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
@@ -20,12 +21,14 @@ function formatCost(value: number): string {
  * board below it: no shared state, its own fetch, its own optional "add to
  * today's plan" action via the existing POST /api/meal-plan route. */
 export function TonightSuggestion() {
+  const router = useRouter();
   const [mealType, setMealType] = useState<MealSlot>("dinner");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<MealSuggestion[] | null>(null);
   const [error, setError] = useState(false);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState(true);
 
   async function fetchSuggestions() {
     setLoading(true);
@@ -33,8 +36,10 @@ export function TonightSuggestion() {
     try {
       const res = await fetch(`/api/meal-suggestions?mealType=${mealType}`);
       const parsed = (await res.json()) as ApiResponse<MealSuggestionsResponse>;
-      if (parsed.ok) setSuggestions(parsed.data.suggestions);
-      else setError(true);
+      if (parsed.ok) {
+        setSuggestions(parsed.data.suggestions);
+        setExpanded(true);
+      } else setError(true);
     } catch {
       setError(true);
     } finally {
@@ -52,7 +57,10 @@ export function TonightSuggestion() {
         body: JSON.stringify({ date: today, mealSlot: mealType, recipeId }),
       });
       const parsed = (await res.json()) as ApiResponse<unknown>;
-      if (parsed.ok) setAddedIds((prev) => new Set(prev).add(recipeId));
+      if (parsed.ok) {
+        setAddedIds((prev) => new Set(prev).add(recipeId));
+        router.refresh();
+      }
     } finally {
       setAddingId(null);
     }
@@ -60,7 +68,20 @@ export function TonightSuggestion() {
 
   return (
     <div className="tonight-suggestion">
-      <h2 className="tonight-suggestion__heading">What should I eat?</h2>
+      <div className="tonight-suggestion__header-row">
+        <h2 className="tonight-suggestion__heading">What should I eat?</h2>
+        {suggestions && suggestions.length > 0 ? (
+          <button
+            type="button"
+            className="tonight-suggestion__collapse"
+            onClick={() => setExpanded((prev) => !prev)}
+            aria-expanded={expanded}
+            aria-label={expanded ? "Collapse suggestions" : "Expand suggestions"}
+          >
+            <span className={`meal-planner-day__chevron${expanded ? " meal-planner-day__chevron--open" : ""}`}>▾</span>
+          </button>
+        ) : null}
+      </div>
       <div className="tonight-suggestion__controls">
         <select
           className="tonight-suggestion__select"
@@ -83,7 +104,7 @@ export function TonightSuggestion() {
         <p className="tonight-suggestion__status">No recipes found for {mealType} right now.</p>
       ) : null}
 
-      {suggestions && suggestions.length > 0 ? (
+      {suggestions && suggestions.length > 0 && expanded ? (
         <div className="tonight-suggestion__grid">
           {suggestions.map((s) => (
             <div key={s.recipeId} className="recipe-card tonight-suggestion__card">

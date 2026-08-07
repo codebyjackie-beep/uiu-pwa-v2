@@ -746,6 +746,41 @@ a {
   font-weight: 600;
 }
 
+.meal-planner-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+}
+
+.meal-planner-build-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meal-planner-build-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meal-planner-board-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+}
+
+.meal-planner-back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .meal-planner-summary {
   display: flex;
   gap: 10px;
@@ -1764,6 +1799,19 @@ a {
 .tonight-suggestion__heading {
   margin: 0;
   font-size: 16px;
+}
+
+.tonight-suggestion__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tonight-suggestion__collapse {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
 }
 
 .tonight-suggestion__controls {
