@@ -38,14 +38,14 @@ export function MealPlannerView({ weekTotalCost, weekTotalCalories, board }: Pro
       <div className="meal-planner-build-card">
         <div className="meal-planner-summary">
           <div className="meal-planner-summary__stat">
-            <span className="meal-planner-summary__value">{formatCost(weekTotalCost)}</span>
+            <span className="meal-planner-summary__subtitle">{formatCost(weekTotalCost)}</span>
             <span className="meal-planner-summary__label">Week cost</span>
-            <span className="meal-planner-summary__subtitle">{formatCost(weekTotalCost / 7)} average per day</span>
+            <span className="meal-planner-summary__value">{formatCost(weekTotalCost / 7)} average per day</span>
           </div>
           <div className="meal-planner-summary__stat">
-            <span className="meal-planner-summary__value">{Math.round(weekTotalCalories)}</span>
+            <span className="meal-planner-summary__subtitle">{Math.round(weekTotalCalories)}</span>
             <span className="meal-planner-summary__label">Week calories</span>
-            <span className="meal-planner-summary__subtitle">{Math.round(weekTotalCalories / 7)} average per day</span>
+            <span className="meal-planner-summary__value">{Math.round(weekTotalCalories / 7)} average per day</span>
           </div>
         </div>
         <div className="meal-planner-build-card__actions">
