@@ -5,8 +5,9 @@
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, ShoppingListItem } from "@uiu/shared";
+import type { ApiResponse, ShoppingListFromIngredientResponse, ShoppingListItem } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
+import { findTitleMatch } from "../services/recipeDraftGenerator";
 
 export const shoppingListRouter = new Hono<{ Bindings: DbEnv }>();
 
@@ -50,6 +51,58 @@ shoppingListRouter.post("/", async (c) => {
   } catch (err) {
     console.error("[uiu-api] shopping-list create error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to add shopping_list_item" } };
+    return c.json(body, 502);
+  }
+});
+
+/** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 — dedupe check against fridge_stock
+ * before inserting a meal-plan-aggregated ingredient. Never writes to fridge_stock. */
+shoppingListRouter.post("/from-ingredient", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const ingredientName = payload?.ingredientName as string | undefined;
+  const canonicalName = payload?.canonicalName as string | undefined;
+  if (typeof ingredientName !== "string" || !ingredientName.trim()) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "ingredientName is required" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const merged = await withDb(c.env, async (db) => {
+      if (canonicalName) {
+        const canonicalDoc = await db.collection("canonical_ingredients").findOne({ canonical_name: canonicalName });
+        if (canonicalDoc) {
+          const fridgeMatch = await db
+            .collection("fridge_stock")
+            .findOne({ canonicalIngredientId: canonicalDoc._id as ObjectIdType });
+          if (fridgeMatch) return true;
+        }
+      }
+
+      // Fallback: exact/substring name match against fridge_stock.ingredientName,
+      // reusing recipeDraftGenerator's title-dedup rule per the handoff.
+      const fridgeDocs = await db.collection("fridge_stock").find({}, { projection: { ingredientName: 1 } }).toArray();
+      const fridgeNames = fridgeDocs.map((d) => d.ingredientName as string);
+      return findTitleMatch(ingredientName, fridgeNames) !== null;
+    });
+
+    if (merged) {
+      const body: ApiResponse<ShoppingListFromIngredientResponse> = { ok: true, data: { merged: true } };
+      return c.json(body);
+    }
+
+    const doc = { text: ingredientName.trim(), checked: false, addedAt: new Date().toISOString() };
+    const inserted = await withDb(c.env, async (db) => {
+      const result = await db.collection("shopping_list_items").insertOne(doc);
+      return { ...doc, _id: result.insertedId as ObjectIdType };
+    });
+    const body: ApiResponse<ShoppingListFromIngredientResponse> = {
+      ok: true,
+      data: { merged: false, added: true, item: toShoppingListItem(inserted) },
+    };
+    return c.json(body, 201);
+  } catch (err) {
+    console.error("[uiu-api] shopping-list from-ingredient error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to process ingredient" } };
     return c.json(body, 502);
   }
 });

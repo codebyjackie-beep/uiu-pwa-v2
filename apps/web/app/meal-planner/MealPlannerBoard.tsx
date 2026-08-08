@@ -7,7 +7,6 @@ import type {
   ApiResponse,
   FavouriteRecipe,
   MealPlanDaySummary,
-  MealPlanEntryView,
   MealSlot,
   RecipeListItem,
   RecipeListPage,
@@ -38,19 +37,6 @@ interface Props {
   weekTotalCost: number;
 }
 
-function CostBreakdown({ lines }: { lines: MealPlanEntryView["recipe"]["costLines"] }) {
-  return (
-    <div className="meal-planner-cost-breakdown">
-      {lines.map((line, i) => (
-        <div key={i} className="meal-planner-cost-breakdown__row">
-          <span>{line.rawName}</span>
-          <span>{line.priceable && line.lineCost != null ? formatCost(line.lineCost) : "no price"}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
   const router = useRouter();
   const [picker, setPicker] = useState<{ date: string; slot: MealSlot } | null>(null);
@@ -59,7 +45,6 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
   const [searching, setSearching] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(() => new Set([toDateKey(new Date())]));
-  const [expandedCost, setExpandedCost] = useState<Set<string>>(() => new Set());
   const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
   const [duplicateQuery, setDuplicateQuery] = useState<string | null>(null);
 
@@ -180,15 +165,6 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
     }
   }
 
-  function toggleCostBreakdown(entryId: string) {
-    setExpandedCost((prev) => {
-      const next = new Set(prev);
-      if (next.has(entryId)) next.delete(entryId);
-      else next.add(entryId);
-      return next;
-    });
-  }
-
   return (
     <div className="meal-planner-board">
       {weekDates.map((date, index) => {
@@ -290,21 +266,7 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
                             >
                               {favouriteIds.has(entry.recipeId) ? "♥" : "♡"}
                             </button>
-                            {entry.recipe.costLines.length > 0 ? (
-                              <button
-                                type="button"
-                                className="meal-planner-slot__icon"
-                                onClick={() => toggleCostBreakdown(entry._id)}
-                                aria-label={`Ingredient cost breakdown for ${entry.recipe.title}`}
-                                title="Ingredient cost breakdown"
-                              >
-                                {expandedCost.has(entry._id) ? "▴" : "▾"}
-                              </button>
-                            ) : null}
                           </div>
-                          {expandedCost.has(entry._id) ? (
-                            <CostBreakdown lines={entry.recipe.costLines} />
-                          ) : null}
                         </div>
                       ) : (
                         <button type="button" className="meal-planner-slot__add" onClick={() => openPicker(date, slot)}>

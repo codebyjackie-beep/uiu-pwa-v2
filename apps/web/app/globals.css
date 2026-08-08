@@ -1103,6 +1103,49 @@ a {
 .meal-planner-cost-breakdown__row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  color: var(--uiu-muted);
+  gap: 8px;
+}
+
+.meal-planner-cost-breakdown__row--done {
+  opacity: 0.45;
+}
+
+.meal-planner-cost-breakdown__name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.meal-planner-cost-breakdown__meta {
+  font-size: 11px;
+  color: var(--uiu-muted);
+}
+
+.meal-planner-cost-breakdown__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.meal-planner-cost-breakdown__add {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.meal-planner-cost-breakdown__add:disabled {
+  cursor: default;
   color: var(--uiu-muted);
 }
 

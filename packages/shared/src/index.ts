@@ -697,4 +697,15 @@ export interface ShoppingListItem {
   addedAt: ISODate;
 }
 
+/** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 — dedupe an aggregated meal-plan
+ * ingredient against fridge_stock before adding to shopping_list_items. */
+export interface ShoppingListFromIngredientRequest {
+  ingredientName: string;
+  canonicalName?: string;
+}
+
+export type ShoppingListFromIngredientResponse =
+  | { merged: true }
+  | { merged: false; added: true; item: ShoppingListItem };
+
 export const API_VERSION = "0.1.0" as const;
