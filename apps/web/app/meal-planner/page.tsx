@@ -1,8 +1,6 @@
-import Link from "next/link";
 import type { MealPlanWeekResponse } from "@uiu/shared";
 import { apiGet } from "../lib/api";
-import { addDays, dayLabel, mondayOf, toDateKey, weekDates } from "../lib/dates";
-import { MealPlannerBoard } from "./MealPlannerBoard";
+import { addDays, mondayOf, toDateKey, weekDates } from "../lib/dates";
 import { MealPlannerView } from "./MealPlannerView";
 
 export const metadata = { title: "Meal Planner · UseItUp" };
@@ -36,6 +34,9 @@ export default async function MealPlannerPage({
 
   const { days, weekTotalCost, weekTotalCalories } = res.data;
 
+  const mealsCount = days.reduce((sum, d) => sum + d.entries.length, 0);
+  const itemsCount = new Set(days.flatMap((d) => d.entries.flatMap((e) => e.recipe.ingredientNames))).size;
+
   return (
     <div className="meal-planner-page">
       <div className="meal-planner-page__header">
@@ -43,20 +44,16 @@ export default async function MealPlannerPage({
       </div>
 
       <MealPlannerView
+        weekDates={dates}
+        days={days}
         weekTotalCost={weekTotalCost}
         weekTotalCalories={weekTotalCalories}
-        board={
-          <>
-            <div className="meal-planner-page__nav">
-              <Link href={`/meal-planner?week=${prevWeekKey}`}>← Prev week</Link>
-              <span>
-                {dayLabel(mondayKey, 0)} – {dayLabel(sunday, 6)}
-              </span>
-              <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
-            </div>
-            <MealPlannerBoard weekDates={dates} days={days} />
-          </>
-        }
+        mealsCount={mealsCount}
+        itemsCount={itemsCount}
+        mondayKey={mondayKey}
+        sunday={sunday}
+        prevWeekKey={prevWeekKey}
+        nextWeekKey={nextWeekKey}
       />
     </div>
   );

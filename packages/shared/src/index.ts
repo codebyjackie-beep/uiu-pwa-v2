@@ -386,6 +386,16 @@ export interface MealPlanEntryView {
     imageUrl: string;
     calories: number | null;
     costPerServing: number | null;
+    /** Added for Meal Planner V2 Overview macro totals (HANDOFF_meal-planner-plan-v2.md §2.1). */
+    protein: number | null;
+    carbs: number | null;
+    fat: number | null;
+    prepTimeMinutes: number;
+    cookTimeMinutes: number;
+    /** Lowercased raw ingredient names, for the plan card's distinct-ITEMS count (§1). */
+    ingredientNames: string[];
+    /** Trimmed from recipe_cost.lines, for the Meals tab's per-ingredient price breakdown (§2.2). Empty when no cost doc yet. */
+    costLines: RecipeDetailCostLine[];
   };
 }
 
@@ -650,6 +660,41 @@ export interface MealSuggestion {
 export interface MealSuggestionsResponse {
   mealType: MealSlot;
   suggestions: MealSuggestion[];
+}
+
+// ---------------------------------------------------------------------------
+// Favourite recipes  (HANDOFF_meal-planner-plan-v2.md §2.2 — collection: favourite_recipes)
+//
+// Deliberately independent of Recipe.isFavorite/favoriteCount (unused legacy
+// fields on the recipe doc itself) — see handoff for why these aren't reused.
+// ---------------------------------------------------------------------------
+
+export interface FavouriteRecipe {
+  _id: ObjectIdHex;
+  recipeId: ObjectIdHex;
+  addedAt: ISODate;
+}
+
+// ---------------------------------------------------------------------------
+// Shop tab V1  (HANDOFF_shop-tab-v1.md)
+// ---------------------------------------------------------------------------
+
+/** One fridge_stock item flagged needsRestock, joined with its cheapest price (if resolvable). */
+export interface ShopRestockItem {
+  fridgeStockId: ObjectIdHex;
+  ingredientName: string;
+  quantity: number;
+  unit: string;
+  cheapest: { store: string; price: number } | null;
+}
+
+/** Manual, non-canonical shopping list item (collection: shopping_list_items) — e.g. toilet roll,
+ * not tied to canonical_ingredients, no price match in V1. */
+export interface ShoppingListItem {
+  _id: ObjectIdHex;
+  text: string;
+  checked: boolean;
+  addedAt: ISODate;
 }
 
 export const API_VERSION = "0.1.0" as const;

@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ApiResponse, MealPlanDaySummary, MealSlot, RecipeListItem, RecipeListPage } from "@uiu/shared";
+import type {
+  ApiResponse,
+  FavouriteRecipe,
+  MealPlanDaySummary,
+  MealPlanEntryView,
+  MealSlot,
+  RecipeListItem,
+  RecipeListPage,
+} from "@uiu/shared";
 import { dayLabel, toDateKey } from "../lib/dates";
 import { mealTypeBadge } from "../lib/recipeDisplay";
 
@@ -27,9 +35,23 @@ function formatCost(value: number): string {
 interface Props {
   weekDates: string[];
   days: MealPlanDaySummary[];
+  weekTotalCost: number;
 }
 
-export function MealPlannerBoard({ weekDates, days }: Props) {
+function CostBreakdown({ lines }: { lines: MealPlanEntryView["recipe"]["costLines"] }) {
+  return (
+    <div className="meal-planner-cost-breakdown">
+      {lines.map((line, i) => (
+        <div key={i} className="meal-planner-cost-breakdown__row">
+          <span>{line.rawName}</span>
+          <span>{line.priceable && line.lineCost != null ? formatCost(line.lineCost) : "no price"}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
   const router = useRouter();
   const [picker, setPicker] = useState<{ date: string; slot: MealSlot } | null>(null);
   const [query, setQuery] = useState("");
@@ -37,8 +59,24 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
   const [searching, setSearching] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(() => new Set([toDateKey(new Date())]));
+  const [expandedCost, setExpandedCost] = useState<Set<string>>(() => new Set());
+  const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
+  const [duplicateQuery, setDuplicateQuery] = useState<string | null>(null);
 
   const dayByDate = new Map(days.map((d) => [d.date, d]));
+  const averageDayCost = weekTotalCost / 7;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await fetch("/api/favourite-recipes");
+      const parsed = (await res.json()) as ApiResponse<FavouriteRecipe[]>;
+      if (!cancelled && parsed.ok) setFavouriteIds(new Set(parsed.data.map((f) => f.recipeId)));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function toggleDate(date: string) {
     setExpandedDates((prev) => {
@@ -100,6 +138,57 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
     }
   }
 
+  async function refreshMeal(entryId: string) {
+    setPendingId(entryId);
+    try {
+      const res = await fetch(`/api/meal-plan/${entryId}/refresh`, { method: "POST" });
+      const parsed = (await res.json()) as ApiResponse<unknown>;
+      if (parsed.ok) router.refresh();
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  function duplicateMeal(title: string) {
+    setDuplicateQuery(title);
+  }
+
+  function openPicker(date: string, slot: MealSlot) {
+    setPicker({ date, slot });
+    if (duplicateQuery) {
+      setQuery(duplicateQuery);
+      setDuplicateQuery(null);
+    }
+  }
+
+  async function toggleFavourite(recipeId: string) {
+    const isFav = favouriteIds.has(recipeId);
+    setFavouriteIds((prev) => {
+      const next = new Set(prev);
+      if (isFav) next.delete(recipeId);
+      else next.add(recipeId);
+      return next;
+    });
+    if (isFav) {
+      await fetch(`/api/favourite-recipes/${recipeId}`, { method: "DELETE" });
+    } else {
+      await fetch("/api/favourite-recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipeId }),
+      });
+    }
+  }
+
+  function toggleCostBreakdown(entryId: string) {
+    setExpandedCost((prev) => {
+      const next = new Set(prev);
+      if (next.has(entryId)) next.delete(entryId);
+      else next.add(entryId);
+      return next;
+    });
+  }
+
   return (
     <div className="meal-planner-board">
       {weekDates.map((date, index) => {
@@ -107,6 +196,7 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
         const entriesBySlot = new Map((summary?.entries ?? []).map((e) => [e.mealSlot, e]));
 
         const expanded = expandedDates.has(date);
+        const aboveAverage = !!summary && averageDayCost > 0 && summary.totalCost > averageDayCost;
 
         return (
           <div key={date} className="meal-planner-day">
@@ -119,7 +209,8 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
               <span className="meal-planner-day__label">Day {index + 1} · {dayLabel(date, index)}</span>
               <span className="meal-planner-day__header-right">
                 {summary ? (
-                  <span className="meal-planner-day__totals">
+                  <span className={`meal-planner-day__totals${aboveAverage ? " meal-planner-day__totals--high" : ""}`}>
+                    {aboveAverage ? <span className="meal-planner-day__flag">Above average</span> : null}
                     {formatCost(summary.totalCost)} · {Math.round(summary.totalCalories)} cal
                   </span>
                 ) : null}
@@ -135,42 +226,88 @@ export function MealPlannerBoard({ weekDates, days }: Props) {
                     <div key={slot} className="meal-planner-slot">
                       <span className="meal-planner-slot__label">{SLOT_LABEL[slot]}</span>
                       {entry ? (
-                        <Link href={`/recipes/${entry.recipeId}`} className="recipe-card meal-planner-slot__card">
-                          {entry.recipe.imageUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img className="recipe-card__image" src={entry.recipe.imageUrl} alt="" />
-                          ) : (
-                            <div className="recipe-card__image" />
-                          )}
-                          <div className="recipe-card__body">
-                            <div className="recipe-card__header">
-                              <p className="recipe-card__title">{entry.recipe.title}</p>
+                        <div className="meal-planner-slot__card-wrap">
+                          <Link href={`/recipes/${entry.recipeId}`} className="recipe-card meal-planner-slot__card">
+                            {entry.recipe.imageUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img className="recipe-card__image" src={entry.recipe.imageUrl} alt="" />
+                            ) : (
+                              <div className="recipe-card__image" />
+                            )}
+                            <div className="recipe-card__body">
+                              <div className="recipe-card__header">
+                                <p className="recipe-card__title">{entry.recipe.title}</p>
+                                <button
+                                  type="button"
+                                  className="meal-planner-slot__remove"
+                                  disabled={pendingId === entry._id}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    removeMeal(entry._id);
+                                  }}
+                                  aria-label={`Remove ${entry.recipe.title}`}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              <div className="recipe-card__macros">
+                                <span className="recipe-card__price">
+                                  {entry.recipe.costPerServing != null ? formatCost(entry.recipe.costPerServing) : "—"}
+                                </span>
+                                {entry.recipe.calories != null ? (
+                                  <span>{Math.round(entry.recipe.calories)} cal</span>
+                                ) : null}
+                              </div>
+                            </div>
+                          </Link>
+                          <div className="meal-planner-slot__icons">
+                            <button
+                              type="button"
+                              className="meal-planner-slot__icon"
+                              disabled={pendingId === entry._id}
+                              onClick={() => refreshMeal(entry._id)}
+                              aria-label={`Refresh ${entry.recipe.title}`}
+                              title="Swap for another recipe"
+                            >
+                              ⟳
+                            </button>
+                            <button
+                              type="button"
+                              className="meal-planner-slot__icon"
+                              onClick={() => duplicateMeal(entry.recipe.title)}
+                              aria-label={`Duplicate ${entry.recipe.title}`}
+                              title="Add this recipe to another slot"
+                            >
+                              ⧉
+                            </button>
+                            <button
+                              type="button"
+                              className={`meal-planner-slot__icon${favouriteIds.has(entry.recipeId) ? " meal-planner-slot__icon--active" : ""}`}
+                              onClick={() => toggleFavourite(entry.recipeId)}
+                              aria-label={`Favourite ${entry.recipe.title}`}
+                              title="Favourite"
+                            >
+                              {favouriteIds.has(entry.recipeId) ? "♥" : "♡"}
+                            </button>
+                            {entry.recipe.costLines.length > 0 ? (
                               <button
                                 type="button"
-                                className="meal-planner-slot__remove"
-                                disabled={pendingId === entry._id}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  removeMeal(entry._id);
-                                }}
-                                aria-label={`Remove ${entry.recipe.title}`}
+                                className="meal-planner-slot__icon"
+                                onClick={() => toggleCostBreakdown(entry._id)}
+                                aria-label={`Ingredient cost breakdown for ${entry.recipe.title}`}
+                                title="Ingredient cost breakdown"
                               >
-                                ×
+                                {expandedCost.has(entry._id) ? "▴" : "▾"}
                               </button>
-                            </div>
-                            <div className="recipe-card__macros">
-                              <span className="recipe-card__price">
-                                {entry.recipe.costPerServing != null ? formatCost(entry.recipe.costPerServing) : "—"}
-                              </span>
-                              {entry.recipe.calories != null ? (
-                                <span>{Math.round(entry.recipe.calories)} cal</span>
-                              ) : null}
-                            </div>
+                            ) : null}
                           </div>
-                        </Link>
+                          {expandedCost.has(entry._id) ? (
+                            <CostBreakdown lines={entry.recipe.costLines} />
+                          ) : null}
+                        </div>
                       ) : (
-                        <button type="button" className="meal-planner-slot__add" onClick={() => setPicker({ date, slot })}>
+                        <button type="button" className="meal-planner-slot__add" onClick={() => openPicker(date, slot)}>
                           + Add
                         </button>
                       )}

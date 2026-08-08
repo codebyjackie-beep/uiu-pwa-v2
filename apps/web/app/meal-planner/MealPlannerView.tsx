@@ -1,59 +1,94 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useState } from "react";
 import Link from "next/link";
+import type { MealPlanDaySummary } from "@uiu/shared";
 import { TonightSuggestion } from "./TonightSuggestion";
+import { PlanDetail } from "./PlanDetail";
 
 function formatCost(value: number): string {
   return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
 }
 
 interface Props {
+  weekDates: string[];
+  days: MealPlanDaySummary[];
   weekTotalCost: number;
   weekTotalCalories: number;
-  board: ReactNode;
+  mealsCount: number;
+  itemsCount: number;
+  mondayKey: string;
+  sunday: string;
+  prevWeekKey: string;
+  nextWeekKey: string;
 }
 
-/** HANDOFF_meal-planner-card-layout-and-fixes.md §1 — Meal Planner defaults to
- * two cards (build-a-plan + tonight-suggestion); "View plan" switches to the
- * existing nav+board, passed in as a pre-rendered server prop so the board's
- * server-side data fetching stays in page.tsx. */
-export function MealPlannerView({ weekTotalCost, weekTotalCalories, board }: Props) {
-  const [view, setView] = useState<"cards" | "board">("cards");
+/** HANDOFF_meal-planner-plan-v2.md §1 — the plan card shows pill badges +
+ * a TOTAL COST/MEALS/ITEMS stat row; "Manage" expands into PlanDetail's
+ * Overview/Meals/Shopping tabs. No Shared tab, no multi-plan library, no
+ * Pause icon (explicitly out of scope). */
+export function MealPlannerView({
+  weekDates,
+  days,
+  weekTotalCost,
+  weekTotalCalories,
+  mealsCount,
+  itemsCount,
+  mondayKey,
+  sunday,
+  prevWeekKey,
+  nextWeekKey,
+}: Props) {
+  const [view, setView] = useState<"cards" | "detail">("cards");
 
-  if (view === "board") {
+  if (view === "detail") {
     return (
-      <div className="meal-planner-board-view">
-        <button type="button" className="meal-planner-back" onClick={() => setView("cards")}>
-          ← Back to plans
-        </button>
-        {board}
-      </div>
+      <PlanDetail
+        weekDates={weekDates}
+        days={days}
+        weekTotalCost={weekTotalCost}
+        weekTotalCalories={weekTotalCalories}
+        mealsCount={mealsCount}
+        itemsCount={itemsCount}
+        mondayKey={mondayKey}
+        sunday={sunday}
+        prevWeekKey={prevWeekKey}
+        nextWeekKey={nextWeekKey}
+        onBack={() => setView("cards")}
+      />
     );
   }
 
   return (
     <div className="meal-planner-cards">
       <div className="meal-planner-build-card">
-        <div className="meal-planner-summary">
-          <div className="meal-planner-summary__stat">
-            <span className="meal-planner-summary__subtitle">{formatCost(weekTotalCost)}</span>
-            <span className="meal-planner-summary__label">Week cost</span>
-            <span className="meal-planner-summary__value">{formatCost(weekTotalCost / 7)} average per day</span>
+        <div className="meal-planner-pills">
+          <span className="meal-planner-pill">7 Days</span>
+          <span className="meal-planner-pill">{formatCost(weekTotalCost / 7)}/day</span>
+          <span className="meal-planner-pill">{Math.round(weekTotalCalories / 7)} cal/day</span>
+        </div>
+
+        <div className="meal-planner-stat-row">
+          <div className="meal-planner-stat-row__stat">
+            <span className="meal-planner-stat-row__value">{formatCost(weekTotalCost)}</span>
+            <span className="meal-planner-stat-row__label">Total cost</span>
           </div>
-          <div className="meal-planner-summary__stat">
-            <span className="meal-planner-summary__subtitle">{Math.round(weekTotalCalories)}</span>
-            <span className="meal-planner-summary__label">Week calories</span>
-            <span className="meal-planner-summary__value">{Math.round(weekTotalCalories / 7)} average per day</span>
+          <div className="meal-planner-stat-row__stat">
+            <span className="meal-planner-stat-row__value">{mealsCount}</span>
+            <span className="meal-planner-stat-row__label">Meals</span>
+          </div>
+          <div className="meal-planner-stat-row__stat">
+            <span className="meal-planner-stat-row__value">{itemsCount}</span>
+            <span className="meal-planner-stat-row__label">Items</span>
           </div>
         </div>
+
         <div className="meal-planner-build-card__actions">
           <Link href="/meal-planner/generate" className="wizard-primary-button">
             Build a plan for me
           </Link>
-          <button type="button" className="wizard-secondary-button" onClick={() => setView("board")}>
-            View plan
+          <button type="button" className="wizard-secondary-button" onClick={() => setView("detail")}>
+            Manage
           </button>
         </div>
       </div>

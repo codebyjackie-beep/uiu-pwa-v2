@@ -10,11 +10,12 @@ import type {
   MealPlanVariation,
   MealPlanWeekResponse,
   MealSlot,
+  RecipeDetailCostLine,
   UkAllergen,
 } from "@uiu/shared";
 import { UK_ALLERGENS } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
-import { generateMealPlan } from "../services/mealPlanGenerator";
+import { buildPool, generateMealPlan } from "../services/mealPlanGenerator";
 
 export const mealPlanRouter = new Hono<{ Bindings: DbEnv }>();
 
@@ -26,10 +27,31 @@ function isValidDate(value: string | undefined): value is string {
   return typeof value === "string" && DATE_RE.test(value);
 }
 
+/** Same trimming as recipes.ts's toDetailCost, duplicated here (small, route-local) so the
+ * Meals tab ingredient breakdown (HANDOFF_meal-planner-plan-v2.md §2.2) doesn't need a
+ * per-entry extra fetch of GET /api/recipes/:id. */
+function toCostLines(costDoc: Document | undefined): RecipeDetailCostLine[] {
+  if (!costDoc) return [];
+  return ((costDoc.lines as Document[]) ?? []).map((line) => ({
+    rawName: line.rawName as string,
+    quantity: line.quantity as number,
+    rawUnit: line.rawUnit as string,
+    priceable: line.priceable as boolean,
+    lineCost: line.lineCost as number | undefined,
+    store: line.store as string | undefined,
+    productTitle: line.productTitle as string | null | undefined,
+    canonicalName: line.canonical_name as string | undefined,
+    normValue: line.normValue as number | undefined,
+    normUnit: line.normUnit as "g" | "ml" | "pc" | undefined,
+  }));
+}
+
 function toEntryView(doc: Document, recipeById: Map<string, Document>, costByRecipeId: Map<string, Document>): MealPlanEntryView {
   const recipeId = (doc.recipeId as ObjectIdType).toString();
   const recipe = recipeById.get(recipeId);
   const cost = costByRecipeId.get(recipeId);
+  const nutrition = recipe?.nutrition as Document | undefined;
+  const ingredients = Array.isArray(recipe?.ingredients) ? (recipe!.ingredients as Document[]) : [];
   return {
     _id: (doc._id as ObjectIdType).toString(),
     date: doc.date as string,
@@ -39,8 +61,15 @@ function toEntryView(doc: Document, recipeById: Map<string, Document>, costByRec
     recipe: {
       title: (recipe?.title as string) ?? "Recipe unavailable",
       imageUrl: (recipe?.imageUrl as string) ?? "",
-      calories: recipe ? Math.round((recipe.nutrition as Document)?.calories as number) : null,
+      calories: recipe ? Math.round((nutrition?.calories as number) ?? 0) : null,
       costPerServing: cost ? (cost.perServing as number) : null,
+      protein: (nutrition?.protein as number | undefined) ?? null,
+      carbs: (nutrition?.carbs as number | undefined) ?? null,
+      fat: (nutrition?.fat as number | undefined) ?? null,
+      prepTimeMinutes: (recipe?.prepTimeMinutes as number | undefined) ?? 0,
+      cookTimeMinutes: (recipe?.cookTimeMinutes as number | undefined) ?? 0,
+      ingredientNames: ingredients.map((i) => String(i.name ?? "").trim().toLowerCase()).filter(Boolean),
+      costLines: toCostLines(cost),
     },
   };
 }
@@ -164,6 +193,68 @@ mealPlanRouter.post("/", async (c) => {
   } catch (err) {
     console.error("[uiu-api] meal-plan create error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to add meal plan entry" } };
+    return c.json(body, 502);
+  }
+});
+
+/**
+ * Refresh icon (HANDOFF_meal-planner-plan-v2.md §2.2 #1) — swaps this slot's recipe for
+ * another eligible one for the same mealSlot, reusing buildPool's slot-eligibility logic
+ * (mealPlanGenerator.ts) rather than a new algorithm. No cost/calorie target to score
+ * against for a single-slot refresh, so selection among eligible candidates (excluding the
+ * current recipe) is a plain random pick, not chooseBest's weighted scoring — that scoring
+ * exists to balance a whole week against a budget, which doesn't apply here.
+ */
+mealPlanRouter.post("/:id/refresh", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid meal plan entry id" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const result = await withDb(c.env, async (db) => {
+      const entryDoc = await db.collection("meal_plans").findOne({ _id: new ObjectId(id) });
+      if (!entryDoc) return null;
+
+      const pool = await buildPool(c.env);
+      const currentRecipeId = (entryDoc.recipeId as ObjectIdType).toString();
+      const slot = entryDoc.mealSlot as MealSlot;
+      const slotPool = pool.filter((r) => r.mealSlots.has(slot));
+      const otherCandidates = slotPool.filter((r) => r.id !== currentRecipeId);
+      const candidates = otherCandidates.length > 0 ? otherCandidates : slotPool;
+      if (candidates.length === 0) return "no_candidates" as const;
+
+      const chosen = candidates[Math.floor(Math.random() * candidates.length)]!;
+      const chosenObjectId = new ObjectId(chosen.id);
+      await db.collection("meal_plans").updateOne({ _id: entryDoc._id }, { $set: { recipeId: chosenObjectId } });
+
+      const [recipe, costDoc] = await Promise.all([
+        db.collection("recipes").findOne({ _id: chosenObjectId }),
+        db.collection("recipe_cost").findOne({ recipeId: chosenObjectId }),
+      ]);
+      return toEntryView(
+        { ...entryDoc, recipeId: chosenObjectId },
+        recipe ? new Map([[chosen.id, recipe]]) : new Map(),
+        costDoc ? new Map([[chosen.id, costDoc]]) : new Map(),
+      );
+    });
+
+    if (result === null) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Meal plan entry not found" } };
+      return c.json(body, 404);
+    }
+    if (result === "no_candidates") {
+      const body: ApiResponse<never> = { ok: false, error: { code: "no_candidates", message: "No other eligible recipe for this slot" } };
+      return c.json(body, 409);
+    }
+
+    const body: ApiResponse<MealPlanEntryView> = { ok: true, data: result };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] meal-plan refresh error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to refresh meal plan entry" } };
     return c.json(body, 502);
   }
 });
