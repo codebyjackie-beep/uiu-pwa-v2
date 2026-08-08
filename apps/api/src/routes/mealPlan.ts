@@ -1,14 +1,12 @@
 import { Hono } from "hono";
-import type { Document, ObjectId as ObjectIdType } from "mongodb";
+import type { Db, Document, ObjectId as ObjectIdType } from "mongodb";
 import type {
   ApiResponse,
   GeneratedMealPlan,
-  MealPlanDaySummary,
   MealPlanEntry,
   MealPlanEntryView,
   MealPlanGeneratorInput,
   MealPlanVariation,
-  MealPlanWeekResponse,
   MealSlot,
   RecipeDetailCostLine,
   UkAllergen,
@@ -25,6 +23,13 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function isValidDate(value: string | undefined): value is string {
   return typeof value === "string" && DATE_RE.test(value);
+}
+
+/** Mon=1...Sun=7, matching apps/web/app/lib/dates.ts's WEEKDAY_LABELS order. */
+function isoWeekdayOf(dateKey: string): number {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const dow = new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay(); // 0=Sun..6=Sat
+  return dow === 0 ? 7 : dow;
 }
 
 /** Same trimming as recipes.ts's toDetailCost, duplicated here (small, route-local) so the
@@ -46,7 +51,7 @@ function toCostLines(costDoc: Document | undefined): RecipeDetailCostLine[] {
   }));
 }
 
-function toEntryView(doc: Document, recipeById: Map<string, Document>, costByRecipeId: Map<string, Document>): MealPlanEntryView {
+export function toEntryView(doc: Document, recipeById: Map<string, Document>, costByRecipeId: Map<string, Document>): MealPlanEntryView {
   const recipeId = (doc.recipeId as ObjectIdType).toString();
   const recipe = recipeById.get(recipeId);
   const cost = costByRecipeId.get(recipeId);
@@ -54,7 +59,8 @@ function toEntryView(doc: Document, recipeById: Map<string, Document>, costByRec
   const ingredients = Array.isArray(recipe?.ingredients) ? (recipe!.ingredients as Document[]) : [];
   return {
     _id: (doc._id as ObjectIdType).toString(),
-    date: doc.date as string,
+    planId: (doc.planId as ObjectIdType).toString(),
+    dayIndex: doc.dayIndex as number,
     mealSlot: doc.mealSlot as MealSlot,
     recipeId,
     servings: doc.servings as number,
@@ -74,84 +80,64 @@ function toEntryView(doc: Document, recipeById: Map<string, Document>, costByRec
   };
 }
 
-mealPlanRouter.get("/", async (c) => {
-  const start = c.req.query("start");
-  const end = c.req.query("end");
-  if (!isValidDate(start) || !isValidDate(end)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "start and end query params must be YYYY-MM-DD" } };
-    return c.json(body, 400);
+/** Joins a plan's meal_plans entries against recipes/recipe_cost in two batched queries.
+ * Shared by mealPlanSets.ts (per-card board) so the recipe/cost join logic lives in one place. */
+export async function loadEntryViewsForPlan(db: Db, ObjectId: Awaited<ReturnType<typeof getMongoModule>>["ObjectId"], planId: InstanceType<typeof ObjectId>): Promise<MealPlanEntryView[]> {
+  const entryDocs = await db
+    .collection("meal_plans")
+    .find({ planId })
+    .sort({ dayIndex: 1, mealSlot: 1 })
+    .toArray();
+
+  const recipeIds = [...new Set(entryDocs.map((d) => (d.recipeId as ObjectIdType).toString()))].map(
+    (id) => new ObjectId(id),
+  );
+  const [recipeDocs, costDocs] = await Promise.all([
+    recipeIds.length ? db.collection("recipes").find({ _id: { $in: recipeIds } }).toArray() : [],
+    recipeIds.length ? db.collection("recipe_cost").find({ recipeId: { $in: recipeIds } }).toArray() : [],
+  ]);
+  const recipeById = new Map(recipeDocs.map((d) => [(d._id as ObjectIdType).toString(), d]));
+  const costByRecipeId = new Map(costDocs.map((d) => [(d.recipeId as ObjectIdType).toString(), d]));
+
+  return entryDocs.map((d) => toEntryView(d, recipeById, costByRecipeId));
+}
+
+/**
+ * Resolves the write target for a new entry. Preferred path: explicit `planId`+`dayIndex`
+ * (MealPlannerBoard's "+Add" picker, TonightSuggestion — both plan-card-aware now). Legacy
+ * fallback: a bare `date` (still sent by MealPlanWizard.tsx's confirm step, deferred to
+ * HANDOFF_ai-meal-plan-generator.md's own handoff per HANDOFF_meal-planner-multi-plan-library.md
+ * §2 — not touched in this pass) resolves against whichever plan is currently active, using the
+ * date's weekday as dayIndex, so the wizard keeps working unmodified against the new schema.
+ */
+async function resolveWriteTarget(
+  db: Db,
+  ObjectIdCtor: Awaited<ReturnType<typeof getMongoModule>>["ObjectId"],
+  payload: Record<string, unknown> | null,
+): Promise<{ planId: InstanceType<typeof ObjectIdCtor>; dayIndex: number } | "bad_request" | "no_active_plan"> {
+  const rawPlanId = payload?.planId as string | undefined;
+  const rawDayIndex = payload?.dayIndex as number | undefined;
+  if (typeof rawPlanId === "string" && typeof rawDayIndex === "number") {
+    if (!ObjectIdCtor.isValid(rawPlanId) || rawDayIndex < 1 || rawDayIndex > 7) return "bad_request";
+    return { planId: new ObjectIdCtor(rawPlanId), dayIndex: rawDayIndex };
   }
 
-  try {
-    const { ObjectId } = await getMongoModule();
-    const data = await withDb(c.env, async (db) => {
-      const entryDocs = await db
-        .collection("meal_plans")
-        .find({ date: { $gte: start, $lte: end } })
-        .sort({ date: 1, mealSlot: 1 })
-        .toArray();
-
-      const recipeIds = [...new Set(entryDocs.map((d) => (d.recipeId as ObjectIdType).toString()))].map(
-        (id) => new ObjectId(id),
-      );
-      const [recipeDocs, costDocs] = await Promise.all([
-        recipeIds.length ? db.collection("recipes").find({ _id: { $in: recipeIds } }).toArray() : [],
-        recipeIds.length ? db.collection("recipe_cost").find({ recipeId: { $in: recipeIds } }).toArray() : [],
-      ]);
-      const recipeById = new Map(recipeDocs.map((d) => [(d._id as ObjectIdType).toString(), d]));
-      const costByRecipeId = new Map(costDocs.map((d) => [(d.recipeId as ObjectIdType).toString(), d]));
-
-      return entryDocs.map((d) => toEntryView(d, recipeById, costByRecipeId));
-    });
-
-    const dayMap = new Map<string, MealPlanEntryView[]>();
-    for (const entry of data) {
-      const list = dayMap.get(entry.date) ?? [];
-      list.push(entry);
-      dayMap.set(entry.date, list);
-    }
-
-    const days: MealPlanDaySummary[] = [...dayMap.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, entries]) => ({
-        date,
-        entries,
-        // Per-serving values, not multiplied by entry.servings — the app has no "how many
-        // people are eating this meal" setting, so a recipe's own servings count (how many
-        // portions the recipe yields) is meaningless here. Matches the wizard preview's
-        // totals (mealPlanGenerator.ts), which also sum costPerServing/calories directly.
-        totalCost: entries.reduce((sum, e) => sum + (e.recipe.costPerServing ?? 0), 0),
-        totalCalories: entries.reduce((sum, e) => sum + (e.recipe.calories ?? 0), 0),
-      }));
-
-    const body: ApiResponse<MealPlanWeekResponse> = {
-      ok: true,
-      data: {
-        start,
-        end,
-        days,
-        weekTotalCost: days.reduce((sum, d) => sum + d.totalCost, 0),
-        weekTotalCalories: days.reduce((sum, d) => sum + d.totalCalories, 0),
-      },
-    };
-    return c.json(body);
-  } catch (err) {
-    console.error("[uiu-api] meal-plan list error:", err instanceof Error ? err.message : String(err));
-    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to fetch meal plan" } };
-    return c.json(body, 502);
-  }
-});
+  const date = payload?.date as string | undefined;
+  if (!isValidDate(date)) return "bad_request";
+  const active = await db.collection("meal_plan_sets").findOne({ isActive: true });
+  if (!active) return "no_active_plan";
+  return { planId: active._id as InstanceType<typeof ObjectIdCtor>, dayIndex: isoWeekdayOf(date) };
+}
 
 mealPlanRouter.post("/", async (c) => {
   const payload = await c.req.json().catch(() => null);
-  const date = payload?.date as string | undefined;
   const mealSlot = payload?.mealSlot as string | undefined;
   const recipeId = payload?.recipeId as string | undefined;
 
-  if (!isValidDate(date) || !mealSlot || !MEAL_SLOTS.includes(mealSlot as MealSlot) || typeof recipeId !== "string") {
+  if (!mealSlot || !MEAL_SLOTS.includes(mealSlot as MealSlot) || typeof recipeId !== "string") {
     const body: ApiResponse<never> = {
       ok: false,
-      error: { code: "bad_request", message: "date (YYYY-MM-DD), mealSlot, and recipeId are required" },
+      error: { code: "bad_request", message: "mealSlot and recipeId are required (plus planId+dayIndex, or a legacy date)" },
     };
     return c.json(body, 400);
   }
@@ -164,12 +150,16 @@ mealPlanRouter.post("/", async (c) => {
     }
 
     const result = await withDb(c.env, async (db) => {
+      const target = await resolveWriteTarget(db, ObjectId, payload);
+      if (target === "bad_request" || target === "no_active_plan") return target;
+
       const recipe = await db.collection("recipes").findOne({ _id: new ObjectId(recipeId) });
       if (!recipe) return null;
 
       const now = new Date().toISOString();
       const doc = {
-        date,
+        planId: target.planId,
+        dayIndex: target.dayIndex,
         mealSlot,
         recipeId: new ObjectId(recipeId),
         // Always 1 — a meal-plan entry is one planned portion of this recipe for this
@@ -183,6 +173,14 @@ mealPlanRouter.post("/", async (c) => {
       return toEntryView({ ...doc, _id: inserted.insertedId }, new Map([[recipeId, recipe]]), costDoc ? new Map([[recipeId, costDoc]]) : new Map());
     });
 
+    if (result === "bad_request") {
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "planId+dayIndex (1-7) or a valid date is required" } };
+      return c.json(body, 400);
+    }
+    if (result === "no_active_plan") {
+      const body: ApiResponse<never> = { ok: false, error: { code: "no_active_plan", message: "No active plan to add this meal to" } };
+      return c.json(body, 409);
+    }
     if (!result) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };
       return c.json(body, 404);

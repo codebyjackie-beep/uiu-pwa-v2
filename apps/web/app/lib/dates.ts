@@ -34,3 +34,14 @@ export function dayLabel(dateKey: string, index: number): string {
   const d = parseDateKey(dateKey);
   return `${WEEKDAY_LABELS[index]} ${d.getUTCDate()}/${d.getUTCMonth() + 1}`;
 }
+
+/** Mon=1...Sun=7, matching apps/api's isoWeekdayOf() — no real calendar date involved. */
+export function dayIndexLabel(dayIndex: number): string {
+  return WEEKDAY_LABELS[dayIndex - 1] ?? `Day ${dayIndex}`;
+}
+
+/** Today's ISO weekday (Mon=1...Sun=7), for tonight-suggestion / "today's plan" writes. */
+export function todayDayIndex(): number {
+  const dow = new Date().getUTCDay();
+  return dow === 0 ? 7 : dow;
+}

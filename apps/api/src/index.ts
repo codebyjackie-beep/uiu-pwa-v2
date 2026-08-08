@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { recipesRouter } from "./routes/recipes";
 import { mealPlanRouter } from "./routes/mealPlan";
+import { mealPlanSetsRouter } from "./routes/mealPlanSets";
 import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { adminRecipesRouter } from "./routes/adminRecipes";
 import { fridgeStockRouter } from "./routes/fridgeStock";
@@ -64,6 +65,7 @@ app.get("/api/version", (c) => {
 
 app.route("/api/recipes", recipesRouter);
 app.route("/api/meal-plan", mealPlanRouter);
+app.route("/api/meal-plan-sets", mealPlanSetsRouter);
 app.route("/api/admin/recipe-drafts", adminRecipeDraftsRouter);
 app.route("/api/admin/recipes", adminRecipesRouter);
 app.route("/api/fridge-stock", fridgeStockRouter);

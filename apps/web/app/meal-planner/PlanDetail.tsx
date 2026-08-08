@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import type { ApiResponse, MealPlanDaySummary, ShoppingListFromIngredientResponse } from "@uiu/shared";
-import { dayLabel } from "../lib/dates";
+import type { ApiResponse, MealPlanSetDetail, ShoppingListFromIngredientResponse } from "@uiu/shared";
 import { MealPlannerBoard } from "./MealPlannerBoard";
 
 function formatCost(value: number): string {
@@ -26,7 +25,7 @@ interface AggregatedIngredient {
 /** Client-side aggregate of every meal-plan entry's costLines, keyed by canonicalName
  * (fallback rawName). Reused by both the Shopping tab (full list) and Shared tab
  * (occurrences >= 2 filter) — no backend aggregation endpoint needed. */
-function aggregateIngredients(days: MealPlanDaySummary[]): AggregatedIngredient[] {
+function aggregateIngredients(days: MealPlanSetDetail["days"]): AggregatedIngredient[] {
   const byKey = new Map<string, AggregatedIngredient>();
   for (const day of days) {
     for (const entry of day.entries) {
@@ -57,34 +56,66 @@ function aggregateIngredients(days: MealPlanDaySummary[]): AggregatedIngredient[
 }
 
 interface Props {
-  weekDates: string[];
-  days: MealPlanDaySummary[];
-  weekTotalCost: number;
-  weekTotalCalories: number;
-  mealsCount: number;
-  itemsCount: number;
-  mondayKey: string;
-  sunday: string;
-  prevWeekKey: string;
-  nextWeekKey: string;
+  planId: string;
   onBack: () => void;
 }
 
-export function PlanDetail({
-  weekDates,
-  days,
-  weekTotalCost,
-  weekTotalCalories,
-  mealsCount,
-  itemsCount,
-  mondayKey,
-  sunday,
-  prevWeekKey,
-  nextWeekKey,
-  onBack,
-}: Props) {
+export function PlanDetail({ planId, onBack }: Props) {
   const [tab, setTab] = useState<Tab>("overview");
+  const [detail, setDetail] = useState<MealPlanSetDetail | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [itemStatus, setItemStatus] = useState<Map<string, "pending" | "merged" | "added">>(() => new Map());
+
+  const reload = useCallback(async () => {
+    const res = await fetch(`/api/meal-plan-sets/${planId}`);
+    const parsed = (await res.json()) as ApiResponse<MealPlanSetDetail>;
+    if (parsed.ok) {
+      setDetail(parsed.data);
+      setLoadError(false);
+    } else {
+      setLoadError(true);
+    }
+  }, [planId]);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
+  if (loadError) {
+    return (
+      <div className="meal-planner-board-view">
+        <div className="meal-planner-modal__header">
+          <h2 className="meal-planner-modal__title">Meal Plan</h2>
+          <button type="button" className="meal-planner-modal__close" onClick={onBack} aria-label="Close">
+            ×
+          </button>
+        </div>
+        <div className="meal-planner-modal__body">
+          <p>Couldn&apos;t load this plan — please try again shortly.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!detail) {
+    return (
+      <div className="meal-planner-board-view">
+        <div className="meal-planner-modal__header">
+          <h2 className="meal-planner-modal__title">Meal Plan</h2>
+          <button type="button" className="meal-planner-modal__close" onClick={onBack} aria-label="Close">
+            ×
+          </button>
+        </div>
+        <div className="meal-planner-modal__body">
+          <p>Loading…</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { name, days, weekTotalCost, weekTotalCalories } = detail;
+  const mealsCount = days.reduce((sum, d) => sum + d.entries.length, 0);
+  const itemsCount = new Set(days.flatMap((d) => d.entries.flatMap((e) => e.recipe.ingredientNames))).size;
 
   const aggregated = aggregateIngredients(days);
   const sharedItems = aggregated.filter((item) => item.occurrences >= 2);
@@ -119,7 +150,7 @@ export function PlanDetail({
   return (
     <div className="meal-planner-board-view">
       <div className="meal-planner-modal__header">
-        <h2 className="meal-planner-modal__title">Meal Plan</h2>
+        <h2 className="meal-planner-modal__title">{name}</h2>
         <button type="button" className="meal-planner-modal__close" onClick={onBack} aria-label="Close">
           ×
         </button>
@@ -174,21 +205,14 @@ export function PlanDetail({
 
       {tab === "meals" ? (
         <div className="meal-planner-meals">
-          <div className="meal-planner-page__nav">
-            <Link href={`/meal-planner?week=${prevWeekKey}`}>← Prev week</Link>
-            <span>
-              {dayLabel(mondayKey, 0)} – {dayLabel(sunday, 6)}
-            </span>
-            <Link href={`/meal-planner?week=${nextWeekKey}`}>Next week →</Link>
-          </div>
-          <MealPlannerBoard weekDates={weekDates} days={days} weekTotalCost={weekTotalCost} />
+          <MealPlannerBoard planId={planId} days={days} weekTotalCost={weekTotalCost} onChanged={reload} />
         </div>
       ) : null}
 
       {tab === "shopping" ? (
         <div className="meal-planner-shopping">
           {aggregated.length === 0 ? (
-            <p>No ingredients yet — add meals to this week's plan first.</p>
+            <p>No ingredients yet — add meals to this plan first.</p>
           ) : (
             <div className="meal-planner-cost-breakdown">
               {aggregated.map((item) => {
@@ -230,7 +254,7 @@ export function PlanDetail({
       {tab === "shared" ? (
         <div className="meal-planner-shopping">
           {sharedItems.length === 0 ? (
-            <p>Nothing shared across meals this week yet.</p>
+            <p>Nothing shared across meals in this plan yet.</p>
           ) : (
             <div className="meal-planner-cost-breakdown">
               {sharedItems.map((item) => (
@@ -262,7 +286,7 @@ function OverviewStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function sumMacro(days: MealPlanDaySummary[], macro: "protein" | "carbs" | "fat"): number {
+function sumMacro(days: MealPlanSetDetail["days"], macro: "protein" | "carbs" | "fat"): number {
   return days.reduce(
     (sum, d) => sum + d.entries.reduce((s, e) => s + (e.recipe[macro] ?? 0), 0),
     0,

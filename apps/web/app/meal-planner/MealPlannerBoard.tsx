@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type {
   ApiResponse,
   FavouriteRecipe,
@@ -11,7 +10,7 @@ import type {
   RecipeListItem,
   RecipeListPage,
 } from "@uiu/shared";
-import { dayLabel, toDateKey } from "../lib/dates";
+import { dayIndexLabel, todayDayIndex } from "../lib/dates";
 import { mealTypeBadge } from "../lib/recipeDisplay";
 
 function formatRecipePrice(cost: RecipeListItem["cost"]) {
@@ -19,6 +18,7 @@ function formatRecipePrice(cost: RecipeListItem["cost"]) {
   return `£${cost.basket.toFixed(2)}`;
 }
 
+const DAY_INDEXES = [1, 2, 3, 4, 5, 6, 7];
 const MEAL_SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 const SLOT_LABEL: Record<MealSlot, string> = {
   breakfast: "Breakfast",
@@ -32,23 +32,23 @@ function formatCost(value: number): string {
 }
 
 interface Props {
-  weekDates: string[];
+  planId: string;
   days: MealPlanDaySummary[];
   weekTotalCost: number;
+  onChanged: () => void;
 }
 
-export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
-  const router = useRouter();
-  const [picker, setPicker] = useState<{ date: string; slot: MealSlot } | null>(null);
+export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Props) {
+  const [picker, setPicker] = useState<{ dayIndex: number; slot: MealSlot } | null>(null);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<RecipeListItem[]>([]);
   const [searching, setSearching] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const [expandedDates, setExpandedDates] = useState<Set<string>>(() => new Set([toDateKey(new Date())]));
+  const [expandedDays, setExpandedDays] = useState<Set<number>>(() => new Set([todayDayIndex()]));
   const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
   const [duplicateQuery, setDuplicateQuery] = useState<string | null>(null);
 
-  const dayByDate = new Map(days.map((d) => [d.date, d]));
+  const dayByIndex = new Map(days.map((d) => [d.dayIndex, d]));
   const averageDayCost = weekTotalCost / 7;
 
   useEffect(() => {
@@ -63,11 +63,11 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
     };
   }, []);
 
-  function toggleDate(date: string) {
-    setExpandedDates((prev) => {
+  function toggleDay(dayIndex: number) {
+    setExpandedDays((prev) => {
       const next = new Set(prev);
-      if (next.has(date)) next.delete(date);
-      else next.add(date);
+      if (next.has(dayIndex)) next.delete(dayIndex);
+      else next.add(dayIndex);
       return next;
     });
   }
@@ -99,13 +99,13 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
       const res = await fetch("/api/meal-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: picker.date, mealSlot: picker.slot, recipeId }),
+        body: JSON.stringify({ planId, dayIndex: picker.dayIndex, mealSlot: picker.slot, recipeId }),
       });
       const parsed = (await res.json()) as ApiResponse<unknown>;
       if (parsed.ok) {
         setPicker(null);
         setQuery("");
-        router.refresh();
+        onChanged();
       }
     } finally {
       setPendingId(null);
@@ -117,7 +117,7 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
     try {
       const res = await fetch(`/api/meal-plan/${entryId}`, { method: "DELETE" });
       const parsed = (await res.json()) as ApiResponse<unknown>;
-      if (parsed.ok) router.refresh();
+      if (parsed.ok) onChanged();
     } finally {
       setPendingId(null);
     }
@@ -128,7 +128,7 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
     try {
       const res = await fetch(`/api/meal-plan/${entryId}/refresh`, { method: "POST" });
       const parsed = (await res.json()) as ApiResponse<unknown>;
-      if (parsed.ok) router.refresh();
+      if (parsed.ok) onChanged();
     } finally {
       setPendingId(null);
     }
@@ -138,8 +138,8 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
     setDuplicateQuery(title);
   }
 
-  function openPicker(date: string, slot: MealSlot) {
-    setPicker({ date, slot });
+  function openPicker(dayIndex: number, slot: MealSlot) {
+    setPicker({ dayIndex, slot });
     if (duplicateQuery) {
       setQuery(duplicateQuery);
       setDuplicateQuery(null);
@@ -167,22 +167,22 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
 
   return (
     <div className="meal-planner-board">
-      {weekDates.map((date, index) => {
-        const summary = dayByDate.get(date);
+      {DAY_INDEXES.map((dayIndex) => {
+        const summary = dayByIndex.get(dayIndex);
         const entriesBySlot = new Map((summary?.entries ?? []).map((e) => [e.mealSlot, e]));
 
-        const expanded = expandedDates.has(date);
+        const expanded = expandedDays.has(dayIndex);
         const aboveAverage = !!summary && averageDayCost > 0 && summary.totalCost > averageDayCost;
 
         return (
-          <div key={date} className="meal-planner-day">
+          <div key={dayIndex} className="meal-planner-day">
             <button
               type="button"
               className="meal-planner-day__header"
-              onClick={() => toggleDate(date)}
+              onClick={() => toggleDay(dayIndex)}
               aria-expanded={expanded}
             >
-              <span className="meal-planner-day__label">Day {index + 1} · {dayLabel(date, index)}</span>
+              <span className="meal-planner-day__label">Day {dayIndex} · {dayIndexLabel(dayIndex)}</span>
               <span className="meal-planner-day__header-right">
                 {summary ? (
                   <span className={`meal-planner-day__totals${aboveAverage ? " meal-planner-day__totals--high" : ""}`}>
@@ -269,7 +269,7 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
                           </div>
                         </div>
                       ) : (
-                        <button type="button" className="meal-planner-slot__add" onClick={() => openPicker(date, slot)}>
+                        <button type="button" className="meal-planner-slot__add" onClick={() => openPicker(dayIndex, slot)}>
                           + Add
                         </button>
                       )}
@@ -287,7 +287,7 @@ export function MealPlannerBoard({ weekDates, days, weekTotalCost }: Props) {
           <div className="meal-picker">
             <div className="meal-picker__header">
               <h2>
-                Add to {SLOT_LABEL[picker.slot]} · {picker.date}
+                Add to {SLOT_LABEL[picker.slot]} · {dayIndexLabel(picker.dayIndex)}
               </h2>
               <button type="button" className="meal-picker__close" onClick={() => setPicker(null)} aria-label="Close">
                 ×

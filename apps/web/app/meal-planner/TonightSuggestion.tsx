@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ApiResponse, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
+import type { ApiResponse, MealPlanSetSummary, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
+import { todayDayIndex } from "../lib/dates";
 
 const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
   { value: "breakfast", label: "Breakfast" },
@@ -29,6 +30,7 @@ export function TonightSuggestion() {
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState(true);
+  const [noActivePlan, setNoActivePlan] = useState(false);
 
   async function fetchSuggestions() {
     setLoading(true);
@@ -49,12 +51,20 @@ export function TonightSuggestion() {
 
   async function addToToday(recipeId: string) {
     setAddingId(recipeId);
+    setNoActivePlan(false);
     try {
-      const today = new Date().toISOString().slice(0, 10);
+      const setsRes = await fetch("/api/meal-plan-sets");
+      const setsParsed = (await setsRes.json()) as ApiResponse<MealPlanSetSummary[]>;
+      const activePlan = setsParsed.ok ? setsParsed.data.find((s) => s.isActive) : undefined;
+      if (!activePlan) {
+        setNoActivePlan(true);
+        return;
+      }
+
       const res = await fetch("/api/meal-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: today, mealSlot: mealType, recipeId }),
+        body: JSON.stringify({ planId: activePlan._id, dayIndex: todayDayIndex(), mealSlot: mealType, recipeId }),
       });
       const parsed = (await res.json()) as ApiResponse<unknown>;
       if (parsed.ok) {
@@ -100,6 +110,11 @@ export function TonightSuggestion() {
       </div>
 
       {error ? <p className="tonight-suggestion__status">Couldn&apos;t load suggestions — please try again.</p> : null}
+      {noActivePlan ? (
+        <p className="tonight-suggestion__status">
+          No active plan yet — build and activate a plan first, then come back to add this.
+        </p>
+      ) : null}
       {suggestions && suggestions.length === 0 ? (
         <p className="tonight-suggestion__status">No recipes found for {mealType} right now.</p>
       ) : null}

@@ -1,7 +1,6 @@
 import Link from "next/link";
-import type { MealPlanWeekResponse } from "@uiu/shared";
+import type { MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
 import { apiGet } from "./lib/api";
-import { mondayOf, toDateKey, weekDates } from "./lib/dates";
 import { InstallButton } from "./InstallButton";
 
 const QUICK_ACTIONS = [
@@ -18,15 +17,17 @@ function formatCost(value: number): string {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const mondayKey = toDateKey(mondayOf());
-  const dates = weekDates(mondayKey);
-  const sunday = dates[dates.length - 1];
+  const setsRes = await apiGet<MealPlanSetSummary[]>("/api/meal-plan-sets");
+  const activeSummary = setsRes.ok ? setsRes.data.find((s) => s.isActive) : undefined;
 
-  const res = await apiGet<MealPlanWeekResponse>(`/api/meal-plan?start=${mondayKey}&end=${sunday}`);
-  const week = res.ok ? res.data : null;
-  const totalMeals = week ? week.days.reduce((sum, day) => sum + day.entries.length, 0) : 0;
-  const hasPlan = totalMeals > 0;
-  const avgCostPerDay = week ? week.weekTotalCost / 7 : 0;
+  const detailRes = activeSummary
+    ? await apiGet<MealPlanSetDetail>(`/api/meal-plan-sets/${activeSummary._id}`)
+    : null;
+  const activeDetail = detailRes?.ok ? detailRes.data : null;
+
+  const totalMeals = activeDetail ? activeDetail.days.reduce((sum, day) => sum + day.entries.length, 0) : 0;
+  const hasPlan = !!activeDetail && totalMeals > 0;
+  const avgCostPerDay = activeDetail ? activeDetail.weekTotalCost / 7 : 0;
 
   return (
     <div className="home-page">
@@ -45,7 +46,7 @@ export default async function Home() {
           {hasPlan ? (
             <>
               <h2 className="home-summary-card__title">
-                {totalMeals} meal{totalMeals === 1 ? "" : "s"} planned this week
+                {totalMeals} meal{totalMeals === 1 ? "" : "s"} planned in {activeDetail!.name}
               </h2>
               <p className="home-summary-card__body">
                 See what&apos;s on the menu for the rest of the week.
@@ -56,9 +57,9 @@ export default async function Home() {
             </>
           ) : (
             <>
-              <h2 className="home-summary-card__title">No meal plan yet</h2>
+              <h2 className="home-summary-card__title">No active meal plan</h2>
               <p className="home-summary-card__body">
-                Build a weekly plan to see it summarised here.
+                Build a plan to get started — activate one to see it summarised here.
               </p>
               <Link href="/meal-planner" className="home-summary-card__cta">
                 Start planning →
@@ -71,9 +72,9 @@ export default async function Home() {
       <section>
         <p className="home-section__label">This week&apos;s cost</p>
         <div className="home-summary-card">
-          {hasPlan && week ? (
+          {hasPlan && activeDetail ? (
             <>
-              <h2 className="home-summary-card__title">{formatCost(week.weekTotalCost)}</h2>
+              <h2 className="home-summary-card__title">{formatCost(activeDetail.weekTotalCost)}</h2>
               <p className="home-summary-card__body">{formatCost(avgCostPerDay)} average per day</p>
               <Link href="/meal-planner" className="home-summary-card__cta">
                 View plan →
@@ -83,7 +84,7 @@ export default async function Home() {
             <>
               <h2 className="home-summary-card__title">No cost data yet</h2>
               <p className="home-summary-card__body">
-                Once you&apos;ve got a meal plan, we&apos;ll total up the cost here.
+                Once you&apos;ve got an active meal plan, we&apos;ll total up the cost here.
               </p>
               <Link href="/meal-planner" className="home-summary-card__cta">
                 Start planning →

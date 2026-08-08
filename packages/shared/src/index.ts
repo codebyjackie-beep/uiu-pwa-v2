@@ -356,15 +356,21 @@ export interface RecipeCost {
 }
 
 // ---------------------------------------------------------------------------
-// Meal plan  (collection: meal_plans — one document per planned meal slot)
+// Meal plan  (collection: meal_plans — one document per planned meal slot,
+// grouped under a meal_plan_sets "Plan card" — see
+// HANDOFF_meal-planner-multi-plan-library.md. Up to 4 plan cards, at most one
+// isActive:true; only the active plan drives Home/Fridge/tonight-suggestion.)
 // ---------------------------------------------------------------------------
 
 export type MealSlot = "breakfast" | "lunch" | "dinner" | "snack";
 
 export interface MealPlanEntry {
   _id: ObjectIdHex;
-  /** Calendar day the meal is planned for, e.g. "2026-08-03" (no time component). */
-  date: string;
+  /** FK to meal_plan_sets._id — which Plan card this entry belongs to. */
+  planId: ObjectIdHex;
+  /** Position within the plan's own 7-day grid, 1=Mon...7=Sun — not tied to a
+   * real calendar date (a plan card has no start date). */
+  dayIndex: number;
   mealSlot: MealSlot;
   recipeId: ObjectIdHex;
   /** Always 1 unless the client explicitly overrides it — the app has no per-meal
@@ -377,7 +383,8 @@ export interface MealPlanEntry {
 /** MealPlanEntry joined with the fields the board needs to render a card, without the full Recipe. */
 export interface MealPlanEntryView {
   _id: ObjectIdHex;
-  date: string;
+  planId: ObjectIdHex;
+  dayIndex: number;
   mealSlot: MealSlot;
   recipeId: ObjectIdHex;
   servings: number;
@@ -400,19 +407,42 @@ export interface MealPlanEntryView {
 }
 
 export interface MealPlanDaySummary {
-  date: string;
+  dayIndex: number;
   totalCost: number;
   totalCalories: number;
   entries: MealPlanEntryView[];
 }
 
-export interface MealPlanWeekResponse {
-  start: string;
-  end: string;
+/** collection: meal_plan_sets — one document per Plan card, max 4 total, at most one isActive:true. */
+export interface MealPlanSet {
+  _id: ObjectIdHex;
+  name: string;
+  isActive: boolean;
+  createdAt: ISODate;
+}
+
+/** GET /api/meal-plan-sets list item — aggregated live from meal_plans, no separate cache fields. */
+export interface MealPlanSetSummary {
+  _id: ObjectIdHex;
+  name: string;
+  isActive: boolean;
+  createdAt: ISODate;
+  weekTotalCost: number;
+  weekTotalMeals: number;
+  previewByDay: { dayIndex: number; recipeTitle: string }[];
+}
+
+/** GET /api/meal-plan-sets/:id — one card's full 7-day board. */
+export interface MealPlanSetDetail {
+  _id: ObjectIdHex;
+  name: string;
+  isActive: boolean;
   days: MealPlanDaySummary[];
   weekTotalCost: number;
   weekTotalCalories: number;
 }
+
+export const MEAL_PLAN_SET_LIMIT = 4;
 
 // ---------------------------------------------------------------------------
 // AI meal plan generator  (HANDOFF_ai-meal-plan-generator.md Part A)
