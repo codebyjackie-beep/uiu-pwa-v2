@@ -429,6 +429,10 @@ export interface MealPlanSetSummary {
   createdAt: ISODate;
   weekTotalCost: number;
   weekTotalMeals: number;
+  weekTotalCalories: number;
+  weekTotalProtein: number;
+  weekTotalCarbs: number;
+  weekTotalFat: number;
   previewByDay: { dayIndex: number; recipeTitle: string }[];
 }
 

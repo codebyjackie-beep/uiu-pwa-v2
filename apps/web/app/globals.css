@@ -821,9 +821,14 @@ a {
   background: none;
   border: 1px solid var(--uiu-border);
   border-radius: var(--radius);
-  padding: 8px 10px;
+  padding: 12px 16px;
   color: #e5484d;
-  font-size: 15px;
+  font-size: 20px;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
@@ -1112,6 +1117,55 @@ a {
 .meal-planner-stat-row__label {
   font-size: 11px;
   color: var(--uiu-muted);
+}
+
+.meal-planner-nutrition {
+  display: flex;
+  gap: 8px;
+}
+
+.meal-planner-nutrition__chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  border-radius: var(--radius);
+  border: 1px solid var(--uiu-border);
+}
+
+.meal-planner-nutrition__value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.meal-planner-nutrition__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--uiu-muted);
+}
+
+.meal-planner-nutrition__chip--protein {
+  background: rgba(249, 115, 22, 0.12);
+}
+.meal-planner-nutrition__chip--protein .meal-planner-nutrition__value {
+  color: #f97316;
+}
+
+.meal-planner-nutrition__chip--carbs {
+  background: rgba(59, 130, 246, 0.12);
+}
+.meal-planner-nutrition__chip--carbs .meal-planner-nutrition__value {
+  color: #3b82f6;
+}
+
+.meal-planner-nutrition__chip--fat {
+  background: rgba(236, 72, 153, 0.12);
+}
+.meal-planner-nutrition__chip--fat .meal-planner-nutrition__value {
+  color: #ec4899;
 }
 
 .meal-planner-tabs {

@@ -7,7 +7,19 @@ import { loadEntryViewsForPlan } from "./mealPlan";
 
 export const mealPlanSetsRouter = new Hono<{ Bindings: DbEnv }>();
 
-function toSummary(setDoc: Document, entries: { dayIndex: number; recipe: { title: string; costPerServing: number | null; calories: number | null } }[]): MealPlanSetSummary {
+type SummaryEntry = {
+  dayIndex: number;
+  recipe: {
+    title: string;
+    costPerServing: number | null;
+    calories: number | null;
+    protein: number | null;
+    carbs: number | null;
+    fat: number | null;
+  };
+};
+
+function toSummary(setDoc: Document, entries: SummaryEntry[]): MealPlanSetSummary {
   const previewByDay = [...new Map(entries.map((e) => [e.dayIndex, e])).values()]
     .sort((a, b) => a.dayIndex - b.dayIndex)
     .slice(0, 3)
@@ -20,6 +32,10 @@ function toSummary(setDoc: Document, entries: { dayIndex: number; recipe: { titl
     createdAt: setDoc.createdAt as string,
     weekTotalCost: entries.reduce((sum, e) => sum + (e.recipe.costPerServing ?? 0), 0),
     weekTotalMeals: entries.length,
+    weekTotalCalories: entries.reduce((sum, e) => sum + (e.recipe.calories ?? 0), 0),
+    weekTotalProtein: entries.reduce((sum, e) => sum + (e.recipe.protein ?? 0), 0),
+    weekTotalCarbs: entries.reduce((sum, e) => sum + (e.recipe.carbs ?? 0), 0),
+    weekTotalFat: entries.reduce((sum, e) => sum + (e.recipe.fat ?? 0), 0),
     previewByDay,
   };
 }

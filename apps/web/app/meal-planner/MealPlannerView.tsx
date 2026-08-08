@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, MealPlanSetSummary } from "@uiu/shared";
 import { MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
-import { dayIndexLabel } from "../lib/dates";
 import { TonightSuggestion } from "./TonightSuggestion";
 import { PlanDetail } from "./PlanDetail";
 
@@ -100,15 +99,30 @@ export function MealPlannerView({ initialSets }: Props) {
                 <span className="meal-planner-stat-row__value">{set.weekTotalMeals}</span>
                 <span className="meal-planner-stat-row__label">Meals</span>
               </div>
+              <div className="meal-planner-stat-row__stat">
+                <span className="meal-planner-stat-row__value">{formatCost(set.weekTotalCost / 7)}</span>
+                <span className="meal-planner-stat-row__label">£/day</span>
+              </div>
+              <div className="meal-planner-stat-row__stat">
+                <span className="meal-planner-stat-row__value">{Math.round(set.weekTotalCalories / 7)}</span>
+                <span className="meal-planner-stat-row__label">cal/day</span>
+              </div>
             </div>
 
-            {set.previewByDay.length > 0 ? (
-              <div className="meal-planner-pills">
-                {set.previewByDay.map((p) => (
-                  <span key={p.dayIndex} className="meal-planner-pill">
-                    {dayIndexLabel(p.dayIndex)}: {p.recipeTitle}
-                  </span>
-                ))}
+            {set.weekTotalMeals > 0 ? (
+              <div className="meal-planner-nutrition">
+                <div className="meal-planner-nutrition__chip meal-planner-nutrition__chip--protein">
+                  <span className="meal-planner-nutrition__value">{Math.round(set.weekTotalProtein)}g</span>
+                  <span className="meal-planner-nutrition__label">Protein</span>
+                </div>
+                <div className="meal-planner-nutrition__chip meal-planner-nutrition__chip--carbs">
+                  <span className="meal-planner-nutrition__value">{Math.round(set.weekTotalCarbs)}g</span>
+                  <span className="meal-planner-nutrition__label">Carbs</span>
+                </div>
+                <div className="meal-planner-nutrition__chip meal-planner-nutrition__chip--fat">
+                  <span className="meal-planner-nutrition__value">{Math.round(set.weekTotalFat)}g</span>
+                  <span className="meal-planner-nutrition__label">Fat</span>
+                </div>
               </div>
             ) : (
               <p className="meal-planner-plan-card__empty">No meals yet.</p>
