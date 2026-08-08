@@ -1948,6 +1948,105 @@ a {
   margin-top: 6px;
 }
 
+/* --- Shop tab (HANDOFF_shop-tab-v1.md) --- */
+
+.shop-page {
+  padding: var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.shop-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shop-section h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shop-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.shop-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shop-card__name {
+  font-weight: 600;
+}
+
+.shop-card__meta {
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.shop-card__price {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.shop-card__price--pending {
+  color: var(--uiu-muted);
+  font-weight: 400;
+}
+
+.shop-add-form {
+  display: flex;
+  gap: 8px;
+}
+
+.shop-add-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: var(--uiu-surface-2);
+  color: var(--fg);
+  font-size: 14px;
+}
+
+.shop-manual-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-manual-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--card);
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.shop-manual-item--checked span {
+  text-decoration: line-through;
+  color: var(--uiu-muted);
+}
+
 /* --- Meal Planner: "What should I eat?" (HANDOFF_tonight-suggestion.md) --- */
 
 .tonight-suggestion {
