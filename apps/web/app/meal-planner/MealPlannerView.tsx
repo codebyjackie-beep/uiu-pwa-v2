@@ -41,24 +41,6 @@ export function MealPlannerView({
 }: Props) {
   const [view, setView] = useState<"cards" | "detail">("cards");
 
-  if (view === "detail") {
-    return (
-      <PlanDetail
-        weekDates={weekDates}
-        days={days}
-        weekTotalCost={weekTotalCost}
-        weekTotalCalories={weekTotalCalories}
-        mealsCount={mealsCount}
-        itemsCount={itemsCount}
-        mondayKey={mondayKey}
-        sunday={sunday}
-        prevWeekKey={prevWeekKey}
-        nextWeekKey={nextWeekKey}
-        onBack={() => setView("cards")}
-      />
-    );
-  }
-
   return (
     <div className="meal-planner-cards">
       <div className="meal-planner-build-card">
@@ -94,6 +76,31 @@ export function MealPlannerView({
       </div>
 
       <TonightSuggestion />
+
+      {view === "detail" ? (
+        <div className="meal-planner-modal-overlay" onClick={() => setView("cards")}>
+          <div
+            className="meal-planner-modal"
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PlanDetail
+              weekDates={weekDates}
+              days={days}
+              weekTotalCost={weekTotalCost}
+              weekTotalCalories={weekTotalCalories}
+              mealsCount={mealsCount}
+              itemsCount={itemsCount}
+              mondayKey={mondayKey}
+              sunday={sunday}
+              prevWeekKey={prevWeekKey}
+              nextWeekKey={nextWeekKey}
+              onBack={() => setView("cards")}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

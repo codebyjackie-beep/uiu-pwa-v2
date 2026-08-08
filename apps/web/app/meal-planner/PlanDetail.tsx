@@ -118,10 +118,14 @@ export function PlanDetail({
 
   return (
     <div className="meal-planner-board-view">
-      <button type="button" className="meal-planner-back" onClick={onBack}>
-        ← Back to plans
-      </button>
+      <div className="meal-planner-modal__header">
+        <h2 className="meal-planner-modal__title">Meal Plan</h2>
+        <button type="button" className="meal-planner-modal__close" onClick={onBack} aria-label="Close">
+          ×
+        </button>
+      </div>
 
+      <div className="meal-planner-modal__body">
       <div className="meal-planner-tabs">
         <button
           type="button"
@@ -244,6 +248,7 @@ export function PlanDetail({
           )}
         </div>
       ) : null}
+      </div>
     </div>
   );
 }

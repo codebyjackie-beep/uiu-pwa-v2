@@ -781,6 +781,72 @@ a {
   cursor: pointer;
 }
 
+.meal-planner-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 25;
+  padding: 0;
+}
+
+.meal-planner-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  background: var(--card);
+  border-radius: 18px 18px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.meal-planner-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space) var(--space) 0;
+  flex-shrink: 0;
+}
+
+.meal-planner-modal__title {
+  margin: 0;
+  font-size: 16px;
+}
+
+.meal-planner-modal__close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: var(--uiu-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.meal-planner-modal__body {
+  padding: var(--space);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+}
+
+@media (min-width: 540px) {
+  .meal-planner-modal-overlay {
+    align-items: center;
+  }
+
+  .meal-planner-modal {
+    border-radius: var(--radius);
+    max-height: 80vh;
+  }
+}
+
 .meal-planner-summary {
   display: flex;
   gap: 10px;
