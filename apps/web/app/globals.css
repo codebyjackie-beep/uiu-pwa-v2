@@ -4,14 +4,16 @@
   --uiu-white: #ffffff;
   --uiu-green: #16a34a;
   --uiu-green-ink: #052e16;
-  --uiu-surface: #141414;
-  --uiu-surface-2: #232326;
-  --uiu-muted: #a1a1aa;
+  --uiu-surface: #f7f7f4;
+  --uiu-surface-2: #eef0ec;
+  --uiu-muted: #5b6b5f;
   --uiu-red: #dc2626;
-  --uiu-yellow: #ca8a04;
+  --uiu-yellow: #a16207;
+  --uiu-border: rgba(5, 46, 22, 0.14);
+  --uiu-overlay: rgba(5, 46, 22, 0.06);
 
-  --bg: #2a2a2e;
-  --fg: var(--uiu-white);
+  --bg: #ffffff;
+  --fg: var(--uiu-green-ink);
   --accent: var(--uiu-green);
   --card: var(--uiu-surface);
 
@@ -56,7 +58,7 @@ a {
   align-items: center;
   height: 60px;
   background: var(--card);
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid var(--uiu-border);
   z-index: 10;
 }
 
@@ -109,7 +111,7 @@ a {
   gap: 12px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   padding: 8px;
@@ -121,7 +123,7 @@ a {
   height: 72px;
   border-radius: calc(var(--radius) - 4px);
   object-fit: cover;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--uiu-overlay);
 }
 
 .recipe-card__body {
@@ -150,7 +152,7 @@ a {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   color: var(--uiu-muted);
   font-size: 11px;
   font-weight: 600;
@@ -266,7 +268,7 @@ a {
   width: 100%;
   padding: 10px 14px;
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--card);
   color: var(--fg);
   font-size: 14px;
@@ -300,7 +302,7 @@ a {
 .chip {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--fg);
   font-size: 13px;
@@ -356,7 +358,7 @@ a {
   height: 180px;
   object-fit: cover;
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--uiu-overlay);
 }
 
 .recipe-detail__title {
@@ -373,7 +375,7 @@ a {
   margin-top: var(--space);
   padding: 16px;
   background: var(--uiu-surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--uiu-border);
   border-radius: var(--radius);
 }
 
@@ -429,7 +431,7 @@ a {
   gap: 2px;
   padding: 10px 4px;
   border-radius: calc(var(--radius) - 4px);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--uiu-overlay);
 }
 
 .macro-tile__value {
@@ -480,7 +482,7 @@ a {
   flex-direction: column;
   gap: 2px;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--uiu-border);
 }
 
 .recipe-detail__ingredient-row {
@@ -549,7 +551,7 @@ a {
   padding: calc(var(--space) * 1.5) var(--space);
   border-radius: var(--radius);
   background: linear-gradient(135deg, var(--uiu-surface-2), var(--uiu-surface));
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--uiu-border);
 }
 
 .home-hero__eyebrow {
@@ -588,7 +590,7 @@ a {
   padding: 16px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
@@ -631,7 +633,7 @@ a {
   padding: 14px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
@@ -820,7 +822,7 @@ a {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--uiu-muted);
   font-size: 18px;
@@ -853,7 +855,7 @@ a {
   padding: 14px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
@@ -890,7 +892,7 @@ a {
   padding: 12px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
 }
 
 .meal-planner-day__header {
@@ -1019,7 +1021,7 @@ a {
   padding: 4px 10px;
   border-radius: 999px;
   background: var(--uiu-surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   font-size: 12px;
   color: var(--uiu-muted);
 }
@@ -1054,7 +1056,7 @@ a {
 .meal-planner-tabs {
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 1px solid var(--uiu-border);
 }
 
 .meal-planner-tab {
@@ -1087,7 +1089,7 @@ a {
   padding: 12px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
 }
 
 .meal-planner-overview__value {
@@ -1143,7 +1145,7 @@ a {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--uiu-muted);
   font-size: 13px;
@@ -1202,7 +1204,7 @@ a {
   height: 26px;
   padding: 0 6px;
   border-radius: 13px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--accent);
   font-size: 12px;
@@ -1259,7 +1261,7 @@ a {
 .meal-picker__search {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 14px;
@@ -1281,7 +1283,7 @@ a {
 
 .meal-picker__result {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   cursor: pointer;
   font: inherit;
   color: var(--fg);
@@ -1338,7 +1340,7 @@ a {
   padding: 16px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
@@ -1358,7 +1360,7 @@ a {
   padding: 10px 12px;
   border-radius: 10px;
   background: var(--uiu-surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   color: var(--uiu-muted);
   font-size: 12.5px;
   line-height: 1.5;
@@ -1382,7 +1384,7 @@ a {
   gap: 2px;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   text-align: left;
@@ -1414,7 +1416,7 @@ a {
 .wizard-chip {
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 13px;
@@ -1440,7 +1442,7 @@ a {
 .wizard-field select {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 14px;
@@ -1490,7 +1492,7 @@ a {
   display: inline-block;
   padding: 12px 20px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--fg);
   font-weight: 600;
@@ -1536,7 +1538,7 @@ a {
   flex: 1;
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--card);
   color: var(--fg);
 }
@@ -1554,7 +1556,7 @@ a {
 
 .admin-drafts-actions button:last-child {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid var(--uiu-border);
 }
 
 .admin-drafts-error {
@@ -1721,7 +1723,7 @@ a {
 .admin-drafts-detail {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--uiu-border);
   font-size: 13.5px;
 }
 
@@ -1770,7 +1772,7 @@ a {
 .admin-drafts-edit-form {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid var(--uiu-border);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -1787,7 +1789,7 @@ a {
 .admin-drafts-edit-form textarea {
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 14px;
@@ -1804,7 +1806,7 @@ a {
 .admin-drafts-ingredient-row input {
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 13px;
@@ -1844,7 +1846,7 @@ a {
 .admin-drafts-icon-button {
   padding: 4px 8px;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--fg);
   cursor: pointer;
@@ -1854,7 +1856,7 @@ a {
 .admin-drafts-tag-add input {
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 13px;
@@ -2128,7 +2130,7 @@ a {
   flex: 1;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 14px;
@@ -2162,7 +2164,7 @@ a {
   padding: 14px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
@@ -2196,7 +2198,7 @@ a {
   flex: 1;
   padding: 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-surface-2);
   color: var(--fg);
   font-size: 14px;
