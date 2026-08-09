@@ -1,9 +1,27 @@
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, MealPlanDaySummary, MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
+import type { ApiResponse, MealPlanDaySummary, MealPlanGeneratorInput, MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
 import { MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { loadEntryViewsForPlan } from "./mealPlan";
+import { generateMealPlan } from "../services/mealPlanGenerator";
+
+/**
+ * Same defaults MealPlanWizard.tsx (HANDOFF_ai-meal-plan-generator.md Part B)
+ * pre-fills on load — "Build a plan for me" reuses the Part A generator
+ * headlessly with these, skipping the 9-question wizard UI entirely rather
+ * than asking anything.
+ */
+const AUTO_FILL_INPUT: MealPlanGeneratorInput = {
+  lengthDays: 7,
+  weeklyBudgetGBP: 40,
+  mealSlots: ["breakfast", "lunch", "dinner"],
+  variation: "medium",
+  cuisines: [],
+  dietary: [],
+  allergens: [],
+  excludeKeywords: [],
+};
 
 export const mealPlanSetsRouter = new Hono<{ Bindings: DbEnv }>();
 
@@ -62,33 +80,53 @@ mealPlanSetsRouter.get("/", async (c) => {
   }
 });
 
-// POST /api/meal-plan-sets — build a new plan card. Rejects once 4 already exist.
+// POST /api/meal-plan-sets — build a new plan card, auto-filled with 7 days of
+// recipes (HANDOFF_meal-planner-multi-plan-library.md gap, fixed 2026-08-09):
+// reuses the Part A generator headlessly (AUTO_FILL_INPUT) instead of asking
+// anything, same as "Build a plan for me" always has. Rejects once 4 already exist.
 mealPlanSetsRouter.post("/", async (c) => {
   const payload = await c.req.json().catch(() => null);
   const name = typeof payload?.name === "string" && payload.name.trim() ? payload.name.trim() : undefined;
 
   try {
-    const result = await withDb(c.env, async (db) => {
-      const count = await db.collection("meal_plan_sets").countDocuments({});
-      if (count >= MEAL_PLAN_SET_LIMIT) return "limit_reached" as const;
+    const { ObjectId } = await getMongoModule();
 
-      const now = new Date().toISOString();
-      const doc = {
-        name: name ?? `Weekly Plan ${count + 1}`,
-        isActive: false,
-        createdAt: now,
-      };
-      const inserted = await db.collection("meal_plan_sets").insertOne(doc);
-      return toSummary({ ...doc, _id: inserted.insertedId }, []);
-    });
-
-    if (result === "limit_reached") {
+    const count = await withDb(c.env, (db) => db.collection("meal_plan_sets").countDocuments({}));
+    if (count >= MEAL_PLAN_SET_LIMIT) {
       const body: ApiResponse<never> = {
         ok: false,
         error: { code: "plan_limit_reached", message: `Already have ${MEAL_PLAN_SET_LIMIT} plans — delete one before building another.` },
       };
       return c.json(body, 409);
     }
+
+    const generated = await generateMealPlan(c.env, AUTO_FILL_INPUT);
+
+    const result = await withDb(c.env, async (db) => {
+      const now = new Date().toISOString();
+      const setDoc = {
+        name: name ?? `Weekly Plan ${count + 1}`,
+        isActive: false,
+        createdAt: now,
+      };
+      const insertedSet = await db.collection("meal_plan_sets").insertOne(setDoc);
+      const planId = insertedSet.insertedId;
+
+      const entryDocs = generated.days.flatMap((day, i) =>
+        day.entries.map((entry) => ({
+          planId,
+          dayIndex: i + 1,
+          mealSlot: entry.mealSlot,
+          recipeId: new ObjectId(entry.recipeId),
+          servings: 1,
+          createdAt: now,
+        })),
+      );
+      if (entryDocs.length > 0) await db.collection("meal_plans").insertMany(entryDocs);
+
+      const entries = await loadEntryViewsForPlan(db, ObjectId, planId);
+      return toSummary({ ...setDoc, _id: planId }, entries);
+    });
 
     const body: ApiResponse<MealPlanSetSummary> = { ok: true, data: result };
     return c.json(body, 201);
