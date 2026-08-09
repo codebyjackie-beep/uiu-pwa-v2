@@ -25,13 +25,6 @@ function isValidDate(value: string | undefined): value is string {
   return typeof value === "string" && DATE_RE.test(value);
 }
 
-/** Mon=1...Sun=7, matching apps/web/app/lib/dates.ts's WEEKDAY_LABELS order. */
-function isoWeekdayOf(dateKey: string): number {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  const dow = new Date(Date.UTC(y!, m! - 1, d!)).getUTCDay(); // 0=Sun..6=Sat
-  return dow === 0 ? 7 : dow;
-}
-
 /** Same trimming as recipes.ts's toDetailCost, duplicated here (small, route-local) so the
  * Meals tab ingredient breakdown (HANDOFF_meal-planner-plan-v2.md §2.2) doesn't need a
  * per-entry extra fetch of GET /api/recipes/:id. */
@@ -103,30 +96,21 @@ export async function loadEntryViewsForPlan(db: Db, ObjectId: Awaited<ReturnType
 }
 
 /**
- * Resolves the write target for a new entry. Preferred path: explicit `planId`+`dayIndex`
- * (MealPlannerBoard's "+Add" picker, TonightSuggestion — both plan-card-aware now). Legacy
- * fallback: a bare `date` (still sent by MealPlanWizard.tsx's confirm step, deferred to
- * HANDOFF_ai-meal-plan-generator.md's own handoff per HANDOFF_meal-planner-multi-plan-library.md
- * §2 — not touched in this pass) resolves against whichever plan is currently active, using the
- * date's weekday as dayIndex, so the wizard keeps working unmodified against the new schema.
+ * Resolves the write target for a new entry: explicit `planId`+`dayIndex`, required from
+ * every caller (MealPlannerBoard's "+Add" picker, TonightSuggestion, and MealPlanWizard.tsx's
+ * confirm step — fixed 2026-08-09 to create its own plan card instead of falling back to a
+ * bare `date` that overwrote whichever plan happened to be active; see
+ * summaries/2026-08-09_wizard-confirm-new-card.md).
  */
-async function resolveWriteTarget(
-  db: Db,
+function resolveWriteTarget(
   ObjectIdCtor: Awaited<ReturnType<typeof getMongoModule>>["ObjectId"],
   payload: Record<string, unknown> | null,
-): Promise<{ planId: InstanceType<typeof ObjectIdCtor>; dayIndex: number } | "bad_request" | "no_active_plan"> {
+): { planId: InstanceType<typeof ObjectIdCtor>; dayIndex: number } | "bad_request" {
   const rawPlanId = payload?.planId as string | undefined;
   const rawDayIndex = payload?.dayIndex as number | undefined;
-  if (typeof rawPlanId === "string" && typeof rawDayIndex === "number") {
-    if (!ObjectIdCtor.isValid(rawPlanId) || rawDayIndex < 1 || rawDayIndex > 7) return "bad_request";
-    return { planId: new ObjectIdCtor(rawPlanId), dayIndex: rawDayIndex };
-  }
-
-  const date = payload?.date as string | undefined;
-  if (!isValidDate(date)) return "bad_request";
-  const active = await db.collection("meal_plan_sets").findOne({ isActive: true });
-  if (!active) return "no_active_plan";
-  return { planId: active._id as InstanceType<typeof ObjectIdCtor>, dayIndex: isoWeekdayOf(date) };
+  if (typeof rawPlanId !== "string" || typeof rawDayIndex !== "number") return "bad_request";
+  if (!ObjectIdCtor.isValid(rawPlanId) || rawDayIndex < 1 || rawDayIndex > 7) return "bad_request";
+  return { planId: new ObjectIdCtor(rawPlanId), dayIndex: rawDayIndex };
 }
 
 mealPlanRouter.post("/", async (c) => {
@@ -137,7 +121,7 @@ mealPlanRouter.post("/", async (c) => {
   if (!mealSlot || !MEAL_SLOTS.includes(mealSlot as MealSlot) || typeof recipeId !== "string") {
     const body: ApiResponse<never> = {
       ok: false,
-      error: { code: "bad_request", message: "mealSlot and recipeId are required (plus planId+dayIndex, or a legacy date)" },
+      error: { code: "bad_request", message: "mealSlot, recipeId, planId, and dayIndex (1-7) are required" },
     };
     return c.json(body, 400);
   }
@@ -150,8 +134,8 @@ mealPlanRouter.post("/", async (c) => {
     }
 
     const result = await withDb(c.env, async (db) => {
-      const target = await resolveWriteTarget(db, ObjectId, payload);
-      if (target === "bad_request" || target === "no_active_plan") return target;
+      const target = resolveWriteTarget(ObjectId, payload);
+      if (target === "bad_request") return target;
 
       const recipe = await db.collection("recipes").findOne({ _id: new ObjectId(recipeId) });
       if (!recipe) return null;
@@ -174,12 +158,8 @@ mealPlanRouter.post("/", async (c) => {
     });
 
     if (result === "bad_request") {
-      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "planId+dayIndex (1-7) or a valid date is required" } };
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "planId and dayIndex (1-7) are required" } };
       return c.json(body, 400);
-    }
-    if (result === "no_active_plan") {
-      const body: ApiResponse<never> = { ok: false, error: { code: "no_active_plan", message: "No active plan to add this meal to" } };
-      return c.json(body, 409);
     }
     if (!result) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };

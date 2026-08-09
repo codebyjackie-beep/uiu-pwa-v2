@@ -214,8 +214,34 @@ export function MealPlanWizard() {
     if (!plan) return;
     setPhase("saving");
     setSavedCount(0);
+
+    // Reserve a new plan card first (skipGenerate: true — an empty shell, not the
+    // auto-fill picks) instead of the old date-based fallback that silently overwrote
+    // whichever plan card happened to be isActive. See
+    // summaries/2026-08-09_wizard-confirm-new-card.md.
+    let planId: string;
+    try {
+      const setRes = await fetch("/api/meal-plan-sets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skipGenerate: true }),
+      });
+      const setParsed = (await setRes.json()) as ApiResponse<{ _id: string }>;
+      if (!setParsed.ok) {
+        setErrorMessage(setParsed.error.message);
+        setPhase("error");
+        return;
+      }
+      planId = setParsed.data._id;
+    } catch {
+      setErrorMessage("Couldn't reach the planner right now — please try again.");
+      setPhase("error");
+      return;
+    }
+
     let ok = 0;
-    for (const day of plan.days) {
+    for (const [i, day] of plan.days.entries()) {
+      const dayIndex = i + 1;
       for (const entry of day.entries) {
         try {
           const res = await fetch("/api/meal-plan", {
@@ -224,7 +250,7 @@ export function MealPlanWizard() {
             // Don't pass entry.servings through — that's the recipe's own yield count
             // (how many portions the recipe makes), not a per-meal headcount. The app
             // has no such setting, so POST /api/meal-plan always stores/uses 1.
-            body: JSON.stringify({ date: day.date, mealSlot: entry.mealSlot, recipeId: entry.recipeId }),
+            body: JSON.stringify({ planId, dayIndex, mealSlot: entry.mealSlot, recipeId: entry.recipeId }),
           });
           const parsed = (await res.json()) as ApiResponse<unknown>;
           if (parsed.ok) ok += 1;

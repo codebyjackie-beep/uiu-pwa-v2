@@ -80,13 +80,18 @@ mealPlanSetsRouter.get("/", async (c) => {
   }
 });
 
-// POST /api/meal-plan-sets — build a new plan card, auto-filled with 7 days of
-// recipes (HANDOFF_meal-planner-multi-plan-library.md gap, fixed 2026-08-09):
-// reuses the Part A generator headlessly (AUTO_FILL_INPUT) instead of asking
-// anything, same as "Build a plan for me" always has. Rejects once 4 already exist.
+// POST /api/meal-plan-sets — build a new plan card. Default: auto-filled with 7 days of
+// recipes (HANDOFF_meal-planner-multi-plan-library.md gap, fixed 2026-08-09), reusing the
+// Part A generator headlessly (AUTO_FILL_INPUT) instead of asking anything, same as
+// "Build a plan for me" always has. `skipGenerate: true` creates an empty card instead —
+// used by MealPlanWizard.tsx's confirm step (fixed 2026-08-09, see
+// summaries/2026-08-09_wizard-confirm-new-card.md) to reserve a planId, then fill it with
+// the wizard's own picks via POST /api/meal-plan's planId+dayIndex path, instead of the
+// old date-based fallback that overwrote whichever plan was active. Rejects once 4 already exist.
 mealPlanSetsRouter.post("/", async (c) => {
   const payload = await c.req.json().catch(() => null);
   const name = typeof payload?.name === "string" && payload.name.trim() ? payload.name.trim() : undefined;
+  const skipGenerate = payload?.skipGenerate === true;
 
   try {
     const { ObjectId } = await getMongoModule();
@@ -100,7 +105,7 @@ mealPlanSetsRouter.post("/", async (c) => {
       return c.json(body, 409);
     }
 
-    const generated = await generateMealPlan(c.env, AUTO_FILL_INPUT);
+    const generated = skipGenerate ? null : await generateMealPlan(c.env, AUTO_FILL_INPUT);
 
     const result = await withDb(c.env, async (db) => {
       const now = new Date().toISOString();
@@ -112,17 +117,19 @@ mealPlanSetsRouter.post("/", async (c) => {
       const insertedSet = await db.collection("meal_plan_sets").insertOne(setDoc);
       const planId = insertedSet.insertedId;
 
-      const entryDocs = generated.days.flatMap((day, i) =>
-        day.entries.map((entry) => ({
-          planId,
-          dayIndex: i + 1,
-          mealSlot: entry.mealSlot,
-          recipeId: new ObjectId(entry.recipeId),
-          servings: 1,
-          createdAt: now,
-        })),
-      );
-      if (entryDocs.length > 0) await db.collection("meal_plans").insertMany(entryDocs);
+      if (generated) {
+        const entryDocs = generated.days.flatMap((day, i) =>
+          day.entries.map((entry) => ({
+            planId,
+            dayIndex: i + 1,
+            mealSlot: entry.mealSlot,
+            recipeId: new ObjectId(entry.recipeId),
+            servings: 1,
+            createdAt: now,
+          })),
+        );
+        if (entryDocs.length > 0) await db.collection("meal_plans").insertMany(entryDocs);
+      }
 
       const entries = await loadEntryViewsForPlan(db, ObjectId, planId);
       return toSummary({ ...setDoc, _id: planId }, entries);
