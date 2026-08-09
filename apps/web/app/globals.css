@@ -650,6 +650,20 @@ a {
   z-index: 0;
 }
 
+/* "Browse Recipes" has no modifier photo — was falling back to the base
+   light --card background while the other 3 quick-action tiles show a dark
+   photo, making it look out of place. Give it a solid dark tile instead,
+   with icon/label/hint recolored for contrast, without touching the other
+   3 tiles' rules. */
+.home-quick-action--recipes {
+  background: var(--uiu-black);
+  color: var(--uiu-white);
+}
+
+.home-quick-action--recipes .home-quick-action__hint {
+  color: rgba(255, 255, 255, 0.72);
+}
+
 .home-quick-action--fridge::before {
   background-image:
     linear-gradient(180deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.35) 45%, rgba(10, 10, 10, 0.92) 100%),

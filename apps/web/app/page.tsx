@@ -4,7 +4,7 @@ import { apiGet } from "./lib/api";
 import { InstallButton } from "./InstallButton";
 
 const QUICK_ACTIONS = [
-  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices", modifier: null },
+  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices", modifier: "recipes" },
   { href: "/fridge", icon: "🧊", label: "Scan Fridge", hint: "Track what you've got", modifier: "fridge" },
   { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices", modifier: "shop" },
   { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI", modifier: "health" },
