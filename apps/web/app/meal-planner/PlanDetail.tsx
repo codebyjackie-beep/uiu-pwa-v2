@@ -225,7 +225,7 @@ export function PlanDetail({ planId, onBack }: Props) {
                     <span className="meal-planner-cost-breakdown__name">
                       {item.displayName}
                       <span className="meal-planner-cost-breakdown__meta">
-                        x{item.occurrences} · {item.store ?? "—"}
+                        Used in {item.occurrences} meals · x{item.occurrences} · {item.store ?? "—"}
                       </span>
                     </span>
                     <span className="meal-planner-cost-breakdown__right">
@@ -262,7 +262,7 @@ export function PlanDetail({ planId, onBack }: Props) {
                   <span className="meal-planner-cost-breakdown__name">
                     {item.displayName}
                     <span className="meal-planner-cost-breakdown__meta">
-                      Used in {item.occurrences} meals · x{item.occurrences} portions · {item.store ?? "—"}
+                      x{item.occurrences} portions · {item.store ?? "—"}
                     </span>
                   </span>
                   <span>{item.priceable ? formatCost(item.totalCost) : "—"}</span>
