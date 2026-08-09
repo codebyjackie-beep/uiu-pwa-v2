@@ -1527,6 +1527,7 @@ a {
 .wizard-option--selected {
   border-color: var(--accent);
   background: var(--uiu-green-ink);
+  color: var(--uiu-white);
 }
 
 .wizard-option__title {
@@ -1537,6 +1538,10 @@ a {
 .wizard-option__sub {
   font-size: 12.5px;
   color: var(--uiu-muted);
+}
+
+.wizard-option--selected .wizard-option__sub {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .wizard-chip-row {
