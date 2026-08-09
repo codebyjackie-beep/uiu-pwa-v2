@@ -225,7 +225,7 @@ export function PlanDetail({ planId, onBack }: Props) {
                     <span className="meal-planner-cost-breakdown__name">
                       {item.displayName}
                       <span className="meal-planner-cost-breakdown__meta">
-                        Used in {item.occurrences} meals · x{item.occurrences} · {item.store ?? "—"}
+                        Used in {item.occurrences} meals · {item.store ?? "—"}
                       </span>
                     </span>
                     <span className="meal-planner-cost-breakdown__right">
