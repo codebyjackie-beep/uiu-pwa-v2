@@ -129,16 +129,21 @@ export function MealPlannerView({ initialSets }: Props) {
             )}
 
             <div className="meal-planner-plan-card__actions">
-              {set.isActive ? null : (
-                <button
-                  type="button"
-                  className="wizard-primary-button"
-                  disabled={busyId === set._id}
-                  onClick={() => activatePlan(set._id)}
-                >
-                  Activate
-                </button>
-              )}
+              {/* Kept mounted (never removed from the DOM) once a plan is active, just
+                  visually hidden — an unmount here would shift Details/Delete left into
+                  this slot, and a user double-clicking the old Activate spot could land
+                  on the now-shifted Delete button. See summaries/2026-08-09_meal-planner-activate-delete-misclick-fix.md. */}
+              <button
+                type="button"
+                className="wizard-primary-button"
+                disabled={busyId === set._id}
+                onClick={() => activatePlan(set._id)}
+                style={set.isActive ? { visibility: "hidden", pointerEvents: "none" } : undefined}
+                aria-hidden={set.isActive}
+                tabIndex={set.isActive ? -1 : undefined}
+              >
+                Activate
+              </button>
               <button type="button" className="wizard-secondary-button" onClick={() => setDetailPlanId(set._id)}>
                 Details
               </button>
