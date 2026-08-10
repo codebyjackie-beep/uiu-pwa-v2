@@ -850,6 +850,8 @@ a {
   display: flex;
   flex-direction: column;
   gap: var(--space);
+  flex: 1;
+  min-height: 0;
 }
 
 .meal-planner-back {
@@ -912,10 +914,14 @@ a {
 
 .meal-planner-modal__body {
   padding: var(--space);
+  padding-bottom: calc(var(--space) + 24px);
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
   flex-direction: column;
   gap: var(--space);
+  flex: 1;
+  min-height: 0;
 }
 
 @media (min-width: 540px) {

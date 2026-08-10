@@ -9,7 +9,7 @@ function formatCost(value: number): string {
   return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
 }
 
-type Tab = "overview" | "meals" | "shopping" | "shared";
+type Tab = "overview" | "meals" | "shopping";
 
 interface AggregatedIngredient {
   key: string;
@@ -23,8 +23,7 @@ interface AggregatedIngredient {
 }
 
 /** Client-side aggregate of every meal-plan entry's costLines, keyed by canonicalName
- * (fallback rawName). Reused by both the Shopping tab (full list) and Shared tab
- * (occurrences >= 2 filter) — no backend aggregation endpoint needed. */
+ * (fallback rawName), for the Shopping tab — no backend aggregation endpoint needed. */
 function aggregateIngredients(days: MealPlanSetDetail["days"]): AggregatedIngredient[] {
   const byKey = new Map<string, AggregatedIngredient>();
   for (const day of days) {
@@ -118,7 +117,6 @@ export function PlanDetail({ planId, onBack }: Props) {
   const itemsCount = new Set(days.flatMap((d) => d.entries.flatMap((e) => e.recipe.ingredientNames))).size;
 
   const aggregated = aggregateIngredients(days);
-  const sharedItems = aggregated.filter((item) => item.occurrences >= 2);
 
   async function addToShop(item: AggregatedIngredient) {
     setItemStatus((prev) => new Map(prev).set(item.key, "pending"));
@@ -178,13 +176,6 @@ export function PlanDetail({ planId, onBack }: Props) {
           onClick={() => setTab("shopping")}
         >
           Shopping
-        </button>
-        <button
-          type="button"
-          className={`meal-planner-tab${tab === "shared" ? " meal-planner-tab--active" : ""}`}
-          onClick={() => setTab("shared")}
-        >
-          Shared
         </button>
       </div>
 
@@ -251,27 +242,6 @@ export function PlanDetail({ planId, onBack }: Props) {
         </div>
       ) : null}
 
-      {tab === "shared" ? (
-        <div className="meal-planner-shopping">
-          {sharedItems.length === 0 ? (
-            <p>Nothing shared across meals in this plan yet.</p>
-          ) : (
-            <div className="meal-planner-cost-breakdown">
-              {sharedItems.map((item) => (
-                <div key={item.key} className="meal-planner-cost-breakdown__row">
-                  <span className="meal-planner-cost-breakdown__name">
-                    {item.displayName}
-                    <span className="meal-planner-cost-breakdown__meta">
-                      x{item.occurrences} portions · {item.store ?? "—"}
-                    </span>
-                  </span>
-                  <span>{item.priceable ? formatCost(item.totalCost) : "—"}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : null}
       </div>
     </div>
   );
