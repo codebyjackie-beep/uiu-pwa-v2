@@ -4,7 +4,7 @@
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, Recipe, RecipeCost, RecipeDraft, RecipeDraftStatus } from "@uiu/shared";
+import { ingredientTextGuard, type ApiResponse, type Recipe, type RecipeCost, type RecipeDraft, type RecipeDraftStatus } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { dailyRecipeDraft, type DailyRecipeDraftEnv, type DailyRecipeDraftSummary } from "../jobs/dailyRecipeDraft";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
@@ -146,10 +146,15 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       const now = new Date().toISOString();
       // Best-effort — never fail approval on a Pexels error (HANDOFF: graceful fallback).
       const imageUrl = await findRecipePhoto(c.env, draft.title as string).catch(() => null);
+      // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: never auto-publish a
+      // draft whose ingredient lines look like an unparsed label blob (>=3 consecutive
+      // quantity=0/unit='' lines) — flag needs_review instead of setting isPublic true.
+      const guardResult = ingredientTextGuard(draft.ingredients as { quantity: number; unit: string }[]);
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: draft.title as string,
         description: (draft.description as string) ?? "",
-        isPublic: true,
+        isPublic: !guardResult.suspicious,
+        needs_review: guardResult.suspicious || undefined,
         userId: null,
         ingredients: draft.ingredients as Recipe["ingredients"],
         steps: draft.steps as string[],

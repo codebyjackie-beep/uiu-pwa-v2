@@ -9,7 +9,7 @@
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, Recipe } from "@uiu/shared";
+import { ingredientTextGuard, type ApiResponse, type Recipe } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 
 export const adminRecipesRouter = new Hono<{ Bindings: DbEnv & { ADMIN_TOKEN: string } }>();
@@ -119,6 +119,12 @@ adminRecipesRouter.patch("/:id", async (c) => {
     return c.json(body, 400);
   }
 
+  // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: an edit that leaves a
+  // recipe's ingredient list looking like an unparsed label blob (>=3 consecutive
+  // quantity=0/unit='' lines) gets flagged needs_review — doesn't block the edit (this is
+  // an admin editing an already-live recipe deliberately), just surfaces it for follow-up.
+  const guardFlag = patch.ingredients ? ingredientTextGuard(patch.ingredients) : null;
+
   try {
     const result = await withDb(c.env, async (db) => {
       const existing = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
@@ -126,7 +132,13 @@ adminRecipesRouter.patch("/:id", async (c) => {
 
       await db.collection("recipes").updateOne(
         { _id: new ObjectId(id) },
-        { $set: { ...(patch as unknown as Document), updatedAt: new Date().toISOString() } },
+        {
+          $set: {
+            ...(patch as unknown as Document),
+            ...(guardFlag?.suspicious ? { needs_review: true } : {}),
+            updatedAt: new Date().toISOString(),
+          },
+        },
       );
       const updated = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
       return { doc: updated! };

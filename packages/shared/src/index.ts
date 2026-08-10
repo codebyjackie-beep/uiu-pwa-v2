@@ -92,6 +92,11 @@ export interface Recipe {
   imageAttempted?: boolean;
   /** Present on 22/197 recipes. */
   isDeleted?: boolean;
+  /** Set by ingredientTextGuard() when a write path's ingredient lines look like an
+   * unparsed label/blob rather than a real recipe (see HANDOFF_recipe-import-french-label-bug-execute.md).
+   * Already present as a bare field (no type) on themealdb_import.cjs docs; added here so
+   * TS write paths (adminRecipeDrafts/adminRecipes) can set it too. */
+  needs_review?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -784,3 +789,57 @@ export type ShoppingListFromIngredientResponse =
   | { merged: false; added: true; item: ShoppingListItem };
 
 export const API_VERSION = "0.1.0" as const;
+
+// ---------------------------------------------------------------------------
+// Ingredient text guard  (HANDOFF_recipe-import-french-label-bug-execute.md
+// decision 2 — catches the 2026-03-14 open_food_facts bug class: a whole
+// product-ingredients-label string comma-split into fake ingredient lines,
+// each with quantity:0/unit:''. Deliberately NOT language-based — 2 of the 8
+// known-bad recipes were in English, so a French/non-ASCII detector alone
+// misses half the class. The "N consecutive quantity=0/unit='' lines" shape
+// is what all 8 have in common regardless of language.
+//
+// Shared (not pipeline-specific) because which future ingestion path will hit
+// this is unknown — wired into every current write path that can set
+// recipes.isPublic=true or edit a live recipe's ingredients: the Rice draft
+// approval flow (adminRecipeDrafts.ts), themealdb_import.cjs, and the admin
+// live-recipe editor (adminRecipes.ts).
+// ---------------------------------------------------------------------------
+
+export interface IngredientTextGuardLine {
+  quantity: number;
+  unit: string;
+}
+
+export interface IngredientTextGuardResult {
+  suspicious: boolean;
+  /** Longest run of consecutive quantity===0 && unit==='' lines found. */
+  maxConsecutiveZeroQtyRun: number;
+  reason?: string;
+}
+
+/** Trip threshold: >=3 consecutive zero-qty/no-unit lines. The smallest of the
+ * 8 known-bad recipes had 9/9 lines trip this; ordinary recipes with the
+ * occasional "salt to taste" (quantity 0, unit '') line don't run 3 in a row. */
+export const INGREDIENT_TEXT_GUARD_THRESHOLD = 3;
+
+export function ingredientTextGuard(lines: IngredientTextGuardLine[]): IngredientTextGuardResult {
+  let maxRun = 0;
+  let currentRun = 0;
+  for (const line of lines) {
+    if (line.quantity === 0 && line.unit === "") {
+      currentRun += 1;
+      if (currentRun > maxRun) maxRun = currentRun;
+    } else {
+      currentRun = 0;
+    }
+  }
+  const suspicious = maxRun >= INGREDIENT_TEXT_GUARD_THRESHOLD;
+  return {
+    suspicious,
+    maxConsecutiveZeroQtyRun: maxRun,
+    reason: suspicious
+      ? `${maxRun} consecutive ingredient lines with quantity===0 && unit==='' — looks like an unparsed comma-separated ingredients-label blob rather than a real recipe ingredient list.`
+      : undefined,
+  };
+}

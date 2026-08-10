@@ -13,6 +13,9 @@ const { parseMeasure } = require("./themealdb_measure_parser.cjs");
 const { normalizeName } = require("../../../../assets/name_normalizer.js");
 const { buildAliasIndex, resolve } = require("../../../../assets/canonical_resolver.service.js");
 const { normalizeQty, costRecipe } = require("../../../../assets/recipe_cost.service.js");
+// packages/shared builds ESM-only (type:module) — this script is CJS, so pull
+// ingredientTextGuard in via dynamic import() inside main() instead of require().
+const SHARED_DIST_URL = "file:///" + path.resolve(__dirname, "../../../packages/shared/dist/index.js").replace(/\\/g, "/");
 
 const WRITE = process.argv.includes("--write");
 const RAW_PATH = path.resolve(__dirname, "../../../../assets/themealdb_raw/meals_raw.json");
@@ -92,6 +95,7 @@ function buildDescription(meal) {
 }
 
 async function main() {
+  const { ingredientTextGuard } = await import(SHARED_DIST_URL);
   const meals = JSON.parse(fs.readFileSync(RAW_PATH, "utf8"));
   console.log(`Loaded ${meals.length} raw TheMealDB meals from ${RAW_PATH}`);
 
@@ -152,6 +156,14 @@ async function main() {
         updatedAt: now,
       };
 
+      // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: every write path
+      // that can touch recipes.isPublic must pass ingredients through the shared guard.
+      // themealdb_import already hardcodes isPublic:false + needs_review:true for every
+      // doc, so a trip here changes no behaviour — it's wired for the audit trail and so
+      // the guard fires consistently if this script's isPublic default is ever loosened.
+      const guardResult = ingredientTextGuard(ingredientLines);
+      if (guardResult.suspicious) stats.guardTripped = (stats.guardTripped || 0) + 1;
+
       // Nutrition: reuse the same unit-conversion table as recipe_cost, with
       // priceDoc=null so count-unit lines fall through to per_item_g grams
       // (nutrition doesn't care about price-cache count pricing).
@@ -205,6 +217,7 @@ async function main() {
     }
 
     console.log(`Built ${recipes.length} recipe drafts, ${costs.length} cost records`);
+    console.log(`ingredientTextGuard tripped on ${stats.guardTripped || 0}/${recipes.length} meals`);
     console.log("Coverage buckets:", JSON.stringify(stats.coverageBuckets));
     console.log(
       `Nutrition: fully resolved ${stats.nutritionFullyResolved}, partial ${stats.nutritionPartial}, none ${stats.nutritionNone}`,
