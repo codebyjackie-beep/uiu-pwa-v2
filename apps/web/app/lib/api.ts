@@ -43,7 +43,7 @@ export async function apiGet<T>(path: string, headers?: Record<string, string>):
 }
 
 async function apiSend<T>(
-  method: "POST" | "PATCH" | "DELETE",
+  method: "POST" | "PUT" | "PATCH" | "DELETE",
   path: string,
   jsonBody?: unknown,
   headers?: Record<string, string>,
@@ -71,6 +71,10 @@ async function apiSend<T>(
 
 export function apiPost<T>(path: string, jsonBody: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
   return apiSend<T>("POST", path, jsonBody, headers);
+}
+
+export function apiPut<T>(path: string, jsonBody: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  return apiSend<T>("PUT", path, jsonBody, headers);
 }
 
 export function apiPatch<T>(path: string, jsonBody: unknown, headers?: Record<string, string>): Promise<ApiResponse<T>> {

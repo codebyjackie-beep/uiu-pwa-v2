@@ -11,6 +11,7 @@ import { mealSuggestionsRouter } from "./routes/mealSuggestions";
 import { favouriteRecipesRouter } from "./routes/favouriteRecipes";
 import { shopRouter } from "./routes/shop";
 import { shoppingListRouter } from "./routes/shoppingList";
+import { healthRouter } from "./routes/health";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
@@ -73,8 +74,7 @@ app.route("/api/meal-suggestions", mealSuggestionsRouter);
 app.route("/api/favourite-recipes", favouriteRecipesRouter);
 app.route("/api/shop", shopRouter);
 app.route("/api/shopping-list", shoppingListRouter);
-
-// Feature routes (health) get mounted here as they land.
+app.route("/api/health", healthRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass

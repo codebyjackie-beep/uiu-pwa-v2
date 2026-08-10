@@ -546,23 +546,64 @@ export interface GeneratedMealPlan {
 }
 
 // ---------------------------------------------------------------------------
-// Health  (collection: user_health — encrypted at rest, secret-tier, never logged)
+// Health  (HANDOFF_health-tab-v1.md — collections: user_health_profiles,
+// weight_logs, meal_logs, nutrition_coach_history. All secret-tier per
+// CLAUDE.md §4: at-rest encrypted (Atlas native), never logged to
+// console/error output. V1 is single-user, no auth.)
 // ---------------------------------------------------------------------------
 
-export interface HealthRecord {
+export type HealthGoal = "lose" | "maintain" | "gain";
+
+/** One doc total in V1 (single user). Manually editable at any time — not a
+ * one-shot onboarding step. */
+export interface UserHealthProfile {
+  heightCm: number;
+  weightKg: number;
+  goal: HealthGoal;
+  targetWeightKg: number;
+  updatedAt: ISODate;
+}
+
+/** Historical timeline, separate from UserHealthProfile.weightKg (which is
+ * just "latest known weight" for quick reads elsewhere). */
+export interface WeightLogEntry {
   _id: ObjectIdHex;
-  userId: ObjectIdHex;
-  heightCm?: number;
-  weightKg?: number;
-  bmi?: number;
-  bodyFatPct?: number;
-  macros?: {
-    calories?: number;
-    proteinG?: number;
-    carbsG?: number;
-    fatG?: number;
-  };
-  recordedAt: ISODate;
+  weightKg: number;
+  loggedAt: ISODate;
+}
+
+export type MealLogSource = "photo" | "barcode" | "manual";
+
+/** "What was actually eaten" — deliberately separate from MealPlanEntry
+ * ("what's planned"), never joined. photoUrl is always null in V1: photos are
+ * analyzed in-memory (OpenRouter vision) and discarded, same as the Fridge
+ * OCR/scan-fridge flow — no image storage pipeline exists in this app. */
+export interface MealLogEntry {
+  _id: ObjectIdHex;
+  photoUrl: string | null;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  description: string;
+  loggedAt: ISODate;
+  source: MealLogSource;
+}
+
+export interface MealLogTotals {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+/** Append-only chat log for the AI Nutrition Coach (Part B, not yet built —
+ * type land now so the milestone 1 schema is stable). */
+export interface NutritionCoachMessage {
+  _id: ObjectIdHex;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: ISODate;
 }
 
 // ---------------------------------------------------------------------------
