@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ApiResponse, HealthGoal, MealLogEntry, MealLogTotals, UserHealthProfile, WeightLogEntry } from "@uiu/shared";
 import { CoachChat } from "./CoachChat";
 import { BarcodeScan } from "./BarcodeScan";
@@ -29,6 +29,41 @@ function formatTime(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+function dayKey(iso: string): string {
+  return iso.slice(0, 10); // YYYY-MM-DD, UTC — matches the API's UTC-midnight range convention.
+}
+
+function dayLabel(key: string): string {
+  const d = new Date(`${key}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return key;
+  return d.toLocaleDateString(undefined, { weekday: "short", month: "numeric", day: "numeric", timeZone: "UTC" });
+}
+
+interface DayGroup {
+  key: string;
+  label: string;
+  entries: MealLogEntry[];
+  totalCalories: number;
+}
+
+function groupByDay(entries: MealLogEntry[]): DayGroup[] {
+  const map = new Map<string, MealLogEntry[]>();
+  for (const entry of entries) {
+    const key = dayKey(entry.loggedAt);
+    const bucket = map.get(key);
+    if (bucket) bucket.push(entry);
+    else map.set(key, [entry]);
+  }
+  return Array.from(map.entries())
+    .sort((a, b) => (a[0] < b[0] ? 1 : -1))
+    .map(([key, dayEntries]) => ({
+      key,
+      label: dayLabel(key),
+      entries: dayEntries,
+      totalCalories: dayEntries.reduce((sum, e) => sum + e.calories, 0),
+    }));
 }
 
 interface ProfileFormState {
@@ -158,6 +193,28 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
 
   const [coachOpen, setCoachOpen] = useState(false);
   const [barcodeOpen, setBarcodeOpen] = useState(false);
+
+  const [weekEntries, setWeekEntries] = useState<MealLogEntry[] | null>(null);
+  const [weekTotals, setWeekTotals] = useState<MealLogTotals | null>(null);
+  const [weekError, setWeekError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchJson<{ entries: MealLogEntry[]; totals: MealLogTotals }>("/api/health/meal-logs?range=week").then(({ parsed }) => {
+      if (cancelled) return;
+      if (!parsed || !parsed.ok) {
+        setWeekError(true);
+        return;
+      }
+      setWeekEntries(parsed.data.entries);
+      setWeekTotals(parsed.data.totals);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const weekGroups = useMemo(() => (weekEntries ? groupByDay(weekEntries) : []), [weekEntries]);
 
   function flash(msg: string) {
     setToast(msg);
@@ -333,6 +390,49 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
         <h2>Today</h2>
         <MacroRing totals={totals} />
         <p className="health-disclaimer">AI-estimated nutrition is approximate — not medical or dietetic advice.</p>
+      </section>
+
+      <section className="health-card">
+        <div className="health-card__header">
+          <h2>This week</h2>
+        </div>
+        {weekError ? <p className="admin-drafts-page__sub">Couldn't load this week's records.</p> : null}
+        {!weekError && weekTotals ? (
+          <p className="health-week-total">7-day total: {Math.round(weekTotals.calories)} kcal</p>
+        ) : null}
+        {!weekError && weekEntries === null ? <p className="admin-drafts-page__sub">Loading…</p> : null}
+        {!weekError && weekEntries !== null && weekGroups.length === 0 ? (
+          <p className="admin-drafts-page__sub">No meals logged this week.</p>
+        ) : null}
+        <div className="health-week-days">
+          {weekGroups.map((day) => (
+            <div key={day.key} className="health-week-day">
+              <div className="health-week-day__header">
+                <span className="health-week-day__label">{day.label}</span>
+                <span className="health-week-day__total">{Math.round(day.totalCalories)} kcal</span>
+              </div>
+              <div className="health-meal-list">
+                {day.entries.map((entry) => (
+                  <div key={entry._id} className="health-meal-card">
+                    <div className="health-meal-card__main">
+                      <span className="health-meal-card__desc">{entry.description}</span>
+                      <span className="health-meal-card__meta">
+                        {formatTime(entry.loggedAt)} ·{" "}
+                        {entry.source === "photo" ? "Photo" : entry.source === "barcode" ? "Barcode" : "Manual"}
+                      </span>
+                    </div>
+                    <div className="health-meal-card__macros">
+                      <span className="health-meal-card__cal">{Math.round(entry.calories)} kcal</span>
+                      <span style={{ color: MACRO_COLORS.protein }}>{Math.round(entry.protein)}g</span>
+                      <span style={{ color: MACRO_COLORS.carbs }}>{Math.round(entry.carbs)}g</span>
+                      <span style={{ color: MACRO_COLORS.fat }}>{Math.round(entry.fat)}g</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="health-card">

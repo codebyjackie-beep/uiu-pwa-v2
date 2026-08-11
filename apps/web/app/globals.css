@@ -2605,6 +2605,35 @@ a {
   color: var(--uiu-muted);
 }
 
+.health-week-total {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.health-week-days {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.health-week-day__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.health-week-day__label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.health-week-day__total {
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
 .health-coach-modal {
   height: 80vh;
 }
