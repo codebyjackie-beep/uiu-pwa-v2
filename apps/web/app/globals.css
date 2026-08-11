@@ -2596,6 +2596,85 @@ a {
   color: var(--uiu-muted);
 }
 
+.health-coach-modal {
+  height: 80vh;
+}
+
+.health-coach-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.health-coach-bubble {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.health-coach-bubble--user {
+  align-self: flex-end;
+  background: var(--uiu-green);
+  color: var(--uiu-black);
+  border-bottom-right-radius: 4px;
+}
+
+.health-coach-bubble--assistant {
+  align-self: flex-start;
+  background: var(--uiu-surface);
+  color: var(--uiu-black);
+  border-bottom-left-radius: 4px;
+}
+
+.health-coach-bubble--pending {
+  opacity: 0.6;
+}
+
+.health-coach-input-row {
+  display: flex;
+  gap: 10px;
+  padding: 0 var(--space);
+  flex-wrap: wrap;
+}
+
+.health-coach-input-row input {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--uiu-border);
+  background: var(--uiu-white);
+  color: var(--uiu-black);
+}
+
+.health-barcode-video {
+  width: 100%;
+  max-height: 40vh;
+  border-radius: 12px;
+  background: #000;
+  object-fit: cover;
+}
+
+.health-barcode-result {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.health-barcode-result__name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+}
+
 .health-meal-card__macros {
   display: flex;
   align-items: center;

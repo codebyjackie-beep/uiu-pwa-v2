@@ -15,13 +15,15 @@ import type {
   MealLogEntry,
   MealLogSource,
   MealLogTotals,
+  NutritionCoachMessage,
   UserHealthProfile,
   WeightLogEntry,
 } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { estimateMealNutrition, type OpenRouterVisionEnv } from "../services/openrouterVision";
+import { chatWithCoach, type CoachChatMessage, type NutritionCoachEnv } from "../services/nutritionCoach";
 
-type HealthEnv = DbEnv & OpenRouterVisionEnv;
+type HealthEnv = DbEnv & OpenRouterVisionEnv & NutritionCoachEnv;
 
 export const healthRouter = new Hono<{ Bindings: HealthEnv }>();
 
@@ -330,6 +332,202 @@ healthRouter.post("/meal-logs/manual", async (c) => {
   } catch (err) {
     console.error("[uiu-api] meal-logs manual error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to log meal" } };
+    return c.json(body, 502);
+  }
+});
+
+/** Barcode lookup — client already resolved the barcode -> Open Food Facts
+ * product client-side (public no-key API, HANDOFF §4); this just persists the
+ * resulting macros for a chosen consumed amount, mirroring the manual-entry
+ * insert shape but tagged source:"barcode". */
+healthRouter.post("/meal-logs/barcode", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const description = payload?.description as string | undefined;
+  const calories = Number(payload?.calories);
+  const protein = Number(payload?.protein ?? 0);
+  const carbs = Number(payload?.carbs ?? 0);
+  const fat = Number(payload?.fat ?? 0);
+
+  if (typeof description !== "string" || !description.trim() || !Number.isFinite(calories) || calories < 0) {
+    const body: ApiResponse<never> = {
+      ok: false,
+      error: { code: "bad_request", message: "description and calories (>= 0) are required" },
+    };
+    return c.json(body, 400);
+  }
+
+  try {
+    const loggedAt = new Date().toISOString();
+    const doc = {
+      photoUrl: null as string | null,
+      calories,
+      protein: Number.isFinite(protein) ? protein : 0,
+      carbs: Number.isFinite(carbs) ? carbs : 0,
+      fat: Number.isFinite(fat) ? fat : 0,
+      description: description.trim(),
+      loggedAt,
+      source: "barcode" as MealLogSource,
+    };
+    const inserted = await withDb(c.env, async (db) => {
+      const result = await db.collection("meal_logs").insertOne(doc);
+      return { ...doc, _id: result.insertedId };
+    });
+    const body: ApiResponse<MealLogEntry> = { ok: true, data: toMealLog(inserted) };
+    return c.json(body, 201);
+  } catch (err) {
+    console.error("[uiu-api] meal-logs barcode error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to log meal" } };
+    return c.json(body, 502);
+  }
+});
+
+// --- AI Nutrition Coach (HANDOFF §2) --------------------------------------
+
+const COACH_HISTORY_LIMIT = 20;
+
+const COACH_SYSTEM_PROMPT =
+  "You are a supportive, practical nutrition coach inside the UseItUp app. Keep replies concise " +
+  "(2-4 short sentences unless the user explicitly asks for more detail). You are not a doctor or " +
+  "registered dietitian — if you give specific numeric targets or anything that could be read as " +
+  "medical advice, briefly note it isn't medical advice. Use the context below (profile, recent weight " +
+  "trend, today's intake) to personalize answers, and remember earlier turns in this conversation " +
+  "(e.g. stated dietary restrictions) without asking the user to repeat themselves.";
+
+function toCoachMessage(doc: Document): NutritionCoachMessage {
+  return {
+    _id: (doc._id as ObjectIdType).toString(),
+    role: doc.role as "user" | "assistant",
+    content: doc.content as string,
+    createdAt: doc.createdAt as string,
+  };
+}
+
+function buildCoachContext(profile: UserHealthProfile | null, recentWeights: WeightLogEntry[], todayTotals: MealLogTotals): string {
+  const lines: string[] = [];
+  if (profile) {
+    const bmi = profile.weightKg / (profile.heightCm / 100) ** 2;
+    lines.push(
+      `User profile — height ${profile.heightCm}cm, weight ${profile.weightKg}kg, BMI ${bmi.toFixed(1)}, ` +
+        `goal: ${profile.goal}, target weight ${profile.targetWeightKg}kg.`,
+    );
+  } else {
+    lines.push("User has not filled in a health profile yet.");
+  }
+  if (recentWeights.length >= 2) {
+    const first = recentWeights[0]!;
+    const last = recentWeights[recentWeights.length - 1]!;
+    lines.push(`Recent weight logs: ${first.weightKg}kg -> ${last.weightKg}kg over the last ${recentWeights.length} entries.`);
+  }
+  lines.push(
+    `Today so far: ${Math.round(todayTotals.calories)} kcal, ${Math.round(todayTotals.protein)}g protein, ` +
+      `${Math.round(todayTotals.carbs)}g carbs, ${Math.round(todayTotals.fat)}g fat.`,
+  );
+  return `Context for personalizing your answer (do not just read these numbers back verbatim): ${lines.join(" ")}`;
+}
+
+healthRouter.get("/coach", async (c) => {
+  try {
+    const docs = await withDb(c.env, (db) =>
+      db.collection("nutrition_coach_history").find({}).sort({ createdAt: -1 }).limit(COACH_HISTORY_LIMIT).toArray(),
+    );
+    const body: ApiResponse<NutritionCoachMessage[]> = { ok: true, data: docs.map(toCoachMessage).reverse() };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] coach history get error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to fetch coach history" } };
+    return c.json(body, 502);
+  }
+});
+
+healthRouter.post("/coach", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const message = typeof payload?.message === "string" ? payload.message.trim() : "";
+  if (!message || message.length > 2000) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "message (1-2000 chars) is required" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const { historyDocs, profileDoc, weightDocs, todayTotals } = await withDb(c.env, async (db) => {
+      const historyDocs = await db
+        .collection("nutrition_coach_history")
+        .find({})
+        .sort({ createdAt: -1 })
+        .limit(COACH_HISTORY_LIMIT)
+        .toArray();
+      const profileDoc = await db.collection("user_health_profiles").findOne({});
+      const weightDocs = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(5).toArray();
+      const todayStart = rangeStart("today").toISOString();
+      const mealDocs = await db.collection("meal_logs").find({ loggedAt: { $gte: todayStart } }).toArray();
+      const todayTotals = mealDocs.reduce<MealLogTotals>(
+        (sum, e) => ({
+          calories: sum.calories + (e.calories as number),
+          protein: sum.protein + (e.protein as number),
+          carbs: sum.carbs + (e.carbs as number),
+          fat: sum.fat + (e.fat as number),
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0 },
+      );
+      return { historyDocs, profileDoc, weightDocs, todayTotals };
+    });
+
+    const history = historyDocs.map(toCoachMessage).reverse();
+    const context = buildCoachContext(
+      profileDoc ? toProfile(profileDoc) : null,
+      weightDocs.map(toWeightLog).reverse(),
+      todayTotals,
+    );
+
+    const messages: CoachChatMessage[] = [
+      { role: "system", content: `${COACH_SYSTEM_PROMPT}\n\n${context}` },
+      ...history.map((h) => ({ role: h.role, content: h.content })),
+      { role: "user", content: message },
+    ];
+
+    const reply = await chatWithCoach(c.env, messages);
+
+    const inserted = await withDb(c.env, async (db) => {
+      const userDoc = { role: "user" as const, content: message, createdAt: new Date().toISOString() };
+      const userResult = await db.collection("nutrition_coach_history").insertOne(userDoc);
+      const assistantDoc = { role: "assistant" as const, content: reply, createdAt: new Date().toISOString() };
+      const assistantResult = await db.collection("nutrition_coach_history").insertOne(assistantDoc);
+      return { user: { ...userDoc, _id: userResult.insertedId }, assistant: { ...assistantDoc, _id: assistantResult.insertedId } };
+    });
+
+    const body: ApiResponse<{ userMessage: NutritionCoachMessage; assistantMessage: NutritionCoachMessage }> = {
+      ok: true,
+      data: { userMessage: toCoachMessage(inserted.user), assistantMessage: toCoachMessage(inserted.assistant) },
+    };
+    return c.json(body, 201);
+  } catch (err) {
+    console.error("[uiu-api] coach post error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "coach_error", message: "Failed to get a coach reply" } };
+    return c.json(body, 502);
+  }
+});
+
+healthRouter.delete("/coach/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid nutrition_coach_history id" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const deleted = await withDb(c.env, async (db) => {
+      const result = await db.collection("nutrition_coach_history").deleteOne({ _id: new ObjectId(id) });
+      return result.deletedCount > 0;
+    });
+    if (!deleted) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "nutrition_coach_history entry not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<{ deleted: true }> = { ok: true, data: { deleted: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] coach delete error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to delete coach message" } };
     return c.json(body, 502);
   }
 });

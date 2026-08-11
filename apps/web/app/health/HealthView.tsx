@@ -2,6 +2,8 @@
 
 import { useMemo, useRef, useState } from "react";
 import type { ApiResponse, HealthGoal, MealLogEntry, MealLogTotals, UserHealthProfile, WeightLogEntry } from "@uiu/shared";
+import { CoachChat } from "./CoachChat";
+import { BarcodeScan } from "./BarcodeScan";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -150,17 +152,12 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
   const [weightInput, setWeightInput] = useState("");
   const [loggingWeight, setLoggingWeight] = useState(false);
 
-  const [manualOpen, setManualOpen] = useState(false);
-  const [manualDescription, setManualDescription] = useState("");
-  const [manualCalories, setManualCalories] = useState("");
-  const [manualProtein, setManualProtein] = useState("");
-  const [manualCarbs, setManualCarbs] = useState("");
-  const [manualFat, setManualFat] = useState("");
-  const [savingManual, setSavingManual] = useState(false);
-
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const [coachOpen, setCoachOpen] = useState(false);
+  const [barcodeOpen, setBarcodeOpen] = useState(false);
 
   function flash(msg: string) {
     setToast(msg);
@@ -244,43 +241,22 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
     flash(`Logged: ${parsed.data.description}`);
   }
 
-  async function saveManualMeal() {
-    const calories = Number(manualCalories);
-    if (!manualDescription.trim() || !Number.isFinite(calories) || calories < 0) {
-      flash("Enter a description and calories.");
-      return;
-    }
-    setSavingManual(true);
-    const { parsed } = await fetchJson<MealLogEntry>("/api/health/meal-logs/manual", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        description: manualDescription.trim(),
-        calories,
-        protein: Number(manualProtein) || 0,
-        carbs: Number(manualCarbs) || 0,
-        fat: Number(manualFat) || 0,
-      }),
-    });
-    setSavingManual(false);
-    if (!parsed || !parsed.ok) {
-      flash(parsed && !parsed.ok ? `Failed: ${parsed.error.message}` : "Failed to log meal.");
-      return;
-    }
-    prependMealLog(parsed.data);
-    setManualDescription("");
-    setManualCalories("");
-    setManualProtein("");
-    setManualCarbs("");
-    setManualFat("");
-    setManualOpen(false);
-    flash("Meal logged.");
+  function handleBarcodeLogged(entry: MealLogEntry) {
+    prependMealLog(entry);
+    flash(`Logged: ${entry.description}`);
   }
 
   return (
     <div className="health-page">
-      <h1>Health</h1>
+      <div className="health-card__header">
+        <h1>Health</h1>
+        <button type="button" className="wizard-secondary-button" onClick={() => setCoachOpen(true)}>
+          Ask Coach
+        </button>
+      </div>
       {toast ? <p className="admin-drafts-toast">{toast}</p> : null}
+      {coachOpen ? <CoachChat onClose={() => setCoachOpen(false)} /> : null}
+      {barcodeOpen ? <BarcodeScan onClose={() => setBarcodeOpen(false)} onLogged={handleBarcodeLogged} /> : null}
 
       <section className="health-card">
         <div className="health-card__header">
@@ -387,8 +363,8 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
           <button type="button" className="wizard-secondary-button" disabled={scanning} onClick={() => photoInputRef.current?.click()}>
             {scanning ? "Analyzing…" : "Take a photo"}
           </button>
-          <button type="button" className="wizard-secondary-button" onClick={() => setManualOpen((v) => !v)}>
-            {manualOpen ? "Cancel manual entry" : "Enter manually"}
+          <button type="button" className="wizard-secondary-button" onClick={() => setBarcodeOpen(true)}>
+            Scan barcode
           </button>
         </div>
         <input
@@ -406,38 +382,6 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
         {scanError ? <p className="admin-drafts-error">{scanError}</p> : null}
         <p className="health-disclaimer">AI-estimated nutrition is approximate — not medical or dietetic advice.</p>
 
-        {manualOpen ? (
-          <div className="health-manual-form">
-            <label className="wizard-field">
-              <span>Description</span>
-              <input type="text" value={manualDescription} onChange={(e) => setManualDescription(e.target.value)} placeholder="e.g. chicken salad" />
-            </label>
-            <div className="wizard-field-row">
-              <label className="wizard-field">
-                <span>Calories</span>
-                <input type="number" min={0} value={manualCalories} onChange={(e) => setManualCalories(e.target.value)} />
-              </label>
-              <label className="wizard-field">
-                <span>Protein (g)</span>
-                <input type="number" min={0} value={manualProtein} onChange={(e) => setManualProtein(e.target.value)} />
-              </label>
-            </div>
-            <div className="wizard-field-row">
-              <label className="wizard-field">
-                <span>Carbs (g)</span>
-                <input type="number" min={0} value={manualCarbs} onChange={(e) => setManualCarbs(e.target.value)} />
-              </label>
-              <label className="wizard-field">
-                <span>Fat (g)</span>
-                <input type="number" min={0} value={manualFat} onChange={(e) => setManualFat(e.target.value)} />
-              </label>
-            </div>
-            <button type="button" className="wizard-primary-button" disabled={savingManual} onClick={saveManualMeal}>
-              {savingManual ? "Saving…" : "Log meal"}
-            </button>
-          </div>
-        ) : null}
-
         <div className="health-meal-list">
           {mealLogs.length === 0 ? <p className="admin-drafts-page__sub">No meals logged today.</p> : null}
           {mealLogs.map((entry) => (
@@ -445,7 +389,8 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
               <div className="health-meal-card__main">
                 <span className="health-meal-card__desc">{entry.description}</span>
                 <span className="health-meal-card__meta">
-                  {formatTime(entry.loggedAt)} · {entry.source === "photo" ? "Photo" : "Manual"}
+                  {formatTime(entry.loggedAt)} ·{" "}
+                  {entry.source === "photo" ? "Photo" : entry.source === "barcode" ? "Barcode" : "Manual"}
                 </span>
               </div>
               <div className="health-meal-card__macros">
