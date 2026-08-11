@@ -43,7 +43,7 @@ a {
 
 .app-shell {
   min-height: 100vh;
-  padding-bottom: 72px; /* clears the fixed bottom nav */
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); /* clears the fixed bottom nav, incl. gesture-nav safe area */
 }
 
 /* --- Bottom nav (6 tabs, Recipes-style active state = accent color) --- */
@@ -57,6 +57,7 @@ a {
   justify-content: space-around;
   align-items: center;
   height: 60px;
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* standalone PWA: don't let the system gesture bar cover the tabs */
   background: var(--card);
   border-top: 1px solid var(--uiu-border);
   z-index: 10;
@@ -1594,10 +1595,18 @@ a {
 .wizard-field-row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .wizard-field-row .wizard-field {
-  flex: 1;
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+.wizard-field-row .wizard-field input,
+.wizard-field-row .wizard-field select {
+  width: 100%;
+  min-width: 0;
 }
 
 .wizard-calorie-calc {
@@ -2517,10 +2526,12 @@ a {
 .health-weight-log-row {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .health-weight-log-row input {
-  flex: 1;
+  flex: 1 1 120px;
+  min-width: 0;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--uiu-border);

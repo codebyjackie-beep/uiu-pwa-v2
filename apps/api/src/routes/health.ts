@@ -18,7 +18,7 @@ import type {
   UserHealthProfile,
   WeightLogEntry,
 } from "@uiu/shared";
-import { withDb, type DbEnv } from "../db";
+import { withDb, getMongoModule, type DbEnv } from "../db";
 import { estimateMealNutrition, type OpenRouterVisionEnv } from "../services/openrouterVision";
 
 type HealthEnv = DbEnv & OpenRouterVisionEnv;
@@ -140,6 +140,32 @@ healthRouter.post("/weight-logs", async (c) => {
   }
 });
 
+healthRouter.delete("/weight-logs/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid weight_logs id" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const deleted = await withDb(c.env, async (db) => {
+      const result = await db.collection("weight_logs").deleteOne({ _id: new ObjectId(id) });
+      return result.deletedCount > 0;
+    });
+    if (!deleted) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "weight_logs entry not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<{ deleted: true }> = { ok: true, data: { deleted: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] weight-logs delete error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to delete weight log" } };
+    return c.json(body, 502);
+  }
+});
+
 // --- Meal logs ------------------------------------------------------------
 
 function toMealLog(doc: Document): MealLogEntry {
@@ -236,6 +262,32 @@ healthRouter.post("/meal-logs", async (c) => {
   } catch (err) {
     console.error("[uiu-api] meal-logs photo error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "vision_error", message: "Failed to analyze meal photo" } };
+    return c.json(body, 502);
+  }
+});
+
+healthRouter.delete("/meal-logs/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid meal_logs id" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const deleted = await withDb(c.env, async (db) => {
+      const result = await db.collection("meal_logs").deleteOne({ _id: new ObjectId(id) });
+      return result.deletedCount > 0;
+    });
+    if (!deleted) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "meal_logs entry not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<{ deleted: true }> = { ok: true, data: { deleted: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] meal-logs delete error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to delete meal log" } };
     return c.json(body, 502);
   }
 });
