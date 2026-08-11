@@ -234,22 +234,38 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       };
       const insertResult = await db.collection("recipes").insertOne(recipeDoc as unknown as Document);
 
-      const costPreview = draft.costPreview as RecipeDraft["costPreview"];
+      // HANDOFF_recipe-drafts-approve-fresh-cost.md — recompute live with the
+      // real engine against the just-inserted recipe doc, same pattern as
+      // GET /:id/cost-lines, instead of copying draft.costPreview's stale
+      // aggregate-only numbers (which always wrote lines:[] and zeroed counts).
+      const ingredientsCol = db.collection<Document>("canonical_ingredients");
+      const priceCol = db.collection<Document>("canonical_price_cache");
+      const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
+      const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
+      const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
+      const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
+      const quarantinedNames = new Set(
+        allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
+      );
+      const index = await buildAliasIndex(ingredientsCol);
+      const resolveFn = (rawName: string) => resolve(rawName, index);
+      const cost = costRecipe({ ...recipeDoc, _id: insertResult.insertedId } as unknown as Recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+
       const recipeCostDoc: Omit<RecipeCost, "_id"> = {
         recipeId: insertResult.insertedId.toString(),
-        basket: costPreview?.basket ?? 0,
-        currency: "GBP",
-        coveragePct: costPreview?.adjustedCoveragePct ?? 0,
-        adjustedCoveragePct: costPreview?.adjustedCoveragePct ?? 0,
-        totalLines: (draft.ingredients as unknown[])?.length ?? 0,
-        priceableCount: 0,
-        adjustedTotal: 0,
-        adjustedPriceable: 0,
-        pantryLineCount: 0,
-        junkLineCount: 0,
-        perServing: costPreview?.perServing ?? 0,
-        lines: [],
-        unpriceableReasons: {},
+        basket: cost.basket,
+        currency: cost.currency,
+        coveragePct: cost.coveragePct,
+        adjustedCoveragePct: cost.adjustedCoveragePct,
+        totalLines: cost.totalLines,
+        priceableCount: cost.priceableCount,
+        adjustedTotal: cost.adjustedTotal,
+        adjustedPriceable: cost.adjustedPriceable,
+        pantryLineCount: cost.pantryLineCount,
+        junkLineCount: cost.junkLineCount,
+        perServing: cost.perServing,
+        lines: cost.lines as unknown as RecipeCostLine[],
+        unpriceableReasons: cost.unpriceableReasons,
         computedAt: now,
         priceCacheStamp: 0,
       };
