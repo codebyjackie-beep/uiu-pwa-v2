@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ApiResponse, RecipeDraft, RecipeIngredient, RecipeDraftStatus } from "@uiu/shared";
+import type { ApiResponse, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeDraftStatus } from "@uiu/shared";
 import { MealTagPicker } from "../_shared/MealTagPicker";
 
 type Session = "loading" | "authed" | "anon";
@@ -58,6 +58,22 @@ function formatCost(v: number | null | undefined): string {
   return v != null ? `£${v.toFixed(2)}/serving` : "未計到價";
 }
 
+/** HANDOFF_recipe-drafts-admin-gram-display.md — display rule per ingredient line. */
+function gramHint(line: RecipeCostLine | undefined): { text: string; warning: boolean } | null {
+  if (!line) return null;
+  if (line.priceable && line.normUnit === "g" && line.normValue != null) {
+    return { text: `≈${Math.round(line.normValue)}g`, warning: false };
+  }
+  if (line.priceable && line.normUnit === "ml" && line.normValue != null) {
+    return { text: `≈${Math.round(line.normValue)}ml`, warning: false };
+  }
+  if (line.bucket === "count") return null;
+  if (!line.priceable && line.reason === "missing_density_cup") {
+    return { text: "⚠️ 未有克數換算資料", warning: true };
+  }
+  return null;
+}
+
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
   const parsed = (await res.json().catch(() => null)) as ApiResponse<T> | null;
@@ -84,6 +100,7 @@ export function RecipeDraftsAdmin() {
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [staleIds, setStaleIds] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
+  const [costLinesById, setCostLinesById] = useState<Record<string, RecipeCostLine[] | "loading" | "error">>({});
 
 // Probes the session on mount by attempting the pending-list fetch itself — a valid
   // admin_session cookie makes it succeed, a missing/expired one returns 401.
@@ -142,6 +159,28 @@ export function RecipeDraftsAdmin() {
     setPassword("");
     setSession("authed");
     void loadDrafts(statusFilter);
+  }
+
+  async function loadCostLines(id: string) {
+    if (costLinesById[id]) return;
+    setCostLinesById((prev) => ({ ...prev, [id]: "loading" }));
+    const { res, parsed } = await fetchJson<RecipeCostLine[]>(`/api/admin/recipe-drafts/${id}/cost-lines`);
+    if (res.status === 401) {
+      setSession("anon");
+      setSessionNotice("Session 已過期，請重新登入。");
+      return;
+    }
+    if (!parsed || !parsed.ok) {
+      setCostLinesById((prev) => ({ ...prev, [id]: "error" }));
+      return;
+    }
+    setCostLinesById((prev) => ({ ...prev, [id]: parsed.data }));
+  }
+
+  function toggleExpand(d: RecipeDraft) {
+    const next = expandedId === d._id ? null : d._id;
+    setExpandedId(next);
+    if (next) void loadCostLines(d._id);
   }
 
   function startEdit(d: RecipeDraft) {
@@ -270,7 +309,7 @@ export function RecipeDraftsAdmin() {
               <button
                 type="button"
                 className="admin-drafts-card__header"
-                onClick={() => setExpandedId(expanded ? null : d._id)}
+                onClick={() => toggleExpand(d)}
               >
                 <div className="admin-drafts-card__header-main">
                   <p className="admin-drafts-card__title">{d.title}</p>
@@ -304,12 +343,25 @@ export function RecipeDraftsAdmin() {
                   <div className="admin-drafts-detail">
                     <p>{d.description}</p>
                     <h4>食材</h4>
+                    {costLinesById[d._id] === "loading" ? <p className="admin-drafts-page__sub">計緊克數…</p> : null}
+                    {costLinesById[d._id] === "error" ? <p className="admin-drafts-page__sub">克數換算讀取失敗（唔影響食材本身）。</p> : null}
                     <ul className="admin-drafts-ingredient-list">
-                      {d.ingredients.map((ing, i) => (
-                        <li key={i}>
-                          {ing.quantity} {ing.unit} {ing.name}
-                        </li>
-                      ))}
+                      {d.ingredients.map((ing, i) => {
+                        const lines = costLinesById[d._id];
+                        const line = Array.isArray(lines) ? lines[i] : undefined;
+                        const hint = gramHint(line);
+                        return (
+                          <li key={i}>
+                            {ing.quantity} {ing.unit} {ing.name}
+                            {hint ? (
+                              <span className={hint.warning ? "admin-drafts-gram-hint admin-drafts-gram-hint--warning" : "admin-drafts-gram-hint"}>
+                                {" "}
+                                {hint.text}
+                              </span>
+                            ) : null}
+                          </li>
+                        );
+                      })}
                     </ul>
                     <h4>做法</h4>
                     <ol className="admin-drafts-step-list">

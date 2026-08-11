@@ -1898,6 +1898,15 @@ a {
   margin-bottom: 4px;
 }
 
+.admin-drafts-gram-hint {
+  color: #8a8a8a;
+  font-size: 0.85em;
+}
+
+.admin-drafts-gram-hint--warning {
+  color: #b45309;
+}
+
 .admin-drafts-card__actions {
   display: flex;
   gap: 8px;

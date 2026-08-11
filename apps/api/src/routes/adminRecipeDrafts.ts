@@ -4,10 +4,12 @@
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import { ingredientTextGuard, type ApiResponse, type Recipe, type RecipeCost, type RecipeDraft, type RecipeDraftStatus } from "@uiu/shared";
+import { ingredientTextGuard, type ApiResponse, type CanonicalIngredient, type CanonicalPriceCacheEntry, type Recipe, type RecipeCost, type RecipeCostLine, type RecipeDraft, type RecipeDraftStatus } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { dailyRecipeDraft, type DailyRecipeDraftEnv, type DailyRecipeDraftSummary } from "../jobs/dailyRecipeDraft";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
+import { buildAliasIndex, resolve } from "../services/ingredientResolver";
+import { costRecipe } from "../services/recipeCost";
 
 export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
 
@@ -109,6 +111,61 @@ adminRecipeDraftsRouter.patch("/:id", async (c) => {
 });
 
 /** Manual trigger — mirrors /api/admin/recompute-costs: dry-run by default, ?write=true to actually insert/advance rotation state. */
+/**
+ * HANDOFF_recipe-drafts-admin-gram-display.md — read-only, on-the-fly cost
+ * line breakdown for a single draft. `costPreview` on the draft doc only
+ * stores aggregate totals (basket/perServing/adjustedCoveragePct), not the
+ * per-line normValue/normUnit the review screen needs, and drafts are never
+ * persisted into `recipe_cost` (that collection is for approved recipes
+ * only). Recomputing costRecipe() for one draft is cheap (buildAliasIndex
+ * over ~735 canonical_ingredients docs, no recipes-collection scan) —
+ * nothing is written back to `recipe_drafts` or any other collection.
+ */
+adminRecipeDraftsRouter.get("/:id/cost-lines", async (c) => {
+  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid draft id" } };
+    return c.json(body, 400);
+  }
+  try {
+    const result = await withDb(c.env, async (db) => {
+      const draft = await db.collection("recipe_drafts").findOne({ _id: new ObjectId(id) });
+      if (!draft) return { notFound: true as const };
+
+      const ingredientsCol = db.collection<Document>("canonical_ingredients");
+      const priceCol = db.collection<Document>("canonical_price_cache");
+      const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
+      const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
+      const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
+      const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
+      const quarantinedNames = new Set(
+        allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
+      );
+      const index = await buildAliasIndex(ingredientsCol);
+      const resolveFn = (rawName: string) => resolve(rawName, index);
+
+      const cost = costRecipe(draft as unknown as Recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+      return { lines: cost.lines };
+    });
+
+    if ("notFound" in result) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Draft not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<RecipeCostLine[]> = { ok: true, data: result.lines as unknown as RecipeCostLine[] };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-drafts cost-lines error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to compute cost lines" } };
+    return c.json(body, 502);
+  }
+});
+
 adminRecipeDraftsRouter.post("/run", async (c) => {
   if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
     const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
