@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ApiResponse } from "@uiu/shared";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
@@ -9,15 +9,28 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Re
   return { res, parsed };
 }
 
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 type Step = "url" | "manual-paste" | "done";
+type Mode = "link" | "photo";
+const MAX_PHOTOS = 3;
 
 export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
+  const [mode, setMode] = useState<Mode>("link");
   const [step, setStep] = useState<Step>("url");
   const [url, setUrl] = useState("");
   const [pastedText, setPastedText] = useState("");
   const [platform, setPlatform] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   async function submitUrl() {
     const trimmed = url.trim();
@@ -35,6 +48,29 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
     }
     if (parsed.data.needsManualPaste) {
       setPlatform(parsed.data.platform ?? null);
+      setStep("manual-paste");
+      return;
+    }
+    setStep("done");
+  }
+
+  async function submitPhotos(files: File[]) {
+    if (files.length === 0 || submitting) return;
+    setError(null);
+    setSubmitting(true);
+    const images = await Promise.all(files.slice(0, MAX_PHOTOS).map(fileToDataUrl));
+    const { parsed } = await fetchJson<{ recipeDraftId?: string; needsManualPaste?: true }>("/api/recipe-import/from-photo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ images }),
+    });
+    setSubmitting(false);
+    if (!parsed || !parsed.ok) {
+      setError(parsed && !parsed.ok ? parsed.error.message : "Something went wrong — please try again.");
+      return;
+    }
+    if (parsed.data.needsManualPaste) {
+      setPlatform(null);
       setStep("manual-paste");
       return;
     }
@@ -70,6 +106,33 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
         </div>
         <div className="meal-planner-modal__body recipe-import-form">
           {step === "url" ? (
+            <div className="recipe-import-form__tabs">
+              <button
+                type="button"
+                className={`chip${mode === "link" ? " chip--active" : ""}`}
+                disabled={submitting}
+                onClick={() => {
+                  setMode("link");
+                  setError(null);
+                }}
+              >
+                Paste a link
+              </button>
+              <button
+                type="button"
+                className={`chip${mode === "photo" ? " chip--active" : ""}`}
+                disabled={submitting}
+                onClick={() => {
+                  setMode("photo");
+                  setError(null);
+                }}
+              >
+                Take a photo
+              </button>
+            </div>
+          ) : null}
+
+          {step === "url" && mode === "link" ? (
             <>
               <p className="admin-drafts-page__sub">
                 Paste a link from TikTok, Instagram, Facebook, Pinterest, YouTube, or any recipe blog.
@@ -91,11 +154,43 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
             </>
           ) : null}
 
+          {step === "url" && mode === "photo" ? (
+            <>
+              <p className="admin-drafts-page__sub">
+                Take or choose up to {MAX_PHOTOS} photos of a handwritten or printed recipe (e.g. both sides of a
+                recipe card, or two facing pages).
+              </p>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                multiple
+                hidden
+                onChange={(e) => {
+                  const files = Array.from(e.target.files ?? []).slice(0, MAX_PHOTOS);
+                  e.target.value = "";
+                  if (files.length > 0) void submitPhotos(files);
+                }}
+              />
+              {error ? <p className="admin-drafts-error">{error}</p> : null}
+              <button
+                type="button"
+                className="wizard-primary-button"
+                disabled={submitting}
+                onClick={() => photoInputRef.current?.click()}
+              >
+                {submitting ? "Analyzing…" : "Choose photo(s)"}
+              </button>
+            </>
+          ) : null}
+
           {step === "manual-paste" ? (
             <>
               <p className="admin-drafts-page__sub">
-                We couldn&apos;t automatically read this link{platform ? ` (${platform})` : ""}. Copy the caption or recipe text
-                from the app and paste it below instead.
+                {mode === "photo"
+                  ? "Couldn't read that photo clearly. Copy the recipe text and paste it below instead."
+                  : `We couldn't automatically read this link${platform ? ` (${platform})` : ""}. Copy the caption or recipe text from the app and paste it below instead.`}
               </p>
               <textarea
                 rows={8}

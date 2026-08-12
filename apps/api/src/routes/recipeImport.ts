@@ -8,10 +8,11 @@ import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe
 import { withDb, type DbEnv } from "../db";
 import type { OpenRouterEnv } from "../services/openrouter";
 import { detectPlatform, parseRecipeFromText, tryJsonLdRecipe, tryOembedCaption, tryPinterestTargetLink, type OembedEnv } from "../services/recipeImport";
+import { extractRecipeFromPhotos, type OpenRouterVisionEnv } from "../services/openrouterVision";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 
-type RecipeImportEnv = DbEnv & OpenRouterEnv & OembedEnv;
+type RecipeImportEnv = DbEnv & OpenRouterEnv & OembedEnv & OpenRouterVisionEnv;
 
 export const recipeImportRouter = new Hono<{ Bindings: RecipeImportEnv }>();
 
@@ -180,6 +181,37 @@ recipeImportRouter.post("/from-text", async (c) => {
   } catch (err) {
     console.error("[uiu-api] recipe-import from-text error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to import recipe from text" } };
+    return c.json(body, 502);
+  }
+});
+
+const MAX_PHOTOS = 3;
+
+recipeImportRouter.post("/from-photo", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const images = payload?.images as unknown;
+  if (!Array.isArray(images) || images.length === 0 || !images.every((v) => typeof v === "string" && v.trim())) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "images (1-3 data URLs) is required" } };
+    return c.json(body, 400);
+  }
+  if (images.length > MAX_PHOTOS) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: `At most ${MAX_PHOTOS} photos are allowed` } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const parsed = await extractRecipeFromPhotos(c.env, images as string[]);
+    if (!parsed) {
+      const body: ApiResponse<{ needsManualPaste: true }> = { ok: true, data: { needsManualPaste: true } };
+      return c.json(body);
+    }
+    const ingredients: RecipeIngredient[] = parsed.ingredients.map((ing) => ({ name: ing.name, quantity: ing.quantity, unit: ing.unit }));
+    const recipeDraftId = await insertDraft(c, { ...parsed, ingredients }, undefined, null, "photo-ocr");
+    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-import from-photo error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to import recipe from photo" } };
     return c.json(body, 502);
   }
 });

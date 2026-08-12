@@ -4,6 +4,8 @@
  * with the daily recipe draft agent — see services/openrouter.ts — but a
  * separate [vars] model id so the two don't collide if either changes).
  */
+import type { DraftedRecipe } from "./openrouter";
+
 export interface OpenRouterVisionEnv {
   OPENROUTER_API_KEY: string;
   OPENROUTER_VISION_MODEL: string;
@@ -118,4 +120,68 @@ export async function estimateMealNutrition(env: OpenRouterVisionEnv, imageDataU
     fat: num(raw.fat),
     description: typeof raw.description === "string" && raw.description.trim() ? raw.description.trim() : "Unknown meal",
   };
+}
+
+const PHOTO_RECIPE_PROMPT_PREFIX = (count: number) =>
+  `These ${count} photo${count > 1 ? "s" : ""} show the same handwritten or printed recipe (possibly the front ` +
+  `and back of a recipe card, or facing pages of a notebook) — combine them into one complete recipe. Transcribe ` +
+  "the handwritten/printed text into structured JSON. " +
+  "Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: " +
+  '{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ' +
+  '"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}. ' +
+  'If the photo(s) are illegible or do not show a recipe, respond with {"title": "", "description": "", "ingredients": [], ' +
+  '"steps": [], "tags": [], "servings": 0, "prepTimeMinutes": 0, "cookTimeMinutes": 0}.';
+
+/** HANDOFF_recipe-photo-import.md — OCR + structure 1-3 photos of a
+ * handwritten/printed recipe into DraftedRecipe shape. Returns null
+ * (not a throw) when the photo(s) don't look like a legible recipe —
+ * caller falls back to the existing Tier 3 manual-paste flow. */
+export async function extractRecipeFromPhotos(env: OpenRouterVisionEnv, imageDataUrls: string[]): Promise<DraftedRecipe | null> {
+  if (imageDataUrls.length === 0) return null;
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: env.OPENROUTER_VISION_MODEL,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: PHOTO_RECIPE_PROMPT_PREFIX(imageDataUrls.length) },
+              ...imageDataUrls.map((url) => ({ type: "image_url", image_url: { url } })),
+            ],
+          },
+        ],
+        response_format: { type: "json_object" },
+      }),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    const content = json.choices?.[0]?.message?.content;
+    if (!content) return null;
+
+    const parsed = extractJson(content) as Partial<DraftedRecipe>;
+    if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < 2 || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
+      return null;
+    }
+
+    return {
+      title: parsed.title,
+      description: parsed.description ?? "",
+      ingredients: parsed.ingredients,
+      steps: parsed.steps,
+      tags: Array.isArray(parsed.tags) ? parsed.tags : [],
+      mealType: parsed.mealType,
+      servings: parsed.servings ?? 2,
+      prepTimeMinutes: parsed.prepTimeMinutes ?? 0,
+      cookTimeMinutes: parsed.cookTimeMinutes ?? 0,
+    };
+  } catch (err) {
+    console.error("[uiu-api] extractRecipeFromPhotos failed:", err instanceof Error ? err.message : String(err));
+    return null;
+  }
 }
