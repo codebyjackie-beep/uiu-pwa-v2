@@ -12,6 +12,7 @@ import { favouriteRecipesRouter } from "./routes/favouriteRecipes";
 import { shopRouter } from "./routes/shop";
 import { shoppingListRouter } from "./routes/shoppingList";
 import { healthRouter } from "./routes/health";
+import { recipeImportRouter } from "./routes/recipeImport";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
@@ -29,12 +30,16 @@ type Bindings = {
   //     draft agent (OPENROUTER_MODEL) and fridge-stock OCR/photo-scan (OPENROUTER_VISION_MODEL).
   //   RAPIDAPI_KEY / RAPIDAPI_HOST — Spoonacular via RapidAPI, same pair as tools/recipe_ideas/spoonacular_browse.cjs.
   //   PEXELS_API_KEY — recipe photo lookup for approved AI drafts (services/pexels.ts).
+  //   YOUTUBE_API_KEY — OPTIONAL, HANDOFF_recipe-social-import.md §0. Powers YouTube Tier 2
+  //     (video description text via YouTube Data API v3). Unset -> YouTube links fall
+  //     straight to Tier 3 manual paste, does not break the rest of the import flow.
   MONGODB_URI: string;
   ADMIN_TOKEN: string;
   OPENROUTER_API_KEY: string;
   RAPIDAPI_KEY: string;
   RAPIDAPI_HOST: string;
   PEXELS_API_KEY: string;
+  YOUTUBE_API_KEY?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -75,6 +80,7 @@ app.route("/api/favourite-recipes", favouriteRecipesRouter);
 app.route("/api/shop", shopRouter);
 app.route("/api/shopping-list", shoppingListRouter);
 app.route("/api/health", healthRouter);
+app.route("/api/recipe-import", recipeImportRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass

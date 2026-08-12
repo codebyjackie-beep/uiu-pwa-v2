@@ -20,6 +20,10 @@ enabled = true
 #   RAPIDAPI_KEY        Spoonacular via RapidAPI (same pair as
 #   RAPIDAPI_HOST       tools/recipe_ideas/spoonacular_browse.cjs, moved server-side for the
 #                       daily cron). Raw values: Key\spoonacular-rapidapi-key.txt.
+#   YOUTUBE_API_KEY     OPTIONAL. HANDOFF_recipe-social-import.md §0 — YouTube Tier 2 (video
+#                       description via YouTube Data API v3). Jackie opens this herself in
+#                       Google Cloud Console; unset -> YouTube links fall straight to Tier 3
+#                       manual paste, nothing else in the import flow breaks without it.
 #
 # --- Non-secret vars ---
 [vars]

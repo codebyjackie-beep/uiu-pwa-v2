@@ -674,6 +674,11 @@ export interface RecipeDraft {
   gapTarget?: GapTarget;
   /** Cost preview computed at draft time (same engine as recipe_cost), so the admin card can show adjustedCoveragePct before approval. */
   costPreview?: RecipeListItemCost | null;
+  /** Set only for social-import drafts (HANDOFF_recipe-social-import.md). Null/undefined for AI daily drafts. */
+  sourceUrl?: string;
+  sourcePlatform?: "tiktok" | "instagram" | "facebook" | "pinterest" | "youtube" | null;
+  /** Debug field, mirrors sourceInspiration convention — which tier actually produced this draft. */
+  importMethod?: "jsonld" | "oembed-caption" | "manual-paste";
 }
 
 /** One cell of the 4 (meal slot) x 10 (DIETARY_FILTERS key) gap matrix. */

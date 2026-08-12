@@ -99,6 +99,22 @@ a {
   font-size: 14px;
 }
 
+.recipes-page__save-from-link {
+  margin-bottom: var(--space);
+}
+
+.recipe-import-form input,
+.recipe-import-form textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--uiu-border);
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+  width: 100%;
+  resize: vertical;
+}
+
 .recipe-list {
   display: flex;
   flex-direction: column;

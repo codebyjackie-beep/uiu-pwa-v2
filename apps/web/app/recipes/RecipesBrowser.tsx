@@ -11,6 +11,7 @@ import {
   type FilterDietary,
   type FilterMealType,
 } from "../lib/recipeFilters";
+import { SaveFromLinkModal } from "./SaveFromLinkModal";
 
 const MEAL_TYPE_OPTIONS: { key: FilterMealType; label: string }[] = [
   { key: "breakfast", label: "Breakfast" },
@@ -47,6 +48,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
   const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
   const [page, setPage] = useState(1);
+  const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
 
   const hasActiveFilters = search.trim() !== "" || mealTypes.length > 0 || dietary.length > 0 || priceBuckets.length > 0;
 
@@ -97,6 +99,13 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
 
   return (
     <div>
+      <div className="recipes-page__save-from-link">
+        <button type="button" className="wizard-primary-button" onClick={() => setSaveFromLinkOpen(true)}>
+          Save from a link
+        </button>
+      </div>
+      {saveFromLinkOpen ? <SaveFromLinkModal onClose={() => setSaveFromLinkOpen(false)} /> : null}
+
       <div className="recipes-filters">
         <input
           type="text"
