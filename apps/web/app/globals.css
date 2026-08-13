@@ -121,6 +121,24 @@ a {
   margin-bottom: var(--space);
 }
 
+.manual-recipe-form__row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.manual-recipe-form__remove {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--uiu-border);
+  border-radius: 8px;
+  color: var(--uiu-muted);
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
 .recipe-list {
   display: flex;
   flex-direction: column;

@@ -187,6 +187,67 @@ recipeImportRouter.post("/from-text", async (c) => {
 
 const MAX_PHOTOS = 3;
 
+/**
+ * HANDOFF_recipes-page-manual-entry-and-refresh.md §A — pure form entry, no AI/LLM call.
+ * Body is a DraftedRecipe-shaped object the user typed themselves.
+ */
+recipeImportRouter.post("/manual", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  if (!payload || typeof payload !== "object") {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "JSON body required" } };
+    return c.json(body, 400);
+  }
+  const title = (payload as Record<string, unknown>).title;
+  const ingredientsRaw = (payload as Record<string, unknown>).ingredients;
+  const stepsRaw = (payload as Record<string, unknown>).steps;
+  if (typeof title !== "string" || !title.trim()) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "title is required" } };
+    return c.json(body, 400);
+  }
+  if (!Array.isArray(ingredientsRaw) || ingredientsRaw.length === 0) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "ingredients (at least 1) is required" } };
+    return c.json(body, 400);
+  }
+  if (!Array.isArray(stepsRaw) || stepsRaw.length === 0 || !stepsRaw.every((s) => typeof s === "string" && s.trim())) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "steps (at least 1 non-empty) is required" } };
+    return c.json(body, 400);
+  }
+  const ingredients: RecipeIngredient[] = [];
+  for (const raw of ingredientsRaw) {
+    const name = (raw as Record<string, unknown>)?.name;
+    if (typeof name !== "string" || !name.trim()) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Every ingredient needs a non-empty name" } };
+      return c.json(body, 400);
+    }
+    const quantity = Number((raw as Record<string, unknown>).quantity) || 0;
+    const unit = typeof (raw as Record<string, unknown>).unit === "string" ? ((raw as Record<string, unknown>).unit as string) : "";
+    ingredients.push({ name, quantity, unit });
+  }
+
+  const p = payload as Record<string, unknown>;
+  const recipe: ImportedRecipe = {
+    title: title.trim(),
+    description: typeof p.description === "string" ? p.description : "",
+    ingredients,
+    steps: (stepsRaw as string[]).map((s) => s.trim()),
+    tags: Array.isArray(p.tags) ? (p.tags as unknown[]).filter((t) => typeof t === "string") as string[] : [],
+    mealType: typeof p.mealType === "string" && p.mealType ? p.mealType : undefined,
+    servings: Number(p.servings) || 2,
+    prepTimeMinutes: Number(p.prepTimeMinutes) || 0,
+    cookTimeMinutes: Number(p.cookTimeMinutes) || 0,
+  };
+
+  try {
+    const recipeDraftId = await insertDraft(c, recipe, undefined, null, "manual");
+    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-import manual error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to save recipe" } };
+    return c.json(body, 502);
+  }
+});
+
 recipeImportRouter.post("/from-photo", async (c) => {
   const payload = await c.req.json().catch(() => null);
   const images = payload?.images as unknown;

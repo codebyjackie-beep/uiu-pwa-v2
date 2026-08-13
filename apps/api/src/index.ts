@@ -13,6 +13,7 @@ import { shopRouter } from "./routes/shop";
 import { shoppingListRouter } from "./routes/shoppingList";
 import { healthRouter } from "./routes/health";
 import { recipeImportRouter } from "./routes/recipeImport";
+import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
@@ -81,6 +82,7 @@ app.route("/api/shop", shopRouter);
 app.route("/api/shopping-list", shoppingListRouter);
 app.route("/api/health", healthRouter);
 app.route("/api/recipe-import", recipeImportRouter);
+app.route("/api/recipe-browse", recipeBrowseStateRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass

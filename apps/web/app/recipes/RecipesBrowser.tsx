@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import type { RecipeListItem } from "@uiu/shared";
+import type { ApiResponse, RecipeListItem } from "@uiu/shared";
 import { mealTypeBadge } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
@@ -12,6 +12,19 @@ import {
   type FilterMealType,
 } from "../lib/recipeFilters";
 import { SaveFromLinkModal } from "./SaveFromLinkModal";
+
+const RANDOM_BROWSE_SIZE = 10;
+
+/** Fisher-Yates, front-end only (HANDOFF_recipes-page-manual-entry-and-refresh.md §B) —
+ * no backend sampling endpoint needed since page.tsx already fetches the full ~250-item set. */
+function pickRandom<T>(items: T[], count: number): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, count);
+}
 
 const MEAL_TYPE_OPTIONS: { key: FilterMealType; label: string }[] = [
   { key: "breakfast", label: "Breakfast" },
@@ -40,15 +53,44 @@ function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-const PAGE_SIZE = 20;
-
 export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [search, setSearch] = useState("");
   const [mealTypes, setMealTypes] = useState<FilterMealType[]>([]);
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
   const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
   const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
+  const [randomTen, setRandomTen] = useState<RecipeListItem[]>(() => pickRandom(items, RANDOM_BROWSE_SIZE));
+  const [remainingToday, setRemainingToday] = useState<number | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/recipe-browse/refresh-status")
+      .then((r) => r.json())
+      .then((parsed: ApiResponse<{ remainingToday: number }>) => {
+        if (!cancelled && parsed.ok) setRemainingToday(parsed.data.remainingToday);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function doRefresh() {
+    if (refreshing) return;
+    setRefreshing(true);
+    setRefreshError(null);
+    const res = await fetch("/api/recipe-browse/refresh", { method: "POST" });
+    const parsed = (await res.json().catch(() => null)) as ApiResponse<{ remainingToday: number }> | null;
+    setRefreshing(false);
+    if (!parsed || !parsed.ok) {
+      setRefreshError(parsed && !parsed.ok ? parsed.error.message : "Something went wrong — please try again.");
+      return;
+    }
+    setRemainingToday(parsed.data.remainingToday);
+    setRandomTen(pickRandom(items, RANDOM_BROWSE_SIZE));
+  }
 
   const hasActiveFilters = search.trim() !== "" || mealTypes.length > 0 || dietary.length > 0 || priceBuckets.length > 0;
 
@@ -77,15 +119,12 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     });
   }, [items, search, mealTypes, dietary, priceBuckets]);
 
-  // No filters active: keep the pre-filter UX unchanged (20/page, Prev/Next) by paging the
-  // full unfiltered list client-side. Any filter active: drop paging, show every match plus
-  // a "N recipes match" count instead (acceptance criteria, HANDOFF_recipes-page-filters.md).
-  const hasNext = hasActiveFilters ? false : page * PAGE_SIZE < items.length;
-  const hasPrev = hasActiveFilters ? false : page > 1;
-  const visible = hasActiveFilters ? filtered : items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // No filters active: random 10 + Refresh (HANDOFF_recipes-page-manual-entry-and-refresh.md
+  // §B). Any filter active: unchanged — show every match, no count limit
+  // (acceptance criteria, HANDOFF_recipes-page-filters.md, not overridden by §B).
+  const visible = hasActiveFilters ? filtered : randomTen;
 
   function updateFilter<T>(setter: (v: T) => void, value: T) {
-    setPage(1);
     setter(value);
   }
 
@@ -94,14 +133,13 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     setMealTypes([]);
     setDietary([]);
     setPriceBuckets([]);
-    setPage(1);
   }
 
   return (
     <div>
       <div className="recipes-page__save-from-link">
         <button type="button" className="wizard-primary-button" onClick={() => setSaveFromLinkOpen(true)}>
-          Save from a link
+          Add a recipe
         </button>
       </div>
       {saveFromLinkOpen ? <SaveFromLinkModal onClose={() => setSaveFromLinkOpen(false)} /> : null}
@@ -208,21 +246,18 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
 
       {!hasActiveFilters ? (
         <div className="recipes-page__pagination">
-          {hasPrev ? (
-            <button type="button" onClick={() => setPage((p) => p - 1)}>
-              ← Prev
-            </button>
-          ) : (
-            <span aria-disabled="true">← Prev</span>
-          )}
-          <span>Page {page}</span>
-          {hasNext ? (
-            <button type="button" onClick={() => setPage((p) => p + 1)}>
-              Next →
-            </button>
-          ) : (
-            <span aria-disabled="true">Next →</span>
-          )}
+          <button type="button" disabled={refreshing || remainingToday === 0} onClick={() => void doRefresh()}>
+            {refreshing ? "Refreshing…" : "🔀 Refresh"}
+          </button>
+          <span>
+            {refreshError
+              ? refreshError
+              : remainingToday === 0
+                ? "You've used today's 3 refreshes — come back tomorrow"
+                : remainingToday === null
+                  ? ""
+                  : `Refreshes left today: ${remainingToday}`}
+          </span>
         </div>
       ) : null}
     </div>

@@ -19,8 +19,12 @@ function fileToDataUrl(file: File): Promise<string> {
 }
 
 type Step = "url" | "manual-paste" | "done";
-type Mode = "link" | "photo";
+type Mode = "link" | "photo" | "manual";
 const MAX_PHOTOS = 3;
+
+const MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack", "dessert"];
+
+type ManualIngredientRow = { name: string; quantity: string; unit: string };
 
 export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
   const [mode, setMode] = useState<Mode>("link");
@@ -31,6 +35,21 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const [manualTitle, setManualTitle] = useState("");
+  const [manualDescription, setManualDescription] = useState("");
+  const [manualIngredients, setManualIngredients] = useState<ManualIngredientRow[]>([{ name: "", quantity: "", unit: "" }]);
+  const [manualSteps, setManualSteps] = useState<string[]>([""]);
+  const [manualTags, setManualTags] = useState("");
+  const [manualMealType, setManualMealType] = useState("");
+  const [manualServings, setManualServings] = useState("");
+  const [manualPrepTime, setManualPrepTime] = useState("");
+  const [manualCookTime, setManualCookTime] = useState("");
+
+  const manualValid =
+    manualTitle.trim() !== "" &&
+    manualIngredients.some((row) => row.name.trim() !== "") &&
+    manualSteps.some((s) => s.trim() !== "");
 
   async function submitUrl() {
     const trimmed = url.trim();
@@ -77,6 +96,41 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
     setStep("done");
   }
 
+  async function submitManual() {
+    if (!manualValid || submitting) return;
+    setError(null);
+    setSubmitting(true);
+    const ingredients = manualIngredients
+      .filter((row) => row.name.trim() !== "")
+      .map((row) => ({ name: row.name.trim(), quantity: Number(row.quantity) || 0, unit: row.unit.trim() }));
+    const steps = manualSteps.map((s) => s.trim()).filter((s) => s !== "");
+    const tags = manualTags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t !== "");
+    const { parsed } = await fetchJson<{ recipeDraftId: string }>("/api/recipe-import/manual", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: manualTitle.trim(),
+        description: manualDescription.trim(),
+        ingredients,
+        steps,
+        tags,
+        mealType: manualMealType || undefined,
+        servings: manualServings ? Number(manualServings) : undefined,
+        prepTimeMinutes: manualPrepTime ? Number(manualPrepTime) : undefined,
+        cookTimeMinutes: manualCookTime ? Number(manualCookTime) : undefined,
+      }),
+    });
+    setSubmitting(false);
+    if (!parsed || !parsed.ok) {
+      setError(parsed && !parsed.ok ? parsed.error.message : "Something went wrong — please try again.");
+      return;
+    }
+    setStep("done");
+  }
+
   async function submitManualPaste() {
     const trimmed = pastedText.trim();
     if (!trimmed || submitting) return;
@@ -99,7 +153,7 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
     <div className="meal-planner-modal-overlay" onClick={onClose}>
       <div className="meal-planner-modal" onClick={(e) => e.stopPropagation()}>
         <div className="meal-planner-modal__header">
-          <h3 className="meal-planner-modal__title">Save recipe from a link</h3>
+          <h3 className="meal-planner-modal__title">Add a recipe</h3>
           <button type="button" className="meal-planner-modal__close" onClick={onClose} aria-label="Close">
             ×
           </button>
@@ -128,6 +182,17 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
                 }}
               >
                 Take a photo
+              </button>
+              <button
+                type="button"
+                className={`chip${mode === "manual" ? " chip--active" : ""}`}
+                disabled={submitting}
+                onClick={() => {
+                  setMode("manual");
+                  setError(null);
+                }}
+              >
+                Manually
               </button>
             </div>
           ) : null}
@@ -181,6 +246,157 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
                 onClick={() => photoInputRef.current?.click()}
               >
                 {submitting ? "Analyzing…" : "Choose photo(s)"}
+              </button>
+            </>
+          ) : null}
+
+          {step === "url" && mode === "manual" ? (
+            <>
+              <p className="admin-drafts-page__sub">Type your own recipe in — nothing here is parsed or checked by AI.</p>
+              <input
+                type="text"
+                placeholder="Title"
+                value={manualTitle}
+                disabled={submitting}
+                onChange={(e) => setManualTitle(e.target.value)}
+              />
+              <textarea
+                rows={2}
+                placeholder="Description (optional)"
+                value={manualDescription}
+                disabled={submitting}
+                onChange={(e) => setManualDescription(e.target.value)}
+              />
+
+              <p className="admin-drafts-page__sub">Ingredients</p>
+              {manualIngredients.map((row, i) => (
+                <div key={i} className="manual-recipe-form__row">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={row.name}
+                    disabled={submitting}
+                    onChange={(e) => {
+                      const next = [...manualIngredients];
+                      next[i] = { ...next[i], name: e.target.value };
+                      setManualIngredients(next);
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Qty"
+                    value={row.quantity}
+                    disabled={submitting}
+                    onChange={(e) => {
+                      const next = [...manualIngredients];
+                      next[i] = { ...next[i], quantity: e.target.value };
+                      setManualIngredients(next);
+                    }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Unit"
+                    value={row.unit}
+                    disabled={submitting}
+                    onChange={(e) => {
+                      const next = [...manualIngredients];
+                      next[i] = { ...next[i], unit: e.target.value };
+                      setManualIngredients(next);
+                    }}
+                  />
+                  {manualIngredients.length > 1 ? (
+                    <button
+                      type="button"
+                      className="manual-recipe-form__remove"
+                      disabled={submitting}
+                      onClick={() => setManualIngredients(manualIngredients.filter((_, idx) => idx !== i))}
+                      aria-label="Remove ingredient"
+                    >
+                      ×
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+              <button
+                type="button"
+                className="chip"
+                disabled={submitting}
+                onClick={() => setManualIngredients([...manualIngredients, { name: "", quantity: "", unit: "" }])}
+              >
+                + Add ingredient
+              </button>
+
+              <p className="admin-drafts-page__sub">Steps</p>
+              {manualSteps.map((s, i) => (
+                <div key={i} className="manual-recipe-form__row">
+                  <textarea
+                    rows={2}
+                    placeholder={`Step ${i + 1}`}
+                    value={s}
+                    disabled={submitting}
+                    onChange={(e) => {
+                      const next = [...manualSteps];
+                      next[i] = e.target.value;
+                      setManualSteps(next);
+                    }}
+                  />
+                  {manualSteps.length > 1 ? (
+                    <button
+                      type="button"
+                      className="manual-recipe-form__remove"
+                      disabled={submitting}
+                      onClick={() => setManualSteps(manualSteps.filter((_, idx) => idx !== i))}
+                      aria-label="Remove step"
+                    >
+                      ×
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+              <button type="button" className="chip" disabled={submitting} onClick={() => setManualSteps([...manualSteps, ""])}>
+                + Add step
+              </button>
+
+              <input
+                type="text"
+                placeholder="Tags, comma separated (optional)"
+                value={manualTags}
+                disabled={submitting}
+                onChange={(e) => setManualTags(e.target.value)}
+              />
+              <select value={manualMealType} disabled={submitting} onChange={(e) => setManualMealType(e.target.value)}>
+                <option value="">Meal type (optional)</option>
+                {MEAL_TYPE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt[0].toUpperCase() + opt.slice(1)}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="number"
+                placeholder="Servings (default 2)"
+                value={manualServings}
+                disabled={submitting}
+                onChange={(e) => setManualServings(e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="Prep time (mins, default 0)"
+                value={manualPrepTime}
+                disabled={submitting}
+                onChange={(e) => setManualPrepTime(e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="Cook time (mins, default 0)"
+                value={manualCookTime}
+                disabled={submitting}
+                onChange={(e) => setManualCookTime(e.target.value)}
+              />
+
+              {error ? <p className="admin-drafts-error">{error}</p> : null}
+              <button type="button" className="wizard-primary-button" disabled={submitting || !manualValid} onClick={() => void submitManual()}>
+                {submitting ? "Saving…" : "Save"}
               </button>
             </>
           ) : null}

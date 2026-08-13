@@ -221,7 +221,10 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
         cookTimeMinutes: draft.cookTimeMinutes as number,
         imageUrl: imageUrl ?? "",
         nutrition: draft.nutrition as Recipe["nutrition"],
-        source: draft.importMethod === "photo-ocr" ? "photo_import" : draft.sourceUrl ? "social_import" : "ai_daily_draft",
+        source: draft.importMethod === "manual" ? "manual_entry"
+          : draft.importMethod === "photo-ocr" ? "photo_import"
+          : draft.sourceUrl ? "social_import"
+          : "ai_daily_draft",
         sourcePlatform: (draft.sourcePlatform as Recipe["sourcePlatform"]) ?? null,
         sourceUrl: (draft.sourceUrl as string) ?? undefined,
         collectionIds: [],
