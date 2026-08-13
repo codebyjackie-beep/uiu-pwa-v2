@@ -21,7 +21,7 @@ function checkAdminToken(token: string | undefined, expected: string): boolean {
 
 /** Same field set the recipe-drafts edit form exposes, minus fields that don't apply to a
  * live recipe (status/createdAt/sourceInspiration/gapTarget/costPreview are draft-only). */
-const EDITABLE_FIELDS = ["title", "description", "ingredients", "steps", "tags", "servings", "prepTimeMinutes", "cookTimeMinutes"] as const;
+const EDITABLE_FIELDS = ["title", "description", "ingredients", "steps", "tags", "servings", "prepTimeMinutes", "cookTimeMinutes", "imageUrl"] as const;
 type EditableField = (typeof EDITABLE_FIELDS)[number];
 type RecipePatch = Partial<Pick<Recipe, EditableField>>;
 

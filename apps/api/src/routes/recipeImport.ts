@@ -4,15 +4,16 @@
  */
 import { Hono } from "hono";
 import type { Document } from "mongodb";
-import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeListItemCost } from "@uiu/shared";
+import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe, RecipeCost, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeListItemCost } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 import type { OpenRouterEnv } from "../services/openrouter";
 import { detectPlatform, parseRecipeFromText, tryJsonLdRecipe, tryOembedCaption, tryPinterestTargetLink, type OembedEnv } from "../services/recipeImport";
 import { extractRecipeFromPhotos, type OpenRouterVisionEnv } from "../services/openrouterVision";
+import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 
-type RecipeImportEnv = DbEnv & OpenRouterEnv & OembedEnv & OpenRouterVisionEnv;
+type RecipeImportEnv = DbEnv & OpenRouterEnv & OembedEnv & OpenRouterVisionEnv & PexelsEnv;
 
 export const recipeImportRouter = new Hono<{ Bindings: RecipeImportEnv }>();
 
@@ -188,8 +189,12 @@ recipeImportRouter.post("/from-text", async (c) => {
 const MAX_PHOTOS = 3;
 
 /**
- * HANDOFF_recipes-page-manual-entry-and-refresh.md §A — pure form entry, no AI/LLM call.
- * Body is a DraftedRecipe-shaped object the user typed themselves.
+ * HANDOFF_recipes-page-manual-entry-and-refresh.md §A (corrected 2026-08-12 — see
+ * HANDOFF_recipes-page-manual-entry-and-refresh.md §A revision): a hand-typed recipe is
+ * final the moment the user hits Save — it never enters recipe_drafts / the admin approve
+ * queue. Inserts straight into `recipes` (mirrors adminRecipeDrafts.ts's approve handler:
+ * best-effort Pexels image, isPublic true, source "manual_entry") and computes recipe_cost
+ * in the same request. No AI/LLM call anywhere in this path.
  */
 recipeImportRouter.post("/manual", async (c) => {
   const payload = await c.req.json().catch(() => null);
@@ -238,8 +243,95 @@ recipeImportRouter.post("/manual", async (c) => {
   };
 
   try {
-    const recipeDraftId = await insertDraft(c, recipe, undefined, null, "manual");
-    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    const recipeId = await withDb(c.env, async (db) => {
+      const now = new Date().toISOString();
+      // Best-effort — never fail the save on a Pexels error (same convention as the drafts approve flow).
+      const imageUrl = await findRecipePhoto(c.env, recipe.title).catch(() => null);
+
+      const ingredientsCol = db.collection<Document>("canonical_ingredients");
+      const priceCol = db.collection<Document>("canonical_price_cache");
+      const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
+      const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
+      const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
+      const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
+      const quarantinedNames = new Set(
+        allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
+      );
+      const index = await buildAliasIndex(ingredientsCol);
+      const resolveFn = (rawName: string) => resolve(rawName, index);
+
+      const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
+      const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+
+      let calories = 0, protein = 0, carbs = 0, fat = 0;
+      for (const line of cost.lines as unknown as RecipeCostLine[]) {
+        if (!line.priceable || line.normUnit !== "g" || !line.canonical_name || !line.normValue) continue;
+        const doc = ingredientsMap.get(line.canonical_name);
+        const n = doc?.nutrition_per_100g;
+        if (!n) continue;
+        const factor = line.normValue / 100;
+        calories += n.kcal * factor;
+        protein += n.protein * factor;
+        carbs += n.carbs * factor;
+        fat += n.fat * factor;
+      }
+
+      const recipeDoc: Omit<Recipe, "_id"> = {
+        title: recipe.title,
+        description: recipe.description,
+        isPublic: true,
+        userId: null,
+        ingredients: recipe.ingredients,
+        steps: recipe.steps,
+        tags: recipe.tags,
+        servings: recipe.servings,
+        prepTimeMinutes: recipe.prepTimeMinutes,
+        cookTimeMinutes: recipe.cookTimeMinutes,
+        imageUrl: imageUrl ?? "",
+        nutrition: {
+          calories: Math.round(calories),
+          protein: Math.round(protein * 10) / 10,
+          carbs: Math.round(carbs * 10) / 10,
+          fat: Math.round(fat * 10) / 10,
+        },
+        source: "manual_entry",
+        sourcePlatform: null,
+        sourceUrl: undefined,
+        collectionIds: [],
+        isFavorite: false,
+        viewCount: 0,
+        favoriteCount: 0,
+        __v: 0,
+        createdAt: now,
+        updatedAt: now,
+        mealType: recipe.mealType,
+      };
+      const insertResult = await db.collection("recipes").insertOne(recipeDoc as unknown as Document);
+
+      const recipeCostDoc: Omit<RecipeCost, "_id"> = {
+        recipeId: insertResult.insertedId.toString(),
+        basket: cost.basket,
+        currency: cost.currency,
+        coveragePct: cost.coveragePct,
+        adjustedCoveragePct: cost.adjustedCoveragePct,
+        totalLines: cost.totalLines,
+        priceableCount: cost.priceableCount,
+        adjustedTotal: cost.adjustedTotal,
+        adjustedPriceable: cost.adjustedPriceable,
+        pantryLineCount: cost.pantryLineCount,
+        junkLineCount: cost.junkLineCount,
+        perServing: cost.perServing,
+        lines: cost.lines as unknown as RecipeCostLine[],
+        unpriceableReasons: cost.unpriceableReasons,
+        computedAt: now,
+        priceCacheStamp: 0,
+      };
+      await db.collection("recipe_cost").insertOne({ ...recipeCostDoc, recipeId: insertResult.insertedId } as unknown as Document);
+
+      return insertResult.insertedId.toString();
+    });
+
+    const body: ApiResponse<{ recipeId: string }> = { ok: true, data: { recipeId } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] recipe-import manual error:", err instanceof Error ? err.message : String(err));

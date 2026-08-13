@@ -108,7 +108,7 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
       .split(",")
       .map((t) => t.trim())
       .filter((t) => t !== "");
-    const { parsed } = await fetchJson<{ recipeDraftId: string }>("/api/recipe-import/manual", {
+    const { parsed } = await fetchJson<{ recipeId: string }>("/api/recipe-import/manual", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -430,7 +430,9 @@ export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
           {step === "done" ? (
             <>
               <p className="admin-drafts-page__sub">
-                Added to the review queue — go to Admin → Recipe Drafts to check and approve it.
+                {mode === "manual"
+                  ? "Saved! Your recipe is live in Recipes."
+                  : "Added to the review queue — go to Admin → Recipe Drafts to check and approve it."}
               </p>
               <button type="button" className="wizard-primary-button" onClick={onClose}>
                 Done
