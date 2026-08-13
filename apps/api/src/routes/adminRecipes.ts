@@ -11,8 +11,9 @@ import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import { ingredientTextGuard, type ApiResponse, type Recipe } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
+import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
-export const adminRecipesRouter = new Hono<{ Bindings: DbEnv & { ADMIN_TOKEN: string } }>();
+export const adminRecipesRouter = new Hono<{ Bindings: DbEnv & { ADMIN_TOKEN: string } & PexelsEnv }>();
 
 function checkAdminToken(token: string | undefined, expected: string): boolean {
   return !!token && token === expected;
@@ -153,6 +154,81 @@ adminRecipesRouter.patch("/:id", async (c) => {
   } catch (err) {
     console.error("[uiu-api] admin-recipes patch error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to update recipe" } };
+    return c.json(body, 502);
+  }
+});
+
+interface BackfillOutcome {
+  id: string;
+  title: string;
+  outcome: "found" | "not_found";
+  imageUrl?: string;
+}
+
+interface BackfillSummary {
+  dryRun: boolean;
+  totalMissing: number;
+  found: number;
+  notFound: number;
+  results: BackfillOutcome[];
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** HANDOFF_recipe-image-backfill.md §2 — one-off backfill for approved recipes with no
+ * imageUrl (mostly pre-dating aa594e5, the Pexels launch commit). Same dry-run/write
+ * convention as /api/admin/recompute-costs. No retry-with-different-keyword on a miss (V1). */
+adminRecipesRouter.post("/backfill-images", async (c) => {
+  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  const write = c.req.query("write") === "true";
+  const { ObjectId } = await getMongoModule();
+
+  try {
+    const missing = await withDb(c.env, (db) =>
+      db
+        .collection("recipes")
+        .find({ $or: [{ imageUrl: "" }, { imageUrl: { $exists: false } }, { imageUrl: null }] })
+        .project({ title: 1 })
+        .toArray(),
+    );
+
+    const results: BackfillOutcome[] = [];
+    for (const doc of missing) {
+      const id = (doc._id as ObjectIdType).toString();
+      const title = doc.title as string;
+      const imageUrl = await findRecipePhoto(c.env, title);
+      if (imageUrl) {
+        results.push({ id, title, outcome: "found", imageUrl });
+        if (write) {
+          await withDb(c.env, (db) =>
+            db.collection("recipes").updateOne({ _id: new ObjectId(id) }, { $set: { imageUrl, updatedAt: new Date().toISOString() } }),
+          );
+        }
+      } else {
+        results.push({ id, title, outcome: "not_found" });
+      }
+      // Pexels free tier rate limit — same lesson as the daily-recipe-draft cron's
+      // "Too many subrequests" incident, stay well under it with a small delay.
+      await sleep(250);
+    }
+
+    const summary: BackfillSummary = {
+      dryRun: !write,
+      totalMissing: missing.length,
+      found: results.filter((r) => r.outcome === "found").length,
+      notFound: results.filter((r) => r.outcome === "not_found").length,
+      results,
+    };
+    const body: ApiResponse<BackfillSummary> = { ok: true, data: summary };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] admin-recipes backfill-images error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to backfill recipe images" } };
     return c.json(body, 502);
   }
 });
