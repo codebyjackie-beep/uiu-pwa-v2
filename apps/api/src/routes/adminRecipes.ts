@@ -161,7 +161,7 @@ adminRecipesRouter.patch("/:id", async (c) => {
 interface BackfillOutcome {
   id: string;
   title: string;
-  outcome: "found" | "not_found";
+  outcome: "found" | "not_found" | "skipped";
   imageUrl?: string;
 }
 
@@ -170,6 +170,7 @@ interface BackfillSummary {
   totalMissing: number;
   found: number;
   notFound: number;
+  skipped: number;
   results: BackfillOutcome[];
 }
 
@@ -186,6 +187,12 @@ adminRecipesRouter.post("/backfill-images", async (c) => {
     return c.json(body, 401);
   }
   const write = c.req.query("write") === "true";
+  const skipIds = new Set(
+    (c.req.query("skipIds") ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
   const { ObjectId } = await getMongoModule();
 
   try {
@@ -201,6 +208,14 @@ adminRecipesRouter.post("/backfill-images", async (c) => {
     for (const doc of missing) {
       const id = (doc._id as ObjectIdType).toString();
       const title = doc.title as string;
+
+      // Caller-vetted rejection (e.g. a Pexels match confirmed unrelated to the dish) —
+      // never write imageUrl for this id, regardless of what the search returns.
+      if (skipIds.has(id)) {
+        results.push({ id, title, outcome: "skipped" });
+        continue;
+      }
+
       const imageUrl = await findRecipePhoto(c.env, title);
       if (imageUrl) {
         results.push({ id, title, outcome: "found", imageUrl });
@@ -222,6 +237,7 @@ adminRecipesRouter.post("/backfill-images", async (c) => {
       totalMissing: missing.length,
       found: results.filter((r) => r.outcome === "found").length,
       notFound: results.filter((r) => r.outcome === "not_found").length,
+      skipped: results.filter((r) => r.outcome === "skipped").length,
       results,
     };
     const body: ApiResponse<BackfillSummary> = { ok: true, data: summary };
