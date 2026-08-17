@@ -305,6 +305,9 @@ export async function parseRecipeFromText(env: OpenRouterEnv, text: string): Pro
       `The following text is a caption or pasted description for a recipe, possibly with a lot of ` +
       `unrelated commentary/hashtags mixed in. Extract the actual recipe from it — do not invent ` +
       `ingredients or steps that are not implied by the text.\n\n` +
+      `Regardless of what language the source text is written in (Chinese, Cantonese, or any other ` +
+      `language), translate the title, description, ingredient names, and steps into English. Do not ` +
+      `leave any part of the output in the original language.\n\n` +
       `Text:\n"""\n${trimmed}\n"""\n\n` +
       `Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: ` +
       `{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ` +

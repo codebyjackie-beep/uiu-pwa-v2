@@ -126,6 +126,9 @@ const PHOTO_RECIPE_PROMPT_PREFIX = (count: number) =>
   `These ${count} photo${count > 1 ? "s" : ""} show the same handwritten or printed recipe (possibly the front ` +
   `and back of a recipe card, or facing pages of a notebook) — combine them into one complete recipe. Transcribe ` +
   "the handwritten/printed text into structured JSON. " +
+  "Regardless of what language the source text is written in (Chinese, Cantonese, or any other language), " +
+  "translate the title, description, ingredient names, and steps into English. Do not leave any part of the " +
+  "output in the original language. " +
   "Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: " +
   '{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ' +
   '"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}. ' +
