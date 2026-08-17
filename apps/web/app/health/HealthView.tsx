@@ -439,6 +439,7 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
         <div className="health-card__header">
           <h2>Weight</h2>
         </div>
+        <p className="health-disclaimer">Log your weight regularly to track your BMI and see your trend over time.</p>
         <div className="health-weight-log-row">
           <input
             type="number"
