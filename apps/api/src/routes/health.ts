@@ -162,6 +162,13 @@ healthRouter.patch("/weight-logs/:id", async (c) => {
       const result = await db
         .collection("weight_logs")
         .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { weightKg } }, { returnDocument: "after" });
+      if (!result) return null;
+      // Keep the profile's "latest known weight" in sync when the edited entry
+      // is the most recent one (HANDOFF_health-weight-log-profile-sync.md §1).
+      const latest = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(1).toArray();
+      if (latest[0] && latest[0]._id.toString() === result._id.toString()) {
+        await db.collection("user_health_profiles").updateOne({}, { $set: { weightKg, updatedAt: new Date().toISOString() } });
+      }
       return result;
     });
     if (!updated) {
@@ -187,8 +194,25 @@ healthRouter.delete("/weight-logs/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
+      const latestBefore = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(1).toArray();
+      const wasLatest = latestBefore[0]?._id.toString() === id;
+
       const result = await db.collection("weight_logs").deleteOne({ _id: new ObjectId(id) });
-      return result.deletedCount > 0;
+      if (result.deletedCount === 0) return false;
+
+      // Keep the profile's "latest known weight" in sync when the deleted entry
+      // was the most recent one (HANDOFF_health-weight-log-profile-sync.md §2).
+      // If none remain, leave user_health_profiles.weightKg untouched rather than
+      // clearing it — the BMI card should still show a value.
+      if (wasLatest) {
+        const latestAfter = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(1).toArray();
+        if (latestAfter[0]) {
+          await db
+            .collection("user_health_profiles")
+            .updateOne({}, { $set: { weightKg: latestAfter[0].weightKg, updatedAt: new Date().toISOString() } });
+        }
+      }
+      return true;
     });
     if (!deleted) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "weight_logs entry not found" } };
