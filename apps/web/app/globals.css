@@ -2761,6 +2761,28 @@ a {
   font-size: 15px;
 }
 
+.health-barcode-mode-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--uiu-border);
+}
+
+.health-barcode-mode-tab {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  color: var(--uiu-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.health-barcode-mode-tab--active {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+
 .health-meal-card__macros {
   display: flex;
   align-items: center;
