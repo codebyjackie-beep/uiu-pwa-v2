@@ -9,6 +9,15 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#0a0a0a",
     theme_color: "#0a0a0a",
+    share_target: {
+      action: "/recipes/share-target",
+      method: "GET",
+      params: {
+        title: "title",
+        text: "text",
+        url: "url",
+      },
+    },
     icons: [
       // Temporary icon (green bg + white "U") — real icons land with the logo design
       // task (Pending Items). PNGs required for Android's install-prompt heuristic;

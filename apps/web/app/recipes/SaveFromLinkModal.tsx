@@ -26,11 +26,22 @@ const MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack", "dessert"];
 
 type ManualIngredientRow = { name: string; quantity: string; unit: string };
 
-export function SaveFromLinkModal({ onClose }: { onClose: () => void }) {
+interface SaveFromLinkModalProps {
+  onClose: () => void;
+  /** Pre-fill from a Web Share Target hand-off (HANDOFF_recipe-share-target.md) —
+   * a link that was extracted server-side, ready to review/confirm. */
+  initialUrl?: string;
+  /** Pre-fill from a share with no extractable link — dropped straight into the
+   * manual-paste step so the user can review/add detail, same as the existing
+   * "couldn't automatically read this link" fallback. */
+  initialText?: string;
+}
+
+export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFromLinkModalProps) {
   const [mode, setMode] = useState<Mode>("link");
-  const [step, setStep] = useState<Step>("url");
-  const [url, setUrl] = useState("");
-  const [pastedText, setPastedText] = useState("");
+  const [step, setStep] = useState<Step>(initialText ? "manual-paste" : "url");
+  const [url, setUrl] = useState(initialUrl ?? "");
+  const [pastedText, setPastedText] = useState(initialText ?? "");
   const [platform, setPlatform] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

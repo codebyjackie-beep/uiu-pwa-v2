@@ -59,10 +59,28 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
   const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
   const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
+  const [sharePrefill, setSharePrefill] = useState<{ url?: string; text?: string } | null>(null);
   const [randomTen, setRandomTen] = useState<RecipeListItem[]>(() => pickRandom(items, RANDOM_BROWSE_SIZE));
   const [remainingToday, setRemainingToday] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+
+  // Web Share Target hand-off (HANDOFF_recipe-share-target.md §2) — /recipes/share-target
+  // redirects here with ?shareUrl= or ?shareText=; open the modal pre-filled and clean the
+  // URL so a page refresh doesn't reopen it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shareUrl = params.get("shareUrl");
+    const shareText = params.get("shareText");
+    if (shareUrl || shareText) {
+      setSharePrefill({ url: shareUrl ?? undefined, text: shareText ?? undefined });
+      setSaveFromLinkOpen(true);
+      params.delete("shareUrl");
+      params.delete("shareText");
+      const query = params.toString();
+      window.history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -142,7 +160,16 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
           Add a recipe
         </button>
       </div>
-      {saveFromLinkOpen ? <SaveFromLinkModal onClose={() => setSaveFromLinkOpen(false)} /> : null}
+      {saveFromLinkOpen ? (
+        <SaveFromLinkModal
+          onClose={() => {
+            setSaveFromLinkOpen(false);
+            setSharePrefill(null);
+          }}
+          initialUrl={sharePrefill?.url}
+          initialText={sharePrefill?.text}
+        />
+      ) : null}
 
       <div className="recipes-filters">
         <input
