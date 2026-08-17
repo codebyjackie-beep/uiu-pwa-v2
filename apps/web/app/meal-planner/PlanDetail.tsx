@@ -223,7 +223,7 @@ export function PlanDetail({ planId, onBack }: Props) {
                     return (
                       <tr key={item.key} className={done ? "meal-planner-shopping-table__row--done" : undefined}>
                         <td className="meal-planner-shopping-table__name">{item.displayName}</td>
-                        <td>{item.occurrences === 1 ? "Used in 1 meal" : `Used in ${item.occurrences} meals`}</td>
+                        <td>{item.occurrences}</td>
                         <td>{item.store ?? "—"}</td>
                         <td>{item.priceable ? formatCost(item.totalCost) : "—"}</td>
                         <td>
