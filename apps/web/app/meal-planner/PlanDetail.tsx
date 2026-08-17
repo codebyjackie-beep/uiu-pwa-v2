@@ -205,35 +205,43 @@ export function PlanDetail({ planId, onBack }: Props) {
           {aggregated.length === 0 ? (
             <p>No ingredients yet — add meals to this plan first.</p>
           ) : (
-            <div className="meal-planner-cost-breakdown">
-              {aggregated.map((item) => {
-                const status = itemStatus.get(item.key);
-                return (
-                  <div
-                    key={item.key}
-                    className={`meal-planner-cost-breakdown__row${status === "merged" || status === "added" ? " meal-planner-cost-breakdown__row--done" : ""}`}
-                  >
-                    <span className="meal-planner-cost-breakdown__name">
-                      {item.displayName}
-                      <span className="meal-planner-cost-breakdown__meta">
-                        Used in {item.occurrences} meals · {item.store ?? "—"}
-                      </span>
-                    </span>
-                    <span className="meal-planner-cost-breakdown__right">
-                      <span>{item.priceable ? formatCost(item.totalCost) : "—"}</span>
-                      <button
-                        type="button"
-                        className="meal-planner-cost-breakdown__add"
-                        disabled={status === "pending" || status === "merged" || status === "added"}
-                        onClick={() => addToShop(item)}
-                        aria-label={`Add ${item.displayName} to Shop list`}
-                      >
-                        {status === "merged" ? "✓ In Fridge" : status === "added" ? "✓ Added" : "+"}
-                      </button>
-                    </span>
-                  </div>
-                );
-              })}
+            <div className="meal-planner-shopping-table-wrap">
+              <table className="meal-planner-shopping-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Used in</th>
+                    <th>Store</th>
+                    <th>Price</th>
+                    <th aria-hidden="true" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {aggregated.map((item) => {
+                    const status = itemStatus.get(item.key);
+                    const done = status === "merged" || status === "added";
+                    return (
+                      <tr key={item.key} className={done ? "meal-planner-shopping-table__row--done" : undefined}>
+                        <td className="meal-planner-shopping-table__name">{item.displayName}</td>
+                        <td>{item.occurrences === 1 ? "Used in 1 meal" : `Used in ${item.occurrences} meals`}</td>
+                        <td>{item.store ?? "—"}</td>
+                        <td>{item.priceable ? formatCost(item.totalCost) : "—"}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className="meal-planner-shopping-table__add"
+                            disabled={status === "pending" || done}
+                            onClick={() => addToShop(item)}
+                            aria-label={`Add ${item.displayName} to Shop list`}
+                          >
+                            {status === "merged" ? "✓ In Fridge" : status === "added" ? "✓ Added" : "+"}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
           <Link href="/shop" className="wizard-primary-button">

@@ -210,7 +210,14 @@ export function FridgePage() {
       setScanError("No items recognized in that photo. Please enter manually.");
       return;
     }
-    setReviewItems(parsed.data.map((item) => ({ ...item, unit: "pc", include: true })));
+    setReviewItems(
+      parsed.data.map((item) => ({
+        ...item,
+        quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
+        unit: "pc",
+        include: true,
+      })),
+    );
   }
 
   function updateReviewItem(index: number, patch: Partial<ScanReviewItem>) {

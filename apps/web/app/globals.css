@@ -65,8 +65,10 @@ a {
 
 .bottom-nav__tab {
   flex: 1;
-  text-align: center;
-  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   color: var(--uiu-muted);
   padding: 8px 4px;
 }
@@ -1334,51 +1336,57 @@ a {
   border-color: var(--uiu-red);
 }
 
-.meal-planner-cost-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 8px;
+.meal-planner-shopping-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--uiu-surface);
   border-radius: 8px;
+}
+
+.meal-planner-shopping-table {
+  width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
   font-size: 12px;
 }
 
-.meal-planner-cost-breakdown__row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.meal-planner-shopping-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--uiu-muted);
-  gap: 8px;
+  border-bottom: 1px solid var(--uiu-border);
+  white-space: nowrap;
 }
 
-.meal-planner-cost-breakdown__row--done {
+.meal-planner-shopping-table td {
+  padding: 8px 10px;
+  color: var(--uiu-muted);
+  border-bottom: 1px solid var(--uiu-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.meal-planner-shopping-table tr:last-child td {
+  border-bottom: none;
+}
+
+.meal-planner-shopping-table tr.meal-planner-shopping-table__row--done {
   opacity: 0.45;
 }
 
-.meal-planner-cost-breakdown__name {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  font-size: 15px;
+.meal-planner-shopping-table__name {
+  min-width: 140px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--uiu-green-ink);
+  white-space: normal;
 }
 
-.meal-planner-cost-breakdown__meta {
-  font-size: 11px;
-  color: var(--uiu-muted);
-}
-
-.meal-planner-cost-breakdown__right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.meal-planner-cost-breakdown__add {
+.meal-planner-shopping-table__add {
   min-width: 26px;
   height: 26px;
   padding: 0 6px;
@@ -1391,7 +1399,7 @@ a {
   cursor: pointer;
 }
 
-.meal-planner-cost-breakdown__add:disabled {
+.meal-planner-shopping-table__add:disabled {
   cursor: default;
   color: var(--uiu-muted);
 }
@@ -2240,7 +2248,7 @@ a {
 
 .fridge-scan-review__row {
   display: grid;
-  grid-template-columns: auto 1fr 70px 70px;
+  grid-template-columns: auto 1fr 52px 52px;
   gap: 8px;
   align-items: center;
 }
