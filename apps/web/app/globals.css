@@ -2607,6 +2607,66 @@ a {
   height: 100px;
 }
 
+.health-weight-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.health-weight-log-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--uiu-border);
+}
+
+.health-weight-log-item:last-child {
+  border-bottom: none;
+}
+
+.health-weight-log-item__date {
+  font-size: 12px;
+  color: var(--uiu-muted);
+  flex: 1 1 auto;
+}
+
+.health-weight-log-item__value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.health-weight-log-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.health-weight-log-item__icon-button {
+  background: none;
+  border: none;
+  color: var(--uiu-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.health-weight-log-item__icon-button:hover {
+  color: var(--uiu-black);
+}
+
+.health-weight-log-item input {
+  flex: 1 1 100px;
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--uiu-border);
+  background: var(--uiu-white);
+  color: var(--uiu-black);
+}
+
 .health-trend-chart__label {
   font-size: 9px;
   fill: var(--uiu-muted);

@@ -13,6 +13,38 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Re
 
 const MACRO_COLORS = { protein: "#f97316", carbs: "#3b82f6", fat: "#ec4899" } as const;
 
+const ROW_ICON_PROPS = {
+  width: 18,
+  height: 18,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+} as const;
+
+function PencilIcon() {
+  return (
+    <svg {...ROW_ICON_PROPS}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg {...ROW_ICON_PROPS}>
+      <path d="M3 6h18" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  );
+}
+
 function bmiOf(heightCm: number, weightKg: number): number {
   const m = heightCm / 100;
   return weightKg / (m * m);
@@ -187,6 +219,11 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
   const [weightInput, setWeightInput] = useState("");
   const [loggingWeight, setLoggingWeight] = useState(false);
 
+  const [editingLogId, setEditingLogId] = useState<string | null>(null);
+  const [editLogValue, setEditLogValue] = useState("");
+  const [savingLogId, setSavingLogId] = useState<string | null>(null);
+  const [deletingLogId, setDeletingLogId] = useState<string | null>(null);
+
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -271,6 +308,54 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
     if (profile) setProfile({ ...profile, weightKg, updatedAt: parsed.data.loggedAt });
     setWeightInput("");
     flash("Weight logged.");
+  }
+
+  const recentWeightLogs = useMemo(() => [...weightLogs].slice(-10).reverse(), [weightLogs]);
+
+  function startEditLog(log: WeightLogEntry) {
+    setEditingLogId(log._id);
+    setEditLogValue(String(log.weightKg));
+  }
+
+  function cancelEditLog() {
+    setEditingLogId(null);
+    setEditLogValue("");
+  }
+
+  async function saveEditLog(id: string) {
+    const weightKg = Number(editLogValue);
+    if (!Number.isFinite(weightKg) || weightKg <= 0) {
+      flash("Enter a valid weight.");
+      return;
+    }
+    setSavingLogId(id);
+    const { parsed } = await fetchJson<WeightLogEntry>(`/api/health/weight-logs/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ weightKg }),
+    });
+    setSavingLogId(null);
+    if (!parsed || !parsed.ok) {
+      flash(parsed && !parsed.ok ? `Failed: ${parsed.error.message}` : "Failed to update weight log.");
+      return;
+    }
+    setWeightLogs((prev) => prev.map((l) => (l._id === id ? parsed.data : l)));
+    setEditingLogId(null);
+    setEditLogValue("");
+    flash("Weight log updated.");
+  }
+
+  async function deleteLog(id: string) {
+    if (!window.confirm("Delete this weight log?")) return;
+    setDeletingLogId(id);
+    const { parsed } = await fetchJson<{ deleted: true }>(`/api/health/weight-logs/${id}`, { method: "DELETE" });
+    setDeletingLogId(null);
+    if (!parsed || !parsed.ok) {
+      flash(parsed && !parsed.ok ? `Failed: ${parsed.error.message}` : "Failed to delete weight log.");
+      return;
+    }
+    setWeightLogs((prev) => prev.filter((l) => l._id !== id));
+    flash("Weight log deleted.");
   }
 
   function prependMealLog(entry: MealLogEntry) {
@@ -454,6 +539,64 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
           </button>
         </div>
         <WeightTrendChart logs={weightLogs} />
+
+        {recentWeightLogs.length > 0 ? (
+          <div className="health-weight-log-list">
+            {recentWeightLogs.map((log) => (
+              <div key={log._id} className="health-weight-log-item">
+                {editingLogId === log._id ? (
+                  <>
+                    <input
+                      type="number"
+                      min={0}
+                      step="any"
+                      value={editLogValue}
+                      onChange={(e) => setEditLogValue(e.target.value)}
+                      autoFocus
+                    />
+                    <div className="health-weight-log-item__actions">
+                      <button
+                        type="button"
+                        className="health-link-button"
+                        disabled={savingLogId === log._id}
+                        onClick={() => saveEditLog(log._id)}
+                      >
+                        {savingLogId === log._id ? "Saving…" : "Save"}
+                      </button>
+                      <button type="button" className="health-link-button" onClick={cancelEditLog} disabled={savingLogId === log._id}>
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="health-weight-log-item__date">{dayLabel(dayKey(log.loggedAt))}</span>
+                    <span className="health-weight-log-item__value">{log.weightKg}kg</span>
+                    <div className="health-weight-log-item__actions">
+                      <button
+                        type="button"
+                        className="health-weight-log-item__icon-button"
+                        aria-label="Edit weight log"
+                        onClick={() => startEditLog(log)}
+                      >
+                        <PencilIcon />
+                      </button>
+                      <button
+                        type="button"
+                        className="health-weight-log-item__icon-button"
+                        aria-label="Delete weight log"
+                        disabled={deletingLogId === log._id}
+                        onClick={() => deleteLog(log._id)}
+                      >
+                        <TrashIcon />
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <section className="health-card">

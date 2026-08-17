@@ -142,6 +142,41 @@ healthRouter.post("/weight-logs", async (c) => {
   }
 });
 
+healthRouter.patch("/weight-logs/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid weight_logs id" } };
+    return c.json(body, 400);
+  }
+
+  const payload = await c.req.json().catch(() => null);
+  const weightKg = Number(payload?.weightKg);
+  if (!Number.isFinite(weightKg) || weightKg <= 0) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "weightKg (> 0) is required" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const updated = await withDb(c.env, async (db) => {
+      const result = await db
+        .collection("weight_logs")
+        .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { weightKg } }, { returnDocument: "after" });
+      return result;
+    });
+    if (!updated) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "weight_logs entry not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<WeightLogEntry> = { ok: true, data: toWeightLog(updated) };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] weight-logs patch error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to update weight log" } };
+    return c.json(body, 502);
+  }
+});
+
 healthRouter.delete("/weight-logs/:id", async (c) => {
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
