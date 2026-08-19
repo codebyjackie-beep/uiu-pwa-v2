@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
+import { FridgeRecipeGenModal } from "./FridgeRecipeGenModal";
 
 interface IngredientOption {
   id: string;
@@ -72,6 +73,16 @@ function FridgeIcon() {
   );
 }
 
+function ChefHatIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 18v-6a6 6 0 0 1 4-5.66 3 3 0 0 1 5.9-1.05A5 5 0 0 1 20 10a5 5 0 0 1-2 10.4V18" transform="translate(0,-1)" />
+      <path d="M8 12a4 4 0 0 1 8 0v6H8z" />
+      <line x1="6" y1="21" x2="18" y2="21" />
+    </svg>
+  );
+}
+
 export function FridgePage() {
   const [items, setItems] = useState<FridgeStockItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +104,8 @@ export function FridgePage() {
   const [confirming, setConfirming] = useState(false);
   const ocrInputRef = useRef<HTMLInputElement>(null);
   const photoScanInputRef = useRef<HTMLInputElement>(null);
+
+  const [genModalOpen, setGenModalOpen] = useState(false);
 
   useEffect(() => {
     void loadItems();
@@ -321,6 +334,9 @@ export function FridgePage() {
           <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
             <FridgeIcon /> {SCAN_LABELS["photo-scan"].button}
           </button>
+          <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => setGenModalOpen(true)}>
+            <ChefHatIcon /> Cook with what I have
+          </button>
         </div>
         <input
           ref={ocrInputRef}
@@ -429,6 +445,8 @@ export function FridgePage() {
           );
         })}
       </div>
+
+      {genModalOpen ? <FridgeRecipeGenModal items={sortedItems} onClose={() => setGenModalOpen(false)} /> : null}
     </div>
   );
 }

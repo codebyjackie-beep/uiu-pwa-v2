@@ -13,6 +13,7 @@ import { shopRouter } from "./routes/shop";
 import { shoppingListRouter } from "./routes/shoppingList";
 import { healthRouter } from "./routes/health";
 import { recipeImportRouter } from "./routes/recipeImport";
+import { fridgeRecipeGenRouter } from "./routes/fridgeRecipeGen";
 import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
@@ -71,6 +72,7 @@ app.get("/api/version", (c) => {
 });
 
 app.route("/api/recipes", recipesRouter);
+app.route("/api/recipes", fridgeRecipeGenRouter);
 app.route("/api/meal-plan", mealPlanRouter);
 app.route("/api/meal-plan-sets", mealPlanSetsRouter);
 app.route("/api/admin/recipe-drafts", adminRecipeDraftsRouter);

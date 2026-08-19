@@ -222,6 +222,7 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
         imageUrl: imageUrl ?? "",
         nutrition: draft.nutrition as Recipe["nutrition"],
         source: draft.importMethod === "photo-ocr" ? "photo_import"
+          : draft.importMethod === "fridge_generated" ? "fridge_generated"
           : draft.sourceUrl ? "social_import"
           : "ai_daily_draft",
         sourcePlatform: (draft.sourcePlatform as Recipe["sourcePlatform"]) ?? null,

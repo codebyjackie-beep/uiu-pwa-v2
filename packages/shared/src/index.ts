@@ -678,7 +678,7 @@ export interface RecipeDraft {
   sourceUrl?: string;
   sourcePlatform?: "tiktok" | "instagram" | "facebook" | "pinterest" | "youtube" | null;
   /** Debug field, mirrors sourceInspiration convention — which tier actually produced this draft. */
-  importMethod?: "jsonld" | "oembed-caption" | "manual-paste" | "photo-ocr";
+  importMethod?: "jsonld" | "oembed-caption" | "manual-paste" | "photo-ocr" | "fridge_generated";
 }
 
 /** One cell of the 4 (meal slot) x 10 (DIETARY_FILTERS key) gap matrix. */
