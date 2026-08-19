@@ -2291,6 +2291,14 @@ a {
   gap: 8px;
 }
 
+.fridge-genmodal__row input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  flex: 0 0 auto;
+}
+
 /* --- Shop tab (HANDOFF_shop-tab-v1.md) --- */
 
 .shop-page {
