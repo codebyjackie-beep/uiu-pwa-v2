@@ -115,7 +115,11 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const filtered = useMemo(() => {
     const searchLower = search.trim().toLowerCase();
     return items.filter((recipe) => {
-      if (searchLower && !recipe.title.toLowerCase().includes(searchLower)) return false;
+      if (searchLower) {
+        const titleMatch = recipe.title.toLowerCase().includes(searchLower);
+        const tagMatch = recipe.tags.some((t) => t.toLowerCase().includes(searchLower));
+        if (!titleMatch && !tagMatch) return false;
+      }
 
       if (mealTypes.length > 0) {
         const recipeTypes = classifyMealTypes(recipe);

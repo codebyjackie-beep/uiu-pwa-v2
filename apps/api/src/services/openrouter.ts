@@ -57,6 +57,27 @@ function buildPrompt(input: DraftPromptInput): string {
       `${input.canonicalNames.join(", ")}.`,
   );
   lines.push(
+    `Before outputting, cross-check every dietary tag against the actual ingredients[] you just wrote — ` +
+      `do not guess. Only include "vegetarian" if no meat/poultry/fish ingredient is present. Only include ` +
+      `"vegan" if no animal product (meat/fish/dairy/egg/honey) is present at all. Only include ` +
+      `"gluten-free" if no wheat/flour/pasta/bread/barley/rye/oats(non-GF) ingredient is present. Only ` +
+      `include "dairy-free" if no milk/cheese/butter/cream/yoghurt ingredient is present. If you are not ` +
+      `certain a dietary tag is accurate, leave it out rather than including it speculatively — a missing ` +
+      `tag is far less harmful than a wrong one, since these tags directly drive Meal Planner's dietary ` +
+      `filtering.`,
+  );
+  lines.push(
+    `Also ensure "mealType" is exactly one of: breakfast, lunch, dinner, snack, dessert — no other ` +
+      `value. In tags[], besides mealType/dietary tags, include AT LEAST 5-8 additional specific and ` +
+      `useful tags covering multiple angles — cuisine origin (e.g. "greek", "sichuan"), cooking method ` +
+      `(e.g. "sheet-pan", "one-pot", "no-bake"), standout ingredients (e.g. "feta", "chickpea"), ` +
+      `texture/mood (e.g. "creamy", "spicy", "comfort-food"), and occasion (e.g. "weeknight", ` +
+      `"meal-prep", "date-night") where genuinely applicable — the goal is to maximize how findable this ` +
+      `recipe is via tag search, so err on the side of more specific tags rather than fewer. Avoid only ` +
+      `generic filler tags like "easy" or "dinner" that duplicate mealType or add no searchable ` +
+      `information — those can still appear, but should not be the ONLY other tags.`,
+  );
+  lines.push(
     `Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: ` +
       `{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ` +
       `"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}.`,
