@@ -166,6 +166,152 @@ adminRecipeDraftsRouter.get("/:id/cost-lines", async (c) => {
   }
 });
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function extractTagJson(text: string): unknown {
+  const trimmed = text.trim();
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  const candidate = fenced ? fenced[1]! : trimmed;
+  return JSON.parse(candidate);
+}
+
+/** HANDOFF_recipe-drafts-batch-regenerate.md §1 — same dietary self-check rule as
+ * HANDOFF_recipe-draft-tag-accuracy.md §1's draft-generation prompt, applied here as a
+ * classify-only pass (existing ingredients/steps are input, never rewritten). */
+function buildTagClassifyPrompt(draft: { title: string; description: string; ingredients: Array<{ name: string; quantity: number; unit: string }>; steps: string[] }): string {
+  return (
+    `Here is an existing recipe (do NOT rewrite it, only classify it):\n` +
+    `Title: ${draft.title}\n` +
+    `Description: ${draft.description}\n` +
+    `Ingredients: ${draft.ingredients.map((i) => `${i.quantity} ${i.unit} ${i.name}`).join(", ")}\n` +
+    `Steps: ${draft.steps.join(" ")}\n\n` +
+    `Based ONLY on the above, output corrected tags. Cross-check every dietary tag against the ` +
+    `actual ingredients — only include "vegetarian" if no meat/poultry/fish ingredient is present, ` +
+    `"vegan" only if no animal product at all, "gluten-free" only if no wheat/flour/pasta/bread/ ` +
+    `barley/rye/non-GF-oats ingredient is present, "dairy-free" only if no milk/cheese/butter/cream/ ` +
+    `yoghurt ingredient is present. If uncertain, leave the tag out. Ensure "mealType" is exactly one ` +
+    `of: breakfast, lunch, dinner, snack, dessert. Besides mealType/dietary tags, include at least ` +
+    `5-8 additional specific tags (cuisine, cooking method, standout ingredients, texture/mood, ` +
+    `occasion) — avoid only-generic filler like "easy"/"dinner".\n\n` +
+    `Respond with ONLY a JSON object: {"tags": [string], "mealType": string}.`
+  );
+}
+
+interface BackfillTagsAndImagesResult {
+  id: string;
+  title: string;
+  oldTags: string[];
+  newTags: string[];
+  oldMealType: string | undefined;
+  newMealType: string | undefined;
+  imageFound: boolean;
+}
+
+interface BackfillTagsAndImagesSummary {
+  dryRun: boolean;
+  processed: number;
+  succeeded: number;
+  failed: number;
+  nextAfterId: string | null;
+  results: BackfillTagsAndImagesResult[];
+}
+
+/** HANDOFF_recipe-drafts-batch-regenerate.md — backfills tags/mealType/imageUrl on existing
+ * pending drafts using the improved classify prompt + Pexels lookup, WITHOUT touching
+ * title/description/ingredients/steps/servings/prepTimeMinutes/cookTimeMinutes (Jackie's explicit
+ * scope decision — she'd already reviewed some drafts' ingredients and didn't want them replaced). */
+adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
+  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  const write = c.req.query("write") === "true";
+  const limit = Math.max(1, Number(c.req.query("limit")) || 50);
+  const afterIdParam = c.req.query("afterId");
+  const { ObjectId } = await getMongoModule();
+  if (afterIdParam && !ObjectId.isValid(afterIdParam)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid afterId" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const results: BackfillTagsAndImagesResult[] = [];
+    const summary = await withDb(c.env, async (db) => {
+      const filter: Document = { status: "pending" };
+      if (afterIdParam) filter._id = { $gt: new ObjectId(afterIdParam) };
+      const drafts = await db.collection("recipe_drafts").find(filter).sort({ _id: 1 }).limit(limit).toArray();
+
+      for (const draft of drafts) {
+        const id = (draft._id as ObjectIdType).toString();
+        const title = draft.title as string;
+        const oldTags = (draft.tags as string[]) ?? [];
+        const oldMealType = draft.mealType as string | undefined;
+
+        try {
+          const prompt = buildTagClassifyPrompt({
+            title,
+            description: (draft.description as string) ?? "",
+            ingredients: draft.ingredients as Array<{ name: string; quantity: number; unit: string }>,
+            steps: draft.steps as string[],
+          });
+          const tagRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${c.env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: c.env.OPENROUTER_MODEL,
+              messages: [{ role: "user", content: prompt }],
+              response_format: { type: "json_object" },
+            }),
+          });
+          if (!tagRes.ok) throw new Error(`OpenRouter ${tagRes.status}`);
+          const tagJson = (await tagRes.json()) as { choices?: Array<{ message?: { content?: string } }> };
+          const content = tagJson.choices?.[0]?.message?.content;
+          if (!content) throw new Error("Empty OpenRouter response");
+          const parsed = extractTagJson(content) as { tags?: unknown; mealType?: unknown };
+          const newTags = Array.isArray(parsed.tags) ? (parsed.tags as string[]) : oldTags;
+          const newMealType = typeof parsed.mealType === "string" ? parsed.mealType : oldMealType;
+
+          const imageUrl = await findRecipePhoto(c.env, title).catch(() => null);
+
+          if (write) {
+            await db.collection("recipe_drafts").updateOne(
+              { _id: draft._id as ObjectIdType },
+              { $set: { tags: newTags, mealType: newMealType, imageUrl } },
+            );
+          }
+          results.push({ id, title, oldTags, newTags, oldMealType, newMealType, imageFound: !!imageUrl });
+        } catch (err) {
+          console.error("[uiu-api] backfill-tags-and-images item error:", id, err instanceof Error ? err.message : String(err));
+          results.push({ id, title, oldTags, newTags: oldTags, oldMealType, newMealType: oldMealType, imageFound: false });
+        }
+        // OpenRouter/Pexels rate limit — same 250ms lesson as backfill-images.
+        await sleep(250);
+      }
+
+      const nextAfterId = drafts.length === limit ? (drafts[drafts.length - 1]!._id as ObjectIdType).toString() : null;
+      const succeeded = results.filter((r) => r.newTags !== r.oldTags || r.imageFound).length;
+      const body: BackfillTagsAndImagesSummary = {
+        dryRun: !write,
+        processed: results.length,
+        succeeded,
+        failed: results.length - succeeded,
+        nextAfterId,
+        results,
+      };
+      return body;
+    });
+
+    const body: ApiResponse<BackfillTagsAndImagesSummary> = { ok: true, data: summary };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] backfill-tags-and-images error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to backfill tags and images" } };
+    return c.json(body, 502);
+  }
+});
+
 adminRecipeDraftsRouter.post("/run", async (c) => {
   if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
     const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
