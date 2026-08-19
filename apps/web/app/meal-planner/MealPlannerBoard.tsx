@@ -11,7 +11,7 @@ import type {
   RecipeListPage,
 } from "@uiu/shared";
 import { dayIndexLabel, todayDayIndex } from "../lib/dates";
-import { mealTypeBadge } from "../lib/recipeDisplay";
+import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
 
 function formatRecipePrice(cost: RecipeListItem["cost"]) {
   if (!cost || cost.basket <= 0) return null;
@@ -327,7 +327,7 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                         {price ? (
                           <span className="recipe-card__price">{price}</span>
                         ) : (
-                          <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
+                          <span className="recipe-card__price recipe-card__price--pending">{costPendingLabel(recipe)}</span>
                         )}
                       </div>
                       <p className="recipe-card__title">{recipe.title}</p>

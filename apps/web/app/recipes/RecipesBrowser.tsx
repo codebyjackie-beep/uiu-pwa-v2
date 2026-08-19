@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, RecipeListItem } from "@uiu/shared";
-import { mealTypeBadge } from "../lib/recipeDisplay";
+import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
   DIETARY_PREDICATES,
@@ -259,7 +259,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
                   {formatPrice(recipe.cost) ? (
                     <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
                   ) : (
-                    <span className="recipe-card__price recipe-card__price--pending">calculating…</span>
+                    <span className="recipe-card__price recipe-card__price--pending">{costPendingLabel(recipe)}</span>
                   )}
                 </div>
                 <p className="recipe-card__title">{recipe.title}</p>

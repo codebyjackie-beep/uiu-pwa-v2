@@ -127,6 +127,9 @@ export interface RecipeListItem {
   cost: RecipeListItemCost | null;
   /** ingredients.length — trimmed count for the list-card meta line, not the full array. */
   ingredientCount: number;
+  /** Projected from Recipe.enrichmentAttempted — lets the client distinguish "still calculating"
+   * from "enrichment ran and genuinely found nothing" (HANDOFF_recipe-missing-ingredients-enrichment.md §3). */
+  enrichmentAttempted?: boolean;
 }
 
 export interface RecipeListPage {

@@ -165,7 +165,10 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
 /** Fetches every public recipe joined with its recipe_cost doc. Read-only — touches no other collection. */
 export async function buildPool(env: DbEnv): Promise<PoolRecipe[]> {
   return withDb(env, async (db) => {
-    const recipeDocs = await db.collection("recipes").find({ isPublic: true }).toArray();
+    const recipeDocs = await db
+      .collection("recipes")
+      .find({ isPublic: true, "ingredients.0": { $exists: true } })
+      .toArray();
     const ids = recipeDocs.map((d) => d._id as ObjectIdType);
     const costDocs = ids.length
       ? await db.collection("recipe_cost").find({ recipeId: { $in: ids } }).toArray()

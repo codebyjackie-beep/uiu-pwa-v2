@@ -1,6 +1,7 @@
 import type { RecipeDetail, RecipeDetailCostLine } from "@uiu/shared";
 import { apiGet } from "../../lib/api";
 import {
+  costPendingLabel,
   dietaryBadges,
   formatIngredientQuantity,
   formatIngredientStorePrice,
@@ -58,7 +59,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         {hasCost ? (
           <p className="cost-hero__price">£{recipe.cost!.perServing.toFixed(2)}</p>
         ) : (
-          <p className="cost-hero__price cost-hero__price--pending">price calculating…</p>
+          <p className="cost-hero__price cost-hero__price--pending">
+            {costPendingLabel({ enrichmentAttempted: recipe.enrichmentAttempted, ingredientCount: recipe.ingredients.length })}
+          </p>
         )}
         <div className="macro-tiles">
           <div className="macro-tile">

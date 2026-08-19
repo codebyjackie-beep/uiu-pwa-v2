@@ -23,6 +23,17 @@ const BADGE_PRIORITY: FilterMealType[] = ["breakfast", "lunch", "dinner", "snack
  * which picked whatever meal-type tag happened to be stored first and could show e.g. "Brunch"
  * on a recipe the Breakfast filter matched (2026-08-04 Task B bug).
  */
+/**
+ * "calculating…" should only appear while a cost is genuinely pending — for recipes where
+ * enrichment already ran and found zero ingredients, cost will never arrive, so show a
+ * permanent "not available" label instead (HANDOFF_recipe-missing-ingredients-enrichment.md §3).
+ */
+export function costPendingLabel(recipe: { enrichmentAttempted?: boolean; ingredientCount?: number }): string {
+  const noIngredients = (recipe.ingredientCount ?? 0) === 0;
+  if (recipe.enrichmentAttempted && noIngredients) return "Ingredients not available";
+  return "calculating…";
+}
+
 export function mealTypeBadge(recipe: MealTagged): string | null {
   if (recipe.mealType && MEAL_TYPES.includes(recipe.mealType.toLowerCase())) {
     return capitalize(recipe.mealType);
