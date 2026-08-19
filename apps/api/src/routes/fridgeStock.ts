@@ -260,8 +260,12 @@ fridgeStockRouter.delete("/:id", async (c) => {
 fridgeStockRouter.post("/ocr", (c) =>
   handleImageScan(
     c,
-    "Read this shopping receipt. List each purchased item with its name and quantity if visible. " +
-      'Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null}].',
+    "Read this shopping receipt. List ONLY the food and grocery items purchased — exclude non-food " +
+      "items entirely (e.g. toiletries, cleaning products, toothpaste, tissue/toilet paper, medicine, " +
+      "pet supplies, batteries, stationery, kitchenware/homeware). If an item is ambiguous or you are " +
+      "unsure whether it is food, leave it out rather than guessing. For each remaining item give its " +
+      'name and quantity if visible. Respond with ONLY a JSON array, no markdown fences, no commentary: ' +
+      '[{"name": string, "quantity": number|null}].',
   ),
 );
 
