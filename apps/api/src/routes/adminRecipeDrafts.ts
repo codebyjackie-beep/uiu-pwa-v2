@@ -201,8 +201,13 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       if (draft.status !== "pending") return { alreadyDecided: true as const };
 
       const now = new Date().toISOString();
-      // Best-effort — never fail approval on a Pexels error (HANDOFF: graceful fallback).
-      const imageUrl = await findRecipePhoto(c.env, draft.title as string).catch(() => null);
+      // Prefer the image already fetched at draft-creation time (HANDOFF_recipe-image-gaps.md
+      // §2) — saves a Pexels call and keeps what the reviewer saw in sync with what gets
+      // published. Only fall back to a fresh lookup for older drafts that predate this field.
+      const draftImageUrl = draft.imageUrl as string | null | undefined;
+      const imageUrl = draftImageUrl
+        ? draftImageUrl
+        : await findRecipePhoto(c.env, draft.title as string).catch(() => null);
       // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: never auto-publish a
       // draft whose ingredient lines look like an unparsed label blob (>=3 consecutive
       // quantity=0/unit='' lines) — flag needs_review instead of setting isPublic true.

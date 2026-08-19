@@ -1880,6 +1880,16 @@ a {
   flex-shrink: 0;
 }
 
+.admin-drafts-card__thumb--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #999;
+  font-size: 10px;
+  text-align: center;
+}
+
 .admin-drafts-card__title {
   margin: 0 0 4px;
   font-size: 16px;

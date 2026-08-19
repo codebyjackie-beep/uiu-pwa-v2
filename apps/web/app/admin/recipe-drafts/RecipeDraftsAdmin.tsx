@@ -311,6 +311,12 @@ export function RecipeDraftsAdmin() {
                 className="admin-drafts-card__header"
                 onClick={() => toggleExpand(d)}
               >
+                {d.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={d.imageUrl} alt="" className="admin-drafts-card__thumb" />
+                ) : (
+                  <span className="admin-drafts-card__thumb admin-drafts-card__thumb--placeholder">未有相</span>
+                )}
                 <div className="admin-drafts-card__header-main">
                   <p className="admin-drafts-card__title">{d.title}</p>
                   <p className="admin-drafts-card__meta">

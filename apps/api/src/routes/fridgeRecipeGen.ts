@@ -15,8 +15,9 @@ import type { OpenRouterEnv } from "../services/openrouter";
 import { generateRecipeFromFridge } from "../services/fridgeRecipeGen";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
+import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
-type FridgeRecipeGenEnv = DbEnv & OpenRouterEnv;
+type FridgeRecipeGenEnv = DbEnv & OpenRouterEnv & PexelsEnv;
 
 export const fridgeRecipeGenRouter = new Hono<{ Bindings: FridgeRecipeGenEnv }>();
 
@@ -136,6 +137,10 @@ fridgeRecipeGenRouter.post("/save-fridge-draft", async (c) => {
       const costPreview: RecipeListItemCost | null =
         cost.basket > 0 ? { basket: cost.basket, currency: "GBP", perServing: cost.perServing, adjustedCoveragePct: cost.adjustedCoveragePct } : null;
 
+      // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
+      // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
+      const imageUrl = await findRecipePhoto(c.env, recipe.title).catch(() => null);
+
       const draft: Omit<RecipeDraft, "_id"> = {
         title: recipe.title,
         description: recipe.description,
@@ -157,6 +162,7 @@ fridgeRecipeGenRouter.post("/save-fridge-draft", async (c) => {
         sourceInspiration: "",
         costPreview,
         importMethod: "fridge_generated",
+        imageUrl,
       };
       const result = await db.collection("recipe_drafts").insertOne(draft as unknown as Document);
       return result.insertedId.toString();

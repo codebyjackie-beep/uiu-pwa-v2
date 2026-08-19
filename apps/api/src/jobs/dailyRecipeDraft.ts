@@ -25,8 +25,9 @@ import { fetchSpoonacularIdeas, type SpoonacularEnv } from "../services/spoonacu
 import { draftRecipe, type OpenRouterEnv } from "../services/openrouter";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
+import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
-export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv {}
+export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv, PexelsEnv {}
 
 export interface DailyRecipeDraftSummary {
   dryRun: boolean;
@@ -218,6 +219,10 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       fat += n.fat * factor;
     }
 
+    // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
+    // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
+    const imageUrl = await findRecipePhoto(env, drafted.title).catch(() => null);
+
     const draft: RecipeDraft = {
       _id: "",
       title: drafted.title,
@@ -242,6 +247,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       costPreview: cost.basket > 0
         ? { basket: cost.basket, currency: "GBP", perServing: cost.perServing, adjustedCoveragePct: cost.adjustedCoveragePct }
         : null,
+      imageUrl,
     };
     drafts.push(draft);
     summaryDrafts.push({ title: draft.title, sourceInspiration: draft.sourceInspiration, gapTarget: draft.gapTarget });
