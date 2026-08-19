@@ -3,13 +3,16 @@
  * generator. No ADMIN_TOKEN, same convention as fridgeStock.ts/recipeImport.ts
  * (user-facing, single-user app). Two endpoints:
  *   POST /generate-from-fridge — pure LLM call, writes nothing to DB (§1).
- *   POST /save-fridge-draft    — user hit Save on the review screen, inserts
- *                                 into recipe_drafts like the other import
- *                                 tiers (§2.4/§2.5) — importMethod "fridge_generated".
+ *   POST /save-fridge-recipe   — user hit Save on the review screen. Writes
+ *                                 straight into `recipes` (isPublic:true,
+ *                                 source:"fridge_generated") + `recipe_cost` —
+ *                                 no recipe_drafts/admin-approve step, per
+ *                                 Jackie's 2026-08-20 request to skip review
+ *                                 for fridge-generated recipes.
  */
 import { Hono } from "hono";
 import type { Document } from "mongodb";
-import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeListItemCost } from "@uiu/shared";
+import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe, RecipeCost, RecipeCostLine, RecipeIngredient } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 import type { OpenRouterEnv } from "../services/openrouter";
 import { generateRecipeFromFridge } from "../services/fridgeRecipeGen";
@@ -58,7 +61,7 @@ fridgeRecipeGenRouter.post("/generate-from-fridge", async (c) => {
   }
 });
 
-fridgeRecipeGenRouter.post("/save-fridge-draft", async (c) => {
+fridgeRecipeGenRouter.post("/save-fridge-recipe", async (c) => {
   const payload = await c.req.json().catch(() => null);
   if (!payload || typeof payload !== "object") {
     const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "JSON body required" } };
@@ -105,7 +108,7 @@ fridgeRecipeGenRouter.post("/save-fridge-draft", async (c) => {
   };
 
   try {
-    const recipeDraftId = await withDb(c.env, async (db) => {
+    const recipeId = await withDb(c.env, async (db) => {
       const ingredientsCol = db.collection<Document>("canonical_ingredients");
       const priceCol = db.collection<Document>("canonical_price_cache");
       const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
@@ -118,11 +121,15 @@ fridgeRecipeGenRouter.post("/save-fridge-draft", async (c) => {
       const index = await buildAliasIndex(ingredientsCol);
       const resolveFn = (rawName: string) => resolve(rawName, index);
 
-      const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
-      const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-
       let calories = 0, protein = 0, carbs = 0, fat = 0;
-      for (const line of cost.lines as unknown as RecipeCostLine[]) {
+      const previewCost = costRecipe(
+        { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe,
+        resolveFn,
+        ingredientsMap,
+        priceMap,
+        quarantinedNames,
+      );
+      for (const line of previewCost.lines as unknown as RecipeCostLine[]) {
         if (!line.priceable || line.normUnit !== "g" || !line.canonical_name || !line.normValue) continue;
         const doc = ingredientsMap.get(line.canonical_name);
         const n = doc?.nutrition_per_100g;
@@ -134,45 +141,73 @@ fridgeRecipeGenRouter.post("/save-fridge-draft", async (c) => {
         fat += n.fat * factor;
       }
 
-      const costPreview: RecipeListItemCost | null =
-        cost.basket > 0 ? { basket: cost.basket, currency: "GBP", perServing: cost.perServing, adjustedCoveragePct: cost.adjustedCoveragePct } : null;
-
-      // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
-      // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
+      // Save straight into `recipes` as a live, public recipe — Jackie's 2026-08-20 request
+      // to skip the recipe_drafts/admin-approve review step for fridge-generated recipes.
       const imageUrl = await findRecipePhoto(c.env, recipe.title).catch(() => null);
-
-      const draft: Omit<RecipeDraft, "_id"> = {
+      const now = new Date().toISOString();
+      const recipeDoc: Omit<Recipe, "_id"> = {
         title: recipe.title,
         description: recipe.description,
+        isPublic: true,
+        userId: null,
         ingredients: recipe.ingredients,
         steps: recipe.steps,
         tags: recipe.tags,
-        mealType: recipe.mealType,
         servings: recipe.servings,
         prepTimeMinutes: recipe.prepTimeMinutes,
         cookTimeMinutes: recipe.cookTimeMinutes,
+        imageUrl: imageUrl ?? "",
         nutrition: {
           calories: Math.round(calories),
           protein: Math.round(protein * 10) / 10,
           carbs: Math.round(carbs * 10) / 10,
           fat: Math.round(fat * 10) / 10,
         },
-        status: "pending",
-        createdAt: new Date().toISOString(),
-        sourceInspiration: "",
-        costPreview,
-        importMethod: "fridge_generated",
-        imageUrl,
+        source: "fridge_generated",
+        sourcePlatform: null,
+        sourceUrl: undefined,
+        collectionIds: [],
+        isFavorite: false,
+        viewCount: 0,
+        favoriteCount: 0,
+        __v: 0,
+        createdAt: now,
+        updatedAt: now,
+        mealType: recipe.mealType,
       };
-      const result = await db.collection("recipe_drafts").insertOne(draft as unknown as Document);
-      return result.insertedId.toString();
+      const insertResult = await db.collection("recipes").insertOne(recipeDoc as unknown as Document);
+
+      // Same cost engine, but computed against the just-inserted recipe doc (matches the
+      // approve handler's pattern) so recipe_cost.recipeId lines up and price shows immediately.
+      const cost = costRecipe({ ...recipeDoc, _id: insertResult.insertedId } as unknown as Recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+      const recipeCostDoc: Omit<RecipeCost, "_id"> = {
+        recipeId: insertResult.insertedId.toString(),
+        basket: cost.basket,
+        currency: cost.currency,
+        coveragePct: cost.coveragePct,
+        adjustedCoveragePct: cost.adjustedCoveragePct,
+        totalLines: cost.totalLines,
+        priceableCount: cost.priceableCount,
+        adjustedTotal: cost.adjustedTotal,
+        adjustedPriceable: cost.adjustedPriceable,
+        pantryLineCount: cost.pantryLineCount,
+        junkLineCount: cost.junkLineCount,
+        perServing: cost.perServing,
+        lines: cost.lines as unknown as RecipeCostLine[],
+        unpriceableReasons: cost.unpriceableReasons,
+        computedAt: now,
+        priceCacheStamp: 0,
+      };
+      await db.collection("recipe_cost").insertOne({ ...recipeCostDoc, recipeId: insertResult.insertedId } as unknown as Document);
+
+      return insertResult.insertedId.toString();
     });
 
-    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    const body: ApiResponse<{ recipeId: string }> = { ok: true, data: { recipeId } };
     return c.json(body);
   } catch (err) {
-    console.error("[uiu-api] save-fridge-draft error:", err instanceof Error ? err.message : String(err));
-    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to save recipe draft" } };
+    console.error("[uiu-api] save-fridge-recipe error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to save recipe" } };
     return c.json(body, 502);
   }
 });

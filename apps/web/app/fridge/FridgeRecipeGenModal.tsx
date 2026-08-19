@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { ApiResponse, FridgeStockItem } from "@uiu/shared";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
@@ -34,6 +35,7 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
   const [error, setError] = useState<string | null>(null);
   const [recipe, setRecipe] = useState<GeneratedRecipe | null>(null);
   const [saving, setSaving] = useState(false);
+  const [savedRecipeId, setSavedRecipeId] = useState<string | null>(null);
 
   function toggle(id: string) {
     setChecked((prev) => {
@@ -63,11 +65,11 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
     setStep("review");
   }
 
-  async function saveDraft() {
+  async function saveRecipe() {
     if (!recipe || saving) return;
     setSaving(true);
     setError(null);
-    const { parsed } = await fetchJson<{ recipeDraftId: string }>("/api/recipes/save-fridge-draft", {
+    const { parsed } = await fetchJson<{ recipeId: string }>("/api/recipes/save-fridge-recipe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(recipe),
@@ -77,6 +79,7 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
       setError(parsed && !parsed.ok ? parsed.error.message : "Save failed, please try again.");
       return;
     }
+    setSavedRecipeId(parsed.data.recipeId);
     setStep("saved");
   }
 
@@ -143,7 +146,7 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
 
               {error ? <p className="admin-drafts-error">{error}</p> : null}
               <div className="fridge-scan-review__actions">
-                <button type="button" className="wizard-primary-button" disabled={saving} onClick={() => void saveDraft()}>
+                <button type="button" className="wizard-primary-button" disabled={saving} onClick={() => void saveRecipe()}>
                   {saving ? "Saving…" : "Save"}
                 </button>
                 <button type="button" disabled={saving} onClick={onClose}>
@@ -155,10 +158,17 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
 
           {step === "saved" ? (
             <>
-              <p className="admin-drafts-page__sub">Added to the review queue — go to Admin → Recipe Drafts to check and approve it.</p>
-              <button type="button" className="wizard-primary-button" onClick={onClose}>
-                Done
-              </button>
+              <p className="admin-drafts-page__sub">Saved! Added to your recipes.</p>
+              <div className="fridge-scan-review__actions">
+                {savedRecipeId ? (
+                  <Link href={`/recipes/${savedRecipeId}`} className="wizard-primary-button" onClick={onClose}>
+                    View recipe
+                  </Link>
+                ) : null}
+                <button type="button" onClick={onClose}>
+                  Done
+                </button>
+              </div>
             </>
           ) : null}
         </div>
