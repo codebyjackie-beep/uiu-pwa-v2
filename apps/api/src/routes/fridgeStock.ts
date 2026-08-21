@@ -263,7 +263,16 @@ fridgeStockRouter.post("/ocr", (c) =>
     "Read this shopping receipt. List ONLY the food and grocery items purchased — exclude non-food " +
       "items entirely (e.g. toiletries, cleaning products, toothpaste, tissue/toilet paper, medicine, " +
       "pet supplies, batteries, stationery, kitchenware/homeware). If an item is ambiguous or you are " +
-      "unsure whether it is food, leave it out rather than guessing. For each remaining item give its " +
+      "unsure whether it is food, leave it out rather than guessing. " +
+      'UK till receipts heavily abbreviate product names — e.g. "MOISTRSNG"=Moisturising, ' +
+      '"CL"=Cleanser, "LTN"=Lotion, "SHMPOO"=Shampoo, "COND"=Conditioner, "DEO"=Deodorant, ' +
+      '"TOOTHPST"=Toothpaste. Also watch for known personal-care/skincare/haircare brand ' +
+      "names even without a category word (e.g. Simple, Nivea, Dove, Vaseline, Sensodyne, " +
+      "Colgate, Original Source, Radox, Imperial Leather) — these are never food regardless " +
+      "of what follows. When a line's meaning is unclear because of abbreviation, lean " +
+      "toward excluding it rather than including it — a missed grocery item is far less " +
+      "harmful than a toiletry ending up in a food list. " +
+      "For each remaining item give its " +
       'name and quantity if visible. Respond with ONLY a JSON array, no markdown fences, no commentary: ' +
       '[{"name": string, "quantity": number|null}].',
   ),
