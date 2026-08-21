@@ -224,6 +224,12 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
   const [savingLogId, setSavingLogId] = useState<string | null>(null);
   const [deletingLogId, setDeletingLogId] = useState<string | null>(null);
 
+  const [editingMealId, setEditingMealId] = useState<string | null>(null);
+  const [editMealGrams, setEditMealGrams] = useState("");
+  const [editMealMacros, setEditMealMacros] = useState({ calories: "", protein: "", carbs: "", fat: "" });
+  const [savingMealId, setSavingMealId] = useState<string | null>(null);
+  const [deletingMealId, setDeletingMealId] = useState<string | null>(null);
+
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -388,6 +394,186 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
     flash(`Logged: ${entry.description}`);
   }
 
+  function startEditMeal(entry: MealLogEntry) {
+    setEditingMealId(entry._id);
+    if (entry.per100g && entry.quantityG != null) {
+      setEditMealGrams(String(entry.quantityG));
+    } else {
+      setEditMealMacros({
+        calories: String(Math.round(entry.calories)),
+        protein: String(Math.round(entry.protein)),
+        carbs: String(Math.round(entry.carbs)),
+        fat: String(Math.round(entry.fat)),
+      });
+    }
+  }
+
+  function cancelEditMeal() {
+    setEditingMealId(null);
+    setEditMealGrams("");
+    setEditMealMacros({ calories: "", protein: "", carbs: "", fat: "" });
+  }
+
+  function applyMealDelta(entry: MealLogEntry, delta: MealLogTotals) {
+    const isToday = mealLogs.some((e) => e._id === entry._id);
+    if (isToday) {
+      setTotals((prev) => ({
+        calories: prev.calories + delta.calories,
+        protein: prev.protein + delta.protein,
+        carbs: prev.carbs + delta.carbs,
+        fat: prev.fat + delta.fat,
+      }));
+    }
+    setWeekTotals((prev) =>
+      prev
+        ? {
+            calories: prev.calories + delta.calories,
+            protein: prev.protein + delta.protein,
+            carbs: prev.carbs + delta.carbs,
+            fat: prev.fat + delta.fat,
+          }
+        : prev,
+    );
+  }
+
+  async function saveEditMeal(entry: MealLogEntry) {
+    const isBarcode = !!entry.per100g;
+    let body: Record<string, unknown>;
+    if (isBarcode) {
+      const quantityG = Number(editMealGrams);
+      if (!Number.isFinite(quantityG) || quantityG <= 0) {
+        flash("Enter a valid amount in grams.");
+        return;
+      }
+      body = { quantityG };
+    } else {
+      const calories = Number(editMealMacros.calories);
+      const protein = Number(editMealMacros.protein);
+      const carbs = Number(editMealMacros.carbs);
+      const fat = Number(editMealMacros.fat);
+      if ([calories, protein, carbs, fat].some((v) => !Number.isFinite(v) || v < 0)) {
+        flash("Enter valid macro values.");
+        return;
+      }
+      body = { calories, protein, carbs, fat };
+    }
+    setSavingMealId(entry._id);
+    const { parsed } = await fetchJson<MealLogEntry>(`/api/health/meal-logs/${entry._id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    setSavingMealId(null);
+    if (!parsed || !parsed.ok) {
+      flash(parsed && !parsed.ok ? `Failed: ${parsed.error.message}` : "Failed to update meal log.");
+      return;
+    }
+    const updated = parsed.data;
+    const delta: MealLogTotals = {
+      calories: updated.calories - entry.calories,
+      protein: updated.protein - entry.protein,
+      carbs: updated.carbs - entry.carbs,
+      fat: updated.fat - entry.fat,
+    };
+    setMealLogs((prev) => prev.map((e) => (e._id === entry._id ? updated : e)));
+    setWeekEntries((prev) => (prev ? prev.map((e) => (e._id === entry._id ? updated : e)) : prev));
+    applyMealDelta(entry, delta);
+    cancelEditMeal();
+    flash("Meal log updated.");
+  }
+
+  async function deleteMealLog(entry: MealLogEntry) {
+    if (!window.confirm("Delete this meal log?")) return;
+    setDeletingMealId(entry._id);
+    const { parsed } = await fetchJson<{ deleted: true }>(`/api/health/meal-logs/${entry._id}`, { method: "DELETE" });
+    setDeletingMealId(null);
+    if (!parsed || !parsed.ok) {
+      flash(parsed && !parsed.ok ? `Failed: ${parsed.error.message}` : "Failed to delete meal log.");
+      return;
+    }
+    setMealLogs((prev) => prev.filter((e) => e._id !== entry._id));
+    setWeekEntries((prev) => (prev ? prev.filter((e) => e._id !== entry._id) : prev));
+    applyMealDelta(entry, { calories: -entry.calories, protein: -entry.protein, carbs: -entry.carbs, fat: -entry.fat });
+    flash("Meal log deleted.");
+  }
+
+  function renderMealCard(entry: MealLogEntry) {
+    const isEditing = editingMealId === entry._id;
+    const isBarcode = !!entry.per100g;
+    if (isEditing) {
+      return (
+        <div key={entry._id} className="health-meal-card health-meal-card--editing">
+          <div className="health-meal-card__edit">
+            {isBarcode ? (
+              <label className="wizard-field">
+                <span>Amount (g)</span>
+                <input type="number" min={0} step="any" value={editMealGrams} onChange={(e) => setEditMealGrams(e.target.value)} autoFocus />
+              </label>
+            ) : (
+              <div className="wizard-field-row">
+                <label className="wizard-field">
+                  <span>Calories</span>
+                  <input type="number" min={0} value={editMealMacros.calories} onChange={(e) => setEditMealMacros((m) => ({ ...m, calories: e.target.value }))} autoFocus />
+                </label>
+                <label className="wizard-field">
+                  <span>Protein (g)</span>
+                  <input type="number" min={0} value={editMealMacros.protein} onChange={(e) => setEditMealMacros((m) => ({ ...m, protein: e.target.value }))} />
+                </label>
+                <label className="wizard-field">
+                  <span>Carbs (g)</span>
+                  <input type="number" min={0} value={editMealMacros.carbs} onChange={(e) => setEditMealMacros((m) => ({ ...m, carbs: e.target.value }))} />
+                </label>
+                <label className="wizard-field">
+                  <span>Fat (g)</span>
+                  <input type="number" min={0} value={editMealMacros.fat} onChange={(e) => setEditMealMacros((m) => ({ ...m, fat: e.target.value }))} />
+                </label>
+              </div>
+            )}
+            <div className="health-form-actions">
+              <button type="button" className="health-link-button" disabled={savingMealId === entry._id} onClick={() => saveEditMeal(entry)}>
+                {savingMealId === entry._id ? "Saving…" : "Save"}
+              </button>
+              <button type="button" className="health-link-button" onClick={cancelEditMeal} disabled={savingMealId === entry._id}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div key={entry._id} className="health-meal-card">
+        <div className="health-meal-card__main">
+          <span className="health-meal-card__desc">{entry.description}</span>
+          <span className="health-meal-card__meta">
+            {formatTime(entry.loggedAt)} ·{" "}
+            {entry.source === "photo" ? "Photo" : entry.source === "barcode" ? "Barcode" : "Manual"}
+          </span>
+        </div>
+        <div className="health-meal-card__macros">
+          <span className="health-meal-card__cal">{Math.round(entry.calories)} kcal</span>
+          <span style={{ color: MACRO_COLORS.protein }}>{Math.round(entry.protein)}g</span>
+          <span style={{ color: MACRO_COLORS.carbs }}>{Math.round(entry.carbs)}g</span>
+          <span style={{ color: MACRO_COLORS.fat }}>{Math.round(entry.fat)}g</span>
+        </div>
+        <div className="health-meal-card__actions">
+          <button type="button" className="health-weight-log-item__icon-button" aria-label="Edit meal log" onClick={() => startEditMeal(entry)}>
+            <PencilIcon />
+          </button>
+          <button
+            type="button"
+            className="health-weight-log-item__icon-button"
+            aria-label="Delete meal log"
+            disabled={deletingMealId === entry._id}
+            onClick={() => deleteMealLog(entry)}
+          >
+            <TrashIcon />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="health-page">
       <div className="health-card__header">
@@ -496,25 +682,7 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
                 <span className="health-week-day__label">{day.label}</span>
                 <span className="health-week-day__total">{Math.round(day.totalCalories)} kcal</span>
               </div>
-              <div className="health-meal-list">
-                {day.entries.map((entry) => (
-                  <div key={entry._id} className="health-meal-card">
-                    <div className="health-meal-card__main">
-                      <span className="health-meal-card__desc">{entry.description}</span>
-                      <span className="health-meal-card__meta">
-                        {formatTime(entry.loggedAt)} ·{" "}
-                        {entry.source === "photo" ? "Photo" : entry.source === "barcode" ? "Barcode" : "Manual"}
-                      </span>
-                    </div>
-                    <div className="health-meal-card__macros">
-                      <span className="health-meal-card__cal">{Math.round(entry.calories)} kcal</span>
-                      <span style={{ color: MACRO_COLORS.protein }}>{Math.round(entry.protein)}g</span>
-                      <span style={{ color: MACRO_COLORS.carbs }}>{Math.round(entry.carbs)}g</span>
-                      <span style={{ color: MACRO_COLORS.fat }}>{Math.round(entry.fat)}g</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <div className="health-meal-list">{day.entries.map((entry) => renderMealCard(entry))}</div>
             </div>
           ))}
         </div>
@@ -628,23 +796,7 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
 
         <div className="health-meal-list">
           {mealLogs.length === 0 ? <p className="admin-drafts-page__sub">No meals logged today.</p> : null}
-          {mealLogs.map((entry) => (
-            <div key={entry._id} className="health-meal-card">
-              <div className="health-meal-card__main">
-                <span className="health-meal-card__desc">{entry.description}</span>
-                <span className="health-meal-card__meta">
-                  {formatTime(entry.loggedAt)} ·{" "}
-                  {entry.source === "photo" ? "Photo" : entry.source === "barcode" ? "Barcode" : "Manual"}
-                </span>
-              </div>
-              <div className="health-meal-card__macros">
-                <span className="health-meal-card__cal">{Math.round(entry.calories)} kcal</span>
-                <span style={{ color: MACRO_COLORS.protein }}>{Math.round(entry.protein)}g</span>
-                <span style={{ color: MACRO_COLORS.carbs }}>{Math.round(entry.carbs)}g</span>
-                <span style={{ color: MACRO_COLORS.fat }}>{Math.round(entry.fat)}g</span>
-              </div>
-            </div>
-          ))}
+          {mealLogs.map((entry) => renderMealCard(entry))}
         </div>
       </section>
     </div>

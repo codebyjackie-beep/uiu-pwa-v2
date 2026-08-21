@@ -2898,6 +2898,38 @@ a {
   margin-right: 4px;
 }
 
+.health-meal-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.health-meal-card--editing {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.health-meal-card__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.health-meal-card__edit .wizard-field-row {
+  flex-wrap: wrap;
+}
+
+.health-meal-card__edit input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--uiu-border);
+  background: var(--uiu-white);
+  color: var(--uiu-black);
+}
+
 .tonight-suggestion__add {
   margin-top: 8px;
   padding: 8px 16px;

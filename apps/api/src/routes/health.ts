@@ -240,6 +240,8 @@ function toMealLog(doc: Document): MealLogEntry {
     description: doc.description as string,
     loggedAt: doc.loggedAt as string,
     source: doc.source as MealLogSource,
+    ...(typeof doc.quantityG === "number" ? { quantityG: doc.quantityG as number } : {}),
+    ...(doc.per100g && typeof doc.per100g === "object" ? { per100g: doc.per100g as MealLogEntry["per100g"] } : {}),
   };
 }
 
@@ -323,6 +325,114 @@ healthRouter.post("/meal-logs", async (c) => {
   } catch (err) {
     console.error("[uiu-api] meal-logs photo error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "vision_error", message: "Failed to analyze meal photo" } };
+    return c.json(body, 502);
+  }
+});
+
+/** Edit a meal log (HANDOFF_health-meal-log-edit.md §2). Two request shapes:
+ * - `{ quantityG }` — barcode entries logged with a `per100g` baseline rescale
+ *   calories/protein/carbs/fat from it; entries without a stored `per100g`
+ *   (pre-this-feature barcode logs, or manual/photo) reject with 400 so the
+ *   client falls back to the direct-macro form instead.
+ * - `{ calories, protein, carbs, fat }` — set the four macros directly,
+ *   regardless of source. Used for manual/photo entries, and as the fallback
+ *   for old barcode entries.
+ */
+healthRouter.patch("/meal-logs/:id", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid meal_logs id" } };
+    return c.json(body, 400);
+  }
+
+  const payload = await c.req.json().catch(() => null);
+  const quantityG = Number(payload?.quantityG);
+  const hasQuantityG = payload && payload.quantityG !== undefined;
+
+  try {
+    if (hasQuantityG) {
+      if (!Number.isFinite(quantityG) || quantityG <= 0) {
+        const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "quantityG (> 0) is required" } };
+        return c.json(body, 400);
+      }
+
+      const existing = await withDb(c.env, (db) => db.collection("meal_logs").findOne({ _id: new ObjectId(id) }));
+      if (!existing) {
+        const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "meal_logs entry not found" } };
+        return c.json(body, 404);
+      }
+      const per100g = existing.per100g as { calories: number; protein: number; carbs: number; fat: number } | undefined;
+      if (!per100g) {
+        const body: ApiResponse<never> = {
+          ok: false,
+          error: { code: "bad_request", message: "This entry has no stored per-100g data — edit calories/protein/carbs/fat directly instead" },
+        };
+        return c.json(body, 400);
+      }
+
+      const scale = quantityG / 100;
+      const description = typeof existing.description === "string"
+        ? existing.description.replace(/\(\s*\d+(\.\d+)?\s*g\s*\)/, `(${quantityG}g)`)
+        : existing.description;
+
+      const updated = await withDb(c.env, (db) =>
+        db.collection("meal_logs").findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              quantityG,
+              calories: per100g.calories * scale,
+              protein: per100g.protein * scale,
+              carbs: per100g.carbs * scale,
+              fat: per100g.fat * scale,
+              description,
+            },
+          },
+          { returnDocument: "after" },
+        ),
+      );
+      if (!updated) {
+        const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "meal_logs entry not found" } };
+        return c.json(body, 404);
+      }
+      const body: ApiResponse<MealLogEntry> = { ok: true, data: toMealLog(updated) };
+      return c.json(body);
+    }
+
+    const calories = Number(payload?.calories);
+    const protein = Number(payload?.protein);
+    const carbs = Number(payload?.carbs);
+    const fat = Number(payload?.fat);
+    if (
+      !Number.isFinite(calories) || calories < 0 ||
+      !Number.isFinite(protein) || protein < 0 ||
+      !Number.isFinite(carbs) || carbs < 0 ||
+      !Number.isFinite(fat) || fat < 0
+    ) {
+      const body: ApiResponse<never> = {
+        ok: false,
+        error: { code: "bad_request", message: "calories, protein, carbs, fat (all >= 0) are required" },
+      };
+      return c.json(body, 400);
+    }
+
+    const updated = await withDb(c.env, (db) =>
+      db.collection("meal_logs").findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { calories, protein, carbs, fat } },
+        { returnDocument: "after" },
+      ),
+    );
+    if (!updated) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "meal_logs entry not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<MealLogEntry> = { ok: true, data: toMealLog(updated) };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] meal-logs patch error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to update meal log" } };
     return c.json(body, 502);
   }
 });
@@ -415,6 +525,30 @@ healthRouter.post("/meal-logs/barcode", async (c) => {
     return c.json(body, 400);
   }
 
+  // Optional — lets the edit flow (HANDOFF_health-meal-log-edit.md §2) rescale
+  // calories/protein/carbs/fat by grams instead of requiring 4 manual edits.
+  const quantityG = Number(payload?.quantityG);
+  const per100gRaw = payload?.per100g;
+  const hasPer100g =
+    per100gRaw &&
+    typeof per100gRaw === "object" &&
+    Number.isFinite(Number(per100gRaw.calories)) &&
+    Number.isFinite(Number(per100gRaw.protein)) &&
+    Number.isFinite(Number(per100gRaw.carbs)) &&
+    Number.isFinite(Number(per100gRaw.fat));
+  const quantityFields =
+    Number.isFinite(quantityG) && quantityG > 0 && hasPer100g
+      ? {
+          quantityG,
+          per100g: {
+            calories: Number(per100gRaw.calories),
+            protein: Number(per100gRaw.protein),
+            carbs: Number(per100gRaw.carbs),
+            fat: Number(per100gRaw.fat),
+          },
+        }
+      : {};
+
   try {
     const loggedAt = new Date().toISOString();
     const doc = {
@@ -426,6 +560,7 @@ healthRouter.post("/meal-logs/barcode", async (c) => {
       description: description.trim(),
       loggedAt,
       source: "barcode" as MealLogSource,
+      ...quantityFields,
     };
     const inserted = await withDb(c.env, async (db) => {
       const result = await db.collection("meal_logs").insertOne(doc);

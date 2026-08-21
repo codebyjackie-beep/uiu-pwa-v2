@@ -596,6 +596,13 @@ export interface MealLogEntry {
   description: string;
   loggedAt: ISODate;
   source: MealLogSource;
+  /** Barcode entries only (logged after HANDOFF_health-meal-log-edit.md) — the
+   * consumed amount and the product's per-100g macros, kept so editing the
+   * amount can rescale calories/protein/carbs/fat instead of requiring the
+   * user to retype all four numbers. Absent on manual/photo entries and on
+   * barcode entries logged before this field existed. */
+  quantityG?: number;
+  per100g?: { calories: number; protein: number; carbs: number; fat: number };
 }
 
 export interface MealLogTotals {

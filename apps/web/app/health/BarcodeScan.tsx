@@ -242,6 +242,13 @@ export function BarcodeScan({ onClose, onLogged }: { onClose: () => void; onLogg
         protein: product.proteinPer100g * scale,
         carbs: product.carbsPer100g * scale,
         fat: product.fatPer100g * scale,
+        quantityG: grams,
+        per100g: {
+          calories: product.caloriesPer100g,
+          protein: product.proteinPer100g,
+          carbs: product.carbsPer100g,
+          fat: product.fatPer100g,
+        },
       }),
     });
     setSaving(false);
