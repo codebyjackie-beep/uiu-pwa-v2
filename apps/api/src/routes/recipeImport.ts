@@ -51,6 +51,7 @@ async function insertDraft(
 
     const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
     const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+    const servingsDivisor = recipe.servings > 0 ? recipe.servings : 1;
 
     let calories = 0, protein = 0, carbs = 0, fat = 0;
     for (const line of cost.lines as unknown as RecipeCostLine[]) {
@@ -83,10 +84,10 @@ async function insertDraft(
       prepTimeMinutes: recipe.prepTimeMinutes,
       cookTimeMinutes: recipe.cookTimeMinutes,
       nutrition: {
-        calories: Math.round(calories),
-        protein: Math.round(protein * 10) / 10,
-        carbs: Math.round(carbs * 10) / 10,
-        fat: Math.round(fat * 10) / 10,
+        calories: Math.round(calories / servingsDivisor),
+        protein: Math.round((protein / servingsDivisor) * 10) / 10,
+        carbs: Math.round((carbs / servingsDivisor) * 10) / 10,
+        fat: Math.round((fat / servingsDivisor) * 10) / 10,
       },
       status: "pending",
       createdAt: new Date().toISOString(),
@@ -294,10 +295,10 @@ recipeImportRouter.post("/manual", async (c) => {
         cookTimeMinutes: recipe.cookTimeMinutes,
         imageUrl: imageUrl ?? "",
         nutrition: {
-          calories: Math.round(calories),
-          protein: Math.round(protein * 10) / 10,
-          carbs: Math.round(carbs * 10) / 10,
-          fat: Math.round(fat * 10) / 10,
+          calories: Math.round(calories / recipe.servings),
+          protein: Math.round((protein / recipe.servings) * 10) / 10,
+          carbs: Math.round((carbs / recipe.servings) * 10) / 10,
+          fat: Math.round((fat / recipe.servings) * 10) / 10,
         },
         source: "manual_entry",
         sourcePlatform: null,

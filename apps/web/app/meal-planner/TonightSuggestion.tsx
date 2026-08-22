@@ -133,7 +133,7 @@ export function TonightSuggestion() {
                 <div className="recipe-card__body">
                   <p className="recipe-card__title">{s.title}</p>
                   <div className="recipe-card__macros">
-                    <span className="recipe-card__price">{s.cost ? formatCost(s.cost.basket) : "—"}</span>
+                    <span className="recipe-card__price">{s.cost ? formatCost(s.cost.perServing) : "—"}</span>
                     {s.calories != null ? <span>{Math.round(s.calories)} cal</span> : null}
                   </div>
                   {s.matchedFridgeItems.length > 0 ? (

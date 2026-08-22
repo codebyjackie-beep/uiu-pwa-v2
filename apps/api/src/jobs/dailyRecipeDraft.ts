@@ -205,6 +205,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
     const costInput = { ingredients, servings: drafted.servings } as unknown as Recipe;
     const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+    const servingsDivisor = drafted.servings > 0 ? drafted.servings : 1;
 
     let calories = 0, protein = 0, carbs = 0, fat = 0;
     for (const line of cost.lines) {
@@ -235,10 +236,10 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       prepTimeMinutes: drafted.prepTimeMinutes,
       cookTimeMinutes: drafted.cookTimeMinutes,
       nutrition: {
-        calories: Math.round(calories),
-        protein: Math.round(protein * 10) / 10,
-        carbs: Math.round(carbs * 10) / 10,
-        fat: Math.round(fat * 10) / 10,
+        calories: Math.round(calories / servingsDivisor),
+        protein: Math.round((protein / servingsDivisor) * 10) / 10,
+        carbs: Math.round((carbs / servingsDivisor) * 10) / 10,
+        fat: Math.round((fat / servingsDivisor) * 10) / 10,
       },
       status: "pending",
       createdAt: new Date().toISOString(),
