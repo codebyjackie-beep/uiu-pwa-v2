@@ -18,6 +18,8 @@ import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
+import { runDiagnostics, type DiagnosticsRunResult } from "./jobs/pwaDiagnostics";
+import { sendTelegram } from "./services/telegram";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -35,6 +37,12 @@ type Bindings = {
   //   YOUTUBE_API_KEY — OPTIONAL, HANDOFF_recipe-social-import.md §0. Powers YouTube Tier 2
   //     (video description text via YouTube Data API v3). Unset -> YouTube links fall
   //     straight to Tier 3 manual paste, does not break the rest of the import flow.
+  //   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID — HANDOFF_pwa-diagnostics-monitor.md.
+  //     Jackie's own Telegram bot/chat, set by Jackie via `wrangler secret put`, never
+  //     logged. Powers the diagnostics cron's alert + daily digest messages.
+  //   CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID — OPTIONAL, HANDOFF_pwa-diagnostics-monitor.md.
+  //     Read-only Workers scope, used only to look up the latest deployment for the daily
+  //     digest. Unset -> diagnostics cron just skips that one info-level line.
   MONGODB_URI: string;
   ADMIN_TOKEN: string;
   OPENROUTER_API_KEY: string;
@@ -42,6 +50,13 @@ type Bindings = {
   RAPIDAPI_HOST: string;
   PEXELS_API_KEY: string;
   YOUTUBE_API_KEY?: string;
+  TELEGRAM_BOT_TOKEN: string;
+  TELEGRAM_CHAT_ID: string;
+  CLOUDFLARE_API_TOKEN?: string;
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  PWA_DIAGNOSTICS_RECIPE_COST_MIN_PCT?: string;
+  PWA_DIAGNOSTICS_NUTRITION_MIN_PCT?: string;
+  PWA_DIAGNOSTICS_DIGEST_HOUR_UK?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -128,6 +143,51 @@ app.get("/api/admin/recipe-cost-stats", async (c) => {
   }
 });
 
+// Manual trigger for the PWA diagnostics cron (HANDOFF_pwa-diagnostics-monitor.md
+// verification requirements). Real Telegram sends happen here too — this IS the
+// dry-run mechanism (there's no separate "fake" mode), so use it deliberately.
+//   ?forceAlert=true   — bypass the issue-set-unchanged/cooldown dedup, useful when
+//                        testing a deliberately-lowered coverage threshold.
+//   ?forceDigest=true  — bypass the "is it 10am UK" gate, sends the OpenRouter summary now.
+app.post("/api/admin/pwa-diagnostics-run", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const result = await runDiagnostics(c.env, {
+      forceAlert: c.req.query("forceAlert") === "true",
+      forceDigest: c.req.query("forceDigest") === "true",
+    });
+    const body: ApiResponse<DiagnosticsRunResult> = { ok: true, data: result };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] pwa-diagnostics-run error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Diagnostics run failed" } };
+    return c.json(body, 502);
+  }
+});
+
+// Sends a fixed test message — confirms the Telegram secrets/bot/chat are
+// wired correctly without touching diagnostics state or coverage checks.
+app.post("/api/admin/pwa-diagnostics-test-telegram", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    await sendTelegram(c.env, "🔧 UIU PWA diagnostics — test message. If you can read this, the bot/chat wiring works.");
+    const body: ApiResponse<{ sent: true }> = { ok: true, data: { sent: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] pwa-diagnostics-test-telegram error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "telegram_error", message: "Failed to send Telegram test message" } };
+    return c.json(body, 502);
+  }
+});
+
 app.notFound((c) => {
   const body: ApiResponse<never> = {
     ok: false,
@@ -154,6 +214,18 @@ export default {
    * daily recipe draft agent). Keep the two logics separate, not merged.
    */
   async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
+    if (event.cron === "0 * * * *") {
+      ctx.waitUntil(
+        runDiagnostics(env)
+          .then((result) => {
+            console.log("[uiu-api] cron pwaDiagnostics:", JSON.stringify({ brokenIssues: result.brokenIssues, alertSent: result.alertSent, digestSent: result.digestSent }));
+          })
+          .catch((err) => {
+            console.error("[uiu-api] cron pwaDiagnostics failed:", err instanceof Error ? err.message : String(err));
+          }),
+      );
+      return;
+    }
     if (event.cron === "0 4,7,10,13,16,19,22 * * *") {
       ctx.waitUntil(
         dailyRecipeDraft(env, false)

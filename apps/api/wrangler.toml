@@ -24,6 +24,12 @@ enabled = true
 #                       description via YouTube Data API v3). Jackie opens this herself in
 #                       Google Cloud Console; unset -> YouTube links fall straight to Tier 3
 #                       manual paste, nothing else in the import flow breaks without it.
+#   TELEGRAM_BOT_TOKEN  HANDOFF_pwa-diagnostics-monitor.md — Jackie's own Telegram bot,
+#   TELEGRAM_CHAT_ID    set via `wrangler secret put`, never committed/logged. Powers the
+#                       PWA diagnostics cron's alert + daily digest messages.
+#   CLOUDFLARE_API_TOKEN  OPTIONAL. HANDOFF_pwa-diagnostics-monitor.md — read-only Workers
+#   CLOUDFLARE_ACCOUNT_ID  scope, used only so the daily digest can mention the latest deploy.
+#                       Unset -> that one info-level line is just omitted, nothing else breaks.
 #
 # --- Non-secret vars ---
 [vars]
@@ -39,9 +45,15 @@ OPENROUTER_MODEL = "~openai/gpt-mini-latest"
 # receipt OCR + fridge photo scan. Shares OPENROUTER_API_KEY, separate model
 # var so it can change independently of the text-drafting model above.
 OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash-lite"
+# HANDOFF_pwa-diagnostics-monitor.md — coverage/digest thresholds for the diagnostics
+# cron. Jackie hasn't finalized these numbers yet (2026-08-23); these are the
+# handoff's suggested starting values, adjustable here without a code change.
+PWA_DIAGNOSTICS_RECIPE_COST_MIN_PCT = "50"
+PWA_DIAGNOSTICS_NUTRITION_MIN_PCT = "30"
+PWA_DIAGNOSTICS_DIGEST_HOUR_UK = "10"
 
-# Two independent crons — scheduled() in index.ts branches on event.cron, the
-# two jobs are NOT merged:
+# Three independent crons — scheduled() in index.ts branches on event.cron, the
+# jobs are NOT merged:
 #   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC).
 #
 #   RE-ENABLED (2026-07-25): first populate done manually via
@@ -63,5 +75,16 @@ OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash-lite"
 #   the event.cron === match in index.ts a single string comparison.
 #   Only ever writes to `recipe_drafts` (status:"pending") — never touches
 #   `recipes`/`recipe_cost` until a human clicks Approve in the admin page.
+#
+#   "0 * * * *"  PWA diagnostics + monitor (HANDOFF_pwa-diagnostics-monitor.md,
+#   2026-08-23) — hourly. No VM, no fixed persona (supersedes the old
+#   "AI Team moves to a new Hetzner" plan in CLAUDE.md §6/§8, which Jackie
+#   dropped 2026-08-22). Every fire runs a handful of read-only health checks
+#   (uptime, Mongo connectivity, recipe_cost / nutrition_per_100g coverage,
+#   latest deploy) and Telegram-alerts on a critical failure (1h cooldown per
+#   unchanged issue set). Once/day at 10am Europe/London wall-clock time
+#   (Intl-computed, DST-aware — not a fixed UTC hour) it also asks OpenRouter
+#   to write a short digest and Telegram-sends that. State lives in
+#   `pwa_diagnostics_state` (single doc, same pattern as recipe_draft_state).
 [triggers]
-crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *"]
+crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *"]
