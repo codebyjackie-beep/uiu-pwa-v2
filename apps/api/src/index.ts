@@ -20,6 +20,9 @@ import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
 import { runDiagnostics, type DiagnosticsRunResult } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
+import { runIgContentBatch, type BatchSummary } from "./jobs/igContentAgent";
+import { checkIgTokenHealth } from "./jobs/igTokenHealth";
+import { igWebhookRouter } from "./routes/igWebhook";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -57,6 +60,31 @@ type Bindings = {
   PWA_DIAGNOSTICS_RECIPE_COST_MIN_PCT?: string;
   PWA_DIAGNOSTICS_NUTRITION_MIN_PCT?: string;
   PWA_DIAGNOSTICS_DIGEST_HOUR_UK?: string;
+  // HANDOFF_ig-marketing-affiliate-agent-design.md — IG Content Agent secrets
+  // (IG_ID_UIU / IG_ID_AFFILIATE are [vars], not secrets — see wrangler.toml):
+  //   IG_TOKEN_UIU — Page Access Token for @useitup.app.
+  //   IG_TOKEN_AFFILIATE — same for @kura.nook. Never mixed with the UIU token —
+  //     draft.targetAccount picks which pair is used, never inferred.
+  //   TELEGRAM_BOT_TOKEN_IG / TELEGRAM_CHAT_ID_IG — a SEPARATE bot from
+  //     TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID above (PWA monitor's "UIU Monitor" bot) —
+  //     content review messages must not mix into the diagnostics alert chat.
+  //   TELEGRAM_IG_WEBHOOK_SECRET — checked against Telegram's
+  //     X-Telegram-Bot-Api-Secret-Token header on the /api/ig-webhook route.
+  //   SERPER_API_KEY — serper.dev Google Search API, used for both ASIN lookup
+  //     (site:amazon.co.uk) and affiliate product photo search. Amazon itself is
+  //     never fetched directly (robots.txt blocks it site-wide, confirmed live).
+  //   AMAZON_ASSOCIATE_TAG — Jackie's Amazon.co.uk Associates Tracking ID
+  //     (kuranook2026-21), appended to affiliate links via ?tag=.
+  IG_TOKEN_UIU: string;
+  IG_ID_UIU: string;
+  IG_TOKEN_AFFILIATE: string;
+  IG_ID_AFFILIATE: string;
+  TELEGRAM_BOT_TOKEN_IG: string;
+  TELEGRAM_CHAT_ID_IG: string;
+  TELEGRAM_IG_WEBHOOK_SECRET: string;
+  SERPER_API_KEY: string;
+  AMAZON_ASSOCIATE_TAG: string;
+  IG_CONTENT_BATCH_SIZE?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -100,6 +128,7 @@ app.route("/api/shopping-list", shoppingListRouter);
 app.route("/api/health", healthRouter);
 app.route("/api/recipe-import", recipeImportRouter);
 app.route("/api/recipe-browse", recipeBrowseStateRouter);
+app.route("/api/ig-webhook", igWebhookRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass
@@ -188,6 +217,46 @@ app.post("/api/admin/pwa-diagnostics-test-telegram", async (c) => {
   }
 });
 
+// Manual trigger for the IG Content Agent batch (HANDOFF_ig-marketing-affiliate-agent-design.md
+// §3) — generates a batch of drafts and sends each to the IG review Telegram chat with
+// Approve/Reject buttons. There is no dry-run flag here: every draft is real content sent
+// for review, but nothing gets published to Instagram until a human taps Approve.
+app.post("/api/admin/ig-content-batch-run", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const summary = await runIgContentBatch(c.env);
+    const body: ApiResponse<BatchSummary> = { ok: true, data: summary };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-content-batch-run error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG content batch run failed" } };
+    return c.json(body, 502);
+  }
+});
+
+// Manual trigger for the IG token health check — confirms the Telegram alert path works
+// and lets Jackie check expiry on demand without waiting for the cron.
+app.post("/api/admin/ig-token-health-run", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    await checkIgTokenHealth(c.env);
+    const body: ApiResponse<{ checked: true }> = { ok: true, data: { checked: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-token-health-run error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG token health check failed" } };
+    return c.json(body, 502);
+  }
+});
+
 app.notFound((c) => {
   const body: ApiResponse<never> = {
     ok: false,
@@ -223,6 +292,26 @@ export default {
           .catch((err) => {
             console.error("[uiu-api] cron pwaDiagnostics failed:", err instanceof Error ? err.message : String(err));
           }),
+      );
+      return;
+    }
+    if (event.cron === "0 9 * * *") {
+      // HANDOFF_ig-marketing-affiliate-agent-design.md §3 — once/day batch (placeholder
+      // 09:00 UTC; Jackie can retime via wrangler.toml). Token health check piggybacks on
+      // the same trigger rather than adding a third cron string for a check this cheap.
+      ctx.waitUntil(
+        runIgContentBatch(env)
+          .then((summary) => {
+            console.log("[uiu-api] cron igContentAgent:", JSON.stringify(summary));
+          })
+          .catch((err) => {
+            console.error("[uiu-api] cron igContentAgent failed:", err instanceof Error ? err.message : String(err));
+          }),
+      );
+      ctx.waitUntil(
+        checkIgTokenHealth(env).catch((err) => {
+          console.error("[uiu-api] cron igTokenHealth failed:", err instanceof Error ? err.message : String(err));
+        }),
       );
       return;
     }

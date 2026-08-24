@@ -30,6 +30,24 @@ enabled = true
 #   CLOUDFLARE_API_TOKEN  OPTIONAL. HANDOFF_pwa-diagnostics-monitor.md — read-only Workers
 #   CLOUDFLARE_ACCOUNT_ID  scope, used only so the daily digest can mention the latest deploy.
 #                       Unset -> that one info-level line is just omitted, nothing else breaks.
+#   IG_TOKEN_UIU        HANDOFF_ig-marketing-affiliate-agent-design.md — Page Access Token
+#                       for @useitup.app. Raw value: Key\ig_token_useitup.txt. (IG_ID_UIU
+#                       itself is not sensitive — it's a [vars] entry below.)
+#   IG_TOKEN_AFFILIATE  Same for @kura.nook. Raw value: Key\ig_token_kuranook.txt. NEVER
+#                       used interchangeably with the UIU token — draft.targetAccount picks
+#                       which one, never inferred.
+#   TELEGRAM_BOT_TOKEN_IG  A SEPARATE bot from TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID above (the
+#   TELEGRAM_CHAT_ID_IG    PWA monitor's "UIU Monitor" bot) — content review must not land in
+#                       the diagnostics alert chat. Raw token: Key\telegram_bot_token_ig.txt.
+#                       Chat id: 8715750614.
+#   TELEGRAM_IG_WEBHOOK_SECRET  Random string Jackie generates, registered with Telegram via
+#                       setTelegramIgWebhook and checked against the
+#                       X-Telegram-Bot-Api-Secret-Token header on POST /api/ig-webhook.
+#   SERPER_API_KEY      serper.dev Google Search API — used for both ASIN lookup
+#                       (site:amazon.co.uk) and affiliate product photo search. Amazon is
+#                       never fetched directly (robots.txt blocks it site-wide).
+#   AMAZON_ASSOCIATE_TAG  Jackie's Amazon.co.uk Associates Tracking ID: kuranook2026-21.
+#                       Raw value: Key\Amazon Associates Account.txt.
 #
 # --- Non-secret vars ---
 [vars]
@@ -51,8 +69,16 @@ OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash-lite"
 PWA_DIAGNOSTICS_RECIPE_COST_MIN_PCT = "50"
 PWA_DIAGNOSTICS_NUTRITION_MIN_PCT = "30"
 PWA_DIAGNOSTICS_DIGEST_HOUR_UK = "10"
+# HANDOFF_ig-marketing-affiliate-agent-design.md §3 — drafts generated per daily batch run
+# (alternating uiu/affiliate). Not a secret so Jackie can tune batch size without touching
+# secrets.
+IG_CONTENT_BATCH_SIZE = "6"
+# IG user ids are not sensitive on their own (no auth power without the matching Page
+# Access Token secret above) — kept here so they don't need re-setting on every redeploy.
+IG_ID_UIU = "17841427988481809"
+IG_ID_AFFILIATE = "17841443611128346"
 
-# Three independent crons — scheduled() in index.ts branches on event.cron, the
+# Four independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:
 #   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC).
 #
@@ -86,5 +112,14 @@ PWA_DIAGNOSTICS_DIGEST_HOUR_UK = "10"
 #   (Intl-computed, DST-aware — not a fixed UTC hour) it also asks OpenRouter
 #   to write a short digest and Telegram-sends that. State lives in
 #   `pwa_diagnostics_state` (single doc, same pattern as recipe_draft_state).
+#
+#   "0 9 * * *"  IG Content Agent (HANDOFF_ig-marketing-affiliate-agent-design.md,
+#   2026-08-24) — once/day placeholder time (09:00 UTC), Jackie can retime here.
+#   Generates IG_CONTENT_BATCH_SIZE drafts (alternating uiu/affiliate) and sends
+#   each to the IG review Telegram bot with Approve/Reject buttons — nothing is
+#   published to Instagram until a human taps Approve (POST /api/ig-webhook).
+#   Same fire also runs the IG token expiry check (services/instagram.ts
+#   getTokenExpiry, alert-only — see jobs/igTokenHealth.ts for why this does
+#   NOT attempt an automated refresh).
 [triggers]
-crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *"]
+crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *", "0 9 * * *"]

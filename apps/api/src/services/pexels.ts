@@ -8,8 +8,13 @@ export interface PexelsEnv {
 }
 
 export async function findRecipePhoto(env: PexelsEnv, title: string): Promise<string | null> {
+  return searchPhoto(env, `${title} food dish`);
+}
+
+/** Generic Pexels search — used by findRecipePhoto and igContentGen (organic/affiliate post images). */
+export async function searchPhoto(env: PexelsEnv, query: string): Promise<string | null> {
   const url = new URL("https://api.pexels.com/v1/search");
-  url.searchParams.set("query", `${title} food dish`);
+  url.searchParams.set("query", query);
   url.searchParams.set("per_page", "1");
   url.searchParams.set("orientation", "landscape");
   const res = await fetch(url, { headers: { Authorization: env.PEXELS_API_KEY } });
