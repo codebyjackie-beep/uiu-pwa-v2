@@ -50,7 +50,15 @@ const DRAFTS_COLLECTION = "ig_content_drafts";
 const PRODUCTS_COLLECTION = "affiliate_products";
 const RECENT_LOOKBACK = 15;
 
-function accountFor(env: IgContentAgentEnv, target: TargetAccount): InstagramAccount {
+/** Minimal env for publishing/re-publishing an already-generated draft — no LLM/Serper/Pexels needed. */
+export type PublishEnv = DbEnv & TelegramIgEnv & {
+  IG_TOKEN_UIU: string;
+  IG_ID_UIU: string;
+  IG_TOKEN_AFFILIATE: string;
+  IG_ID_AFFILIATE: string;
+};
+
+function accountFor(env: PublishEnv, target: TargetAccount): InstagramAccount {
   return target === "uiu"
     ? { igUserId: env.IG_ID_UIU, accessToken: env.IG_TOKEN_UIU }
     : { igUserId: env.IG_ID_AFFILIATE, accessToken: env.IG_TOKEN_AFFILIATE };
@@ -80,11 +88,11 @@ async function recentProductNames(env: DbEnv): Promise<string[]> {
   });
 }
 
-async function recordAffiliateProductUse(env: DbEnv, productName: string, asin: string, affiliateLink: string, category: string): Promise<void> {
+async function recordAffiliateProductUse(env: DbEnv, productName: string, asin: string, affiliateLink: string, category: string, imageUrl: string): Promise<void> {
   await withDb(env, async (db) => {
     await db
       .collection(PRODUCTS_COLLECTION)
-      .updateOne({ asin }, { $set: { productName, asin, affiliateLink, category, lastUsedAt: new Date().toISOString() } }, { upsert: true });
+      .updateOne({ asin }, { $set: { productName, asin, affiliateLink, category, imageUrl, lastUsedAt: new Date().toISOString() } }, { upsert: true });
   });
 }
 
@@ -117,6 +125,7 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   let category: string | undefined;
   let asin: string | undefined;
   let affiliateLink: string | undefined;
+  let productImageUrl: string | undefined;
 
   if (target === "uiu") {
     const recents = await recentOrganicSummaries(env);
@@ -133,11 +142,15 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     category = draft.category;
     asin = draft.asin;
     affiliateLink = draft.affiliateLink;
-    await recordAffiliateProductUse(env, productName, asin, affiliateLink, category);
+    productImageUrl = draft.productImageUrl;
   }
 
-  const imageUrl = await searchPhoto(env, imageQuery);
+  // Real listing photo (Serper Shopping/Images) takes priority over the Pexels stock search.
+  const imageUrl = productImageUrl ?? (await searchPhoto(env, imageQuery));
   if (!imageUrl) return null; // IG requires a public image URL at publish time — cannot post without one
+  if (target === "affiliate" && productName && asin && affiliateLink && category) {
+    await recordAffiliateProductUse(env, productName, asin, affiliateLink, category, imageUrl);
+  }
 
   const id = await insertDraft(env, {
     targetAccount: target,
@@ -193,7 +206,7 @@ export interface DecisionResult {
 }
 
 /** Called from the Telegram webhook when Jackie taps Approve. */
-export async function approveDraft(env: IgContentAgentEnv, draftId: ObjectId): Promise<DecisionResult> {
+export async function approveDraft(env: PublishEnv, draftId: ObjectId): Promise<DecisionResult> {
   const draft = await getDraft(env, draftId);
   if (!draft) return { ok: false, message: "Draft not found." };
   if (draft.status !== "pending") return { ok: false, message: `Already ${draft.status}.` };
@@ -210,7 +223,41 @@ export async function approveDraft(env: IgContentAgentEnv, draftId: ObjectId): P
     const message = err instanceof Error ? err.message : String(err);
     await updateDraft(env, draftId, { status: "publish_failed", decidedAt: new Date().toISOString(), error: message });
     if (draft.telegramMessageId) {
-      await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n⚠️ *Publish failed:* ${message}`);
+      await editTelegramIgMessage(
+        env,
+        draft.telegramMessageId,
+        `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n⚠️ *Publish failed:* ${message}`,
+        [[{ text: "🔄 Retry", callback_data: `ig:retry:${draftId.toString()}` }]],
+      );
+    }
+    return { ok: false, message: `Publish failed: ${message}` };
+  }
+}
+
+/** Called from the Telegram webhook (or the admin retry route) when Jackie retries a publish_failed draft — reuses the same caption/image, no regeneration. */
+export async function retryDraft(env: PublishEnv, draftId: ObjectId): Promise<DecisionResult> {
+  const draft = await getDraft(env, draftId);
+  if (!draft) return { ok: false, message: "Draft not found." };
+  if (draft.status !== "publish_failed") return { ok: false, message: `Not retryable (status: ${draft.status}).` };
+
+  try {
+    const account = accountFor(env, draft.targetAccount);
+    const { mediaId } = await publishImagePost(account, draft.imageUrl, draft.caption);
+    await updateDraft(env, draftId, { status: "approved", decidedAt: new Date().toISOString(), publishedAt: new Date().toISOString(), publishedMediaId: mediaId, error: undefined });
+    if (draft.telegramMessageId) {
+      await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n✅ *Published (retry).*`);
+    }
+    return { ok: true, message: "Published." };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await updateDraft(env, draftId, { status: "publish_failed", decidedAt: new Date().toISOString(), error: message });
+    if (draft.telegramMessageId) {
+      await editTelegramIgMessage(
+        env,
+        draft.telegramMessageId,
+        `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n⚠️ *Publish failed again:* ${message}`,
+        [[{ text: "🔄 Retry", callback_data: `ig:retry:${draftId.toString()}` }]],
+      );
     }
     return { ok: false, message: `Publish failed: ${message}` };
   }

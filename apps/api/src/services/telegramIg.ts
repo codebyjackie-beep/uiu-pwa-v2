@@ -67,13 +67,15 @@ export async function sendTelegramIgPhoto(env: TelegramIgEnv, photoUrl: string, 
   return json.result.message_id;
 }
 
-export async function editTelegramIgMessage(env: TelegramIgEnv, messageId: number, text: string): Promise<void> {
-  await postTelegram(env, "editMessageText", {
+export async function editTelegramIgMessage(env: TelegramIgEnv, messageId: number, text: string, buttons?: InlineButton[][]): Promise<void> {
+  const body: Record<string, unknown> = {
     chat_id: env.TELEGRAM_CHAT_ID_IG,
     message_id: messageId,
     text,
     parse_mode: "Markdown",
-  });
+  };
+  if (buttons) body.reply_markup = { inline_keyboard: buttons };
+  await postTelegram(env, "editMessageText", body);
 }
 
 export async function answerTelegramIgCallback(env: TelegramIgEnv, callbackQueryId: string, text?: string): Promise<void> {

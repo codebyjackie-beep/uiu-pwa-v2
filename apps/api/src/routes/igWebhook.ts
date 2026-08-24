@@ -11,7 +11,7 @@
  */
 import { Hono } from "hono";
 import { getMongoModule } from "../db";
-import { approveDraft, rejectDraft, type IgContentAgentEnv } from "../jobs/igContentAgent";
+import { approveDraft, rejectDraft, retryDraft, type IgContentAgentEnv } from "../jobs/igContentAgent";
 import { answerTelegramIgCallback } from "../services/telegramIg";
 
 type Bindings = IgContentAgentEnv & { TELEGRAM_IG_WEBHOOK_SECRET: string };
@@ -40,17 +40,18 @@ igWebhookRouter.post("/", async (c) => {
     return c.text("ok");
   }
 
-  const match = callback.data.match(/^ig:(approve|reject):([a-f0-9]{24})$/i);
+  const match = callback.data.match(/^ig:(approve|reject|retry):([a-f0-9]{24})$/i);
   if (!match) {
     await answerTelegramIgCallback(c.env, callback.id, "Unrecognised action.").catch(() => {});
     return c.text("ok");
   }
-  const [, action, draftIdStr] = match as [string, "approve" | "reject", string];
+  const [, action, draftIdStr] = match as [string, "approve" | "reject" | "retry", string];
 
   try {
     const { ObjectId } = await getMongoModule();
     const draftId = new ObjectId(draftIdStr);
-    const result = action === "approve" ? await approveDraft(c.env, draftId) : await rejectDraft(c.env, draftId);
+    const result =
+      action === "approve" ? await approveDraft(c.env, draftId) : action === "reject" ? await rejectDraft(c.env, draftId) : await retryDraft(c.env, draftId);
     await answerTelegramIgCallback(c.env, callback.id, result.message.slice(0, 200));
   } catch (err) {
     console.error("[uiu-api] igWebhook callback error:", err instanceof Error ? err.message : String(err));

@@ -14,7 +14,37 @@ export interface InstagramAccount {
   accessToken: string;
 }
 
-/** Two-step publish: create a media container, then publish it. */
+const CONTAINER_POLL_ATTEMPTS = 10;
+const CONTAINER_POLL_DELAY_MS = 2000;
+
+/**
+ * Container creation (POST .../media) returns immediately with an id, but IG
+ * processes the image asynchronously — publishing before it reaches FINISHED
+ * throws error code 9007 "Media ID is not available" (confirmed live 2026-08-24,
+ * draft 6a8cabe9a9995d2570a511b4: media_publish was attempted 20s after container
+ * creation, still IN_PROGRESS). Poll status_code up to CONTAINER_POLL_ATTEMPTS
+ * times before publishing.
+ */
+async function waitForContainerReady(account: InstagramAccount, creationId: string): Promise<void> {
+  const statusUrl = new URL(`https://graph.facebook.com/${GRAPH_VERSION}/${creationId}`);
+  statusUrl.searchParams.set("fields", "status_code");
+  statusUrl.searchParams.set("access_token", account.accessToken);
+
+  for (let attempt = 0; attempt < CONTAINER_POLL_ATTEMPTS; attempt++) {
+    const res = await fetch(statusUrl);
+    if (res.ok) {
+      const json = (await res.json()) as { status_code?: string };
+      if (json.status_code === "FINISHED") return;
+      if (json.status_code === "ERROR" || json.status_code === "EXPIRED") {
+        throw new Error(`Instagram media container ${json.status_code.toLowerCase()} before publish`);
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, CONTAINER_POLL_DELAY_MS));
+  }
+  throw new Error(`Instagram media container not FINISHED after ${CONTAINER_POLL_ATTEMPTS} polls`);
+}
+
+/** Two-step publish: create a media container, wait for it to finish processing, then publish it. */
 export async function publishImagePost(account: InstagramAccount, imageUrl: string, caption: string): Promise<{ mediaId: string }> {
   const createUrl = new URL(`https://graph.facebook.com/${GRAPH_VERSION}/${account.igUserId}/media`);
   createUrl.searchParams.set("image_url", imageUrl);
@@ -28,6 +58,8 @@ export async function publishImagePost(account: InstagramAccount, imageUrl: stri
   }
   const createJson = (await createRes.json()) as { id?: string };
   if (!createJson.id) throw new Error("Instagram media container response had no id");
+
+  await waitForContainerReady(account, createJson.id);
 
   const publishUrl = new URL(`https://graph.facebook.com/${GRAPH_VERSION}/${account.igUserId}/media_publish`);
   publishUrl.searchParams.set("creation_id", createJson.id);

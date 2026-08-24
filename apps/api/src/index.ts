@@ -24,6 +24,7 @@ import { runIgContentBatch, type BatchSummary } from "./jobs/igContentAgent";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
+import { affiliateProductsRouter } from "./routes/affiliateProducts";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -131,6 +132,7 @@ app.route("/api/recipe-import", recipeImportRouter);
 app.route("/api/recipe-browse", recipeBrowseStateRouter);
 app.route("/api/ig-webhook", igWebhookRouter);
 app.route("/api/admin/ig-drafts", adminIgDraftsRouter);
+app.route("/api/affiliate-products", affiliateProductsRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass

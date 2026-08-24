@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import { BottomNav } from "./components/BottomNav";
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
@@ -17,13 +18,17 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const hdrs = await headers();
+  // shop.useitup.uk is a public marketing page, not part of the app shell — no bottom nav / SW.
+  const isPublicShop = (hdrs.get("host") ?? "") === "shop.useitup.uk";
+
   return (
     <html lang="en">
       <body>
-        <ServiceWorkerKillSwitch />
+        {!isPublicShop && <ServiceWorkerKillSwitch />}
         <div className="app-shell">{children}</div>
-        <BottomNav />
+        {!isPublicShop && <BottomNav />}
       </body>
     </html>
   );

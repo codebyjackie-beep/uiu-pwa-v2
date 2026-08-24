@@ -5,8 +5,8 @@
 import { Hono } from "hono";
 import type { Document } from "mongodb";
 import type { ApiResponse } from "@uiu/shared";
-import { withDb, type DbEnv } from "../db";
-import type { IgContentDraft } from "../jobs/igContentAgent";
+import { withDb, getMongoModule, type DbEnv } from "../db";
+import { retryDraft, type IgContentDraft } from "../jobs/igContentAgent";
 
 type VerifyBindings = DbEnv & {
   ADMIN_TOKEN: string;
@@ -14,6 +14,8 @@ type VerifyBindings = DbEnv & {
   IG_ID_UIU: string;
   IG_TOKEN_AFFILIATE: string;
   IG_ID_AFFILIATE: string;
+  TELEGRAM_BOT_TOKEN_IG: string;
+  TELEGRAM_CHAT_ID_IG: string;
 };
 
 export const adminIgDraftsRouter = new Hono<{ Bindings: VerifyBindings }>();
@@ -72,6 +74,26 @@ adminIgDraftsRouter.get("/verify-media", async (c) => {
   } catch (err) {
     console.error("[uiu-api] ig-drafts verify-media error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to verify media" } };
+    return c.json(body, 502);
+  }
+});
+
+/** Retries a publish_failed draft (e.g. after the 9007-race fix) without waiting for a Telegram tap on a stale message. */
+adminIgDraftsRouter.post("/:id/retry", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const { ObjectId } = await getMongoModule();
+    const draftId = new ObjectId(c.req.param("id"));
+    const result = await retryDraft(c.env, draftId);
+    const body: ApiResponse<typeof result> = { ok: true, data: result };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-drafts retry error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to retry draft" } };
     return c.json(body, 502);
   }
 });

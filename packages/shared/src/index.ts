@@ -803,6 +803,20 @@ export interface ShoppingListFromIngredientRequest {
   canonicalName?: string;
 }
 
+// ---------------------------------------------------------------------------
+// shop.useitup.uk public affiliate page (HANDOFF_ig-marketing-affiliate-agent-design.md)
+// ---------------------------------------------------------------------------
+
+/** One row of the affiliate_products collection — recently-recommended kitchen products, public/read-only. */
+export interface AffiliateProduct {
+  productName: string;
+  category: string;
+  asin: string;
+  affiliateLink: string;
+  imageUrl: string;
+  lastUsedAt: ISODate;
+}
+
 export type ShoppingListFromIngredientResponse =
   | { merged: true }
   | { merged: false; added: true; item: ShoppingListItem };

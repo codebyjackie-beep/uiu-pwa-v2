@@ -17,7 +17,7 @@
  */
 import type { OpenRouterEnv } from "./openrouter";
 import type { SerperEnv } from "./serper";
-import { lookupAsin, buildAffiliateLink } from "./serper";
+import { lookupAsin, buildAffiliateLink, searchProductImage } from "./serper";
 
 export interface OrganicDraft {
   targetAccount: "uiu";
@@ -33,6 +33,9 @@ export interface AffiliateDraft {
   category: string;
   asin: string;
   affiliateLink: string;
+  /** Real product photo from Serper Shopping/Images, if found — takes priority over imageQuery/Pexels. */
+  productImageUrl?: string;
+  productImageSource?: "serper_shopping" | "serper_images";
 }
 
 function extractJson(text: string): unknown {
@@ -145,6 +148,9 @@ export async function generateAffiliateDraft(env: AffiliateEnv, recentProductNam
   const { caption, imageQuery } = await writeAffiliateCaption(env, idea);
   const affiliateLink = buildAffiliateLink(found.asin, env.AMAZON_ASSOCIATE_TAG);
   const fullCaption = `${caption}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
+  // Prefer the real listing photo (Serper Shopping, falling back to Serper Images) over the
+  // generic Pexels stock search below — searchPhoto(imageQuery) is only reached if this is null.
+  const productImage = await searchProductImage(env, found.title || idea.productName).catch(() => null);
   return {
     targetAccount: "affiliate",
     caption: fullCaption,
@@ -153,5 +159,7 @@ export async function generateAffiliateDraft(env: AffiliateEnv, recentProductNam
     category: idea.category,
     asin: found.asin,
     affiliateLink,
+    productImageUrl: productImage?.imageUrl,
+    productImageSource: productImage?.source,
   };
 }

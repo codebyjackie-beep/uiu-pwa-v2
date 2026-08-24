@@ -53,3 +53,43 @@ export async function lookupAsin(env: SerperEnv, query: string): Promise<AsinLoo
 export function buildAffiliateLink(asin: string, associateTag: string): string {
   return `https://www.amazon.co.uk/dp/${asin}?tag=${associateTag}`;
 }
+
+export interface ProductImageResult {
+  imageUrl: string;
+  source: "serper_shopping" | "serper_images";
+}
+
+/**
+ * Real product-photo search for affiliate posts (2026-08-24 addendum — the
+ * imageQuery/Pexels path in igContentGen.ts only ever returns generic stock
+ * lifestyle photos, never the actual listing photo). Tries Serper's Shopping
+ * endpoint first (results are genuine product-listing photos, usually
+ * white-background), falls back to Serper Images with a "product photo white
+ * background" qualifier if Shopping has no hit. Returns null if neither
+ * finds anything — caller falls back to Pexels.
+ */
+export async function searchProductImage(env: SerperEnv, query: string): Promise<ProductImageResult | null> {
+  const shoppingRes = await fetch("https://google.serper.dev/shopping", {
+    method: "POST",
+    headers: { "X-API-KEY": env.SERPER_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ q: query, gl: "uk" }),
+  });
+  if (shoppingRes.ok) {
+    const data = (await shoppingRes.json()) as { shopping?: Array<{ imageUrl?: string }> };
+    const imageUrl = data.shopping?.find((item) => item.imageUrl)?.imageUrl;
+    if (imageUrl) return { imageUrl, source: "serper_shopping" };
+  }
+
+  const imagesRes = await fetch("https://google.serper.dev/images", {
+    method: "POST",
+    headers: { "X-API-KEY": env.SERPER_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ q: `${query} product photo white background`, gl: "uk" }),
+  });
+  if (imagesRes.ok) {
+    const data = (await imagesRes.json()) as { images?: Array<{ imageUrl?: string }> };
+    const imageUrl = data.images?.find((item) => item.imageUrl)?.imageUrl;
+    if (imageUrl) return { imageUrl, source: "serper_images" };
+  }
+
+  return null;
+}
