@@ -12,7 +12,12 @@ export const affiliateProductsRouter = new Hono<{ Bindings: DbEnv }>();
 affiliateProductsRouter.get("/", async (c) => {
   try {
     const docs = await withDb(c.env, (db) =>
-      db.collection("affiliate_products").find({}).sort({ lastUsedAt: -1 }).limit(60).toArray(),
+      db
+        .collection("affiliate_products")
+        .find({ imageUrl: { $type: "string", $ne: "" } })
+        .sort({ lastUsedAt: -1 })
+        .limit(60)
+        .toArray(),
     );
     const data: AffiliateProduct[] = docs.map((doc) => ({
       productName: String(doc.productName),

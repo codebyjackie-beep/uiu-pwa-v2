@@ -7,6 +7,7 @@ import type { Document } from "mongodb";
 import type { ApiResponse } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { retryDraft, type IgContentDraft } from "../jobs/igContentAgent";
+import { searchProductImage } from "../services/serper";
 
 type VerifyBindings = DbEnv & {
   ADMIN_TOKEN: string;
@@ -16,6 +17,7 @@ type VerifyBindings = DbEnv & {
   IG_ID_AFFILIATE: string;
   TELEGRAM_BOT_TOKEN_IG: string;
   TELEGRAM_CHAT_ID_IG: string;
+  SERPER_API_KEY: string;
 };
 
 export const adminIgDraftsRouter = new Hono<{ Bindings: VerifyBindings }>();
@@ -94,6 +96,35 @@ adminIgDraftsRouter.post("/:id/retry", async (c) => {
   } catch (err) {
     console.error("[uiu-api] ig-drafts retry error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to retry draft" } };
+    return c.json(body, 502);
+  }
+});
+
+/** One-off backfill: affiliate_products rows written before imageUrl was recorded (pre-2026-08-24 fix) have no imageUrl field. */
+adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const docs = await withDb(c.env, (db) =>
+      db.collection("affiliate_products").find({ imageUrl: { $exists: false } }).toArray(),
+    );
+    const results = await Promise.all(
+      docs.map(async (doc) => {
+        const productName = String(doc.productName);
+        const found = await searchProductImage(c.env, productName).catch(() => null);
+        if (!found) return { asin: String(doc.asin), updated: false, reason: "no image found" };
+        await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $set: { imageUrl: found.imageUrl, imageSource: found.source } }));
+        return { asin: String(doc.asin), updated: true, imageUrl: found.imageUrl, source: found.source };
+      }),
+    );
+    const body: ApiResponse<typeof results> = { ok: true, data: results };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-drafts backfill-product-images error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to backfill product images" } };
     return c.json(body, 502);
   }
 });
