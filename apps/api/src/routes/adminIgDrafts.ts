@@ -8,13 +8,74 @@ import type { ApiResponse } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 import type { IgContentDraft } from "../jobs/igContentAgent";
 
-export const adminIgDraftsRouter = new Hono<{ Bindings: DbEnv & { ADMIN_TOKEN: string } }>();
+type VerifyBindings = DbEnv & {
+  ADMIN_TOKEN: string;
+  IG_TOKEN_UIU: string;
+  IG_ID_UIU: string;
+  IG_TOKEN_AFFILIATE: string;
+  IG_ID_AFFILIATE: string;
+};
+
+export const adminIgDraftsRouter = new Hono<{ Bindings: VerifyBindings }>();
 
 function toIgDraft(doc: Document): Omit<IgContentDraft, "_id"> & { _id: string } {
   return { ...(doc as unknown as IgContentDraft), _id: String(doc._id) };
 }
 
 /** `?status=` optional. Pass "all" for every status, omit for the default (all, most recent first). */
+/**
+ * Cross-checks each approved draft's publishedMediaId against the Instagram
+ * Graph API, using the *same* account token the draft claims to belong to
+ * (accountFor's mapping, duplicated here) — if targetAccount and the token
+ * actually used to publish had ever diverged, this call would 400/403
+ * because the wrong token has no permission on that media node.
+ */
+adminIgDraftsRouter.get("/verify-media", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const docs = await withDb(c.env, (db) =>
+      db.collection("ig_content_drafts").find({ status: "approved", publishedMediaId: { $exists: true } }).sort({ createdAt: -1 }).toArray(),
+    );
+    const results = await Promise.all(
+      docs.map(async (doc) => {
+        const targetAccount = doc.targetAccount as "uiu" | "affiliate";
+        const accessToken = targetAccount === "uiu" ? c.env.IG_TOKEN_UIU : c.env.IG_TOKEN_AFFILIATE;
+        const igUserId = targetAccount === "uiu" ? c.env.IG_ID_UIU : c.env.IG_ID_AFFILIATE;
+        const mediaId = String(doc.publishedMediaId);
+        const url = new URL(`https://graph.facebook.com/v21.0/${mediaId}`);
+        url.searchParams.set("fields", "permalink,timestamp,media_product_type");
+        url.searchParams.set("access_token", accessToken);
+        try {
+          const res = await fetch(url);
+          const json = (await res.json()) as { permalink?: string; timestamp?: string; error?: { message?: string } };
+          return {
+            _id: String(doc._id),
+            targetAccount,
+            igUserIdChecked: igUserId,
+            mediaId,
+            httpStatus: res.status,
+            permalink: json.permalink ?? null,
+            igTimestamp: json.timestamp ?? null,
+            graphError: json.error?.message ?? null,
+          };
+        } catch (err) {
+          return { _id: String(doc._id), targetAccount, mediaId, httpStatus: 0, permalink: null, igTimestamp: null, graphError: err instanceof Error ? err.message : String(err) };
+        }
+      }),
+    );
+    const body: ApiResponse<typeof results> = { ok: true, data: results };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-drafts verify-media error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to verify media" } };
+    return c.json(body, 502);
+  }
+});
+
 adminIgDraftsRouter.get("/", async (c) => {
   const token = c.req.header("X-Admin-Token");
   if (!token || token !== c.env.ADMIN_TOKEN) {
