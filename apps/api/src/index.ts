@@ -23,6 +23,7 @@ import { sendTelegram } from "./services/telegram";
 import { runIgContentBatch, type BatchSummary } from "./jobs/igContentAgent";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { igWebhookRouter } from "./routes/igWebhook";
+import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -129,6 +130,7 @@ app.route("/api/health", healthRouter);
 app.route("/api/recipe-import", recipeImportRouter);
 app.route("/api/recipe-browse", recipeBrowseStateRouter);
 app.route("/api/ig-webhook", igWebhookRouter);
+app.route("/api/admin/ig-drafts", adminIgDraftsRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass
