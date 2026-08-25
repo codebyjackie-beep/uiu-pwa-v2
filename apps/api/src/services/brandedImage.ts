@@ -101,12 +101,29 @@ async function toDataUri(url: string): Promise<string> {
  * Cloudflare-Workers-specific forks that solve exactly this (their bundle has zero references
  * to the `harfbuzzjs` package) — same `satori()`/`Resvg` API, swapped in as a drop-in fix.
  */
+/**
+ * `initResvg`/`initSatori` each throw "Function already called" if invoked a second time
+ * per isolate — and since Cloudflare can hot-swap a new deployment's code into an already-warm
+ * isolate (module-level state isn't guaranteed to reset per deploy), that guard can fire even
+ * on what is, from this module's perspective, the very first call. Treat that specific error as
+ * "already initialized by someone else in this isolate" and fall through to `.ensure()`, which
+ * waits on whichever init actually ran, rather than treating it as fatal.
+ */
+async function initOnce(init: (input: WebAssembly.Module) => Promise<void>, ensure: () => Promise<void>, wasmModule: WebAssembly.Module): Promise<void> {
+  try {
+    await init(wasmModule);
+  } catch (err) {
+    if (!(err instanceof Error && err.message.includes("already called"))) throw err;
+  }
+  await ensure();
+}
+
 let wasmReady: Promise<void> | undefined;
 function ensureWasm(): Promise<void> {
   if (!wasmReady) {
     wasmReady = Promise.all([
-      initResvg(resvgWasmModule as unknown as WebAssembly.Module),
-      initSatori(yogaWasmModule as unknown as WebAssembly.Module),
+      initOnce(initResvg, initResvg.ensure, resvgWasmModule as unknown as WebAssembly.Module),
+      initOnce(initSatori, initSatori.ensure, yogaWasmModule as unknown as WebAssembly.Module),
     ]).then(() => undefined);
   }
   return wasmReady;
