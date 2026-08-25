@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@cf-wasm/resvg": "^0.4.0",
-    "@cf-wasm/satori": "^0.4.0",
     "@uiu/shared": "*",
     "hono": "^4.6.14",
     "mongodb": "^7.5.0"

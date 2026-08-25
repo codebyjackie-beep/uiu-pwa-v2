@@ -2,16 +2,28 @@
  * HANDOFF_ig-marketing-affiliate-agent-design.md — 2026-08-25 addendum (Jackie, after
  * reviewing live posts: "人哋睇個post唔會知你個張圖想講啲乜") — composites the post's
  * hook line onto its background photo, so the point of the post is visible in-feed
- * without a reader tapping "more". satori (JSX-shaped object -> SVG) + @resvg/resvg-wasm
- * (SVG -> PNG) both run natively in the Workers runtime (no new SaaS/API key).
+ * without a reader tapping "more".
  *
- * satori cannot fetch the background photo itself (it only embeds whatever `src` string
- * is given), and @resvg/resvg-wasm's renderer has no network access inside the wasm
- * sandbox — so the background image is fetched here and inlined as a base64 data: URI
- * before being handed to satori.
+ * 2026-08-25 rewrite (Jackie, after this hit 3 separate production-only bugs in a row —
+ * Google Fonts woff/ttf mismatch, then a harfbuzz module-load crash, then a Cloudflare
+ * isolate-reuse "already called" init guard — all traced back to the same layer):
+ * the previous version used `satori` (JSX-shaped tree -> SVG) purely for 3 fixed pieces of
+ * layout (gradient rect, hook text, handle chip) that don't need a flexbox/text-shaping
+ * engine at all. This version hand-writes the SVG directly and uses `@cf-wasm/resvg`
+ * (SVG -> PNG, runs natively in Workers) as the ONLY rendering dependency — satori and its
+ * harfbuzz dependency chain are removed entirely.
+ *
+ * The hook font is bundled at build time (`assets/hook-font.ttf`, Poppins ExtraBold,
+ * OFL-licensed — see assets/hook-font.OFL.txt) as a `wrangler.toml` `[[rules]] type = "Data"`
+ * import, i.e. a plain ArrayBuffer baked into the deployed bundle. This replaces the old
+ * per-request Google Fonts fetch: one less runtime dependency, one less way for this to break.
+ *
+ * resvg-wasm cannot fetch the background photo itself and has no network access inside the
+ * wasm sandbox, so the background image is fetched here and inlined as a base64 data: URI
+ * before being embedded in the SVG.
  */
-import satori, { initSatori, yogaWasmModule } from "@cf-wasm/satori/workerd";
-import { Resvg, initResvg, resvgWasmModule } from "@cf-wasm/resvg/workerd";
+import { Resvg, initResvg } from "@cf-wasm/resvg/workerd";
+import hookFontData from "../../assets/hook-font.ttf";
 
 export type BrandAccount = "uiu" | "affiliate";
 
@@ -31,47 +43,6 @@ const PALETTES: Record<BrandAccount, Palette> = {
   affiliate: { overlay: "#0a0a0a", accent: "#22c55e", text: "#ffffff", handle: "@kura.nook" },
 };
 
-const fontCache = new Map<string, Promise<ArrayBuffer>>();
-
-/**
- * Standard "old Chrome User-Agent" trick (same technique @vercel/og uses) — Google Fonts'
- * css2 endpoint serves woff2 to modern UAs but plain .ttf to old ones, and satori/resvg need
- * a raw TTF/OTF, not woff2. Cached at module scope so a warm isolate only fetches once.
- */
-function loadGoogleFont(family: string, weight: number): Promise<ArrayBuffer> {
-  const key = `${family}:${weight}`;
-  let cached = fontCache.get(key);
-  if (!cached) {
-    cached = fetchGoogleFont(family, weight);
-    fontCache.set(key, cached);
-  }
-  return cached;
-}
-
-/** Google now serves plain .woff (not .ttf) to this old-Chrome UA (Chrome 41 predates
- * woff2) — confirmed live 2026-08-25. satori/opentype.js parse .woff fine, so this no
- * longer insists on truetype/opentype; it just needs the "latin" subset block (the CSS
- * lists several unicode-range subsets — cyrillic/greek/vietnamese/etc. come first, latin
- * last), since that's the one covering plain English hook text. */
-async function fetchGoogleFont(family: string, weight: number): Promise<ArrayBuffer> {
-  const cssRes = await fetch(`https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}`, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
-    },
-  });
-  if (!cssRes.ok) throw new Error(`Google Fonts CSS fetch failed: ${cssRes.status}`);
-  const css = await cssRes.text();
-  const blocks = css.split("@font-face").slice(1);
-  const latinBlock = blocks.find((b) => b.includes("U+0000-00FF")) ?? blocks[blocks.length - 1];
-  if (!latinBlock) throw new Error("Google Fonts CSS had no @font-face blocks");
-  const match = latinBlock.match(/src: url\(([^)]+)\)/);
-  if (!match) throw new Error("Google Fonts CSS latin block had no src url");
-  const fontRes = await fetch(match[1]!);
-  if (!fontRes.ok) throw new Error(`Google Fonts font fetch failed: ${fontRes.status}`);
-  return fontRes.arrayBuffer();
-}
-
 function bytesToBase64(bytes: Uint8Array): string {
   const CHUNK = 0x8000;
   let binary = "";
@@ -89,44 +60,20 @@ async function toDataUri(url: string): Promise<string> {
   return `data:${contentType};base64,${bytesToBase64(bytes)}`;
 }
 
-/**
- * Plain `satori` + `@resvg/resvg-wasm` fail in this Worker: satori's transitive `harfbuzzjs`
- * dependency calls `hb()` as a MODULE-LOAD-TIME side effect (inside harfbuzzjs/index.js),
- * which runs before any of our code — including satori's own `init()` — ever executes, and
- * that call does `new URL('hb.wasm', import.meta.url)` internally, which resolves to
- * `undefined` under wrangler's esbuild bundling (confirmed live via `wrangler tail`:
- * "Cannot read properties of undefined (reading 'href')" thrown from harfbuzzjs's hb.js).
- * Worse, satori 0.33.4's exported `init()` is a no-op stub, so there's no supported way to
- * intercept this from userland at all. `@cf-wasm/satori` / `@cf-wasm/resvg` are
- * Cloudflare-Workers-specific forks that solve exactly this (their bundle has zero references
- * to the `harfbuzzjs` package) — same `satori()`/`Resvg` API, swapped in as a drop-in fix.
- */
-/**
- * `initResvg`/`initSatori` each throw "Function already called" if invoked a second time
- * per isolate — and since Cloudflare can hot-swap a new deployment's code into an already-warm
- * isolate (module-level state isn't guaranteed to reset per deploy), that guard can fire even
- * on what is, from this module's perspective, the very first call. Treat that specific error as
- * "already initialized by someone else in this isolate" and fall through to `.ensure()`, which
- * waits on whichever init actually ran, rather than treating it as fatal.
- */
-async function initOnce(init: (input: WebAssembly.Module) => Promise<void>, ensure: () => Promise<void>, wasmModule: WebAssembly.Module): Promise<void> {
-  try {
-    await init(wasmModule);
-  } catch (err) {
-    if (!(err instanceof Error && err.message.includes("already called"))) throw err;
-  }
-  await ensure();
+function escapeXml(input: string): string {
+  return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-let wasmReady: Promise<void> | undefined;
+/**
+ * `@cf-wasm/resvg/workerd`'s own entrypoint module (dist/workerd.js) already calls
+ * `initResvg(resvgWasmModule)` itself as a module-load-time side effect the moment it's
+ * imported — confirmed by reading that file directly. Calling `initResvg()` again ourselves
+ * is what caused the earlier "(@cf-wasm/resvg): Function already called" production error
+ * (it fired on literally the first request in a fresh isolate, not an isolate-reuse race as
+ * originally suspected). We only need to wait on the init the import already triggered.
+ */
 function ensureWasm(): Promise<void> {
-  if (!wasmReady) {
-    wasmReady = Promise.all([
-      initOnce(initResvg, initResvg.ensure, resvgWasmModule as unknown as WebAssembly.Module),
-      initOnce(initSatori, initSatori.ensure, yogaWasmModule as unknown as WebAssembly.Module),
-    ]).then(() => undefined);
-  }
-  return wasmReady;
+  return initResvg.ensure();
 }
 
 /** Hook font size shrinks as the hook gets longer so a ~125-char hook still fits the overlay band. */
@@ -134,6 +81,30 @@ function hookFontSize(hookLength: number): number {
   if (hookLength <= 55) return 66;
   if (hookLength <= 85) return 54;
   return 44;
+}
+
+/**
+ * SVG has no auto-wrap for `<text>` — greedy word-wrap using an estimated average glyph
+ * width (Poppins ExtraBold runs close to 0.6x font-size per character for this kind of
+ * short punchy hook copy). Good enough for a 1-3 line headline; not a general text-layout engine.
+ */
+function wrapHook(hook: string, fontSize: number, maxWidth: number): string[] {
+  const avgCharWidth = fontSize * 0.6;
+  const maxCharsPerLine = Math.max(1, Math.floor(maxWidth / avgCharWidth));
+  const words = hook.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length > maxCharsPerLine && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
 }
 
 export interface RenderBrandedImageParams {
@@ -145,100 +116,42 @@ export interface RenderBrandedImageParams {
 /** Renders a 1080x1080 IG feed image: background photo + bottom gradient + hook headline + handle watermark. */
 export async function renderBrandedImage(params: RenderBrandedImageParams): Promise<Uint8Array> {
   const palette = PALETTES[params.account];
-  const [bgDataUri, fontData] = await Promise.all([toDataUri(params.backgroundImageUrl), loadGoogleFont("Inter", 800), ensureWasm()]);
+  const [bgDataUri] = await Promise.all([toDataUri(params.backgroundImageUrl), ensureWasm()]);
 
-  const tree = {
-    type: "div",
-    props: {
-      style: {
-        display: "flex",
-        position: "relative",
-        width: "1080px",
-        height: "1080px",
-        backgroundColor: palette.overlay,
-        fontFamily: "Inter",
-      },
-      children: [
-        {
-          type: "img",
-          props: {
-            src: bgDataUri,
-            width: 1080,
-            height: 1080,
-            style: { position: "absolute", top: "0px", left: "0px", width: "1080px", height: "1080px", objectFit: "cover" },
-          },
-        },
-        {
-          type: "div",
-          props: {
-            style: {
-              display: "flex",
-              position: "absolute",
-              left: "0px",
-              right: "0px",
-              bottom: "0px",
-              height: "620px",
-              background: `linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.92) 100%)`,
-            },
-          },
-        },
-        {
-          type: "div",
-          props: {
-            style: {
-              display: "flex",
-              position: "absolute",
-              top: "48px",
-              left: "48px",
-              padding: "12px 22px",
-              borderRadius: "999px",
-              backgroundColor: "rgba(0,0,0,0.45)",
-              color: palette.accent,
-              fontSize: "30px",
-              fontWeight: 800,
-            },
-            children: palette.handle,
-          },
-        },
-        {
-          type: "div",
-          props: {
-            style: {
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-              left: "56px",
-              right: "56px",
-              bottom: "88px",
-            },
-            children: [
-              {
-                type: "div",
-                props: {
-                  style: {
-                    display: "flex",
-                    fontSize: `${hookFontSize(params.hook.length)}px`,
-                    fontWeight: 800,
-                    color: palette.text,
-                    lineHeight: 1.18,
-                    letterSpacing: "-1px",
-                  },
-                  children: params.hook,
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
-  };
+  const fontSize = hookFontSize(params.hook.length);
+  const lineHeight = fontSize * 1.18;
+  const textLeft = 56;
+  const textRight = 1080 - 56;
+  const maxTextWidth = textRight - textLeft;
+  const lines = wrapHook(params.hook, fontSize, maxTextWidth);
+  const bottomY = 1080 - 88;
+  const firstLineY = bottomY - lineHeight * (lines.length - 1);
+  const hookTspans = lines
+    .map((line, i) => `<tspan x="${textLeft}" y="${firstLineY + lineHeight * i}">${escapeXml(line)}</tspan>`)
+    .join("");
 
-  const svg = await satori(tree as unknown as Parameters<typeof satori>[0], {
-    width: 1080,
-    height: 1080,
-    fonts: [{ name: "Inter", data: fontData, weight: 800, style: "normal" }],
+  const handleText = escapeXml(palette.handle);
+  const handleChipWidth = handleText.length * 17 + 44;
+
+  const svg = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+      <stop offset="55%" stop-color="#000000" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.92" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1080" height="1080" fill="${palette.overlay}" />
+  <image href="${bgDataUri}" x="0" y="0" width="1080" height="1080" preserveAspectRatio="xMidYMid slice" />
+  <rect x="0" y="460" width="1080" height="620" fill="url(#grad)" />
+  <rect x="48" y="48" width="${handleChipWidth}" height="54" rx="27" fill="rgba(0,0,0,0.45)" />
+  <text x="${48 + handleChipWidth / 2}" y="83" font-family="Hook" font-weight="800" font-size="30" fill="${palette.accent}" text-anchor="middle">${handleText}</text>
+  <text font-family="Hook" font-weight="800" font-size="${fontSize}" fill="${palette.text}" letter-spacing="-1">${hookTspans}</text>
+</svg>`;
+
+  const resvg = new Resvg(svg, {
+    fitTo: { mode: "width", value: 1080 },
+    font: { fontBuffers: [new Uint8Array(hookFontData)], defaultFontFamily: "Hook" },
   });
-
-  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1080 } });
   return resvg.render().asPng();
 }

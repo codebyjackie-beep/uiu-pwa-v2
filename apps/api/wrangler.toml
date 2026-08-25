@@ -9,6 +9,13 @@ compatibility_flags = ["nodejs_compat"]
 [observability]
 enabled = true
 
+# services/brandedImage.ts bundles its hook-overlay font as a build-time asset (Data import,
+# raw ArrayBuffer) instead of fetching it per-request — see that file's header comment for why.
+[[rules]]
+type = "Data"
+globs = ["**/*.ttf"]
+fallthrough = true
+
 # --- Secrets (set via `wrangler secret put` or CI, NEVER committed) ---
 #   MONGODB_URI        Atlas connection string (mongodb+srv://...), official `mongodb` driver
 #                       over Workers TCP sockets — no Data API involved.
