@@ -10,9 +10,10 @@
  * sandbox — so the background image is fetched here and inlined as a base64 data: URI
  * before being handed to satori.
  */
-import satori from "satori";
+import satori, { init as initSatori } from "satori";
 import { Resvg, initWasm } from "@resvg/resvg-wasm";
 import RESVG_WASM from "@resvg/resvg-wasm/index_bg.wasm";
+import HARFBUZZ_WASM from "harfbuzzjs/hb.wasm";
 
 export type BrandAccount = "uiu" | "affiliate";
 
@@ -90,9 +91,22 @@ async function toDataUri(url: string): Promise<string> {
   return `data:${contentType};base64,${bytesToBase64(bytes)}`;
 }
 
+/**
+ * Both wasm binaries must be explicitly pre-initialized in Workers — satori's default
+ * harfbuzzjs loading path does `new URL('hb.wasm', import.meta.url)` internally, which
+ * resolves to `undefined` under wrangler's bundler (confirmed live via `wrangler tail`:
+ * "Cannot read properties of undefined (reading 'href')" thrown from harfbuzzjs's hb.js).
+ * satori exports `init(wasmModule)` specifically to bypass that lookup — same pattern as
+ * @resvg/resvg-wasm's initWasm() below, just two separate wasm binaries for two libraries.
+ */
 let wasmReady: Promise<void> | undefined;
-function ensureResvgWasm(): Promise<void> {
-  if (!wasmReady) wasmReady = initWasm(RESVG_WASM as unknown as WebAssembly.Module);
+function ensureWasm(): Promise<void> {
+  if (!wasmReady) {
+    wasmReady = Promise.all([
+      initWasm(RESVG_WASM as unknown as WebAssembly.Module),
+      initSatori(HARFBUZZ_WASM as unknown as WebAssembly.Module),
+    ]).then(() => undefined);
+  }
   return wasmReady;
 }
 
@@ -112,7 +126,7 @@ export interface RenderBrandedImageParams {
 /** Renders a 1080x1080 IG feed image: background photo + bottom gradient + hook headline + handle watermark. */
 export async function renderBrandedImage(params: RenderBrandedImageParams): Promise<Uint8Array> {
   const palette = PALETTES[params.account];
-  const [bgDataUri, fontData] = await Promise.all([toDataUri(params.backgroundImageUrl), loadGoogleFont("Inter", 800)]);
+  const [bgDataUri, fontData] = await Promise.all([toDataUri(params.backgroundImageUrl), loadGoogleFont("Inter", 800), ensureWasm()]);
 
   const tree = {
     type: "div",
@@ -206,7 +220,6 @@ export async function renderBrandedImage(params: RenderBrandedImageParams): Prom
     fonts: [{ name: "Inter", data: fontData, weight: 800, style: "normal" }],
   });
 
-  await ensureResvgWasm();
   const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1080 } });
   return resvg.render().asPng();
 }
