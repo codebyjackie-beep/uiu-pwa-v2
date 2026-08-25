@@ -10,11 +10,11 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@resvg/resvg-wasm": "^2.6.2",
+    "@cf-wasm/resvg": "^0.4.0",
+    "@cf-wasm/satori": "^0.4.0",
     "@uiu/shared": "*",
     "hono": "^4.6.14",
-    "mongodb": "^7.5.0",
-    "satori": "^0.33.4"
+    "mongodb": "^7.5.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241218.0",

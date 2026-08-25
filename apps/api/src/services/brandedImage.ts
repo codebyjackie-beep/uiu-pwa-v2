@@ -10,10 +10,8 @@
  * sandbox — so the background image is fetched here and inlined as a base64 data: URI
  * before being handed to satori.
  */
-import satori, { init as initSatori } from "satori";
-import { Resvg, initWasm } from "@resvg/resvg-wasm";
-import RESVG_WASM from "@resvg/resvg-wasm/index_bg.wasm";
-import HARFBUZZ_WASM from "harfbuzzjs/hb.wasm";
+import satori, { initSatori, yogaWasmModule } from "@cf-wasm/satori/workerd";
+import { Resvg, initResvg, resvgWasmModule } from "@cf-wasm/resvg/workerd";
 
 export type BrandAccount = "uiu" | "affiliate";
 
@@ -92,19 +90,23 @@ async function toDataUri(url: string): Promise<string> {
 }
 
 /**
- * Both wasm binaries must be explicitly pre-initialized in Workers — satori's default
- * harfbuzzjs loading path does `new URL('hb.wasm', import.meta.url)` internally, which
- * resolves to `undefined` under wrangler's bundler (confirmed live via `wrangler tail`:
+ * Plain `satori` + `@resvg/resvg-wasm` fail in this Worker: satori's transitive `harfbuzzjs`
+ * dependency calls `hb()` as a MODULE-LOAD-TIME side effect (inside harfbuzzjs/index.js),
+ * which runs before any of our code — including satori's own `init()` — ever executes, and
+ * that call does `new URL('hb.wasm', import.meta.url)` internally, which resolves to
+ * `undefined` under wrangler's esbuild bundling (confirmed live via `wrangler tail`:
  * "Cannot read properties of undefined (reading 'href')" thrown from harfbuzzjs's hb.js).
- * satori exports `init(wasmModule)` specifically to bypass that lookup — same pattern as
- * @resvg/resvg-wasm's initWasm() below, just two separate wasm binaries for two libraries.
+ * Worse, satori 0.33.4's exported `init()` is a no-op stub, so there's no supported way to
+ * intercept this from userland at all. `@cf-wasm/satori` / `@cf-wasm/resvg` are
+ * Cloudflare-Workers-specific forks that solve exactly this (their bundle has zero references
+ * to the `harfbuzzjs` package) — same `satori()`/`Resvg` API, swapped in as a drop-in fix.
  */
 let wasmReady: Promise<void> | undefined;
 function ensureWasm(): Promise<void> {
   if (!wasmReady) {
     wasmReady = Promise.all([
-      initWasm(RESVG_WASM as unknown as WebAssembly.Module),
-      initSatori(HARFBUZZ_WASM as unknown as WebAssembly.Module),
+      initResvg(resvgWasmModule as unknown as WebAssembly.Module),
+      initSatori(yogaWasmModule as unknown as WebAssembly.Module),
     ]).then(() => undefined);
   }
   return wasmReady;
