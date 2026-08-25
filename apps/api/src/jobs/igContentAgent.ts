@@ -231,7 +231,7 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   try {
     imageUrl = await buildBrandedImageUrl(env, target, sourceImageUrl, hook);
   } catch (err) {
-    console.error("[uiu-api] renderBrandedImage failed, falling back to unbranded source photo:", err instanceof Error ? err.message : String(err));
+    console.error("[uiu-api] renderBrandedImage failed, falling back to unbranded source photo:", err instanceof Error ? (err.stack ?? err.message) : String(err));
     imageUrl = sourceImageUrl; // still postable — just without the hook overlay
   }
 
