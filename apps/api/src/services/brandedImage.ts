@@ -49,6 +49,11 @@ function loadGoogleFont(family: string, weight: number): Promise<ArrayBuffer> {
   return cached;
 }
 
+/** Google now serves plain .woff (not .ttf) to this old-Chrome UA (Chrome 41 predates
+ * woff2) — confirmed live 2026-08-25. satori/opentype.js parse .woff fine, so this no
+ * longer insists on truetype/opentype; it just needs the "latin" subset block (the CSS
+ * lists several unicode-range subsets — cyrillic/greek/vietnamese/etc. come first, latin
+ * last), since that's the one covering plain English hook text. */
 async function fetchGoogleFont(family: string, weight: number): Promise<ArrayBuffer> {
   const cssRes = await fetch(`https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}`, {
     headers: {
@@ -58,10 +63,13 @@ async function fetchGoogleFont(family: string, weight: number): Promise<ArrayBuf
   });
   if (!cssRes.ok) throw new Error(`Google Fonts CSS fetch failed: ${cssRes.status}`);
   const css = await cssRes.text();
-  const match = css.match(/src: url\(([^)]+)\) format\('(?:truetype|opentype)'\)/);
-  if (!match) throw new Error("Google Fonts CSS had no truetype/opentype src");
+  const blocks = css.split("@font-face").slice(1);
+  const latinBlock = blocks.find((b) => b.includes("U+0000-00FF")) ?? blocks[blocks.length - 1];
+  if (!latinBlock) throw new Error("Google Fonts CSS had no @font-face blocks");
+  const match = latinBlock.match(/src: url\(([^)]+)\)/);
+  if (!match) throw new Error("Google Fonts CSS latin block had no src url");
   const fontRes = await fetch(match[1]!);
-  if (!fontRes.ok) throw new Error(`Google Fonts TTF fetch failed: ${fontRes.status}`);
+  if (!fontRes.ok) throw new Error(`Google Fonts font fetch failed: ${fontRes.status}`);
   return fontRes.arrayBuffer();
 }
 
