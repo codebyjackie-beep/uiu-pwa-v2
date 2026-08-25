@@ -24,6 +24,7 @@
  */
 import { Resvg, initResvg } from "@cf-wasm/resvg/workerd";
 import hookFontData from "../../assets/hook-font.ttf";
+import { webpToPng } from "./webpTranscode";
 
 export type BrandAccount = "uiu" | "affiliate";
 
@@ -56,8 +57,14 @@ async function toDataUri(url: string): Promise<string> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Background image fetch failed: ${res.status}`);
   const contentType = res.headers.get("content-type")?.split(";")[0] || "image/jpeg";
-  const bytes = new Uint8Array(await res.arrayBuffer());
-  return `data:${contentType};base64,${bytesToBase64(bytes)}`;
+  let bytes: Uint8Array<ArrayBufferLike> = new Uint8Array(await res.arrayBuffer());
+  let outContentType = contentType;
+  // resvg can't decode WebP (see webpTranscode.ts header) — transcode to PNG before embedding.
+  if (contentType === "image/webp") {
+    bytes = await webpToPng(bytes);
+    outContentType = "image/png";
+  }
+  return `data:${outContentType};base64,${bytesToBase64(bytes)}`;
 }
 
 function escapeXml(input: string): string {
