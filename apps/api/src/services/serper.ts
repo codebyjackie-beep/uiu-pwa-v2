@@ -93,3 +93,35 @@ export async function searchProductImage(env: SerperEnv, query: string): Promise
 
   return null;
 }
+
+const HASHTAG_RE = /#[a-zA-Z][a-zA-Z0-9]{2,29}/g;
+
+/**
+ * 2026-08-25 addendum (Jackie: hashtags must not be a hardcoded reused list) — searches
+ * `"{topic} instagram hashtags"` and pulls real `#tag` tokens out of the organic result
+ * titles/snippets, so the tag set actually reflects live usage for this specific topic
+ * rather than a fixed static list. `exclude` filters out tags used in the last N drafts
+ * (caller passes recent history) so back-to-back posts don't repeat the same set.
+ * `fallback` is a small last-resort list used ONLY if the live search returns nothing
+ * (e.g. Serper outage) — not the primary source.
+ */
+export async function researchHashtags(env: SerperEnv, topic: string, exclude: string[], fallback: string[], count = 5): Promise<string[]> {
+  const excludeSet = new Set(exclude.map((h) => h.toLowerCase().replace(/^#/, "")));
+  try {
+    const res = await fetch("https://google.serper.dev/search", {
+      method: "POST",
+      headers: { "X-API-KEY": env.SERPER_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: `${topic} instagram hashtags`, gl: "uk" }),
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { organic?: Array<{ title?: string; snippet?: string }> };
+      const text = (data.organic ?? []).map((r) => `${r.title ?? ""} ${r.snippet ?? ""}`).join(" ");
+      const found = Array.from(new Set((text.match(HASHTAG_RE) ?? []).map((h) => h.toLowerCase())));
+      const filtered = found.filter((h) => !excludeSet.has(h.replace(/^#/, "")));
+      if (filtered.length > 0) return filtered.slice(0, count);
+    }
+  } catch {
+    // fall through to fallback list below
+  }
+  return fallback.filter((h) => !excludeSet.has(h.toLowerCase().replace(/^#/, ""))).slice(0, count);
+}

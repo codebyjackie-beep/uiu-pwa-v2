@@ -12,27 +12,50 @@
  *      requested from the LLM — Amazon Associates + ASA/FTC require it and it
  *      must not depend on the model remembering to include it.
  *
+ * 2026-08-25 addendum (Jackie, after reviewing live posts — "唔吸引、唔知想表達
+ * 啲咩" / "人哋睇個post唔會知你個張圖想講啲乜"): every draft is now generated as
+ * three explicit parts — hook / body / cta — instead of one opaque caption blob.
+ *   - hook: the pre-"more"-cutoff line (~125 chars), must be a question / pain
+ *     point / counter-intuitive claim, never a plain spec description. Returned
+ *     standalone (not just embedded in caption) because jobs/igContentAgent.ts
+ *     composites this exact same string onto the post image (services/brandedImage.ts)
+ *     — the same sentence has to work as both the caption opener AND the on-image
+ *     headline, so the two must never drift apart.
+ *   - body: 2-3 sentences, the actual benefit/tip.
+ *   - cta: one engagement line (comment/save/share), appended by the LLM per
+ *     the prompt, not fabricated by code (varies more naturally that way).
+ * Hashtags are no longer LLM-authored free text — see researchHashtags() below,
+ * appended by code after the LLM call, same isolation reasoning as the disclosure.
+ *
  * Product ASIN lookup goes through services/serper.ts (Google SERP via
  * Serper, never a direct Amazon fetch — see that file for why).
  */
 import type { OpenRouterEnv } from "./openrouter";
 import type { SerperEnv } from "./serper";
-import { lookupAsin, buildAffiliateLink, searchProductImage } from "./serper";
+import { lookupAsin, buildAffiliateLink, searchProductImage, researchHashtags } from "./serper";
+
+const ORGANIC_FALLBACK_HASHTAGS = ["#mealprep", "#foodwasteuk", "#healthyeatinguk", "#kitchentips", "#ukfoodie"];
+const AFFILIATE_FALLBACK_HASHTAGS = ["#kitchengadgets", "#amazonfinds", "#kitchenmusthaves", "#cookingtools", "#ukfoodie"];
 
 export interface OrganicDraft {
   targetAccount: "uiu";
+  pillar: string;
+  hook: string;
   caption: string;
   imageQuery: string;
+  hashtags: string[];
 }
 
 export interface AffiliateDraft {
   targetAccount: "affiliate";
+  hook: string;
   caption: string;
   imageQuery: string;
   productName: string;
   category: string;
   asin: string;
   affiliateLink: string;
+  hashtags: string[];
   /** Real product photo from Serper Shopping/Images, if found — takes priority over imageQuery/Pexels. */
   productImageUrl?: string;
   productImageSource?: "serper_shopping" | "serper_images";
@@ -67,25 +90,61 @@ async function callOpenRouterJson(env: OpenRouterEnv, systemPrompt: string, user
   return extractJson(content);
 }
 
-const ORGANIC_SYSTEM_PROMPT =
-  "You are writing one Instagram feed post caption for @useitup.app, a UK healthy-eating / " +
-  "meal-planning / food-waste-reduction app. Tone: warm, practical, food-and-kitchen focused — " +
-  "recipe ideas, cooking tips, fridge/food-waste tips, meal-prep encouragement. Never mention " +
-  "any product recommendation, purchase link, or Amazon — this account is organic content only. " +
-  "Include 3-6 relevant hashtags at the end. Respond with ONLY a JSON object: " +
-  '{"caption": string, "imageQuery": string} — imageQuery is a short English phrase (2-6 words) ' +
-  "describing a food/kitchen photo that would suit this post, for a stock photo search.";
+/** hook first (pre-cutoff, standalone), then body, then cta, then the code-appended hashtag line. */
+function assembleCaption(hook: string, body: string, cta: string, hashtags: string[]): string {
+  const tagLine = hashtags.length > 0 ? hashtags.map((h) => (h.startsWith("#") ? h : `#${h}`)).join(" ") : "";
+  return [hook, body, cta, tagLine].filter((part) => part.length > 0).join("\n\n");
+}
 
-/** recentCaptionSummaries: short strings (e.g. titles) of recently-posted organic content, to avoid repeats. */
-export async function generateOrganicDraft(env: OpenRouterEnv, recentCaptionSummaries: string[]): Promise<OrganicDraft> {
+interface HookBodyCta {
+  hook: string;
+  body: string;
+  cta: string;
+  imageQuery: string;
+}
+
+const HOOK_BODY_CTA_INSTRUCTIONS =
+  "Structure the post in three parts, returned as separate JSON fields (never merge them into one string): " +
+  '1) "hook" — the very first line, shown before Instagram\'s "more" cutoff (roughly the first 125 ' +
+  "characters). It must grab attention on its own: a question, a surprising/counter-intuitive claim, or a " +
+  "relatable pain point. NEVER a plain product/feature description or a generic greeting — a reader must " +
+  'be able to tell what the post is about from the hook alone. 2) "body" — 2-3 short sentences delivering ' +
+  'the actual benefit/tip. 3) "cta" — one short line inviting engagement (comment/save/share), e.g. ' +
+  '"Which one would you try first?" or "Save this for your next shop" or "Tag someone who needs this". ' +
+  'Respond with ONLY a JSON object: {"hook": string, "body": string, "cta": string, "imageQuery": string} ' +
+  "— imageQuery is a short English phrase (2-6 words) for a stock photo search. Do NOT include hashtags " +
+  "anywhere — they are added separately by code.";
+
+const ORGANIC_SYSTEM_PROMPT =
+  "You are writing one Instagram feed post for @useitup.app, a UK healthy-eating / meal-planning / " +
+  "food-waste-reduction app. Tone: warm, practical, food-and-kitchen focused — recipe ideas, cooking " +
+  "tips, fridge/food-waste tips, meal-prep encouragement. Never mention any product recommendation, " +
+  "purchase link, or Amazon — this account is organic content only. You will be told which content " +
+  "pillar to write for (recipe / tip / waste-reduction / behind-the-scenes) — stay strictly within that " +
+  "pillar. " +
+  HOOK_BODY_CTA_INSTRUCTIONS;
+
+/**
+ * recentCaptionSummaries: short strings of recently-posted organic content, to avoid repeats.
+ * recentHashtags: hashtags used in recent drafts (any account), so this batch's set doesn't repeat them.
+ * pillar: one of UIU_PILLARS (jobs/igContentAgent.ts owns the rotation state) — the LLM must stay on-pillar.
+ */
+export async function generateOrganicDraft(
+  env: OpenRouterEnv & SerperEnv,
+  recentCaptionSummaries: string[],
+  recentHashtags: string[],
+  pillar: string,
+): Promise<OrganicDraft> {
   const userPrompt =
-    "Write one new Instagram post idea (recipe tip, cooking tip, or food-waste tip) for a UK audience." +
-    (recentCaptionSummaries.length > 0
-      ? ` Avoid repeating these recently-posted topics: ${recentCaptionSummaries.join("; ")}.`
-      : "");
-  const parsed = (await callOpenRouterJson(env, ORGANIC_SYSTEM_PROMPT, userPrompt)) as Partial<OrganicDraft>;
-  if (!parsed.caption || !parsed.imageQuery) throw new Error("Organic draft response missing caption/imageQuery");
-  return { targetAccount: "uiu", caption: parsed.caption, imageQuery: parsed.imageQuery };
+    `Write one new Instagram post for the "${pillar}" content pillar, for a UK audience.` +
+    (recentCaptionSummaries.length > 0 ? ` Avoid repeating these recently-posted topics: ${recentCaptionSummaries.join("; ")}.` : "");
+  const parsed = (await callOpenRouterJson(env, ORGANIC_SYSTEM_PROMPT, userPrompt)) as Partial<HookBodyCta>;
+  if (!parsed.hook || !parsed.body || !parsed.cta || !parsed.imageQuery) {
+    throw new Error("Organic draft response missing hook/body/cta/imageQuery");
+  }
+  const hashtags = await researchHashtags(env, `${pillar} ${parsed.imageQuery}`, recentHashtags, ORGANIC_FALLBACK_HASHTAGS);
+  const caption = assembleCaption(parsed.hook, parsed.body, parsed.cta, hashtags);
+  return { targetAccount: "uiu", pillar, hook: parsed.hook, caption, imageQuery: parsed.imageQuery, hashtags };
 }
 
 const AFFILIATE_IDEA_SYSTEM_PROMPT =
@@ -103,10 +162,11 @@ interface AffiliateIdea {
   reason: string;
 }
 
-async function suggestAffiliateProduct(env: OpenRouterEnv, recentProductNames: string[]): Promise<AffiliateIdea> {
+async function suggestAffiliateProduct(env: OpenRouterEnv, recentProductNames: string[], avoidCategory: string | null): Promise<AffiliateIdea> {
   const userPrompt =
     "Suggest one kitchen/cooking product to recommend today." +
-    (recentProductNames.length > 0 ? ` Do not repeat these recently-recommended products: ${recentProductNames.join("; ")}.` : "");
+    (recentProductNames.length > 0 ? ` Do not repeat these recently-recommended products: ${recentProductNames.join("; ")}.` : "") +
+    (avoidCategory ? ` The previous post was in the "${avoidCategory}" category — pick a DIFFERENT category this time, do not post two in a row from the same category.` : "");
   const parsed = (await callOpenRouterJson(env, AFFILIATE_IDEA_SYSTEM_PROMPT, userPrompt)) as Partial<AffiliateIdea>;
   if (!parsed.productName || !parsed.searchQuery) throw new Error("Affiliate idea response missing productName/searchQuery");
   return {
@@ -118,18 +178,18 @@ async function suggestAffiliateProduct(env: OpenRouterEnv, recentProductNames: s
 }
 
 const AFFILIATE_CAPTION_SYSTEM_PROMPT =
-  "You write ONE Instagram feed post caption recommending a specific kitchen product, for an Amazon " +
-  "affiliate account (@kura.nook). Tone: genuine, helpful, practical — explain why the product is " +
-  "useful in a home kitchen. Do NOT include any disclosure text yourself (it is appended separately) " +
-  "and do NOT include a link (also appended separately). Include 3-6 relevant hashtags at the end. " +
-  'Respond with ONLY a JSON object: {"caption": string, "imageQuery": string} — imageQuery is a short ' +
-  "English phrase (2-6 words) describing a product/kitchen photo for a stock photo search.";
+  "You write ONE Instagram feed post recommending a specific kitchen product, for an Amazon affiliate " +
+  "account (@kura.nook). Tone: genuine, helpful, practical — explain why the product is useful in a " +
+  "home kitchen. Do NOT include any disclosure text or a link yourself (both appended separately). " +
+  HOOK_BODY_CTA_INSTRUCTIONS;
 
-async function writeAffiliateCaption(env: OpenRouterEnv, idea: AffiliateIdea): Promise<{ caption: string; imageQuery: string }> {
+async function writeAffiliateCaption(env: OpenRouterEnv, idea: AffiliateIdea): Promise<HookBodyCta> {
   const userPrompt = `Product: ${idea.productName}. Category: ${idea.category}. Why it's worth recommending: ${idea.reason}.`;
-  const parsed = (await callOpenRouterJson(env, AFFILIATE_CAPTION_SYSTEM_PROMPT, userPrompt)) as Partial<{ caption: string; imageQuery: string }>;
-  if (!parsed.caption || !parsed.imageQuery) throw new Error("Affiliate caption response missing caption/imageQuery");
-  return { caption: parsed.caption, imageQuery: parsed.imageQuery };
+  const parsed = (await callOpenRouterJson(env, AFFILIATE_CAPTION_SYSTEM_PROMPT, userPrompt)) as Partial<HookBodyCta>;
+  if (!parsed.hook || !parsed.body || !parsed.cta || !parsed.imageQuery) {
+    throw new Error("Affiliate caption response missing hook/body/cta/imageQuery");
+  }
+  return { hook: parsed.hook, body: parsed.body, cta: parsed.cta, imageQuery: parsed.imageQuery };
 }
 
 export interface AffiliateEnv extends OpenRouterEnv, SerperEnv {
@@ -137,28 +197,43 @@ export interface AffiliateEnv extends OpenRouterEnv, SerperEnv {
 }
 
 /**
- * Full affiliate pipeline: idea -> ASIN lookup -> caption -> disclosure appended by code.
- * Returns null if Serper found no ASIN for the suggested product — callers should skip
- * this slot rather than publish a link-less "affiliate" post or fabricate an ASIN.
+ * Full affiliate pipeline: idea -> ASIN lookup -> hook/body/cta -> hashtags -> disclosure
+ * appended by code. Returns null if Serper found no ASIN for the suggested product — callers
+ * should skip this slot rather than publish a link-less "affiliate" post or fabricate an ASIN.
+ * avoidCategory: jobs/igContentAgent.ts's persisted lastAffiliateCategory, so two posts in a
+ * row don't land in the same product category (retried once if the model ignores the prompt).
  */
-export async function generateAffiliateDraft(env: AffiliateEnv, recentProductNames: string[]): Promise<AffiliateDraft | null> {
-  const idea = await suggestAffiliateProduct(env, recentProductNames);
+export async function generateAffiliateDraft(
+  env: AffiliateEnv,
+  recentProductNames: string[],
+  recentHashtags: string[],
+  avoidCategory: string | null,
+): Promise<AffiliateDraft | null> {
+  let idea = await suggestAffiliateProduct(env, recentProductNames, avoidCategory);
+  if (avoidCategory && idea.category.toLowerCase() === avoidCategory.toLowerCase()) {
+    // Model ignored the avoid-category instruction — one retry with a blunter constraint before giving up.
+    idea = await suggestAffiliateProduct(env, [...recentProductNames, idea.productName], avoidCategory);
+  }
   const found = await lookupAsin(env, idea.searchQuery);
   if (!found) return null;
-  const { caption, imageQuery } = await writeAffiliateCaption(env, idea);
+  const { hook, body, cta, imageQuery } = await writeAffiliateCaption(env, idea);
   const affiliateLink = buildAffiliateLink(found.asin, env.AMAZON_ASSOCIATE_TAG);
-  const fullCaption = `${caption}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
+  const hashtags = await researchHashtags(env, `${idea.category} ${idea.productName}`, recentHashtags, AFFILIATE_FALLBACK_HASHTAGS);
+  const body_ = assembleCaption(hook, body, cta, hashtags);
+  const fullCaption = `${body_}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
   // Prefer the real listing photo (Serper Shopping, falling back to Serper Images) over the
   // generic Pexels stock search below — searchPhoto(imageQuery) is only reached if this is null.
   const productImage = await searchProductImage(env, found.title || idea.productName).catch(() => null);
   return {
     targetAccount: "affiliate",
+    hook,
     caption: fullCaption,
     imageQuery,
     productName: idea.productName,
     category: idea.category,
     asin: found.asin,
     affiliateLink,
+    hashtags,
     productImageUrl: productImage?.imageUrl,
     productImageSource: productImage?.source,
   };

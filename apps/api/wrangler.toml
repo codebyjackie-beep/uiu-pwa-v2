@@ -77,6 +77,11 @@ IG_CONTENT_BATCH_SIZE = "6"
 # Access Token secret above) — kept here so they don't need re-setting on every redeploy.
 IG_ID_UIU = "17841427988481809"
 IG_ID_AFFILIATE = "17841443611128346"
+# 2026-08-25 addendum — this Worker's own public URL, used to build the branded-image URL
+# (services/igMediaStore.ts) Instagram/shop.useitup.uk fetch. Same value as apps/web's
+# API_BASE_URL (apps/web/wrangler.toml) but a separate var — this one points AT this Worker,
+# that one points FROM the web Worker TO this one; happen to be the same host today.
+PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 
 # Four independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:

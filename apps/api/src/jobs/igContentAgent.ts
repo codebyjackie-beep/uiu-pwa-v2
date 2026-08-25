@@ -14,6 +14,8 @@ import type { SerperEnv } from "../services/serper";
 import type { PexelsEnv } from "../services/pexels";
 import { searchPhoto } from "../services/pexels";
 import { generateOrganicDraft, generateAffiliateDraft, type AffiliateEnv } from "../services/igContentGen";
+import { renderBrandedImage } from "../services/brandedImage";
+import { storeBrandedImage, brandedImageUrl } from "../services/igMediaStore";
 import { publishImagePost, type InstagramAccount } from "../services/instagram";
 import { sendTelegramIgMessage, sendTelegramIgPhoto, editTelegramIgMessage, type TelegramIgEnv } from "../services/telegramIg";
 
@@ -22,7 +24,13 @@ export type TargetAccount = "uiu" | "affiliate";
 export interface IgContentDraft {
   _id?: ObjectId;
   targetAccount: TargetAccount;
+  pillar?: string;
+  hook?: string;
+  hashtags?: string[];
   caption: string;
+  /** Background photo (Serper product photo or Pexels stock) before branding. */
+  sourceImageUrl?: string;
+  /** Branded composite (services/brandedImage.ts) — this is what actually gets published. */
   imageUrl: string;
   status: "pending" | "approved" | "rejected" | "publish_failed";
   productName?: string;
@@ -42,13 +50,61 @@ export interface IgContentAgentEnv extends DbEnv, OpenRouterEnv, SerperEnv, Pexe
   IG_ID_UIU: string;
   IG_TOKEN_AFFILIATE: string;
   IG_ID_AFFILIATE: string;
+  /** Public base URL of this Worker (apps/api/wrangler.toml [vars]) — used to build the
+   * branded-image URL Instagram/the public shop page fetch. */
+  PUBLIC_API_BASE_URL: string;
   /** [vars], not a secret — how many drafts per batch run. */
   IG_CONTENT_BATCH_SIZE?: string;
 }
 
 const DRAFTS_COLLECTION = "ig_content_drafts";
 const PRODUCTS_COLLECTION = "affiliate_products";
+const STATE_COLLECTION = "ig_content_state";
 const RECENT_LOOKBACK = 15;
+
+/** HANDOFF addendum 2026-08-25 §4 — UIU account rotates through these 4 pillars in order. */
+const UIU_PILLARS = ["recipe", "tip", "waste_reduction", "behind_the_scenes"] as const;
+
+/**
+ * Atomic $inc on a singleton state doc — the same pattern recipe_draft_state/
+ * pwa_diagnostics_state already use elsewhere in this codebase. Returns the pillar AND the
+ * raw counter so callers/tests can verify the counter is actually advancing (Jackie's
+ * standing "要真正驗證有rotate" requirement — Max's rotation bug on the old Hetzner turned
+ * out to be an index that was computed but never persisted).
+ */
+async function nextUiuPillar(env: DbEnv): Promise<{ pillar: string; rawIndex: number }> {
+  return withDb(env, async (db) => {
+    const res = await db
+      .collection<Document>(STATE_COLLECTION)
+      .findOneAndUpdate({ _id: "pillars" } as unknown as Document, { $inc: { uiuPillarIndex: 1 } }, { upsert: true, returnDocument: "after" });
+    const rawIndex = Number(res?.uiuPillarIndex ?? 1);
+    const pillar = UIU_PILLARS[(rawIndex - 1) % UIU_PILLARS.length]!;
+    return { pillar, rawIndex };
+  });
+}
+
+async function getLastAffiliateCategory(env: DbEnv): Promise<string | null> {
+  return withDb(env, async (db) => {
+    const doc = await db.collection<Document>(STATE_COLLECTION).findOne({ _id: "pillars" } as unknown as Document);
+    return (doc?.lastAffiliateCategory as string | undefined) ?? null;
+  });
+}
+
+async function setLastAffiliateCategory(env: DbEnv, category: string): Promise<void> {
+  await withDb(env, async (db) => {
+    await db.collection(STATE_COLLECTION).updateOne({ _id: "pillars" } as unknown as Document, { $set: { lastAffiliateCategory: category } }, { upsert: true });
+  });
+}
+
+async function recentHashtags(env: DbEnv): Promise<string[]> {
+  return withDb(env, async (db) => {
+    const docs = await db
+      .collection<Document>(DRAFTS_COLLECTION)
+      .find({ hashtags: { $exists: true } }, { projection: { hashtags: 1 }, sort: { createdAt: -1 }, limit: 6 })
+      .toArray();
+    return docs.flatMap((d) => (Array.isArray(d.hashtags) ? (d.hashtags as string[]) : []));
+  });
+}
 
 /** Minimal env for publishing/re-publishing an already-generated draft — no LLM/Serper/Pexels needed. */
 export type PublishEnv = DbEnv & TelegramIgEnv & {
@@ -76,6 +132,13 @@ async function recentOrganicSummaries(env: DbEnv): Promise<string[]> {
       .toArray();
     return docs.map((d) => String(d.caption).slice(0, 60));
   });
+}
+
+/** Renders the hook onto the background photo and stores the PNG (services/igMediaStore.ts) — returns a public URL. */
+async function buildBrandedImageUrl(env: IgContentAgentEnv, target: TargetAccount, backgroundImageUrl: string, hook: string): Promise<string> {
+  const png = await renderBrandedImage({ backgroundImageUrl, hook, account: target });
+  const id = await storeBrandedImage(env, png);
+  return brandedImageUrl(env.PUBLIC_API_BASE_URL, id);
 }
 
 async function recentProductNames(env: DbEnv): Promise<string[]> {
@@ -117,26 +180,41 @@ function reviewMessageText(target: TargetAccount, caption: string): string {
   return `${accountLabel(target)}\n\n${caption}`;
 }
 
-/** Builds one draft (organic or affiliate), finds an image, inserts it, and sends it to Telegram for review. Returns null if the slot had to be skipped (e.g. no ASIN found, no image found) — caller should just move on, not retry indefinitely within one batch run. */
+/** Builds one draft (organic or affiliate), finds a background photo, brands it with the hook
+ * (services/brandedImage.ts), inserts it, and sends it to Telegram for review. Returns null if
+ * the slot had to be skipped (e.g. no ASIN found, no image found) — caller should just move on,
+ * not retry indefinitely within one batch run. */
 async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount): Promise<ObjectId | null> {
   let caption: string;
+  let hook: string;
+  let hashtags: string[];
   let imageQuery: string;
+  let pillar: string | undefined;
   let productName: string | undefined;
   let category: string | undefined;
   let asin: string | undefined;
   let affiliateLink: string | undefined;
   let productImageUrl: string | undefined;
 
+  const hashtagHistory = await recentHashtags(env);
+
   if (target === "uiu") {
     const recents = await recentOrganicSummaries(env);
-    const draft = await generateOrganicDraft(env, recents);
+    const { pillar: chosenPillar } = await nextUiuPillar(env);
+    pillar = chosenPillar;
+    const draft = await generateOrganicDraft(env, recents, hashtagHistory, pillar);
     caption = draft.caption;
+    hook = draft.hook;
+    hashtags = draft.hashtags;
     imageQuery = draft.imageQuery;
   } else {
     const recents = await recentProductNames(env);
-    const draft = await generateAffiliateDraft(env, recents);
+    const avoidCategory = await getLastAffiliateCategory(env);
+    const draft = await generateAffiliateDraft(env, recents, hashtagHistory, avoidCategory);
     if (!draft) return null; // no ASIN found for the suggested product — skip this slot
     caption = draft.caption;
+    hook = draft.hook;
+    hashtags = draft.hashtags;
     imageQuery = draft.imageQuery;
     productName = draft.productName;
     category = draft.category;
@@ -146,15 +224,29 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   }
 
   // Real listing photo (Serper Shopping/Images) takes priority over the Pexels stock search.
-  const imageUrl = productImageUrl ?? (await searchPhoto(env, imageQuery));
-  if (!imageUrl) return null; // IG requires a public image URL at publish time — cannot post without one
+  const sourceImageUrl = productImageUrl ?? (await searchPhoto(env, imageQuery));
+  if (!sourceImageUrl) return null; // IG requires a public image URL at publish time — cannot post without one
+
+  let imageUrl: string;
+  try {
+    imageUrl = await buildBrandedImageUrl(env, target, sourceImageUrl, hook);
+  } catch (err) {
+    console.error("[uiu-api] renderBrandedImage failed, falling back to unbranded source photo:", err instanceof Error ? err.message : String(err));
+    imageUrl = sourceImageUrl; // still postable — just without the hook overlay
+  }
+
   if (target === "affiliate" && productName && asin && affiliateLink && category) {
     await recordAffiliateProductUse(env, productName, asin, affiliateLink, category, imageUrl);
+    await setLastAffiliateCategory(env, category);
   }
 
   const id = await insertDraft(env, {
     targetAccount: target,
+    pillar,
+    hook,
+    hashtags,
     caption,
+    sourceImageUrl,
     imageUrl,
     status: "pending",
     productName,

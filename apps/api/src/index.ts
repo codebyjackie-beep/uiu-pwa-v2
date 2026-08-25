@@ -25,6 +25,7 @@ import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
+import { igMediaRouter } from "./routes/igMedia";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -87,6 +88,9 @@ type Bindings = {
   SERPER_API_KEY: string;
   AMAZON_ASSOCIATE_TAG: string;
   IG_CONTENT_BATCH_SIZE?: string;
+  // 2026-08-25 addendum — public URL of this Worker itself, used to build the branded-image
+  // URL (services/igMediaStore.ts) that Instagram/shop.useitup.uk fetch. Not a secret.
+  PUBLIC_API_BASE_URL: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -133,6 +137,7 @@ app.route("/api/recipe-browse", recipeBrowseStateRouter);
 app.route("/api/ig-webhook", igWebhookRouter);
 app.route("/api/admin/ig-drafts", adminIgDraftsRouter);
 app.route("/api/affiliate-products", affiliateProductsRouter);
+app.route("/api/ig-media", igMediaRouter);
 
 // Manual trigger for the recipe_cost precompute job. Defaults to dry-run
 // (never writes) so it's safe to hit over HTTP for verification. Pass

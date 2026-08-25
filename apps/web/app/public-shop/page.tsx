@@ -1,14 +1,20 @@
 import type { AffiliateProduct } from "@uiu/shared";
 import { apiGet } from "../lib/api";
+import PublicShopGrid from "./PublicShopGrid";
 
 export const metadata = { title: "Kitchen Picks · Kura Nook" };
 
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-  } catch {
-    return iso;
-  }
+/** "KN" monogram — placeholder built inline until Jackie supplies the actual @kura.nook
+ * bio logo asset (flagged same as the branded-image affiliate accent colour). */
+function KnLogo() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+      <rect width="40" height="40" rx="10" fill="#16a34a" />
+      <text x="20" y="27" textAnchor="middle" fontFamily="Georgia, serif" fontSize="17" fontWeight="700" fill="#0a0a0a">
+        KN
+      </text>
+    </svg>
+  );
 }
 
 export default async function PublicShopPage() {
@@ -16,64 +22,48 @@ export default async function PublicShopPage() {
   const products = res.ok ? res.data : [];
 
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", padding: "32px 16px 64px", fontFamily: "var(--font)" }}>
-      <header style={{ textAlign: "center", marginBottom: 32 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--uiu-green-ink)", margin: 0 }}>Kura Nook — Kitchen Picks</h1>
-        <p style={{ fontSize: 14, color: "#555", marginTop: 8 }}>
-          Kitchen &amp; cooking products we&apos;ve recommended on{" "}
-          <a href="https://www.instagram.com/kura.nook" target="_blank" rel="noreferrer" style={{ color: "var(--uiu-green)" }}>
-            @kura.nook
-          </a>
-          . As an Amazon Associate we earn from qualifying purchases.
-        </p>
-      </header>
+    <div style={{ background: "#081a10", minHeight: "100vh" }}>
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "28px 16px 48px" }}>
+        <header style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", marginBottom: 32, gap: 12 }}>
+          <KnLogo />
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: "#f2f7f3", margin: 0 }}>Kura Nook — Kitchen Picks</h1>
+          <p style={{ fontSize: 14, color: "#9cb5a6", margin: 0, maxWidth: 520 }}>
+            Kitchen &amp; cooking products we&apos;ve recommended on{" "}
+            <a href="https://www.instagram.com/kura.nook" target="_blank" rel="noreferrer" style={{ color: "#4ade80" }}>
+              @kura.nook
+            </a>
+            .
+          </p>
+        </header>
 
-      {!res.ok && <p style={{ textAlign: "center", color: "#999" }}>Couldn&apos;t load products right now — please check back soon.</p>}
-      {res.ok && products.length === 0 && <p style={{ textAlign: "center", color: "#999" }}>No products yet — check back soon.</p>}
+        {!res.ok && <p style={{ textAlign: "center", color: "#9cb5a6" }}>Couldn&apos;t load products right now — please check back soon.</p>}
+        {res.ok && products.length === 0 && <p style={{ textAlign: "center", color: "#9cb5a6" }}>No products yet — check back soon.</p>}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20 }}>
-        {products.map((p) => (
+        <PublicShopGrid products={products} />
+
+        <footer
+          style={{
+            marginTop: 48,
+            paddingTop: 24,
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            textAlign: "center",
+          }}
+        >
           <a
-            key={p.asin}
-            href={p.affiliateLink}
+            href="https://www.instagram.com/kura.nook"
             target="_blank"
-            rel="noopener noreferrer sponsored"
-            style={{
-              display: "block",
-              border: "1px solid #eee",
-              borderRadius: 12,
-              overflow: "hidden",
-              textDecoration: "none",
-              color: "inherit",
-              background: "#fff",
-            }}
+            rel="noreferrer"
+            style={{ color: "#cfe0d5", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.imageUrl} alt={p.productName} style={{ width: "100%", height: 200, objectFit: "cover", display: "block" }} />
-            <div style={{ padding: 12 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.35 }}>{p.productName}</div>
-              <div style={{ fontSize: 11, color: "#888", marginTop: 6, textTransform: "uppercase", letterSpacing: 0.3 }}>{p.category}</div>
-              <div
-                style={{
-                  display: "inline-block",
-                  marginTop: 10,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "var(--uiu-green-ink)",
-                  background: "#eafbf1",
-                  borderRadius: 999,
-                  padding: "4px 10px",
-                }}
-              >
-                Shop on Amazon →
-              </div>
-              <div style={{ fontSize: 10, color: "#aaa", marginTop: 8 }}>Recommended {formatDate(p.lastUsedAt)}</div>
-            </div>
+            @kura.nook on Instagram
           </a>
-        ))}
+          <p style={{ fontSize: 11, color: "#5f7a68", marginTop: 16, lineHeight: 1.6, maxWidth: 520, marginLeft: "auto", marginRight: "auto" }}>
+            #ad As an Amazon Associate, Kura Nook earns from qualifying purchases. Product links on this page are affiliate
+            links — if you buy through them we may earn a small commission at no extra cost to you. We only recommend
+            products we&apos;ve genuinely used or researched for our kitchen &amp; cooking content.
+          </p>
+        </footer>
       </div>
-
-      <p style={{ textAlign: "center", fontSize: 11, color: "#aaa", marginTop: 40 }}>#ad Affiliate links — as an Amazon Associate we earn from qualifying purchases.</p>
     </div>
   );
 }
