@@ -9,3 +9,9 @@ declare module "*.ttf" {
   const data: ArrayBuffer;
   export default data;
 }
+
+/** Same `[[rules]]` mechanism, for `.png` imports (e.g. assets/kn-logo.png). */
+declare module "*.png" {
+  const data: ArrayBuffer;
+  export default data;
+}

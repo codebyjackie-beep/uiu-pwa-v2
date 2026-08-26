@@ -16,6 +16,13 @@ type = "Data"
 globs = ["**/*.ttf"]
 fallthrough = true
 
+# Same file's @kura.nook logo watermark (assets/kn-logo.png, resized+quantized to 160x160/~4KB
+# from the original 1024x1024/1.3MB source) — bundled the same way, base64-embedded per render.
+[[rules]]
+type = "Data"
+globs = ["**/*.png"]
+fallthrough = true
+
 # --- Secrets (set via `wrangler secret put` or CI, NEVER committed) ---
 #   MONGODB_URI        Atlas connection string (mongodb+srv://...), official `mongodb` driver
 #                       over Workers TCP sockets — no Data API involved.

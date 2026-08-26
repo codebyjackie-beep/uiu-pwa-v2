@@ -4,17 +4,10 @@ import PublicShopGrid from "./PublicShopGrid";
 
 export const metadata = { title: "Kitchen Picks · Kura Nook" };
 
-/** "KN" monogram — placeholder built inline until Jackie supplies the actual @kura.nook
- * bio logo asset (flagged same as the branded-image affiliate accent colour). */
+/** @kura.nook bio logo (apps/web/public/kn-logo.png, resized+quantized to 200x200/~5KB from the 1024x1024 source). */
 function KnLogo() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
-      <rect width="40" height="40" rx="10" fill="#16a34a" />
-      <text x="20" y="27" textAnchor="middle" fontFamily="Georgia, serif" fontSize="17" fontWeight="700" fill="#0a0a0a">
-        KN
-      </text>
-    </svg>
-  );
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/kn-logo.png" alt="Kura Nook" width={40} height={40} style={{ borderRadius: 10 }} />;
 }
 
 export default async function PublicShopPage() {

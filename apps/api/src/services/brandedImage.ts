@@ -24,7 +24,10 @@
  */
 import { Resvg, initResvg } from "@cf-wasm/resvg/workerd";
 import hookFontData from "../../assets/hook-font.ttf";
+import knLogoData from "../../assets/kn-logo.png";
 import { webpToPng } from "./webpTranscode";
+
+const KN_LOGO_DATA_URI = `data:image/png;base64,${bytesToBase64(new Uint8Array(knLogoData))}`;
 
 export type BrandAccount = "uiu" | "affiliate";
 
@@ -40,7 +43,7 @@ const PALETTES: Record<BrandAccount, Palette> = {
   // UIU: black bg, white text, UIU brand green accent (apps/web/app/globals.css --uiu-green).
   uiu: { overlay: "#0a0a0a", accent: "#16a34a", text: "#ffffff", handle: "@useitup.app" },
   // Affiliate (@kura.nook): same dark base, a distinct brighter green so the two accounts
-  // are visually distinguishable — placeholder shade pending Jackie's exact KN logo hex.
+  // are visually distinguishable.
   affiliate: { overlay: "#0a0a0a", accent: "#22c55e", text: "#ffffff", handle: "@kura.nook" },
 };
 
@@ -138,7 +141,16 @@ export async function renderBrandedImage(params: RenderBrandedImageParams): Prom
     .join("");
 
   const handleText = escapeXml(palette.handle);
-  const handleChipWidth = handleText.length * 17 + 44;
+  // @kura.nook has a real logo asset (assets/kn-logo.png) to watermark with; UIU doesn't
+  // have one yet, so its chip stays text-only until Jackie supplies one.
+  const hasLogo = params.account === "affiliate";
+  const logoSize = 54;
+  const chipPadLeft = hasLogo ? logoSize + 8 : 22;
+  const handleChipWidth = handleText.length * 17 + chipPadLeft + 22;
+  const handleTextX = 48 + chipPadLeft + (handleChipWidth - chipPadLeft - 22) / 2;
+  const logoTag = hasLogo
+    ? `<image href="${KN_LOGO_DATA_URI}" x="48" y="48" width="${logoSize}" height="${logoSize}" clip-path="url(#logoClip)" />`
+    : "";
 
   const svg = `<svg width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -147,12 +159,14 @@ export async function renderBrandedImage(params: RenderBrandedImageParams): Prom
       <stop offset="55%" stop-color="#000000" stop-opacity="0.55" />
       <stop offset="100%" stop-color="#000000" stop-opacity="0.92" />
     </linearGradient>
+    <clipPath id="logoClip"><circle cx="${48 + logoSize / 2}" cy="${48 + logoSize / 2}" r="${logoSize / 2}" /></clipPath>
   </defs>
   <rect x="0" y="0" width="1080" height="1080" fill="${palette.overlay}" />
   <image href="${bgDataUri}" x="0" y="0" width="1080" height="1080" preserveAspectRatio="xMidYMid slice" />
   <rect x="0" y="460" width="1080" height="620" fill="url(#grad)" />
   <rect x="48" y="48" width="${handleChipWidth}" height="54" rx="27" fill="rgba(0,0,0,0.45)" />
-  <text x="${48 + handleChipWidth / 2}" y="83" font-family="Hook" font-weight="800" font-size="30" fill="${palette.accent}" text-anchor="middle">${handleText}</text>
+  ${logoTag}
+  <text x="${handleTextX}" y="83" font-family="Hook" font-weight="800" font-size="30" fill="${palette.accent}" text-anchor="middle">${handleText}</text>
   <text font-family="Hook" font-weight="800" font-size="${fontSize}" fill="${palette.text}" letter-spacing="-1">${hookTspans}</text>
 </svg>`;
 
