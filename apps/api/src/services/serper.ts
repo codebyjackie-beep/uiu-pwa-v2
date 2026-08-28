@@ -59,7 +59,15 @@ export interface ProductImageResult {
   source: "amazon_scrape";
 }
 
-const AMAZON_IMAGE_RE = /!\[[^\]]*\]\((https?:\/\/m\.media-amazon\.com\/images\/I\/[^)\s]+)\)/;
+// Only matches an EMPTY-alt image markdown tag `![](url)` — confirmed live that Amazon's own
+// product-gallery image always renders with no alt text and no enclosing link, while page-top
+// promo/campaign banners ("Second Chance Deal Days", "Back to Hogwarts. Harry Potter Shop Now.")
+// always carry descriptive alt text and are wrapped in a `[![alt](img)](link)` markdown link.
+// The `(?<!\[)` lookbehind excludes exactly that wrapped case. Do NOT loosen this to "first
+// m-media-amazon image, any alt" — that regressed to picking up banner images (2026-08-28,
+// caught re-verifying the force-backfill run below: B081JTZNRS, the one actually-published
+// affiliate post, got overwritten with a Harry Potter promo banner under the looser regex).
+const AMAZON_IMAGE_RE = /(?<!\[)!\[\]\((https?:\/\/m\.media-amazon\.com\/images\/I\/[^)\s]+\.(?:jpg|jpeg|png))\)/;
 /** Amazon media CDN size modifier, e.g. `._SS75_` / `._SL1500_` in `.../41abc._SS75_.jpg` — stripping it serves the unscaled original. */
 const AMAZON_SIZE_SUFFIX_RE = /\._[A-Z]{2}\d+_(?=\.[a-z]+$)/;
 
@@ -73,13 +81,13 @@ const AMAZON_SIZE_SUFFIX_RE = /\._[A-Z]{2}\d+_(?=\.[a-z]+$)/;
  * against the ASIN.
  *
  * Fix: scrape the ASIN's own `/dp/{asin}` page (`found.productUrl` from lookupAsin) via
- * Serper's `/scrape` endpoint with `includeMarkdown: true` and pull the first
- * `m.media-amazon.com` image out of the returned markdown — confirmed live (multiple ASINs)
- * that this is reliably the product's own listing photo, appearing as the first image before
- * any other content. Since the image comes from the exact ASIN's page, there's no keyword
- * ambiguity to resolve. Returns null if the page has no matching image (caller skips the
- * product-photo and falls back to the generic Pexels search) — never falls back to a
- * keyword search that could return a different product's photo.
+ * Serper's `/scrape` endpoint with `includeMarkdown: true` and pull the product's own gallery
+ * image out of the returned markdown (see AMAZON_IMAGE_RE comment for how it's distinguished
+ * from a promo banner). Since the image comes from the exact ASIN's page, there's no keyword
+ * ambiguity to resolve once the banner case is excluded. Returns null if the page has no
+ * matching image (caller skips the product-photo and falls back to the generic Pexels search)
+ * — never falls back to a keyword search that could return a different product's photo, and
+ * never falls back to "just take the first image" that could return a banner ad.
  */
 export async function scrapeProductImage(env: SerperEnv, productUrl: string): Promise<ProductImageResult | null> {
   const res = await fetch("https://scrape.serper.dev", {
