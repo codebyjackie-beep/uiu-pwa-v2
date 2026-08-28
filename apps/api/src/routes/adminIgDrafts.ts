@@ -130,7 +130,14 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
         // serper.ts scrapeProductImage's header comment for why (keyword search can't be
         // verified against the ASIN and previously produced a real mismatched-photo bug).
         const found = await scrapeProductImage(c.env, `https://www.amazon.co.uk/dp/${asin}`).catch(() => null);
-        if (!found) return { asin, updated: false, reason: "no image found" };
+        if (!found) {
+          // force mode: clear whatever's stored rather than leave a possibly-stale/wrong
+          // imageUrl in place (2026-08-28 — a looser regex once wrote a promo-banner URL here;
+          // if a later re-run can't confidently re-derive an image, it must not leave that
+          // banner sitting in the DB just because this row wasn't touched).
+          if (force) await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $unset: { imageUrl: "", imageSource: "" } }));
+          return { asin, updated: false, reason: "no image found" };
+        }
         await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $set: { imageUrl: found.imageUrl, imageSource: found.source } }));
         return { asin, updated: true, imageUrl: found.imageUrl, source: found.source };
       }),
