@@ -100,7 +100,17 @@ adminIgDraftsRouter.post("/:id/retry", async (c) => {
   }
 });
 
-/** One-off backfill: affiliate_products rows written before imageUrl was recorded (pre-2026-08-24 fix) have no imageUrl field. */
+/**
+ * One-off backfill: affiliate_products rows written before imageUrl was recorded
+ * (pre-2026-08-24 fix) have no imageUrl field.
+ *
+ * 2026-08-28 addendum: `{ force: true }` in the request body re-scrapes EVERY row instead of
+ * only the ones missing imageUrl — needed because rows written before the 2026-08-28
+ * scrapeProductImage fix (see serper.ts) have an imageUrl that EXISTS but may not match the
+ * ASIN (the old keyword-search bug), so the plain `imageUrl: { $exists: false }` filter skips
+ * exactly the rows that need fixing. Confirmed live on the public shop page: B0CJ974CT4 kept
+ * showing the wrong grinder photo after the code fix because this route never re-touched it.
+ */
 adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
   const token = c.req.header("X-Admin-Token");
   if (!token || token !== c.env.ADMIN_TOKEN) {
@@ -108,8 +118,10 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
     return c.json(body, 401);
   }
   try {
+    const payload = await c.req.json().catch(() => null);
+    const force = payload?.force === true;
     const docs = await withDb(c.env, (db) =>
-      db.collection("affiliate_products").find({ imageUrl: { $exists: false } }).toArray(),
+      db.collection("affiliate_products").find(force ? {} : { imageUrl: { $exists: false } }).toArray(),
     );
     const results = await Promise.all(
       docs.map(async (doc) => {
