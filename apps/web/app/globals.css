@@ -2935,3 +2935,53 @@ a {
   padding: 8px 16px;
   font-size: 13px;
 }
+
+/* --- Public shop: category filter (mobile pill bar / desktop left sidebar) --- */
+/* Mobile stays the original horizontal-scroll pill bar unchanged — most traffic arrives via
+   the @kura.nook IG bio link on phones. Desktop (>=768px) switches to a left sidebar so the
+   pills don't crowd the product grid; both share the same categories/active state, only the
+   wrapper layout differs (2026-08-28, Jackie screenshot feedback: pill bar looked unprofessional
+   on desktop). */
+
+.public-shop-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.public-shop-categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.public-shop-content {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .public-shop-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .public-shop-categories {
+    flex-direction: column;
+    overflow-x: visible;
+    flex-shrink: 0;
+    width: 200px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    position: sticky;
+    top: 24px;
+  }
+
+  .public-shop-categories button {
+    width: 100%;
+    text-align: left;
+  }
+}
