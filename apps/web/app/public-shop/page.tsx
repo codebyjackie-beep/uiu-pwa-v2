@@ -4,10 +4,16 @@ import PublicShopGrid from "./PublicShopGrid";
 
 export const metadata = { title: "Kitchen Picks · Kura Nook" };
 
-/** @kura.nook bio logo (apps/web/public/kn-logo.png, resized+quantized to 200x200/~5KB from the 1024x1024 source). */
+/**
+ * @kura.nook bio logo (apps/web/public/kn-logo.png). Source is a circular badge with ~24%
+ * black frame padding around it (1024x1024 original, badge radius ~390px) — cropped to
+ * (112,112,912,912) before resizing so the badge fills the frame, then plain LANCZOS resize
+ * to 256x256 (~95KB). No palette quantization: an earlier quantized 200x200 version looked
+ * like a blurry blob at display size — 2026-08-28 Jackie feedback.
+ */
 function KnLogo() {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src="/kn-logo.png" alt="Kura Nook" width={40} height={40} style={{ borderRadius: 10 }} />;
+  return <img src="/kn-logo.png" alt="Kura Nook" width={64} height={64} style={{ borderRadius: "50%" }} />;
 }
 
 export default async function PublicShopPage() {

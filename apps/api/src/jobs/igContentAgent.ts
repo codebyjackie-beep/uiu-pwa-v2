@@ -223,7 +223,7 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     productImageUrl = draft.productImageUrl;
   }
 
-  // Real listing photo (Serper Shopping/Images) takes priority over the Pexels stock search.
+  // Real listing photo (scraped from the ASIN's own Amazon page, see serper.ts scrapeProductImage) takes priority over the Pexels stock search.
   const sourceImageUrl = productImageUrl ?? (await searchPhoto(env, imageQuery));
   if (!sourceImageUrl) return null; // IG requires a public image URL at publish time — cannot post without one
 

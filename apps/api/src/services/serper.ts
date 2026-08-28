@@ -56,42 +56,43 @@ export function buildAffiliateLink(asin: string, associateTag: string): string {
 
 export interface ProductImageResult {
   imageUrl: string;
-  source: "serper_shopping" | "serper_images";
+  source: "amazon_scrape";
 }
 
+const AMAZON_IMAGE_RE = /!\[[^\]]*\]\((https?:\/\/m\.media-amazon\.com\/images\/I\/[^)\s]+)\)/;
+/** Amazon media CDN size modifier, e.g. `._SS75_` / `._SL1500_` in `.../41abc._SS75_.jpg` — stripping it serves the unscaled original. */
+const AMAZON_SIZE_SUFFIX_RE = /\._[A-Z]{2}\d+_(?=\.[a-z]+$)/;
+
 /**
- * Real product-photo search for affiliate posts (2026-08-24 addendum — the
- * imageQuery/Pexels path in igContentGen.ts only ever returns generic stock
- * lifestyle photos, never the actual listing photo). Tries Serper's Shopping
- * endpoint first (results are genuine product-listing photos, usually
- * white-background), falls back to Serper Images with a "product photo white
- * background" qualifier if Shopping has no hit. Returns null if neither
- * finds anything — caller falls back to Pexels.
+ * 2026-08-28 rewrite (Jackie: a real live post linked a TOMEEM double-grinder ASIN but
+ * showed a single-grinder photo) — the previous version searched Serper Shopping/Images by
+ * product-name *keywords*, which finds *a* plausible-looking result, not necessarily a photo
+ * of *this* ASIN's listing. Confirmed live: Shopping results carry no `/dp/{asin}` link (their
+ * `link` field is an opaque Google Shopping redirect), and the organic search used by
+ * lookupAsin() carries no image field at all — so neither response can be cross-checked
+ * against the ASIN.
+ *
+ * Fix: scrape the ASIN's own `/dp/{asin}` page (`found.productUrl` from lookupAsin) via
+ * Serper's `/scrape` endpoint with `includeMarkdown: true` and pull the first
+ * `m.media-amazon.com` image out of the returned markdown — confirmed live (multiple ASINs)
+ * that this is reliably the product's own listing photo, appearing as the first image before
+ * any other content. Since the image comes from the exact ASIN's page, there's no keyword
+ * ambiguity to resolve. Returns null if the page has no matching image (caller skips the
+ * product-photo and falls back to the generic Pexels search) — never falls back to a
+ * keyword search that could return a different product's photo.
  */
-export async function searchProductImage(env: SerperEnv, query: string): Promise<ProductImageResult | null> {
-  const shoppingRes = await fetch("https://google.serper.dev/shopping", {
+export async function scrapeProductImage(env: SerperEnv, productUrl: string): Promise<ProductImageResult | null> {
+  const res = await fetch("https://scrape.serper.dev", {
     method: "POST",
     headers: { "X-API-KEY": env.SERPER_API_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ q: query, gl: "uk" }),
+    body: JSON.stringify({ url: productUrl, includeMarkdown: true }),
   });
-  if (shoppingRes.ok) {
-    const data = (await shoppingRes.json()) as { shopping?: Array<{ imageUrl?: string }> };
-    const imageUrl = data.shopping?.find((item) => item.imageUrl)?.imageUrl;
-    if (imageUrl) return { imageUrl, source: "serper_shopping" };
-  }
-
-  const imagesRes = await fetch("https://google.serper.dev/images", {
-    method: "POST",
-    headers: { "X-API-KEY": env.SERPER_API_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ q: `${query} product photo white background`, gl: "uk" }),
-  });
-  if (imagesRes.ok) {
-    const data = (await imagesRes.json()) as { images?: Array<{ imageUrl?: string }> };
-    const imageUrl = data.images?.find((item) => item.imageUrl)?.imageUrl;
-    if (imageUrl) return { imageUrl, source: "serper_images" };
-  }
-
-  return null;
+  if (!res.ok) return null;
+  const data = (await res.json()) as { markdown?: string };
+  const match = AMAZON_IMAGE_RE.exec(data.markdown ?? "");
+  if (!match) return null;
+  const imageUrl = match[1]!.replace(AMAZON_SIZE_SUFFIX_RE, "");
+  return { imageUrl, source: "amazon_scrape" };
 }
 
 const HASHTAG_RE = /#[a-zA-Z][a-zA-Z0-9]{2,29}/g;

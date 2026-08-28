@@ -16,8 +16,10 @@ type = "Data"
 globs = ["**/*.ttf"]
 fallthrough = true
 
-# Same file's @kura.nook logo watermark (assets/kn-logo.png, resized+quantized to 160x160/~4KB
-# from the original 1024x1024/1.3MB source) — bundled the same way, base64-embedded per render.
+# Same file's @kura.nook logo watermark (assets/kn-logo.png, cropped to the badge's actual
+# extent then resized to 160x160/~40KB from the original 1024x1024/1.3MB source — see
+# brandedImage.ts's KnLogo comment for why it's a crop+resize, not quantize) — bundled the
+# same way, base64-embedded per render.
 [[rules]]
 type = "Data"
 globs = ["**/*.png"]

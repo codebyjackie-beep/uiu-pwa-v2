@@ -7,7 +7,7 @@ import type { Document } from "mongodb";
 import type { ApiResponse } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { retryDraft, type IgContentDraft } from "../jobs/igContentAgent";
-import { searchProductImage } from "../services/serper";
+import { scrapeProductImage } from "../services/serper";
 
 type VerifyBindings = DbEnv & {
   ADMIN_TOKEN: string;
@@ -113,11 +113,14 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
     );
     const results = await Promise.all(
       docs.map(async (doc) => {
-        const productName = String(doc.productName);
-        const found = await searchProductImage(c.env, productName).catch(() => null);
-        if (!found) return { asin: String(doc.asin), updated: false, reason: "no image found" };
+        const asin = String(doc.asin);
+        // 2026-08-28: scrape the ASIN's own listing page instead of a keyword search — see
+        // serper.ts scrapeProductImage's header comment for why (keyword search can't be
+        // verified against the ASIN and previously produced a real mismatched-photo bug).
+        const found = await scrapeProductImage(c.env, `https://www.amazon.co.uk/dp/${asin}`).catch(() => null);
+        if (!found) return { asin, updated: false, reason: "no image found" };
         await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $set: { imageUrl: found.imageUrl, imageSource: found.source } }));
-        return { asin: String(doc.asin), updated: true, imageUrl: found.imageUrl, source: found.source };
+        return { asin, updated: true, imageUrl: found.imageUrl, source: found.source };
       }),
     );
     const body: ApiResponse<typeof results> = { ok: true, data: results };

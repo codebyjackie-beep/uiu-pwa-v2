@@ -32,7 +32,7 @@
  */
 import type { OpenRouterEnv } from "./openrouter";
 import type { SerperEnv } from "./serper";
-import { lookupAsin, buildAffiliateLink, searchProductImage, researchHashtags } from "./serper";
+import { lookupAsin, buildAffiliateLink, scrapeProductImage, researchHashtags } from "./serper";
 
 const ORGANIC_FALLBACK_HASHTAGS = ["#mealprep", "#foodwasteuk", "#healthyeatinguk", "#kitchentips", "#ukfoodie"];
 const AFFILIATE_FALLBACK_HASHTAGS = ["#kitchengadgets", "#amazonfinds", "#kitchenmusthaves", "#cookingtools", "#ukfoodie"];
@@ -56,9 +56,9 @@ export interface AffiliateDraft {
   asin: string;
   affiliateLink: string;
   hashtags: string[];
-  /** Real product photo from Serper Shopping/Images, if found — takes priority over imageQuery/Pexels. */
+  /** Real product photo scraped from the ASIN's own Amazon listing page, if found — takes priority over imageQuery/Pexels. */
   productImageUrl?: string;
-  productImageSource?: "serper_shopping" | "serper_images";
+  productImageSource?: "amazon_scrape";
 }
 
 function extractJson(text: string): unknown {
@@ -221,9 +221,9 @@ export async function generateAffiliateDraft(
   const hashtags = await researchHashtags(env, `${idea.category} ${idea.productName}`, recentHashtags, AFFILIATE_FALLBACK_HASHTAGS);
   const body_ = assembleCaption(hook, body, cta, hashtags);
   const fullCaption = `${body_}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
-  // Prefer the real listing photo (Serper Shopping, falling back to Serper Images) over the
+  // Prefer the real listing photo scraped from this exact ASIN's own Amazon page over the
   // generic Pexels stock search below — searchPhoto(imageQuery) is only reached if this is null.
-  const productImage = await searchProductImage(env, found.title || idea.productName).catch(() => null);
+  const productImage = await scrapeProductImage(env, found.productUrl).catch(() => null);
   return {
     targetAccount: "affiliate",
     hook,

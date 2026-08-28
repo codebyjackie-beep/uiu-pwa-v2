@@ -144,7 +144,9 @@ export async function renderBrandedImage(params: RenderBrandedImageParams): Prom
   // @kura.nook has a real logo asset (assets/kn-logo.png) to watermark with; UIU doesn't
   // have one yet, so its chip stays text-only until Jackie supplies one.
   const hasLogo = params.account === "affiliate";
-  const logoSize = 54;
+  // 2026-08-28: bumped 54->64 alongside the web shop logo's 40->64 (crop+resize fix, see
+  // assets/kn-logo.png / apps/web KnLogo comment) — the smaller size read as a blurry blob.
+  const logoSize = 64;
   const chipPadLeft = hasLogo ? logoSize + 8 : 22;
   const handleChipWidth = handleText.length * 17 + chipPadLeft + 22;
   const handleTextX = 48 + chipPadLeft + (handleChipWidth - chipPadLeft - 22) / 2;
