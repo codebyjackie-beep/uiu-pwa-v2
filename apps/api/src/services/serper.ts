@@ -56,7 +56,7 @@ export function buildAffiliateLink(asin: string, associateTag: string): string {
 
 export interface ProductImageResult {
   imageUrl: string;
-  source: "amazon_scrape";
+  source: "amazon_scrape" | "images_search";
 }
 
 // Only matches an EMPTY-alt image markdown tag `![](url)` — confirmed live that Amazon's own
@@ -101,6 +101,43 @@ export async function scrapeProductImage(env: SerperEnv, productUrl: string): Pr
   if (!match) return null;
   const imageUrl = match[1]!.replace(AMAZON_SIZE_SUFFIX_RE, "");
   return { imageUrl, source: "amazon_scrape" };
+}
+
+/**
+ * 2026-08-30 fallback for when scrapeProductImage() finds nothing — investigated live why
+ * B081JTZNRS (a real published post) had no image: `scrape.serper.dev`'s markdown extraction
+ * is not a full-page render, it's a readability-style excerpt that varies call to call (10
+ * live samples across 2 ASINs returned "About this Item" bullets, a review blurb, a ClimeCo
+ * badge, or an outright 500 — never once the gallery image markdown). Retrying the scrape
+ * would not reliably fix this.
+ *
+ * Fix: query Google Images (via Serper) for `site:amazon.co.uk {asin}` — when Google has the
+ * ASIN indexed on the listing page, this returns results whose `link` is the exact
+ * `/dp/{asin}` URL, so the match is verified against the ASIN itself (no keyword-mismatch risk
+ * like the pre-2026-08-28 bug). Confirmed live: this query found B081JTZNRS's real product
+ * photos on the first try. It is NOT universal — a keyword-based images search for
+ * B0CJ974CT4 returned 10 results and none linked to `/dp/B0CJ974CT4` (that ASIN just isn't
+ * indexed by Google under a searchable title), so this fallback intentionally only accepts a
+ * result whose link contains the exact ASIN, and returns null (never a best-guess) otherwise.
+ */
+export async function searchProductImageByAsin(env: SerperEnv, asin: string): Promise<ProductImageResult | null> {
+  const res = await fetch("https://google.serper.dev/images", {
+    method: "POST",
+    headers: { "X-API-KEY": env.SERPER_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ q: `site:amazon.co.uk ${asin}`, gl: "uk" }),
+  });
+  if (!res.ok) return null;
+  const data = (await res.json()) as {
+    images?: Array<{ imageUrl?: string; link?: string; imageWidth?: number; imageHeight?: number }>;
+  };
+  const matches = (data.images ?? []).filter((img) => img.link?.includes(`/dp/${asin}`) && img.imageUrl?.includes("m.media-amazon.com"));
+  // Prefer the largest result — the ASIN-verified matches include both full-size gallery
+  // photos and small thumbnail crops, and the thumbnail isn't worth publishing.
+  matches.sort((a, b) => (b.imageWidth ?? 0) * (b.imageHeight ?? 0) - (a.imageWidth ?? 0) * (a.imageHeight ?? 0));
+  const best = matches[0];
+  if (!best?.imageUrl) return null;
+  const imageUrl = best.imageUrl.replace(AMAZON_SIZE_SUFFIX_RE, "");
+  return { imageUrl, source: "images_search" };
 }
 
 const HASHTAG_RE = /#[a-zA-Z][a-zA-Z0-9]{2,29}/g;

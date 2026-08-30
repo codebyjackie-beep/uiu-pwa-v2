@@ -7,7 +7,7 @@ import type { Document } from "mongodb";
 import type { ApiResponse } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { retryDraft, type IgContentDraft } from "../jobs/igContentAgent";
-import { scrapeProductImage } from "../services/serper";
+import { scrapeProductImage, searchProductImageByAsin } from "../services/serper";
 
 type VerifyBindings = DbEnv & {
   ADMIN_TOKEN: string;
@@ -129,7 +129,13 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
         // 2026-08-28: scrape the ASIN's own listing page instead of a keyword search — see
         // serper.ts scrapeProductImage's header comment for why (keyword search can't be
         // verified against the ASIN and previously produced a real mismatched-photo bug).
-        const found = await scrapeProductImage(c.env, `https://www.amazon.co.uk/dp/${asin}`).catch(() => null);
+        // 2026-08-30: scrape.serper.dev's markdown extraction is flaky (confirmed live — mostly
+        // returns a readability excerpt with no gallery image at all, see searchProductImage
+        // ByAsin's header comment) so fall back to an ASIN-verified Google Images search before
+        // giving up.
+        const found =
+          (await scrapeProductImage(c.env, `https://www.amazon.co.uk/dp/${asin}`).catch(() => null)) ??
+          (await searchProductImageByAsin(c.env, asin).catch(() => null));
         if (!found) {
           // force mode: clear whatever's stored rather than leave a possibly-stale/wrong
           // imageUrl in place (2026-08-28 — a looser regex once wrote a promo-banner URL here;

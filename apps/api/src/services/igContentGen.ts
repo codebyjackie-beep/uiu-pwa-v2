@@ -32,7 +32,7 @@
  */
 import type { OpenRouterEnv } from "./openrouter";
 import type { SerperEnv } from "./serper";
-import { lookupAsin, buildAffiliateLink, scrapeProductImage, researchHashtags } from "./serper";
+import { lookupAsin, buildAffiliateLink, scrapeProductImage, searchProductImageByAsin, researchHashtags } from "./serper";
 
 const ORGANIC_FALLBACK_HASHTAGS = ["#mealprep", "#foodwasteuk", "#healthyeatinguk", "#kitchentips", "#ukfoodie"];
 const AFFILIATE_FALLBACK_HASHTAGS = ["#kitchengadgets", "#amazonfinds", "#kitchenmusthaves", "#cookingtools", "#ukfoodie"];
@@ -58,7 +58,7 @@ export interface AffiliateDraft {
   hashtags: string[];
   /** Real product photo scraped from the ASIN's own Amazon listing page, if found — takes priority over imageQuery/Pexels. */
   productImageUrl?: string;
-  productImageSource?: "amazon_scrape";
+  productImageSource?: "amazon_scrape" | "images_search";
 }
 
 function extractJson(text: string): unknown {
@@ -223,7 +223,11 @@ export async function generateAffiliateDraft(
   const fullCaption = `${body_}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
   // Prefer the real listing photo scraped from this exact ASIN's own Amazon page over the
   // generic Pexels stock search below — searchPhoto(imageQuery) is only reached if this is null.
-  const productImage = await scrapeProductImage(env, found.productUrl).catch(() => null);
+  // 2026-08-30: scrapeProductImage's markdown extraction is flaky (see searchProductImageByAsin's
+  // header comment in serper.ts) so fall back to an ASIN-verified Google Images search.
+  const productImage =
+    (await scrapeProductImage(env, found.productUrl).catch(() => null)) ??
+    (await searchProductImageByAsin(env, found.asin).catch(() => null));
   return {
     targetAccount: "affiliate",
     hook,
