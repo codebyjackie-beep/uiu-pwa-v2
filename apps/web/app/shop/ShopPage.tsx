@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ApiResponse, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
 
@@ -194,6 +195,14 @@ export function ShopPage() {
             Clear checked
           </button>
         ) : null}
+      </section>
+
+      <section className="shop-section">
+        <h2>Kitchen Picks</h2>
+        <p className="admin-drafts-page__sub">Products we&apos;ve recommended on Instagram.</p>
+        <Link href="/shop-affiliate" className="wizard-secondary-button">
+          Browse Kitchen Picks
+        </Link>
       </section>
     </div>
   );
