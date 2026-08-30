@@ -273,13 +273,21 @@ export interface BatchSummary {
   skipped: number;
 }
 
-/** Cron entry point — generates a mixed batch (alternating uiu/affiliate) and sends each to Telegram for review. */
+/**
+ * 2026-08-31 (Jackie: brand merge — KuraNook dropped, no more standalone affiliate account):
+ * paused generating "affiliate"-target drafts so @kura.nook stops receiving new auto-drafts.
+ * Batch runs uiu-only until the affiliate pipeline is repointed at @useitup.app (see brand
+ * merge prompt). Not deleted — just short-circuited to "uiu" so this is a one-line revert.
+ */
+const AFFILIATE_TARGET_PAUSED = true;
+
+/** Cron entry point — generates a batch (uiu-only while AFFILIATE_TARGET_PAUSED) and sends each to Telegram for review. */
 export async function runIgContentBatch(env: IgContentAgentEnv): Promise<BatchSummary> {
   const batchSize = Number(env.IG_CONTENT_BATCH_SIZE) || 6;
   let sent = 0;
   let skipped = 0;
   for (let i = 0; i < batchSize; i++) {
-    const target: TargetAccount = i % 2 === 0 ? "uiu" : "affiliate";
+    const target: TargetAccount = AFFILIATE_TARGET_PAUSED ? "uiu" : i % 2 === 0 ? "uiu" : "affiliate";
     try {
       const id = await generateAndSendOne(env, target);
       if (id) sent++;
