@@ -6,7 +6,7 @@ import { Hono } from "hono";
 import type { Document } from "mongodb";
 import type { ApiResponse } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
-import { retryDraft, type IgContentDraft } from "../jobs/igContentAgent";
+import { retryDraft, accountFor, type IgContentDraft } from "../jobs/igContentAgent";
 import { scrapeProductImage, searchProductImageByAsin } from "../services/serper";
 
 type VerifyBindings = DbEnv & {
@@ -47,8 +47,13 @@ adminIgDraftsRouter.get("/verify-media", async (c) => {
     const results = await Promise.all(
       docs.map(async (doc) => {
         const targetAccount = doc.targetAccount as "uiu" | "affiliate";
-        const accessToken = targetAccount === "uiu" ? c.env.IG_TOKEN_UIU : c.env.IG_TOKEN_AFFILIATE;
-        const igUserId = targetAccount === "uiu" ? c.env.IG_ID_UIU : c.env.IG_ID_AFFILIATE;
+        // 2026-08-31 brand merge: accountFor() now always resolves to @useitup.app regardless of
+        // targetAccount — reused here (not duplicated) so this check can't drift from publish
+        // behavior again. Drafts published before the merge actually went to the old
+        // @kura.nook account, so this check will correctly 403/graphError on those historical
+        // rows now — that's expected, not a bug, since IG_TOKEN_UIU has no permission on media
+        // that was never posted to that account.
+        const { accessToken, igUserId } = accountFor(c.env, targetAccount);
         const mediaId = String(doc.publishedMediaId);
         const url = new URL(`https://graph.facebook.com/v21.0/${mediaId}`);
         url.searchParams.set("fields", "permalink,timestamp,media_product_type");
@@ -110,6 +115,11 @@ adminIgDraftsRouter.post("/:id/retry", async (c) => {
  * ASIN (the old keyword-search bug), so the plain `imageUrl: { $exists: false }` filter skips
  * exactly the rows that need fixing. Confirmed live on the public shop page: B0CJ974CT4 kept
  * showing the wrong grinder photo after the code fix because this route never re-touched it.
+ *
+ * 2026-08-31 addendum: `{ asins: string[] }` scopes force-mode to specific ASINs instead of
+ * re-scanning all 40+ rows — used to targetedly repair the 3 rows (B000LCP6EW, B0D4DMRPY6,
+ * B06Y4MCKFM) that got a branded/watermarked IG-post PNG written to imageUrl by a since-fixed
+ * bug in igContentAgent.ts's recordAffiliateProductUse call, without re-touching already-correct rows.
  */
 adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
   const token = c.req.header("X-Admin-Token");
@@ -120,9 +130,9 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
   try {
     const payload = await c.req.json().catch(() => null);
     const force = payload?.force === true;
-    const docs = await withDb(c.env, (db) =>
-      db.collection("affiliate_products").find(force ? {} : { imageUrl: { $exists: false } }).toArray(),
-    );
+    const asins: string[] | undefined = Array.isArray(payload?.asins) ? payload.asins.map(String) : undefined;
+    const filter = asins ? { asin: { $in: asins } } : force ? {} : { imageUrl: { $exists: false } };
+    const docs = await withDb(c.env, (db) => db.collection("affiliate_products").find(filter).toArray());
     const results = await Promise.all(
       docs.map(async (doc) => {
         const asin = String(doc.asin);
@@ -141,7 +151,7 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
           // imageUrl in place (2026-08-28 — a looser regex once wrote a promo-banner URL here;
           // if a later re-run can't confidently re-derive an image, it must not leave that
           // banner sitting in the DB just because this row wasn't touched).
-          if (force) await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $unset: { imageUrl: "", imageSource: "" } }));
+          if (force || asins) await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $unset: { imageUrl: "", imageSource: "" } }));
           return { asin, updated: false, reason: "no image found" };
         }
         await withDb(c.env, (db) => db.collection("affiliate_products").updateOne({ _id: doc._id }, { $set: { imageUrl: found.imageUrl, imageSource: found.source } }));

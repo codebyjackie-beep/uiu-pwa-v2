@@ -114,14 +114,20 @@ export type PublishEnv = DbEnv & TelegramIgEnv & {
   IG_ID_AFFILIATE: string;
 };
 
-function accountFor(env: PublishEnv, target: TargetAccount): InstagramAccount {
-  return target === "uiu"
-    ? { igUserId: env.IG_ID_UIU, accessToken: env.IG_TOKEN_UIU }
-    : { igUserId: env.IG_ID_AFFILIATE, accessToken: env.IG_TOKEN_AFFILIATE };
+/**
+ * 2026-08-31 brand merge (Jackie: drop the standalone Kura Nook account) — both targets now
+ * publish to the single @useitup.app account. `targetAccount` is kept on the draft purely as a
+ * content-type label (organic vs affiliate, still used for pillar/category rotation state and
+ * for the Telegram reviewer to see which kind of post this is) — it no longer selects a
+ * different IG account/token. IG_TOKEN_AFFILIATE/IG_ID_AFFILIATE stay in the env type (not
+ * deleting secrets) but are unused here now.
+ */
+export function accountFor(env: PublishEnv, _target: TargetAccount): InstagramAccount {
+  return { igUserId: env.IG_ID_UIU, accessToken: env.IG_TOKEN_UIU };
 }
 
 function accountLabel(target: TargetAccount): string {
-  return target === "uiu" ? "[UIU account]" : "[Affiliate account]";
+  return target === "uiu" ? "[UIU — organic]" : "[UIU — affiliate]";
 }
 
 async function recentOrganicSummaries(env: DbEnv): Promise<string[]> {
@@ -151,11 +157,11 @@ async function recentProductNames(env: DbEnv): Promise<string[]> {
   });
 }
 
-async function recordAffiliateProductUse(env: DbEnv, productName: string, asin: string, affiliateLink: string, category: string, imageUrl: string): Promise<void> {
+async function recordAffiliateProductUse(env: DbEnv, productName: string, asin: string, affiliateLink: string, category: string, sourceImageUrl: string): Promise<void> {
   await withDb(env, async (db) => {
     await db
       .collection(PRODUCTS_COLLECTION)
-      .updateOne({ asin }, { $set: { productName, asin, affiliateLink, category, imageUrl, lastUsedAt: new Date().toISOString() } }, { upsert: true });
+      .updateOne({ asin }, { $set: { productName, asin, affiliateLink, category, imageUrl: sourceImageUrl, lastUsedAt: new Date().toISOString() } }, { upsert: true });
   });
 }
 
@@ -236,7 +242,12 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   }
 
   if (target === "affiliate" && productName && asin && affiliateLink && category) {
-    await recordAffiliateProductUse(env, productName, asin, affiliateLink, category, imageUrl);
+    // affiliate_products.imageUrl feeds the /shop-affiliate page — must be the clean scraped
+    // product photo, never `imageUrl` (the branded IG-post PNG with hook text + watermark
+    // baked in via buildBrandedImageUrl). 2026-08-31: caught 3 rows (B000LCP6EW, B0D4DMRPY6,
+    // B06Y4MCKFM) live on shop-affiliate showing an old @kura.nook-watermarked post image
+    // because this call used to pass `imageUrl` here.
+    await recordAffiliateProductUse(env, productName, asin, affiliateLink, category, sourceImageUrl);
     await setLastAffiliateCategory(env, category);
   }
 
@@ -274,20 +285,21 @@ export interface BatchSummary {
 }
 
 /**
- * 2026-08-31 (Jackie: brand merge — KuraNook dropped, no more standalone affiliate account):
- * paused generating "affiliate"-target drafts so @kura.nook stops receiving new auto-drafts.
- * Batch runs uiu-only until the affiliate pipeline is repointed at @useitup.app (see brand
- * merge prompt). Not deleted — just short-circuited to "uiu" so this is a one-line revert.
+ * 2026-08-31 brand merge (Jackie): affiliate content now publishes to @useitup.app alongside
+ * organic recipe content, so both content types land in the same IG grid. Jackie's own example
+ * ratio ("5條organic先1條affiliate") sets the interleave: every Nth slot is affiliate, the rest
+ * organic. With the current IG_CONTENT_BATCH_SIZE=6 that's exactly 5 organic + 1 affiliate per
+ * batch; a larger batch size repeats the same 5:1 pattern rather than changing the ratio.
  */
-const AFFILIATE_TARGET_PAUSED = true;
+const AFFILIATE_EVERY_N = 6;
 
-/** Cron entry point — generates a batch (uiu-only while AFFILIATE_TARGET_PAUSED) and sends each to Telegram for review. */
+/** Cron entry point — generates a batch (organic:affiliate interleaved per AFFILIATE_EVERY_N) and sends each to Telegram for review. */
 export async function runIgContentBatch(env: IgContentAgentEnv): Promise<BatchSummary> {
   const batchSize = Number(env.IG_CONTENT_BATCH_SIZE) || 6;
   let sent = 0;
   let skipped = 0;
   for (let i = 0; i < batchSize; i++) {
-    const target: TargetAccount = AFFILIATE_TARGET_PAUSED ? "uiu" : i % 2 === 0 ? "uiu" : "affiliate";
+    const target: TargetAccount = (i + 1) % AFFILIATE_EVERY_N === 0 ? "affiliate" : "uiu";
     try {
       const id = await generateAndSendOne(env, target);
       if (id) sent++;
