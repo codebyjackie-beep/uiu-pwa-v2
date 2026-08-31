@@ -14,6 +14,7 @@
 import type { Document } from "mongodb";
 import { withDb, type DbEnv } from "../db";
 import { sendTelegram, type TelegramEnv } from "../services/telegram";
+import { checkCronHealth, type CronHealthResult } from "../services/cronHealthMonitor";
 
 export interface PwaDiagnosticsEnv extends DbEnv, TelegramEnv {
   OPENROUTER_API_KEY: string;
@@ -231,6 +232,8 @@ export interface DiagnosticsRunResult {
   brokenIssues: string[];
   alertSent: boolean;
   digestSent: boolean;
+  /** Cron 靜默failure監察 (2026-08-31 prompt) — igContentAgent/dailyRecipeDraft/pwaDiagnostics run health, piggybacked on this hourly cron per the prompt's §2 ("可以摺落現有pwaDiagnostics.ts嘅hourly cron"). */
+  cronHealth: CronHealthResult[];
 }
 
 /**
@@ -272,5 +275,7 @@ export async function runDiagnostics(
     await saveState(env, { lastDigestDate: todayUk });
   }
 
-  return { checks, brokenIssues, alertSent, digestSent };
+  const cronHealth = await checkCronHealth(env);
+
+  return { checks, brokenIssues, alertSent, digestSent, cronHealth };
 }

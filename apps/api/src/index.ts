@@ -26,6 +26,7 @@ import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { igMediaRouter } from "./routes/igMedia";
+import { recordCronRun } from "./services/cronHealthMonitor";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -297,9 +298,12 @@ export default {
         runDiagnostics(env)
           .then((result) => {
             console.log("[uiu-api] cron pwaDiagnostics:", JSON.stringify({ brokenIssues: result.brokenIssues, alertSent: result.alertSent, digestSent: result.digestSent }));
+            return recordCronRun(env, { jobName: "pwaDiagnostics", ok: true, itemsProcessed: result.checks.length }).catch(() => {});
           })
           .catch((err) => {
-            console.error("[uiu-api] cron pwaDiagnostics failed:", err instanceof Error ? err.message : String(err));
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            console.error("[uiu-api] cron pwaDiagnostics failed:", errorMessage);
+            return recordCronRun(env, { jobName: "pwaDiagnostics", ok: false, errorMessage }).catch(() => {});
           }),
       );
       return;
@@ -312,9 +316,22 @@ export default {
         runIgContentBatch(env)
           .then((summary) => {
             console.log("[uiu-api] cron igContentAgent:", JSON.stringify(summary));
+            // runIgContentBatch never rejects on a per-slot error (see igContentAgent.ts's
+            // per-slot try/catch — the exact mechanism that hid the 2026-08-29/31 OpenRouter
+            // 402 outage, since "resolved with sent:0" looks identical to a graceful skip run
+            // at this level). requested>0 && sent===0 is the same "all slots failed" signature.
+            const ok = summary.requested === 0 || summary.sent > 0;
+            return recordCronRun(env, {
+              jobName: "igContentAgent",
+              ok,
+              itemsProcessed: summary.sent,
+              errorMessage: ok ? undefined : `all ${summary.requested} slots skipped/failed (sent:0) — check wrangler tail for the underlying per-slot error`,
+            }).catch(() => {});
           })
           .catch((err) => {
-            console.error("[uiu-api] cron igContentAgent failed:", err instanceof Error ? err.message : String(err));
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            console.error("[uiu-api] cron igContentAgent failed:", errorMessage);
+            return recordCronRun(env, { jobName: "igContentAgent", ok: false, errorMessage }).catch(() => {});
           }),
       );
       ctx.waitUntil(
@@ -329,9 +346,21 @@ export default {
         dailyRecipeDraft(env, false)
           .then((summary) => {
             console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates, batch: summary.batch }));
+            // Same "resolves normally with zero output" risk as igContentAgent — each spec's
+            // OpenRouter/Spoonacular calls are caught per-attempt inside dailyRecipeDraft, so a
+            // billing/API outage shows up as created:0 here, not a rejection.
+            const ok = summary.batch.alreadyCompletedToday || summary.batch.attempted === 0 || summary.created > 0;
+            return recordCronRun(env, {
+              jobName: "dailyRecipeDraft",
+              ok,
+              itemsProcessed: summary.created,
+              errorMessage: ok ? undefined : `${summary.batch.attempted} specs attempted, 0 created — check wrangler tail for the underlying error`,
+            }).catch(() => {});
           })
           .catch((err) => {
-            console.error("[uiu-api] cron dailyRecipeDraft failed:", err instanceof Error ? err.message : String(err));
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            console.error("[uiu-api] cron dailyRecipeDraft failed:", errorMessage);
+            return recordCronRun(env, { jobName: "dailyRecipeDraft", ok: false, errorMessage }).catch(() => {});
           }),
       );
       return;
