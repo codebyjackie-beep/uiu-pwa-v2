@@ -267,21 +267,6 @@ app.post("/api/admin/ig-token-health-run", async (c) => {
   }
 });
 
-// TEMPORARY — verification-only for the cron health monitor (removed once confirmed live,
-// see 2026-08-31 prompt's "驗證要求"). Lets Jackie/Claude seed cron_run_log rows through the
-// Worker's own DB binding instead of guessing at local Mongo credentials.
-app.post("/api/admin/cron-health-test-seed", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
-  const payload = await c.req.json();
-  await recordCronRun(c.env, { jobName: payload.jobName, ok: payload.ok, errorMessage: payload.errorMessage, itemsProcessed: payload.itemsProcessed });
-  const body: ApiResponse<{ seeded: true }> = { ok: true, data: { seeded: true } };
-  return c.json(body);
-});
-
 app.notFound((c) => {
   const body: ApiResponse<never> = {
     ok: false,
