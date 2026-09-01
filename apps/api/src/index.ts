@@ -27,7 +27,6 @@ import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
-import { generateAffiliateDraft } from "./services/igContentGen";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -266,41 +265,6 @@ app.post("/api/admin/ig-token-health-run", async (c) => {
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG token health check failed" } };
     return c.json(body, 502);
   }
-});
-
-// TEMPORARY — verification-only for the commission-rate category filter
-// (cc_prompt_commission_rate_filter.md, 2026-09-01). Dry-runs generateAffiliateDraft() N times
-// (real LLM + real Serper calls, no DB writes / no Telegram send) so Jackie/cloud can eyeball
-// the picked products' real verified category + rate before trusting the live batch. Remove
-// once confirmed live, same pattern as the cron-health-test-seed route removed 2026-08-31.
-app.post("/api/admin/category-filter-test-run", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
-  const payload = await c.req.json().catch(() => ({}));
-  const count = Number(payload.count) || 5;
-  const results: Array<{ productName?: string; asin?: string; category?: string; commissionRate?: number; rawAmazonCategory?: string; picked: boolean }> = [];
-  const productNames: string[] = [];
-  let avoidCategory: string | null = null;
-  for (let i = 0; i < count; i++) {
-    let draft: Awaited<ReturnType<typeof generateAffiliateDraft>> = null;
-    try {
-      draft = await generateAffiliateDraft(c.env, productNames, [], avoidCategory);
-    } catch (err) {
-      console.error("[uiu-api] category-filter-test-run: generateAffiliateDraft threw:", err instanceof Error ? err.message : String(err));
-    }
-    if (draft) {
-      results.push({ productName: draft.productName, asin: draft.asin, category: draft.category, commissionRate: draft.commissionRate, rawAmazonCategory: draft.rawAmazonCategory, picked: true });
-      productNames.push(draft.productName);
-      avoidCategory = draft.category;
-    } else if (results.length <= i) {
-      results.push({ picked: false });
-    }
-  }
-  const body: ApiResponse<{ results: typeof results }> = { ok: true, data: { results } };
-  return c.json(body);
 });
 
 app.notFound((c) => {
