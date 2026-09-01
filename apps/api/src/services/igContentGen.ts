@@ -292,3 +292,196 @@ export async function generateAffiliateDraft(
   }
   return null;
 }
+
+/**
+ * cc_prompt_multiproduct_collage.md (2026-09-01) — "Pattern 2" catalog-grid post: 9 same-theme
+ * products in one image instead of generateAffiliateDraft()'s one-product-per-post. This function
+ * only decides WHAT the collage contains (theme's product list, per-product category verification,
+ * caption copy) — rendering the grid PNG (services/collageImage.ts) and storing/publishing it stays
+ * in jobs/igContentAgent.ts, same separation as the single-product flow (this file returns a source
+ * photo URL; igContentAgent.ts's buildBrandedImageUrl does the actual compositing).
+ *
+ * One LLM call requests a theme's headline/copy plus ~12 CANDIDATE product ideas (buffer above the
+ * 9 needed, since some will fail ASIN lookup or land outside the targeted commission-rate
+ * categories) — NOT 9-12 separate suggestAffiliateProduct()+writeAffiliateCaption() calls, which
+ * would be 18-24 OpenRouter round-trips for one post. Each candidate is still independently
+ * ASIN-looked-up and detectAmazonCategory()-verified below, same "skip, don't fabricate" rule as
+ * generateAffiliateDraft() — the LLM's freeform idea never becomes a draft's category unchecked.
+ */
+const AFFILIATE_COLLAGE_SYSTEM_PROMPT =
+  "You plan ONE multi-product Instagram catalog post for an Amazon UK affiliate account " +
+  "(@useitup.app) focused on home life — kitchen, furniture, home decor/improvement, garden, pets, " +
+  "and household tools. You will be given a theme; suggest specific, commonly-sold product types " +
+  "that fit it (e.g. \"stainless steel mixing bowls set\", not a vague category like \"kitchen tools\") " +
+  "so each can be found by a product search. Respond with ONLY a JSON object: " +
+  '{"headline": string, "subtitle": string, "hookQuestion": string, "cta": string, "products": ' +
+  '[{"productName": string, "searchQuery": string, "benefitLine": string}, ...]} — ' +
+  "headline is a short punchy on-image title for the theme (e.g. \"9 Kitchen Gadgets Under £20\"), " +
+  "subtitle is a one-line badge under it, hookQuestion is the caption's opening line (a question " +
+  "that makes the reader want to see the list), cta is one short engagement line (comment/save/share), " +
+  "searchQuery is what you'd type into a shopping search engine to find that exact product on " +
+  "amazon.co.uk, and benefitLine is a short (under 8 words) reason to want it — shown both under the " +
+  "product's photo in the grid AND as its caption bullet, so it must work as both. Provide exactly " +
+  "12 products so some can be dropped if unavailable. Do NOT include hashtags or a link anywhere — " +
+  "both are added separately by code.";
+
+export interface CollageProductIdea {
+  productName: string;
+  searchQuery: string;
+  benefitLine: string;
+}
+
+interface CollageIdea {
+  headline: string;
+  subtitle: string;
+  hookQuestion: string;
+  cta: string;
+  products: CollageProductIdea[];
+}
+
+async function suggestCollageIdea(env: OpenRouterEnv, theme: string, recentProductNames: string[]): Promise<CollageIdea> {
+  const userPrompt =
+    `Theme: "${theme}". Suggest 12 candidate products for a UK audience.` +
+    (recentProductNames.length > 0 ? ` Avoid repeating these recently-recommended products: ${recentProductNames.join("; ")}.` : "");
+  const parsed = (await callOpenRouterJson(env, AFFILIATE_COLLAGE_SYSTEM_PROMPT, userPrompt)) as Partial<CollageIdea>;
+  if (!parsed.headline || !parsed.subtitle || !parsed.hookQuestion || !parsed.cta || !Array.isArray(parsed.products) || parsed.products.length === 0) {
+    throw new Error("Collage idea response missing headline/subtitle/hookQuestion/cta/products");
+  }
+  return {
+    headline: parsed.headline,
+    subtitle: parsed.subtitle,
+    hookQuestion: parsed.hookQuestion,
+    cta: parsed.cta,
+    products: parsed.products.filter((p): p is CollageProductIdea => Boolean(p?.productName && p?.searchQuery && p?.benefitLine)),
+  };
+}
+
+export interface ResolvedCollageProduct {
+  productName: string;
+  asin: string;
+  affiliateLink: string;
+  category: TargetedCategory;
+  commissionRate: number;
+  rawAmazonCategory: string;
+  imageUrl: string;
+  benefitLine: string;
+}
+
+/** ASIN lookup -> real-category verification -> real product photo, for one collage candidate. Returns
+ * null (never a guess) if any step fails — same discard rule generateAffiliateDraft() uses. */
+async function resolveCollageCandidate(env: AffiliateEnv, candidate: CollageProductIdea): Promise<ResolvedCollageProduct | null> {
+  const found = await lookupAsin(env, candidate.searchQuery);
+  if (!found) return null;
+
+  const detected = await detectAmazonCategory(env, found.productUrl);
+  if (!detected.ok) return null;
+
+  const productImage =
+    (await scrapeProductImage(env, found.productUrl).catch(() => null)) ?? (await searchProductImageByAsin(env, found.asin).catch(() => null));
+  if (!productImage?.imageUrl) return null;
+
+  return {
+    productName: candidate.productName,
+    asin: found.asin,
+    affiliateLink: buildAffiliateLink(found.asin, env.AMAZON_ASSOCIATE_TAG),
+    category: detected.category,
+    commissionRate: detected.rate,
+    rawAmazonCategory: detected.rawAmazonCategory,
+    imageUrl: productImage.imageUrl,
+    benefitLine: candidate.benefitLine,
+  };
+}
+
+// collageImage.ts's 3x3 grid renderer requires exactly this many products (see that file's header
+// comment on why V1 is a fixed grid) — a theme attempt either resolves all of them or is discarded,
+// no partial-grid rendering.
+const COLLAGE_TARGET_COUNT = 9;
+const COLLAGE_RESOLVE_CHUNK_SIZE = 4;
+const MAX_COLLAGE_THEME_ATTEMPTS = 2;
+
+/** Resolves candidates in bounded-concurrency chunks (not all 12 at once, not fully serial —
+ * a collage does up to 3 Serper calls per candidate, ~36 calls unbounded is both slow and risks
+ * a single Worker invocation's time limit), stopping once COLLAGE_TARGET_COUNT succeed. */
+async function resolveCollageCandidates(env: AffiliateEnv, candidates: CollageProductIdea[]): Promise<ResolvedCollageProduct[]> {
+  const resolved: ResolvedCollageProduct[] = [];
+  const seenAsins = new Set<string>();
+  for (let i = 0; i < candidates.length && resolved.length < COLLAGE_TARGET_COUNT; i += COLLAGE_RESOLVE_CHUNK_SIZE) {
+    const chunk = candidates.slice(i, i + COLLAGE_RESOLVE_CHUNK_SIZE);
+    const results = await Promise.all(chunk.map((c) => resolveCollageCandidate(env, c).catch(() => null)));
+    for (const r of results) {
+      if (r && !seenAsins.has(r.asin) && resolved.length < COLLAGE_TARGET_COUNT) {
+        seenAsins.add(r.asin);
+        resolved.push(r);
+      }
+    }
+  }
+  return resolved;
+}
+
+function assembleCollageCaption(hookQuestion: string, products: ResolvedCollageProduct[], cta: string, hashtags: string[]): string {
+  const bullets = products.map((p) => `✅ ${p.productName} — ${p.benefitLine}`).join("\n");
+  const tagLine = hashtags.length > 0 ? hashtags.map((h) => (h.startsWith("#") ? h : `#${h}`)).join(" ") : "";
+  return [
+    hookQuestion,
+    bullets,
+    cta,
+    "🔗 Full list + direct links → useitup.uk/shop-affiliate",
+    tagLine,
+    "#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.",
+  ]
+    .filter((part) => part.length > 0)
+    .join("\n\n");
+}
+
+export interface AffiliateCollageDraft {
+  targetAccount: "affiliate";
+  postType: "collage";
+  theme: string;
+  headline: string;
+  subtitle: string;
+  caption: string;
+  hashtags: string[];
+  products: ResolvedCollageProduct[]; // exactly COLLAGE_TARGET_COUNT
+}
+
+/**
+ * Full collage pipeline: theme -> candidate ideas -> per-candidate ASIN/category/photo resolution
+ * -> caption assembly. Returns null if fewer than COLLAGE_MIN_ACCEPTABLE candidates resolved after
+ * MAX_COLLAGE_THEME_ATTEMPTS tries — caller should skip this run rather than publish a thin/off-niche
+ * collage. `theme` is chosen by the caller (jobs/igContentAgent.ts owns the rotation counter, same
+ * pattern as nextUiuPillar) so this function stays a pure "given a theme, build the post" step.
+ */
+export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentProductNames: string[], theme: string): Promise<AffiliateCollageDraft | null> {
+  for (let attempt = 0; attempt < MAX_COLLAGE_THEME_ATTEMPTS; attempt++) {
+    let idea: CollageIdea;
+    try {
+      idea = await suggestCollageIdea(env, theme, recentProductNames);
+    } catch (err) {
+      console.error("[uiu-api] igContentGen: suggestCollageIdea failed:", err instanceof Error ? err.message : String(err));
+      continue;
+    }
+
+    const resolved = await resolveCollageCandidates(env, idea.products);
+    if (resolved.length < COLLAGE_TARGET_COUNT) {
+      console.log(`[uiu-api] igContentGen: collage theme "${theme}" only resolved ${resolved.length}/${COLLAGE_TARGET_COUNT} products — ${attempt + 1 < MAX_COLLAGE_THEME_ATTEMPTS ? "retrying" : "giving up"}`);
+      continue;
+    }
+    const products = resolved.slice(0, COLLAGE_TARGET_COUNT);
+
+    const categories = Array.from(new Set(products.map((p) => p.category)));
+    const hashtags = await researchHashtags(env, `${theme} ${categories.join(" ")}`, [], AFFILIATE_FALLBACK_HASHTAGS);
+    const caption = assembleCollageCaption(idea.hookQuestion, products, idea.cta, hashtags);
+
+    return {
+      targetAccount: "affiliate",
+      postType: "collage",
+      theme,
+      headline: idea.headline,
+      subtitle: idea.subtitle,
+      caption,
+      hashtags,
+      products,
+    };
+  }
+  return null;
+}

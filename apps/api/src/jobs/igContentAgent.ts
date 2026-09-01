@@ -13,17 +13,33 @@ import type { OpenRouterEnv } from "../services/openrouter";
 import type { SerperEnv } from "../services/serper";
 import type { PexelsEnv } from "../services/pexels";
 import { searchPhoto } from "../services/pexels";
-import { generateOrganicDraft, generateAffiliateDraft, type AffiliateEnv } from "../services/igContentGen";
+import { generateOrganicDraft, generateAffiliateDraft, generateAffiliateCollageDraft, type AffiliateEnv, type ResolvedCollageProduct } from "../services/igContentGen";
 import { renderBrandedImage } from "../services/brandedImage";
+import { renderCollageImage } from "../services/collageImage";
 import { storeBrandedImage, brandedImageUrl } from "../services/igMediaStore";
 import { publishImagePost, type InstagramAccount } from "../services/instagram";
 import { sendTelegramIgMessage, sendTelegramIgPhoto, editTelegramIgMessage, type TelegramIgEnv } from "../services/telegramIg";
 
 export type TargetAccount = "uiu" | "affiliate";
 
+export interface CollageProductRef {
+  productName: string;
+  asin: string;
+  affiliateLink: string;
+  category: string;
+  commissionRate: number;
+  rawAmazonCategory: string;
+  imageUrl: string;
+  benefitLine: string;
+}
+
 export interface IgContentDraft {
   _id?: ObjectId;
   targetAccount: TargetAccount;
+  /** cc_prompt_multiproduct_collage.md — "collage" is a 9-product grid post, still affiliate
+   * content (targetAccount stays "affiliate"), distinguished from a single-product post by this
+   * field. Undefined/"single" on every pre-2026-09-01 draft. */
+  postType?: "single" | "collage";
   pillar?: string;
   hook?: string;
   hashtags?: string[];
@@ -41,6 +57,9 @@ export interface IgContentDraft {
   rawAmazonCategory?: string;
   asin?: string;
   affiliateLink?: string;
+  /** Collage drafts only — the 9 resolved products the grid image/caption were built from. */
+  collageTheme?: string;
+  collageProducts?: CollageProductRef[];
   telegramMessageId?: number;
   createdAt: string;
   decidedAt?: string;
@@ -69,6 +88,18 @@ const RECENT_LOOKBACK = 15;
 /** HANDOFF addendum 2026-08-25 §4 — UIU account rotates through these 4 pillars in order. */
 const UIU_PILLARS = ["recipe", "tip", "waste_reduction", "behind_the_scenes"] as const;
 
+/** cc_prompt_multiproduct_collage.md — collage post themes rotate the same way UIU_PILLARS does,
+ * so themes (and therefore the real Amazon categories products land in) visibly cycle rather than
+ * drifting back to kitchen-only. Deliberately spans all 7 targeted commission-rate categories. */
+const COLLAGE_THEMES = [
+  "Kitchen gadgets under £20",
+  "Small kitchen appliances beyond the rice cooker",
+  "Garden upgrades for a small UK garden",
+  "Pet products for a tidy home",
+  "Furniture and home organisation hacks",
+  "Household tools every home needs",
+] as const;
+
 /**
  * Atomic $inc on a singleton state doc — the same pattern recipe_draft_state/
  * pwa_diagnostics_state already use elsewhere in this codebase. Returns the pillar AND the
@@ -84,6 +115,17 @@ async function nextUiuPillar(env: DbEnv): Promise<{ pillar: string; rawIndex: nu
     const rawIndex = Number(res?.uiuPillarIndex ?? 1);
     const pillar = UIU_PILLARS[(rawIndex - 1) % UIU_PILLARS.length]!;
     return { pillar, rawIndex };
+  });
+}
+
+/** Same atomic-$inc pattern as nextUiuPillar, separate counter field on the same singleton doc. */
+async function nextCollageTheme(env: DbEnv): Promise<string> {
+  return withDb(env, async (db) => {
+    const res = await db
+      .collection<Document>(STATE_COLLECTION)
+      .findOneAndUpdate({ _id: "pillars" } as unknown as Document, { $inc: { collageThemeIndex: 1 } }, { upsert: true, returnDocument: "after" });
+    const rawIndex = Number(res?.collageThemeIndex ?? 1);
+    return COLLAGE_THEMES[(rawIndex - 1) % COLLAGE_THEMES.length]!;
   });
 }
 
@@ -130,8 +172,9 @@ export function accountFor(env: PublishEnv, _target: TargetAccount): InstagramAc
   return { igUserId: env.IG_ID_UIU, accessToken: env.IG_TOKEN_UIU };
 }
 
-function accountLabel(target: TargetAccount): string {
-  return target === "uiu" ? "[UIU — organic]" : "[UIU — affiliate]";
+function accountLabel(target: TargetAccount, postType?: "single" | "collage"): string {
+  if (target === "uiu") return "[UIU — organic]";
+  return postType === "collage" ? "[UIU — affiliate collage]" : "[UIU — affiliate]";
 }
 
 async function recentOrganicSummaries(env: DbEnv): Promise<string[]> {
@@ -199,8 +242,8 @@ async function getDraft(env: DbEnv, id: ObjectId): Promise<IgContentDraft | null
   return withDb(env, async (db) => (await db.collection<Document>(DRAFTS_COLLECTION).findOne({ _id: id })) as IgContentDraft | null);
 }
 
-function reviewMessageText(target: TargetAccount, caption: string): string {
-  return `${accountLabel(target)}\n\n${caption}`;
+function reviewMessageText(target: TargetAccount, caption: string, postType?: "single" | "collage"): string {
+  return `${accountLabel(target, postType)}\n\n${caption}`;
 }
 
 /** Builds one draft (organic or affiliate), finds a background photo, brands it with the hook
@@ -301,6 +344,74 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   return id;
 }
 
+function collageProductRefs(products: ResolvedCollageProduct[]): CollageProductRef[] {
+  return products.map((p) => ({
+    productName: p.productName,
+    asin: p.asin,
+    affiliateLink: p.affiliateLink,
+    category: p.category,
+    commissionRate: p.commissionRate,
+    rawAmazonCategory: p.rawAmazonCategory,
+    imageUrl: p.imageUrl,
+    benefitLine: p.benefitLine,
+  }));
+}
+
+/**
+ * cc_prompt_multiproduct_collage.md — builds one 9-product collage draft (theme -> product
+ * ideation+resolution in igContentGen.ts -> grid PNG render -> DB writes -> Telegram review),
+ * manual-trigger only for V1 (routes/index.ts's POST /api/admin/ig-content/collage) — deliberately
+ * NOT wired into runIgContentBatch's cron interleave below, so the existing 5:1 organic:affiliate
+ * cadence and cost are completely unaffected by this new, more expensive post type.
+ */
+export async function generateAndSendCollage(env: IgContentAgentEnv): Promise<ObjectId | null> {
+  const theme = await nextCollageTheme(env);
+  const recents = await recentProductNames(env);
+  const draft = await generateAffiliateCollageDraft(env, recents, theme);
+  if (!draft) return null; // fewer than 9 in-scope products resolved for this theme — skip
+
+  let imageUrl: string;
+  try {
+    const png = await renderCollageImage({
+      headline: draft.headline,
+      subtitle: draft.subtitle,
+      products: draft.products.map((p) => ({ imageUrl: p.imageUrl, productName: p.productName, benefitLine: p.benefitLine })),
+    });
+    console.log(`[uiu-api] igContentAgent: collage PNG for theme "${theme}" is ${png.byteLength} bytes`);
+    const id = await storeBrandedImage(env, png);
+    imageUrl = brandedImageUrl(env.PUBLIC_API_BASE_URL, id);
+  } catch (err) {
+    console.error("[uiu-api] renderCollageImage failed — cannot post a collage without its grid image:", err instanceof Error ? (err.stack ?? err.message) : String(err));
+    return null; // unlike the single-product fallback-to-unbranded-photo, there is no sensible un-composited fallback for a 9-product grid
+  }
+
+  for (const p of draft.products) {
+    await recordAffiliateProductUse(env, p.productName, p.asin, p.affiliateLink, p.category, p.commissionRate, p.rawAmazonCategory, p.imageUrl);
+  }
+
+  const id = await insertDraft(env, {
+    targetAccount: "affiliate",
+    postType: "collage",
+    hashtags: draft.hashtags,
+    caption: draft.caption,
+    imageUrl,
+    status: "pending",
+    collageTheme: draft.theme,
+    collageProducts: collageProductRefs(draft.products),
+    createdAt: new Date().toISOString(),
+  });
+
+  await sendTelegramIgPhoto(env, imageUrl);
+  const messageId = await sendTelegramIgMessage(env, reviewMessageText("affiliate", draft.caption, "collage"), [
+    [
+      { text: "✅ Approve", callback_data: `ig:approve:${id.toString()}` },
+      { text: "❌ Reject", callback_data: `ig:reject:${id.toString()}` },
+    ],
+  ]);
+  await updateDraft(env, id, { telegramMessageId: messageId });
+  return id;
+}
+
 export interface BatchSummary {
   requested: number;
   sent: number;
@@ -351,7 +462,7 @@ export async function approveDraft(env: PublishEnv, draftId: ObjectId): Promise<
     const { mediaId } = await publishImagePost(account, draft.imageUrl, draft.caption);
     await updateDraft(env, draftId, { status: "approved", decidedAt: new Date().toISOString(), publishedAt: new Date().toISOString(), publishedMediaId: mediaId });
     if (draft.telegramMessageId) {
-      await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n✅ *Published.*`);
+      await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption, draft.postType)}\n\n✅ *Published.*`);
     }
     return { ok: true, message: "Published." };
   } catch (err) {
@@ -361,7 +472,7 @@ export async function approveDraft(env: PublishEnv, draftId: ObjectId): Promise<
       await editTelegramIgMessage(
         env,
         draft.telegramMessageId,
-        `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n⚠️ *Publish failed:* ${message}`,
+        `${reviewMessageText(draft.targetAccount, draft.caption, draft.postType)}\n\n⚠️ *Publish failed:* ${message}`,
         [[{ text: "🔄 Retry", callback_data: `ig:retry:${draftId.toString()}` }]],
       );
     }
@@ -380,7 +491,7 @@ export async function retryDraft(env: PublishEnv, draftId: ObjectId): Promise<De
     const { mediaId } = await publishImagePost(account, draft.imageUrl, draft.caption);
     await updateDraft(env, draftId, { status: "approved", decidedAt: new Date().toISOString(), publishedAt: new Date().toISOString(), publishedMediaId: mediaId, error: undefined });
     if (draft.telegramMessageId) {
-      await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n✅ *Published (retry).*`);
+      await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption, draft.postType)}\n\n✅ *Published (retry).*`);
     }
     return { ok: true, message: "Published." };
   } catch (err) {
@@ -390,7 +501,7 @@ export async function retryDraft(env: PublishEnv, draftId: ObjectId): Promise<De
       await editTelegramIgMessage(
         env,
         draft.telegramMessageId,
-        `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n⚠️ *Publish failed again:* ${message}`,
+        `${reviewMessageText(draft.targetAccount, draft.caption, draft.postType)}\n\n⚠️ *Publish failed again:* ${message}`,
         [[{ text: "🔄 Retry", callback_data: `ig:retry:${draftId.toString()}` }]],
       );
     }
@@ -406,11 +517,11 @@ export async function rejectDraft(env: IgContentAgentEnv, draftId: ObjectId): Pr
 
   await updateDraft(env, draftId, { status: "rejected", decidedAt: new Date().toISOString() });
   if (draft.telegramMessageId) {
-    await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption)}\n\n❌ *Rejected.*`);
+    await editTelegramIgMessage(env, draft.telegramMessageId, `${reviewMessageText(draft.targetAccount, draft.caption, draft.postType)}\n\n❌ *Rejected.*`);
   }
 
   try {
-    const replacementId = await generateAndSendOne(env, draft.targetAccount);
+    const replacementId = draft.postType === "collage" ? await generateAndSendCollage(env) : await generateAndSendOne(env, draft.targetAccount);
     return replacementId ? { ok: true, message: "Rejected. Replacement sent." } : { ok: true, message: "Rejected. No replacement could be generated this time (skipped — no ASIN/image found)." };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

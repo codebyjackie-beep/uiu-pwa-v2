@@ -20,7 +20,7 @@ import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
 import { runDiagnostics, type DiagnosticsRunResult } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
-import { runIgContentBatch, type BatchSummary } from "./jobs/igContentAgent";
+import { runIgContentBatch, generateAndSendCollage, type BatchSummary } from "./jobs/igContentAgent";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
@@ -244,6 +244,27 @@ app.post("/api/admin/ig-content-batch-run", async (c) => {
   } catch (err) {
     console.error("[uiu-api] ig-content-batch-run error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG content batch run failed" } };
+    return c.json(body, 502);
+  }
+});
+
+// Manual trigger for a multi-product collage post (cc_prompt_multiproduct_collage.md, 2026-09-01)
+// — groups 9 same-theme affiliate products into one catalog-grid image driving traffic to
+// useitup.uk/shop-affiliate. Manual-trigger only for V1 (confirmed with Jackie): not wired into
+// the runIgContentBatch cron interleave.
+app.post("/api/admin/ig-content/collage", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const draftId = await generateAndSendCollage(c.env);
+    const body: ApiResponse<{ draftId: string | null }> = { ok: true, data: { draftId: draftId ? draftId.toHexString() : null } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-content-collage error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG content collage run failed" } };
     return c.json(body, 502);
   }
 });
