@@ -33,9 +33,10 @@
 import type { OpenRouterEnv } from "./openrouter";
 import type { SerperEnv } from "./serper";
 import { lookupAsin, buildAffiliateLink, scrapeProductImage, searchProductImageByAsin, researchHashtags } from "./serper";
+import { detectAmazonCategory, type TargetedCategory } from "./amazonCategory";
 
 const ORGANIC_FALLBACK_HASHTAGS = ["#mealprep", "#foodwasteuk", "#healthyeatinguk", "#kitchentips", "#ukfoodie"];
-const AFFILIATE_FALLBACK_HASHTAGS = ["#kitchengadgets", "#amazonfinds", "#kitchenmusthaves", "#cookingtools", "#ukfoodie"];
+const AFFILIATE_FALLBACK_HASHTAGS = ["#kitchengadgets", "#amazonfinds", "#homefinds", "#ukhomedecor", "#ukfoodie"];
 
 export interface OrganicDraft {
   targetAccount: "uiu";
@@ -52,7 +53,11 @@ export interface AffiliateDraft {
   caption: string;
   imageQuery: string;
   productName: string;
-  category: string;
+  category: TargetedCategory;
+  /** Amazon Associates UK commission rate (%) for `category`, from cc_prompt_commission_rate_filter.md's table — for reporting, not re-derived elsewhere. */
+  commissionRate: number;
+  /** The real Amazon browse-node text (page title suffix or Best Sellers Rank line) that `category` was matched from — kept for the verification/audit trail, see amazonCategory.ts. */
+  rawAmazonCategory: string;
   asin: string;
   affiliateLink: string;
   hashtags: string[];
@@ -147,10 +152,22 @@ export async function generateOrganicDraft(
   return { targetAccount: "uiu", pillar, hook: parsed.hook, caption, imageQuery: parsed.imageQuery, hashtags };
 }
 
+/**
+ * 2026-09-01 (cc_prompt_commission_rate_filter.md): niche broadened from kitchen-only to
+ * "home lifestyle" so the pool of biddable products covers all of the Amazon Associates UK
+ * categories Jackie approved as targeted — Kitchen stays the priority (4.5% commission, the
+ * original core niche) but Furniture/Home/Home Improvement/Lawn & Garden/Pets/Tools (3% each)
+ * are now equally valid picks, not a last-resort fallback. Whatever the LLM suggests here still
+ * gets independently verified against Amazon's real category (amazonCategory.ts) before a draft
+ * is built — this prompt only shapes *what's suggested*, it is not the enforcement point.
+ */
 const AFFILIATE_IDEA_SYSTEM_PROMPT =
-  "You suggest ONE kitchen/cooking/food-storage product to recommend on an Amazon UK affiliate " +
-  "Instagram account (@kura.nook), aimed at home cooks. Suggest a specific, commonly-sold product " +
-  "type (e.g. \"stainless steel mixing bowls set\", not a vague category like \"kitchen tools\") " +
+  "You suggest ONE product to recommend on an Amazon UK affiliate Instagram account (@useitup.app), " +
+  "aimed at people who care about their home — kitchen, furniture, home decor/improvement, garden, " +
+  "pets, or household tools. Prioritise kitchen/cooking/food-storage products when a good idea fits, " +
+  "but furniture, home organisation, garden, pet, and tool products are equally valid — do not limit " +
+  "yourself to the kitchen. Suggest a specific, commonly-sold product type (e.g. \"stainless steel " +
+  "mixing bowls set\" or \"raised garden bed planter box\", not a vague category like \"kitchen tools\") " +
   "so it can be found by a product search. Respond with ONLY a JSON object: " +
   '{"productName": string, "category": string, "searchQuery": string, "reason": string} — ' +
   "searchQuery is what you'd type into a shopping search engine to find this exact product on amazon.co.uk.";
@@ -164,7 +181,7 @@ interface AffiliateIdea {
 
 async function suggestAffiliateProduct(env: OpenRouterEnv, recentProductNames: string[], avoidCategory: string | null): Promise<AffiliateIdea> {
   const userPrompt =
-    "Suggest one kitchen/cooking product to recommend today." +
+    "Suggest one home-lifestyle product (kitchen, furniture, home decor/improvement, garden, pets, or tools) to recommend today." +
     (recentProductNames.length > 0 ? ` Do not repeat these recently-recommended products: ${recentProductNames.join("; ")}.` : "") +
     (avoidCategory ? ` The previous post was in the "${avoidCategory}" category — pick a DIFFERENT category this time, do not post two in a row from the same category.` : "");
   const parsed = (await callOpenRouterJson(env, AFFILIATE_IDEA_SYSTEM_PROMPT, userPrompt)) as Partial<AffiliateIdea>;
@@ -178,9 +195,11 @@ async function suggestAffiliateProduct(env: OpenRouterEnv, recentProductNames: s
 }
 
 const AFFILIATE_CAPTION_SYSTEM_PROMPT =
-  "You write ONE Instagram feed post recommending a specific kitchen product, for an Amazon affiliate " +
-  "account (@kura.nook). Tone: genuine, helpful, practical — explain why the product is useful in a " +
-  "home kitchen. Do NOT include any disclosure text or a link yourself (both appended separately). " +
+  "You write ONE Instagram feed post recommending a specific product, for an Amazon UK affiliate " +
+  "account (@useitup.app) focused on home life — kitchen, furniture, home decor/improvement, garden, " +
+  "pets, and household tools. Tone: genuine, helpful, practical — explain why the product is useful " +
+  "for the home, in whichever of those areas it fits. Do NOT include any disclosure text or a link " +
+  "yourself (both appended separately). " +
   HOOK_BODY_CTA_INSTRUCTIONS;
 
 async function writeAffiliateCaption(env: OpenRouterEnv, idea: AffiliateIdea): Promise<HookBodyCta> {
@@ -196,12 +215,26 @@ export interface AffiliateEnv extends OpenRouterEnv, SerperEnv {
   AMAZON_ASSOCIATE_TAG: string;
 }
 
+const MAX_AFFILIATE_ATTEMPTS = 2;
+
 /**
- * Full affiliate pipeline: idea -> ASIN lookup -> hook/body/cta -> hashtags -> disclosure
- * appended by code. Returns null if Serper found no ASIN for the suggested product — callers
- * should skip this slot rather than publish a link-less "affiliate" post or fabricate an ASIN.
- * avoidCategory: jobs/igContentAgent.ts's persisted lastAffiliateCategory, so two posts in a
- * row don't land in the same product category (retried once if the model ignores the prompt).
+ * Full affiliate pipeline: idea -> ASIN lookup -> real-category verification -> hook/body/cta ->
+ * hashtags -> disclosure appended by code. Returns null if no in-scope candidate could be found
+ * within MAX_AFFILIATE_ATTEMPTS tries — callers should skip this slot rather than publish a
+ * link-less/off-niche "affiliate" post or fabricate a category.
+ *
+ * avoidCategory: jobs/igContentAgent.ts's persisted lastAffiliateCategory (now the *verified*
+ * category from a prior run, see amazonCategory.ts), so two posts in a row don't land in the
+ * same commission-rate category.
+ *
+ * 2026-09-01 (cc_prompt_commission_rate_filter.md): the LLM's self-reported `idea.category` is
+ * freeform and unverified — it can't be trusted to actually be "≥4% Kitchen" or one of the
+ * targeted 3% categories (Furniture/Home/Home Improvement/Lawn & Garden/Pets Products/Tools).
+ * Once an ASIN is found, detectAmazonCategory() checks the *real* Amazon listing (page title +
+ * Best Sellers Rank text, see that file) and only a match against the targeted list proceeds —
+ * anything else (0% categories, off-niche categories like Electronics/Toys, or a listing whose
+ * category couldn't be read at all) is discarded rather than guessed at, same "skip, don't
+ * fabricate" rule as a missing ASIN or missing image below.
  */
 export async function generateAffiliateDraft(
   env: AffiliateEnv,
@@ -209,36 +242,53 @@ export async function generateAffiliateDraft(
   recentHashtags: string[],
   avoidCategory: string | null,
 ): Promise<AffiliateDraft | null> {
-  let idea = await suggestAffiliateProduct(env, recentProductNames, avoidCategory);
-  if (avoidCategory && idea.category.toLowerCase() === avoidCategory.toLowerCase()) {
-    // Model ignored the avoid-category instruction — one retry with a blunter constraint before giving up.
-    idea = await suggestAffiliateProduct(env, [...recentProductNames, idea.productName], avoidCategory);
+  for (let attempt = 0; attempt < MAX_AFFILIATE_ATTEMPTS; attempt++) {
+    let idea = await suggestAffiliateProduct(env, [...recentProductNames], avoidCategory);
+    if (avoidCategory && idea.category.toLowerCase() === avoidCategory.toLowerCase()) {
+      // Model ignored the avoid-category instruction — one retry with a blunter constraint before giving up.
+      idea = await suggestAffiliateProduct(env, [...recentProductNames, idea.productName], avoidCategory);
+    }
+
+    const found = await lookupAsin(env, idea.searchQuery);
+    if (!found) continue; // no ASIN for this idea — try the next attempt rather than giving up immediately
+
+    const detected = await detectAmazonCategory(env, found.productUrl);
+    if (!detected.ok) {
+      console.log(`[uiu-api] igContentGen: skipped "${idea.productName}" (${found.asin}) — category check failed: ${detected.reason}${detected.rawAmazonCategory ? ` (raw: "${detected.rawAmazonCategory}")` : ""}`);
+      continue;
+    }
+    if (avoidCategory && detected.category === avoidCategory) {
+      console.log(`[uiu-api] igContentGen: skipped "${idea.productName}" (${found.asin}) — verified category "${detected.category}" repeats the previous post's category`);
+      continue;
+    }
+
+    const { hook, body, cta, imageQuery } = await writeAffiliateCaption(env, { ...idea, category: detected.category });
+    const affiliateLink = buildAffiliateLink(found.asin, env.AMAZON_ASSOCIATE_TAG);
+    const hashtags = await researchHashtags(env, `${detected.category} ${idea.productName}`, recentHashtags, AFFILIATE_FALLBACK_HASHTAGS);
+    const body_ = assembleCaption(hook, body, cta, hashtags);
+    const fullCaption = `${body_}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
+    // Prefer the real listing photo scraped from this exact ASIN's own Amazon page over the
+    // generic Pexels stock search below — searchPhoto(imageQuery) is only reached if this is null.
+    // 2026-08-30: scrapeProductImage's markdown extraction is flaky (see searchProductImageByAsin's
+    // header comment in serper.ts) so fall back to an ASIN-verified Google Images search.
+    const productImage =
+      (await scrapeProductImage(env, found.productUrl).catch(() => null)) ??
+      (await searchProductImageByAsin(env, found.asin).catch(() => null));
+    return {
+      targetAccount: "affiliate",
+      hook,
+      caption: fullCaption,
+      imageQuery,
+      productName: idea.productName,
+      category: detected.category,
+      commissionRate: detected.rate,
+      rawAmazonCategory: detected.rawAmazonCategory,
+      asin: found.asin,
+      affiliateLink,
+      hashtags,
+      productImageUrl: productImage?.imageUrl,
+      productImageSource: productImage?.source,
+    };
   }
-  const found = await lookupAsin(env, idea.searchQuery);
-  if (!found) return null;
-  const { hook, body, cta, imageQuery } = await writeAffiliateCaption(env, idea);
-  const affiliateLink = buildAffiliateLink(found.asin, env.AMAZON_ASSOCIATE_TAG);
-  const hashtags = await researchHashtags(env, `${idea.category} ${idea.productName}`, recentHashtags, AFFILIATE_FALLBACK_HASHTAGS);
-  const body_ = assembleCaption(hook, body, cta, hashtags);
-  const fullCaption = `${body_}\n\n🔗 ${affiliateLink}\n\n#ad Affiliate link — as an Amazon Associate I earn from qualifying purchases.`;
-  // Prefer the real listing photo scraped from this exact ASIN's own Amazon page over the
-  // generic Pexels stock search below — searchPhoto(imageQuery) is only reached if this is null.
-  // 2026-08-30: scrapeProductImage's markdown extraction is flaky (see searchProductImageByAsin's
-  // header comment in serper.ts) so fall back to an ASIN-verified Google Images search.
-  const productImage =
-    (await scrapeProductImage(env, found.productUrl).catch(() => null)) ??
-    (await searchProductImageByAsin(env, found.asin).catch(() => null));
-  return {
-    targetAccount: "affiliate",
-    hook,
-    caption: fullCaption,
-    imageQuery,
-    productName: idea.productName,
-    category: idea.category,
-    asin: found.asin,
-    affiliateLink,
-    hashtags,
-    productImageUrl: productImage?.imageUrl,
-    productImageSource: productImage?.source,
-  };
+  return null;
 }

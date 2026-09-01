@@ -35,6 +35,10 @@ export interface IgContentDraft {
   status: "pending" | "approved" | "rejected" | "publish_failed";
   productName?: string;
   category?: string;
+  /** Amazon Associates UK commission rate (%) for `category` — see services/amazonCategory.ts. Affiliate drafts only. */
+  commissionRate?: number;
+  /** The real Amazon browse-node text `category` was verified against — audit trail for cc_prompt_commission_rate_filter.md. */
+  rawAmazonCategory?: string;
   asin?: string;
   affiliateLink?: string;
   telegramMessageId?: number;
@@ -157,11 +161,24 @@ async function recentProductNames(env: DbEnv): Promise<string[]> {
   });
 }
 
-async function recordAffiliateProductUse(env: DbEnv, productName: string, asin: string, affiliateLink: string, category: string, sourceImageUrl: string): Promise<void> {
+async function recordAffiliateProductUse(
+  env: DbEnv,
+  productName: string,
+  asin: string,
+  affiliateLink: string,
+  category: string,
+  commissionRate: number | undefined,
+  rawAmazonCategory: string | undefined,
+  sourceImageUrl: string,
+): Promise<void> {
   await withDb(env, async (db) => {
     await db
       .collection(PRODUCTS_COLLECTION)
-      .updateOne({ asin }, { $set: { productName, asin, affiliateLink, category, imageUrl: sourceImageUrl, lastUsedAt: new Date().toISOString() } }, { upsert: true });
+      .updateOne(
+        { asin },
+        { $set: { productName, asin, affiliateLink, category, commissionRate, rawAmazonCategory, imageUrl: sourceImageUrl, lastUsedAt: new Date().toISOString() } },
+        { upsert: true },
+      );
   });
 }
 
@@ -198,6 +215,8 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   let pillar: string | undefined;
   let productName: string | undefined;
   let category: string | undefined;
+  let commissionRate: number | undefined;
+  let rawAmazonCategory: string | undefined;
   let asin: string | undefined;
   let affiliateLink: string | undefined;
   let productImageUrl: string | undefined;
@@ -224,6 +243,8 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     imageQuery = draft.imageQuery;
     productName = draft.productName;
     category = draft.category;
+    commissionRate = draft.commissionRate;
+    rawAmazonCategory = draft.rawAmazonCategory;
     asin = draft.asin;
     affiliateLink = draft.affiliateLink;
     productImageUrl = draft.productImageUrl;
@@ -247,7 +268,7 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     // baked in via buildBrandedImageUrl). 2026-08-31: caught 3 rows (B000LCP6EW, B0D4DMRPY6,
     // B06Y4MCKFM) live on shop-affiliate showing an old @kura.nook-watermarked post image
     // because this call used to pass `imageUrl` here.
-    await recordAffiliateProductUse(env, productName, asin, affiliateLink, category, sourceImageUrl);
+    await recordAffiliateProductUse(env, productName, asin, affiliateLink, category, commissionRate, rawAmazonCategory, sourceImageUrl);
     await setLastAffiliateCategory(env, category);
   }
 
@@ -262,6 +283,8 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     status: "pending",
     productName,
     category,
+    commissionRate,
+    rawAmazonCategory,
     asin,
     affiliateLink,
     createdAt: new Date().toISOString(),
