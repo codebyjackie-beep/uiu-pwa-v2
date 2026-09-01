@@ -40,9 +40,17 @@ export type CategoryDetection =
   | { ok: false; reason: "no_signal" | "out_of_scope" | "scrape_failed"; rawAmazonCategory?: string };
 
 /** Checked in priority order (most specific first) — a Home & Kitchen listing whose BSR sub-category
- * mentions cookware wins Kitchen over the generic Home catch-all at the bottom of the list. */
+ * mentions cookware wins Kitchen over the generic Home catch-all at the bottom of the list.
+ *
+ * 2026-09-01 fix: the Kitchen rule used to include a bare `container` keyword, which matched
+ * Amazon's generic "Storage Containers" BSR sub-category on non-food storage products (under-bed
+ * boxes, drawer dividers, vacuum storage bags, etc.) — confirmed live on a "furniture and home
+ * organisation" collage where all 9 resolved products were wrongly bucketed into Kitchen (4.5%)
+ * instead of Furniture/Home (3%), which also skewed hashtag generation toward kitchen terms
+ * (igContentGen.ts builds the hashtag query from the resolved categories). Narrowed to
+ * `food container` so it only fires on Amazon's actual food-storage sub-categories. */
 const RULES: Array<{ category: TargetedCategory; keywords: RegExp }> = [
-  { category: "Kitchen", keywords: /kitchen|cookware|bakeware|container|cutlery|dinnerware|kettle|toaster|utensil|\bknives?\b|\bpans?\b|\bpots?\b|blender|mixer|dining|tableware|food storage/i },
+  { category: "Kitchen", keywords: /kitchen|cookware|bakeware|food container|cutlery|dinnerware|kettle|toaster|utensil|\bknives?\b|\bpans?\b|\bpots?\b|blender|mixer|dining|tableware|food storage/i },
   { category: "Furniture", keywords: /furniture|\bsofa\b|\bchairs?\b|\btables?\b|\bdesks?\b|shelv|cabinet|wardrobe|bed frame|mattress/i },
   { category: "Tools", keywords: /\btools?\b|power tool|hand tool|\bdrill\b|screwdriver/i },
   { category: "Home Improvement", keywords: /home improvement|\bdiy\b|lighting|plumbing|\bpaint\b|hardware/i },

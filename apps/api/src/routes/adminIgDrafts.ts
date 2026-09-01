@@ -6,7 +6,7 @@ import { Hono } from "hono";
 import type { Document } from "mongodb";
 import type { ApiResponse } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
-import { retryDraft, accountFor, type IgContentDraft } from "../jobs/igContentAgent";
+import { retryDraft, rejectDraft, accountFor, type IgContentDraft } from "../jobs/igContentAgent";
 import { scrapeProductImage, searchProductImageByAsin } from "../services/serper";
 
 type VerifyBindings = DbEnv & {
@@ -18,6 +18,11 @@ type VerifyBindings = DbEnv & {
   TELEGRAM_BOT_TOKEN_IG: string;
   TELEGRAM_CHAT_ID_IG: string;
   SERPER_API_KEY: string;
+  PUBLIC_API_BASE_URL: string;
+  OPENROUTER_API_KEY: string;
+  OPENROUTER_MODEL: string;
+  PEXELS_API_KEY: string;
+  AMAZON_ASSOCIATE_TAG: string;
 };
 
 export const adminIgDraftsRouter = new Hono<{ Bindings: VerifyBindings }>();
@@ -101,6 +106,26 @@ adminIgDraftsRouter.post("/:id/retry", async (c) => {
   } catch (err) {
     console.error("[uiu-api] ig-drafts retry error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to retry draft" } };
+    return c.json(body, 502);
+  }
+});
+
+/** Rejects a pending draft without waiting for a Telegram tap (e.g. a known-bad pre-fix draft still sitting in the review channel). Mirrors the ig:reject webhook path, including regeneration of a replacement. */
+adminIgDraftsRouter.post("/:id/reject", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const { ObjectId } = await getMongoModule();
+    const draftId = new ObjectId(c.req.param("id"));
+    const result = await rejectDraft(c.env, draftId);
+    const body: ApiResponse<typeof result> = { ok: true, data: result };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-drafts reject error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to reject draft" } };
     return c.json(body, 502);
   }
 });
