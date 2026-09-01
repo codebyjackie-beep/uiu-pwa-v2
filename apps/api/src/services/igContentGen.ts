@@ -476,7 +476,11 @@ export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentPro
       targetAccount: "affiliate",
       postType: "collage",
       theme,
-      headline: idea.headline,
+      // The idea prompt asks for 12 candidate products (buffer for lookup failures) but the
+      // grid always ships exactly COLLAGE_TARGET_COUNT — the LLM sometimes echoes "12" into its
+      // own headline text (e.g. "12 Kitchen Gadgets..."), which would then visibly mismatch the
+      // 9-cell grid. Force any leading count in the headline to match what's actually shown.
+      headline: idea.headline.replace(/^\d+(?=\s)/, String(COLLAGE_TARGET_COUNT)),
       subtitle: idea.subtitle,
       caption,
       hashtags,

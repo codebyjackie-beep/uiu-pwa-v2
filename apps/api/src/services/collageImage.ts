@@ -124,7 +124,7 @@ export async function renderCollageImage(params: RenderCollageImageParams): Prom
   <text x="${CANVAS_W / 2}" y="${subtitleY}" font-family="Hook" font-weight="600" font-size="26" fill="${ACCENT}" text-anchor="middle">${escapeXml(params.subtitle)}</text>
   ${cells}
   <rect x="0" y="${CANVAS_H - 90}" width="${CANVAS_W}" height="90" fill="${ACCENT}" />
-  <text x="${CANVAS_W / 2}" y="${CANVAS_H - 40}" font-family="Hook" font-weight="700" font-size="28" fill="${BG}" text-anchor="middle">Full list &amp; where to buy → useitup.uk/shop-affiliate</text>
+  <text x="${CANVAS_W / 2}" y="${CANVAS_H - 40}" font-family="Hook" font-weight="700" font-size="28" fill="${BG}" text-anchor="middle">Full list &amp; where to buy &gt;&gt; useitup.uk/shop-affiliate</text>
 </svg>`;
 
   const resvg = new Resvg(svg, {
