@@ -42,7 +42,7 @@ project `memory.md` (claude.ai project **UIU_PWA_V2**), not here.
 
 - Old **VM2** and old **Atlas cluster** must NOT be deleted until the v2 backend runs
   end-to-end against the new Atlas cluster `uiu-pwa-v2`. Old Atlas M0 is the free fallback.
-- VM2 also waits until all AI Team / Affiliate Team agent code is on GitHub + moved to new Hetzner.
+- VM2 also waits until all related automation code is on GitHub + moved to its new host.
 
 ## 4. App surface (6 tabs)
 

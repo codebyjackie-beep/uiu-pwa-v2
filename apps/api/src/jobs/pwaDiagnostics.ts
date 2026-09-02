@@ -1,7 +1,7 @@
 /**
  * PWA diagnostics + monitor (HANDOFF_pwa-diagnostics-monitor.md). Cloudflare
- * Cron Trigger job: no VM, no fixed persona — this replaces the old
- * "Jack/Edith SSH into Hetzner" plan (CLAUDE.md §6/§8, superseded 2026-08-22).
+ * Cron Trigger job: no VM, no fixed persona — this replaces an earlier
+ * SSH-based ops-monitoring approach (superseded 2026-08-22).
  * Runs hourly:
  *   - Every fire: collects a handful of health checks. Any "critical" one
  *     failing sends a Telegram alert (with a 1h cooldown per unchanged issue set).

@@ -1,10 +1,47 @@
 # uiu-pwa-v2
 
-UseItUp PWA **v2** — full rebuild. Next.js frontend + Cloudflare Workers backend, deployed entirely on Cloudflare.
+UseItUp PWA **v2** — a zero-waste kitchen app. Next.js frontend + Cloudflare Workers backend,
+deployed entirely on Cloudflare, MongoDB Atlas for data.
 
 > **Repo boundary (read this first).** This is the v2 codebase and the *only* active
 > development repo. The v1 system lives at `github.com/codebyjackie-beep/UseItUp` and is a
 > **frozen, read-only archive** — reference only, never commit there again. See `CLAUDE.md`.
+
+## What this app does
+
+Six tabs, one loop: **Fridge** (scan what you have, with expiry dates) generates the
+**Shop** list — only what's actually missing, with supermarket price comparison. **Recipes**
+suggests dishes from what's in the fridge. **Meal Planner** turns that into a week's plan with
+cost/calorie totals. **Health** logs macros/weight against those meals. **Home** is the
+dashboard tying it together.
+
+Live at [useitup.uk](https://useitup.uk).
+
+## How this was built
+
+I'm a chef transitioning into software development — this project is the applied practice
+ground for that transition, and it's public because I want it to hold up to an interviewer's
+scrutiny, not despite that.
+
+Straight answer: this codebase was built with **Claude Code** (an AI coding agent),
+prompt-driven — I did not hand-type the implementation line by line. What I did do:
+
+- **Own every architecture and product decision** — stack choice (Next.js + Cloudflare
+  Workers over the original Flutter build), data model, the six-tab structure, the
+  Fridge→Shop relationship, deploy platform, CI/CD-from-day-one as a hard rule.
+- **Write the specs the AI implements against** — scoped, testable instructions, not
+  "build me an app."
+- **Run an independent verification gate before accepting any change as done.** I don't take
+  an AI's narrative report ("this should work now") as evidence. Every commit gets checked
+  against raw output — `git show`/`git log` on the actual diff, not a description of it — and
+  claimed production behavior gets checked against the live system (hit the real endpoint,
+  read the actual log/DB row), not assumed. Two real bugs the assistant itself caught and
+  reported honestly are still in the commit history rather than edited out.
+
+Why I'm foregrounding this rather than hiding it: reviewing AI-generated code — reading a
+diff critically, reasoning about the architecture it sits in, and telling "code exists" apart
+from "code verified in production" — is a real part of how software gets built now, and it's
+the skill I'm actually claiming here.
 
 ## Structure (monorepo, npm workspaces)
 

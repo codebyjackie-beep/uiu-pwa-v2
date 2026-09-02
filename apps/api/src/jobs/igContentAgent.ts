@@ -105,9 +105,9 @@ const COLLAGE_THEMES = [
 /**
  * Atomic $inc on a singleton state doc — the same pattern recipe_draft_state/
  * pwa_diagnostics_state already use elsewhere in this codebase. Returns the pillar AND the
- * raw counter so callers/tests can verify the counter is actually advancing (Jackie's
- * standing "要真正驗證有rotate" requirement — Max's rotation bug on the old Hetzner turned
- * out to be an index that was computed but never persisted).
+ * raw counter so callers/tests can verify the counter is actually advancing (a standing
+ * requirement to verify rotation actually happens — an earlier rotation bug turned out to
+ * be an index that was computed but never persisted).
  */
 async function nextUiuPillar(env: DbEnv): Promise<{ pillar: string; rawIndex: number }> {
   return withDb(env, async (db) => {
