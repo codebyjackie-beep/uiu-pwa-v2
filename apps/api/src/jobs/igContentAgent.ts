@@ -13,6 +13,8 @@ import type { OpenRouterEnv } from "../services/openrouter";
 import type { SerperEnv } from "../services/serper";
 import type { PexelsEnv } from "../services/pexels";
 import { searchPhoto } from "../services/pexels";
+import type { AtlasCloudEnv } from "../services/atlasCloudImage";
+import { generateBackgroundImage } from "../services/atlasCloudImage";
 import { generateOrganicDraft, generateAffiliateDraft, generateAffiliateCollageDraft, type AffiliateEnv, type ResolvedCollageProduct } from "../services/igContentGen";
 import { renderBrandedImage } from "../services/brandedImage";
 import { renderCollageImage } from "../services/collageImage";
@@ -68,7 +70,7 @@ export interface IgContentDraft {
   error?: string;
 }
 
-export interface IgContentAgentEnv extends DbEnv, OpenRouterEnv, SerperEnv, PexelsEnv, TelegramIgEnv, AffiliateEnv {
+export interface IgContentAgentEnv extends DbEnv, OpenRouterEnv, SerperEnv, PexelsEnv, AtlasCloudEnv, TelegramIgEnv, AffiliateEnv {
   IG_TOKEN_UIU: string;
   IG_ID_UIU: string;
   IG_TOKEN_AFFILIATE: string;
@@ -187,9 +189,16 @@ async function recentOrganicSummaries(env: DbEnv): Promise<string[]> {
   });
 }
 
-/** Renders the hook onto the background photo and stores the PNG (services/igMediaStore.ts) — returns a public URL. */
-async function buildBrandedImageUrl(env: IgContentAgentEnv, target: TargetAccount, backgroundImageUrl: string, hook: string): Promise<string> {
-  const png = await renderBrandedImage({ backgroundImageUrl, hook, account: target });
+/** Renders the hook onto the background photo (+ optional real product photo card for the
+ * affiliate 3-layer composite) and stores the PNG (services/igMediaStore.ts) — returns a public URL. */
+async function buildBrandedImageUrl(
+  env: IgContentAgentEnv,
+  target: TargetAccount,
+  backgroundImageUrl: string,
+  hook: string,
+  productImageUrl?: string,
+): Promise<string> {
+  const png = await renderBrandedImage({ backgroundImageUrl, productImageUrl, hook, account: target });
   const id = await storeBrandedImage(env, png);
   return brandedImageUrl(env.PUBLIC_API_BASE_URL, id);
 }
@@ -263,6 +272,7 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
   let asin: string | undefined;
   let affiliateLink: string | undefined;
   let productImageUrl: string | undefined;
+  let backgroundPrompt: string | undefined;
 
   const hashtagHistory = await recentHashtags(env);
 
@@ -275,6 +285,7 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     hook = draft.hook;
     hashtags = draft.hashtags;
     imageQuery = draft.imageQuery;
+    backgroundPrompt = draft.backgroundPrompt;
   } else {
     const recents = await recentProductNames(env);
     const avoidCategory = await getLastAffiliateCategory(env);
@@ -291,15 +302,45 @@ async function generateAndSendOne(env: IgContentAgentEnv, target: TargetAccount)
     asin = draft.asin;
     affiliateLink = draft.affiliateLink;
     productImageUrl = draft.productImageUrl;
+    backgroundPrompt = draft.backgroundPrompt;
   }
 
-  // Real listing photo (scraped from the ASIN's own Amazon page, see serper.ts scrapeProductImage) takes priority over the Pexels stock search.
-  const sourceImageUrl = productImageUrl ?? (await searchPhoto(env, imageQuery));
-  if (!sourceImageUrl) return null; // IG requires a public image URL at publish time — cannot post without one
+  // cc_prompt_atlas_cloud_bg.md — AI-generated background scene, tried first for both content
+  // types. Never throws (returns null on any failure) so an Atlas Cloud outage/rate-limit can't
+  // sink the batch — organic falls back to Pexels below, affiliate falls back to the pre-existing
+  // single-layer "product photo as the whole image" look.
+  const aiBackgroundUrl = await generateBackgroundImage(env, backgroundPrompt);
+
+  // sourceImageUrl is the "real"/of-record photo: for affiliate this MUST stay the actual
+  // product photo (feeds affiliate_products.imageUrl / the shop-affiliate page — never an
+  // AI image, see recordAffiliateProductUse's caller note below on the 2026-08-31 bug this
+  // guards against). For organic it's simply whichever background ends up used.
+  let sourceImageUrl: string | null;
+  let renderBackgroundUrl: string;
+  let renderProductUrl: string | undefined;
+
+  if (target === "uiu") {
+    sourceImageUrl = aiBackgroundUrl ?? (await searchPhoto(env, imageQuery));
+    if (!sourceImageUrl) return null; // IG requires a public image URL at publish time — cannot post without one
+    renderBackgroundUrl = sourceImageUrl;
+  } else {
+    // Real listing photo (scraped from the ASIN's own Amazon page, see serper.ts scrapeProductImage) takes priority over the Pexels stock search.
+    sourceImageUrl = productImageUrl ?? (await searchPhoto(env, imageQuery));
+    if (!sourceImageUrl) return null;
+    if (aiBackgroundUrl && productImageUrl) {
+      // 3-layer composite: AI background + the real product photo inset on top.
+      renderBackgroundUrl = aiBackgroundUrl;
+      renderProductUrl = productImageUrl;
+    } else {
+      // Atlas Cloud failed (or there's no separate product photo to composite) — fall back to
+      // the pre-existing single-layer look: the product photo fills the whole frame.
+      renderBackgroundUrl = sourceImageUrl;
+    }
+  }
 
   let imageUrl: string;
   try {
-    imageUrl = await buildBrandedImageUrl(env, target, sourceImageUrl, hook);
+    imageUrl = await buildBrandedImageUrl(env, target, renderBackgroundUrl, hook, renderProductUrl);
   } catch (err) {
     console.error("[uiu-api] renderBrandedImage failed, falling back to unbranded source photo:", err instanceof Error ? (err.stack ?? err.message) : String(err));
     imageUrl = sourceImageUrl; // still postable — just without the hook overlay

@@ -64,6 +64,10 @@ fallthrough = true
 #                       never fetched directly (robots.txt blocks it site-wide).
 #   AMAZON_ASSOCIATE_TAG  Jackie's Amazon.co.uk Associates Tracking ID: kuranook2026-21.
 #                       Raw value: Key\Amazon Associates Account.txt.
+#   ATLAS_CLOUD_API_KEY  cc_prompt_atlas_cloud_bg.md (2026-09-02) — Atlas Cloud unified
+#                       inference API key, used for AI-generated IG post background images
+#                       (services/atlasCloudImage.ts). Raw value: Key\altas-cloud-api.txt
+#                       (note the source file's own "altas" typo).
 #
 # --- Non-secret vars ---
 [vars]

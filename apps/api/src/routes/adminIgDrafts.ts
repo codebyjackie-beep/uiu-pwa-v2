@@ -23,6 +23,7 @@ type VerifyBindings = DbEnv & {
   OPENROUTER_MODEL: string;
   PEXELS_API_KEY: string;
   AMAZON_ASSOCIATE_TAG: string;
+  ATLAS_CLOUD_API_KEY: string;
 };
 
 export const adminIgDraftsRouter = new Hono<{ Bindings: VerifyBindings }>();

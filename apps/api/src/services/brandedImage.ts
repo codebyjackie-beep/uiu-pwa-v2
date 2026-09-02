@@ -121,14 +121,45 @@ function wrapHook(hook: string, fontSize: number, maxWidth: number): string[] {
 
 export interface RenderBrandedImageParams {
   backgroundImageUrl: string;
+  /**
+   * cc_prompt_atlas_cloud_bg.md 3-layer affiliate composite — the real Serper-sourced product
+   * photo, inset as a white card on top of the AI-generated backgroundImageUrl. Its pixels are
+   * never AI-modified (ad-integrity requirement: the product shown must be the actual product).
+   * Undefined for organic posts and for the affiliate fallback path (single-layer, unchanged).
+   */
+  productImageUrl?: string;
   hook: string;
   account: BrandAccount;
 }
 
-/** Renders a 1080x1080 IG feed image: background photo + bottom gradient + hook headline + handle watermark. */
+const PRODUCT_CARD_SIZE = 640;
+const PRODUCT_CARD_X = (1080 - PRODUCT_CARD_SIZE) / 2;
+const PRODUCT_CARD_Y = 130;
+const PRODUCT_CARD_RADIUS = 28;
+const PRODUCT_CARD_SHADOW_OFFSET = 12;
+
+/** White rounded-rect "card" (with an offset dark rect behind it for a simple drop shadow) that
+ * insets the real product photo over the AI background — plain rects/clip-path only, no SVG
+ * filter primitives, to stay within what resvg reliably supports. */
+function productCardSvg(productDataUri: string): string {
+  return `
+  <rect x="${PRODUCT_CARD_X + PRODUCT_CARD_SHADOW_OFFSET}" y="${PRODUCT_CARD_Y + PRODUCT_CARD_SHADOW_OFFSET}" width="${PRODUCT_CARD_SIZE}" height="${PRODUCT_CARD_SIZE}" rx="${PRODUCT_CARD_RADIUS}" fill="rgba(0,0,0,0.35)" />
+  <rect x="${PRODUCT_CARD_X}" y="${PRODUCT_CARD_Y}" width="${PRODUCT_CARD_SIZE}" height="${PRODUCT_CARD_SIZE}" rx="${PRODUCT_CARD_RADIUS}" fill="#ffffff" />
+  <clipPath id="productClip"><rect x="${PRODUCT_CARD_X}" y="${PRODUCT_CARD_Y}" width="${PRODUCT_CARD_SIZE}" height="${PRODUCT_CARD_SIZE}" rx="${PRODUCT_CARD_RADIUS}" /></clipPath>
+  <g clip-path="url(#productClip)">
+    <image href="${productDataUri}" x="${PRODUCT_CARD_X}" y="${PRODUCT_CARD_Y}" width="${PRODUCT_CARD_SIZE}" height="${PRODUCT_CARD_SIZE}" preserveAspectRatio="xMidYMid meet" />
+  </g>`;
+}
+
+/** Renders a 1080x1080 IG feed image: background photo (+ optional inset real product photo card
+ * for the affiliate 3-layer composite) + bottom gradient + hook headline + handle watermark. */
 export async function renderBrandedImage(params: RenderBrandedImageParams): Promise<Uint8Array> {
   const palette = PALETTES[params.account];
-  const [bgDataUri] = await Promise.all([toDataUri(params.backgroundImageUrl), ensureWasm()]);
+  const [bgDataUri, productDataUri] = await Promise.all([
+    toDataUri(params.backgroundImageUrl),
+    params.productImageUrl ? toDataUri(params.productImageUrl) : Promise.resolve(null),
+    ensureWasm(),
+  ]);
 
   const fontSize = hookFontSize(params.hook.length);
   const lineHeight = fontSize * 1.18;
@@ -159,6 +190,7 @@ export async function renderBrandedImage(params: RenderBrandedImageParams): Prom
   </defs>
   <rect x="0" y="0" width="1080" height="1080" fill="${palette.overlay}" />
   <image href="${bgDataUri}" x="0" y="0" width="1080" height="1080" preserveAspectRatio="xMidYMid slice" />
+  ${productDataUri ? productCardSvg(productDataUri) : ""}
   <rect x="0" y="460" width="1080" height="620" fill="url(#grad)" />
   <rect x="48" y="48" width="${handleChipWidth}" height="54" rx="27" fill="rgba(0,0,0,0.45)" />
   <text x="${handleTextX}" y="83" font-family="Hook" font-weight="800" font-size="30" fill="${palette.accent}" text-anchor="middle">${handleText}</text>

@@ -44,6 +44,10 @@ export interface OrganicDraft {
   hook: string;
   caption: string;
   imageQuery: string;
+  /** cc_prompt_atlas_cloud_bg.md — natural-language scene description fed to Atlas Cloud
+   * (services/atlasCloudImage.ts) to generate the post's AI background photo. Separate from
+   * imageQuery (a short stock-search phrase, kept as the Pexels fallback's search term). */
+  backgroundPrompt: string;
   hashtags: string[];
 }
 
@@ -64,6 +68,10 @@ export interface AffiliateDraft {
   /** Real product photo scraped from the ASIN's own Amazon listing page, if found — takes priority over imageQuery/Pexels. */
   productImageUrl?: string;
   productImageSource?: "amazon_scrape" | "images_search";
+  /** cc_prompt_atlas_cloud_bg.md — scene description for the AI-generated BACKGROUND only
+   * (composited behind the real productImageUrl by brandedImage.ts's 3-layer render — never
+   * describes/replaces the product itself, see that file's header comment on why). */
+  backgroundPrompt: string;
 }
 
 function extractJson(text: string): unknown {
@@ -106,6 +114,7 @@ interface HookBodyCta {
   body: string;
   cta: string;
   imageQuery: string;
+  backgroundPrompt: string;
 }
 
 const HOOK_BODY_CTA_INSTRUCTIONS =
@@ -116,9 +125,12 @@ const HOOK_BODY_CTA_INSTRUCTIONS =
   'be able to tell what the post is about from the hook alone. 2) "body" — 2-3 short sentences delivering ' +
   'the actual benefit/tip. 3) "cta" — one short line inviting engagement (comment/save/share), e.g. ' +
   '"Which one would you try first?" or "Save this for your next shop" or "Tag someone who needs this". ' +
-  'Respond with ONLY a JSON object: {"hook": string, "body": string, "cta": string, "imageQuery": string} ' +
-  "— imageQuery is a short English phrase (2-6 words) for a stock photo search. Do NOT include hashtags " +
-  "anywhere — they are added separately by code.";
+  'Respond with ONLY a JSON object: {"hook": string, "body": string, "cta": string, "imageQuery": string, ' +
+  '"backgroundPrompt": string} — imageQuery is a short English phrase (2-6 words) for a stock photo search ' +
+  "(fallback only). backgroundPrompt is a one-sentence, vivid visual description for an AI image generator " +
+  "to create the post's background photo — describe a real photographic scene that matches the post's " +
+  "topic (e.g. lighting, setting, mood, styling), and explicitly state it must contain NO text, NO logos, " +
+  "and NO product packaging/labels. Do NOT include hashtags anywhere — they are added separately by code.";
 
 const ORGANIC_SYSTEM_PROMPT =
   "You are writing one Instagram feed post for @useitup.app, a UK healthy-eating / meal-planning / " +
@@ -144,12 +156,12 @@ export async function generateOrganicDraft(
     `Write one new Instagram post for the "${pillar}" content pillar, for a UK audience.` +
     (recentCaptionSummaries.length > 0 ? ` Avoid repeating these recently-posted topics: ${recentCaptionSummaries.join("; ")}.` : "");
   const parsed = (await callOpenRouterJson(env, ORGANIC_SYSTEM_PROMPT, userPrompt)) as Partial<HookBodyCta>;
-  if (!parsed.hook || !parsed.body || !parsed.cta || !parsed.imageQuery) {
-    throw new Error("Organic draft response missing hook/body/cta/imageQuery");
+  if (!parsed.hook || !parsed.body || !parsed.cta || !parsed.imageQuery || !parsed.backgroundPrompt) {
+    throw new Error("Organic draft response missing hook/body/cta/imageQuery/backgroundPrompt");
   }
   const hashtags = await researchHashtags(env, `${pillar} ${parsed.imageQuery}`, recentHashtags, ORGANIC_FALLBACK_HASHTAGS);
   const caption = assembleCaption(parsed.hook, parsed.body, parsed.cta, hashtags);
-  return { targetAccount: "uiu", pillar, hook: parsed.hook, caption, imageQuery: parsed.imageQuery, hashtags };
+  return { targetAccount: "uiu", pillar, hook: parsed.hook, caption, imageQuery: parsed.imageQuery, backgroundPrompt: parsed.backgroundPrompt, hashtags };
 }
 
 /**
@@ -203,12 +215,16 @@ const AFFILIATE_CAPTION_SYSTEM_PROMPT =
   HOOK_BODY_CTA_INSTRUCTIONS;
 
 async function writeAffiliateCaption(env: OpenRouterEnv, idea: AffiliateIdea): Promise<HookBodyCta> {
-  const userPrompt = `Product: ${idea.productName}. Category: ${idea.category}. Why it's worth recommending: ${idea.reason}.`;
+  const userPrompt =
+    `Product: ${idea.productName}. Category: ${idea.category}. Why it's worth recommending: ${idea.reason}. ` +
+    "The backgroundPrompt must describe a lifestyle/setting scene the product would naturally be used in " +
+    "or shown near (e.g. the kind of room/surface/context), NOT the product itself — a real photo of the " +
+    "actual product is composited on top separately, so the background must not depict any product.";
   const parsed = (await callOpenRouterJson(env, AFFILIATE_CAPTION_SYSTEM_PROMPT, userPrompt)) as Partial<HookBodyCta>;
-  if (!parsed.hook || !parsed.body || !parsed.cta || !parsed.imageQuery) {
-    throw new Error("Affiliate caption response missing hook/body/cta/imageQuery");
+  if (!parsed.hook || !parsed.body || !parsed.cta || !parsed.imageQuery || !parsed.backgroundPrompt) {
+    throw new Error("Affiliate caption response missing hook/body/cta/imageQuery/backgroundPrompt");
   }
-  return { hook: parsed.hook, body: parsed.body, cta: parsed.cta, imageQuery: parsed.imageQuery };
+  return { hook: parsed.hook, body: parsed.body, cta: parsed.cta, imageQuery: parsed.imageQuery, backgroundPrompt: parsed.backgroundPrompt };
 }
 
 export interface AffiliateEnv extends OpenRouterEnv, SerperEnv {
@@ -262,7 +278,7 @@ export async function generateAffiliateDraft(
       continue;
     }
 
-    const { hook, body, cta, imageQuery } = await writeAffiliateCaption(env, { ...idea, category: detected.category });
+    const { hook, body, cta, imageQuery, backgroundPrompt } = await writeAffiliateCaption(env, { ...idea, category: detected.category });
     const affiliateLink = buildAffiliateLink(found.asin, env.AMAZON_ASSOCIATE_TAG);
     const hashtags = await researchHashtags(env, `${detected.category} ${idea.productName}`, recentHashtags, AFFILIATE_FALLBACK_HASHTAGS);
     const body_ = assembleCaption(hook, body, cta, hashtags);
@@ -288,6 +304,7 @@ export async function generateAffiliateDraft(
       hashtags,
       productImageUrl: productImage?.imageUrl,
       productImageSource: productImage?.source,
+      backgroundPrompt,
     };
   }
   return null;

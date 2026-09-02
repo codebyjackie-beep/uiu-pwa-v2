@@ -88,6 +88,10 @@ type Bindings = {
   TELEGRAM_IG_WEBHOOK_SECRET: string;
   SERPER_API_KEY: string;
   AMAZON_ASSOCIATE_TAG: string;
+  // cc_prompt_atlas_cloud_bg.md — Atlas Cloud (atlascloud.ai) unified inference API key, used
+  // for AI-generated IG post background images (services/atlasCloudImage.ts). Raw value:
+  // Key\altas-cloud-api.txt (note the file's own typo, not ours).
+  ATLAS_CLOUD_API_KEY: string;
   IG_CONTENT_BATCH_SIZE?: string;
   // 2026-08-25 addendum — public URL of this Worker itself, used to build the branded-image
   // URL (services/igMediaStore.ts) that Instagram/shop.useitup.uk fetch. Not a secret.
