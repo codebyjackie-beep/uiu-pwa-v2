@@ -21,6 +21,7 @@ import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
 import { runDiagnostics, type DiagnosticsRunResult } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
 import { runIgContentBatch, generateAndSendCollage, type BatchSummary } from "./jobs/igContentAgent";
+import { renderCollageImage } from "./services/collageImage";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
@@ -269,6 +270,28 @@ app.post("/api/admin/ig-content/collage", async (c) => {
   } catch (err) {
     console.error("[uiu-api] ig-content-collage error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG content collage run failed" } };
+    return c.json(body, 502);
+  }
+});
+
+// Renders a collage PNG straight from a supplied product list and returns the raw image —
+// no Mongo write, no Telegram send. cc_prompt_multiproduct_collage.md's 2026-09-02 moodboard
+// redesign asked for local sample renders before wide rollout; this route is the repeatable way
+// to get those (curl it with a real product/theme payload, save the response body as a .png)
+// without spamming the review chat for every layout tweak.
+app.post("/api/admin/ig-content/collage-preview", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const payload = await c.req.json<{ headline: string; subtitle: string; products: Array<{ imageUrl: string; productName: string; benefitLine: string }> }>();
+    const png = await renderCollageImage(payload);
+    return new Response(png, { headers: { "content-type": "image/png" } });
+  } catch (err) {
+    console.error("[uiu-api] ig-content collage-preview error:", err instanceof Error ? (err.stack ?? err.message) : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Collage preview render failed" } };
     return c.json(body, 502);
   }
 });
