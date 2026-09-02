@@ -34,6 +34,7 @@ import type { OpenRouterEnv } from "./openrouter";
 import type { SerperEnv } from "./serper";
 import { lookupAsin, buildAffiliateLink, scrapeProductImage, searchProductImageByAsin, researchHashtags } from "./serper";
 import { detectAmazonCategory, type TargetedCategory } from "./amazonCategory";
+import { cutoutProductImage, type CutoutResult } from "./cutoutImage";
 
 const ORGANIC_FALLBACK_HASHTAGS = ["#mealprep", "#foodwasteuk", "#healthyeatinguk", "#kitchentips", "#ukfoodie"];
 const AFFILIATE_FALLBACK_HASHTAGS = ["#kitchengadgets", "#amazonfinds", "#homefinds", "#ukhomedecor", "#ukfoodie"];
@@ -382,10 +383,17 @@ export interface ResolvedCollageProduct {
   rawAmazonCategory: string;
   imageUrl: string;
   benefitLine: string;
+  // Computed here (not left to collageImage.ts) so candidate SELECTION can prefer photos that
+  // actually cut out cleanly — see resolveCollageCandidates()'s cutout-first ordering below.
+  // `null` means cutoutImage.ts declined this photo (busy/non-white bg, decode failure, etc.);
+  // the renderer already has its own graceful white-card fallback for that case.
+  cutout: CutoutResult | null;
 }
 
-/** ASIN lookup -> real-category verification -> real product photo, for one collage candidate. Returns
- * null (never a guess) if any step fails — same discard rule generateAffiliateDraft() uses. */
+/** ASIN lookup -> real-category verification -> real product photo -> cutout attempt, for one
+ * collage candidate. Returns null (never a guess) if any of the first three steps fail — same
+ * discard rule generateAffiliateDraft() uses. The cutout step itself never causes a discard here
+ * (a candidate with a busy background is still usable, just less desirable — see below). */
 async function resolveCollageCandidate(env: AffiliateEnv, candidate: CollageProductIdea): Promise<ResolvedCollageProduct | null> {
   const found = await lookupAsin(env, candidate.searchQuery);
   if (!found) return null;
@@ -397,6 +405,8 @@ async function resolveCollageCandidate(env: AffiliateEnv, candidate: CollageProd
     (await scrapeProductImage(env, found.productUrl).catch(() => null)) ?? (await searchProductImageByAsin(env, found.asin).catch(() => null));
   if (!productImage?.imageUrl) return null;
 
+  const cutout = await cutoutProductImage(productImage.imageUrl).catch(() => null);
+
   return {
     productName: candidate.productName,
     asin: found.asin,
@@ -406,6 +416,7 @@ async function resolveCollageCandidate(env: AffiliateEnv, candidate: CollageProd
     rawAmazonCategory: detected.rawAmazonCategory,
     imageUrl: productImage.imageUrl,
     benefitLine: candidate.benefitLine,
+    cutout,
   };
 }
 
@@ -416,17 +427,28 @@ const COLLAGE_TARGET_COUNT = 9;
 const COLLAGE_RESOLVE_CHUNK_SIZE = 4;
 const MAX_COLLAGE_THEME_ATTEMPTS = 2;
 
-/** Resolves candidates in bounded-concurrency chunks (not all 12 at once, not fully serial —
- * a collage does up to 3 Serper calls per candidate, ~36 calls unbounded is both slow and risks
- * a single Worker invocation's time limit), stopping once COLLAGE_TARGET_COUNT succeed. */
+/**
+ * Resolves candidates in bounded-concurrency chunks (not all 12 at once, not fully serial — a
+ * collage does up to 3 Serper calls per candidate, ~36 calls unbounded is both slow and risks a
+ * single Worker invocation's time limit).
+ *
+ * cc_prompt_collage_cutout_fallback_style.md (2026-09-02): unlike before, this no longer stops the
+ * moment COLLAGE_TARGET_COUNT succeed — Jackie's real-batch review found the old white-card
+ * fallback (used whenever cutoutImage.ts declines a busy/non-white photo) looked jarringly out of
+ * place next to 7 clean cutout "stickers". Root cause fix: always try to resolve the full
+ * candidate pool (up to ~12 ideas) so generateAffiliateCollageDraft() can prefer the
+ * cutout-successful ones and only reach for a cutout-failed candidate when there aren't enough
+ * clean ones to fill the grid. Bounded cost is still the same ~12 candidates this always tried to
+ * resolve *some* of; the only change is not stopping 1-3 candidates early once 9 succeed.
+ */
 async function resolveCollageCandidates(env: AffiliateEnv, candidates: CollageProductIdea[]): Promise<ResolvedCollageProduct[]> {
   const resolved: ResolvedCollageProduct[] = [];
   const seenAsins = new Set<string>();
-  for (let i = 0; i < candidates.length && resolved.length < COLLAGE_TARGET_COUNT; i += COLLAGE_RESOLVE_CHUNK_SIZE) {
+  for (let i = 0; i < candidates.length; i += COLLAGE_RESOLVE_CHUNK_SIZE) {
     const chunk = candidates.slice(i, i + COLLAGE_RESOLVE_CHUNK_SIZE);
     const results = await Promise.all(chunk.map((c) => resolveCollageCandidate(env, c).catch(() => null)));
     for (const r of results) {
-      if (r && !seenAsins.has(r.asin) && resolved.length < COLLAGE_TARGET_COUNT) {
+      if (r && !seenAsins.has(r.asin)) {
         seenAsins.add(r.asin);
         resolved.push(r);
       }
@@ -483,7 +505,14 @@ export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentPro
       console.log(`[uiu-api] igContentGen: collage theme "${theme}" only resolved ${resolved.length}/${COLLAGE_TARGET_COUNT} products — ${attempt + 1 < MAX_COLLAGE_THEME_ATTEMPTS ? "retrying" : "giving up"}`);
       continue;
     }
-    const products = resolved.slice(0, COLLAGE_TARGET_COUNT);
+    // Prefer candidates whose photo actually cut out cleanly (stable partition — each group keeps
+    // its original idea order) so a cutout-failed photo only makes the final grid when there
+    // genuinely aren't enough clean ones to fill it. See resolveCollageCandidates()'s header.
+    const cutoutOk = resolved.filter((p) => p.cutout !== null);
+    const cutoutFailed = resolved.filter((p) => p.cutout === null);
+    const products = [...cutoutOk, ...cutoutFailed].slice(0, COLLAGE_TARGET_COUNT);
+    const cutoutUsed = products.filter((p) => p.cutout !== null).length;
+    console.log(`[uiu-api] igContentGen: collage theme "${theme}" resolved ${resolved.length} candidates (${cutoutOk.length} cutout-clean) — shipping ${cutoutUsed}/${COLLAGE_TARGET_COUNT} as cutouts`);
 
     const categories = Array.from(new Set(products.map((p) => p.category)));
     const hashtags = await researchHashtags(env, `${theme} ${categories.join(" ")}`, [], AFFILIATE_FALLBACK_HASHTAGS);

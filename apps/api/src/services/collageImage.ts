@@ -28,12 +28,19 @@ import { Resvg } from "@cf-wasm/resvg/workerd";
 import hookFontData from "../../assets/hook-font.ttf";
 import collageFontData from "../../assets/collage-font.ttf";
 import { toDataUri, escapeXml, ensureWasm } from "./brandedImage";
-import { cutoutProductImage } from "./cutoutImage";
+import { cutoutProductImage, type CutoutResult } from "./cutoutImage";
 
 export interface CollageProductCell {
   imageUrl: string;
   productName: string;
   benefitLine: string;
+  // cc_prompt_collage_cutout_fallback_style.md (2026-09-02): the real pipeline
+  // (jobs/igContentAgent.ts) now attempts cutout during product SELECTION so it can prefer
+  // clean-cutout candidates — pass that result through here rather than re-cutting (would also
+  // silently disagree with the selection step if the two ever attempted it differently). `undefined`
+  // (the debug /collage-preview route's raw JSON body won't have this field) means "not resolved
+  // yet, attempt it here" — kept only for that debug path; `null` means "already tried, failed".
+  cutout?: CutoutResult | null;
 }
 
 export interface RenderCollageImageParams {
@@ -56,7 +63,11 @@ const ACCENT = "#16a34a";
 const BG = "#F5EDE0"; // warm cream — replaces the old dead-black canvas
 const TEXT_DARK = "#1a1a1a";
 const MUTED = "#6b6152";
-const CARD_WHITE = "#ffffff"; // fallback (non-cutout) product card only
+// Fallback (non-cutout) product card only. Was pure white — Jackie's real-batch review found a
+// stark white box next to 7 warm-cream cutout stickers read as "2 ID photos mixed into a sticker
+// sheet." Warmed to match the BG family instead, and renderTile() also feathers the photo's edges
+// via fallbackVignette so a busy/non-white background doesn't read as a hard-edged rectangle.
+const CARD_FALLBACK = "#EFE1CB";
 
 /** Greedy word-wrap for a fixed-width caption/headline line — same approximation as brandedImage.ts's wrapHook. */
 function wrapText(text: string, fontSize: number, maxWidth: number, maxLines: number): string[] {
@@ -145,7 +156,7 @@ function renderTile(tile: Tile, index: number, photo: { dataUri: string; width: 
 
   if (!photo) {
     // Should not happen (toDataUri throws on fetch failure), but keep the tile visually inert rather than crash the batch.
-    return `<g><rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="14" fill="${CARD_WHITE}" />${captionSvg}</g>`;
+    return `<g><rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="14" fill="${CARD_FALLBACK}" />${captionSvg}</g>`;
   }
 
   if (isCutout) {
@@ -163,13 +174,18 @@ function renderTile(tile: Tile, index: number, photo: { dataUri: string; width: 
   ${captionSvg}`;
   }
 
-  // Fallback: old rounded white card, cover-fit photo, no rotation (keeps the fallback legible/predictable).
+  // Fallback: warm-toned rounded card (not stark white, see CARD_FALLBACK), cover-fit photo, no
+  // rotation (keeps the fallback legible/predictable). The photo's edges are feathered through
+  // fallbackVignette (defined once in the outer <defs>) so a busy/non-white product background
+  // fades toward the card color instead of reading as a hard-edged rectangle among the cutout
+  // stickers.
   return `
   <g>
     <rect x="${tile.x - 4}" y="${tile.y + 6}" width="${tile.w + 8}" height="${tile.h + 8}" rx="16" fill="#000000" opacity="0.10" filter="url(#tileShadow)" />
-    <rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="14" fill="${CARD_WHITE}" />
+    <rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="14" fill="${CARD_FALLBACK}" />
     <clipPath id="cell-clip-${index}"><rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" rx="14" /></clipPath>
-    <image href="${photo.dataUri}" x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cell-clip-${index})" />
+    <mask id="cell-vignette-${index}"><rect x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" fill="url(#fallbackVignette)" /></mask>
+    <image href="${photo.dataUri}" x="${tile.x}" y="${tile.y}" width="${tile.w}" height="${tile.h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cell-clip-${index})" mask="url(#cell-vignette-${index})" />
   </g>
   ${captionSvg}`;
 }
@@ -184,7 +200,10 @@ export async function renderCollageImage(params: RenderCollageImageParams): Prom
   const [photos] = await Promise.all([
     Promise.all(
       params.products.map(async (p) => {
-        const cutout = await cutoutProductImage(p.imageUrl);
+        // The real pipeline (igContentGen.ts) already attempted cutout during product selection —
+        // reuse that result instead of re-cutting. Only the debug /collage-preview route (raw JSON
+        // body, no `cutout` field) falls through to attempting it here.
+        const cutout = p.cutout !== undefined ? p.cutout : await cutoutProductImage(p.imageUrl);
         if (cutout) return { photo: cutout, isCutout: true as const };
         const dataUri = await toDataUri(p.imageUrl);
         // Fallback path doesn't know pixel dimensions (toDataUri doesn't decode) — renderTile only
@@ -217,6 +236,10 @@ export async function renderCollageImage(params: RenderCollageImageParams): Prom
     <filter id="tileShadow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="6" />
     </filter>
+    <radialGradient id="fallbackVignette" cx="50%" cy="45%" r="62%">
+      <stop offset="55%" stop-color="#ffffff" stop-opacity="1" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.22" />
+    </radialGradient>
   </defs>
   <rect x="0" y="0" width="${CANVAS_W}" height="${CANVAS_H}" fill="${BG}" />
   <text font-family="DM Serif Display" font-size="58" fill="${TEXT_DARK}" text-anchor="middle">${headlineTspans}</text>

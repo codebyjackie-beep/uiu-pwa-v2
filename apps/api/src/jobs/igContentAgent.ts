@@ -416,7 +416,7 @@ export async function generateAndSendCollage(env: IgContentAgentEnv): Promise<Ob
     const png = await renderCollageImage({
       headline: draft.headline,
       subtitle: draft.subtitle,
-      products: draft.products.map((p) => ({ imageUrl: p.imageUrl, productName: p.productName, benefitLine: p.benefitLine })),
+      products: draft.products.map((p) => ({ imageUrl: p.imageUrl, productName: p.productName, benefitLine: p.benefitLine, cutout: p.cutout })),
     });
     console.log(`[uiu-api] igContentAgent: collage PNG for theme "${theme}" is ${png.byteLength} bytes`);
     const id = await storeBrandedImage(env, png);
