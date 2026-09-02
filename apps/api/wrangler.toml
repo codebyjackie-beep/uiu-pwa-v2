@@ -89,10 +89,12 @@ OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash-lite"
 PWA_DIAGNOSTICS_RECIPE_COST_MIN_PCT = "50"
 PWA_DIAGNOSTICS_NUTRITION_MIN_PCT = "30"
 PWA_DIAGNOSTICS_DIGEST_HOUR_UK = "10"
-# HANDOFF_ig-marketing-affiliate-agent-design.md §3 — drafts generated per daily batch run
-# (alternating uiu/affiliate). Not a secret so Jackie can tune batch size without touching
-# secrets.
-IG_CONTENT_BATCH_SIZE = "6"
+# cc_prompt_affiliate_cadence.md, 2026-09-02 — organic drafts per manual admin-trigger call
+# (POST /api/admin/ig-content-batch-run), Jackie fires it herself. Was 6 (5 organic + 1
+# affiliate interleaved) before organic/affiliate cadences were split into independent paths;
+# affiliate's own cadence is AFFILIATE_CRON_INTERVAL_DAYS in igContentAgent.ts, not this var.
+# Not a secret so Jackie can tune batch size without touching secrets.
+IG_CONTENT_BATCH_SIZE = "3"
 # IG user ids are not sensitive on their own (no auth power without the matching Page
 # Access Token secret above) — kept here so they don't need re-setting on every redeploy.
 IG_ID_UIU = "17841427988481809"
@@ -103,7 +105,7 @@ IG_ID_AFFILIATE = "17841443611128346"
 # that one points FROM the web Worker TO this one; happen to be the same host today.
 PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 
-# Four independent crons — scheduled() in index.ts branches on event.cron, the
+# Five independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:
 #   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC).
 #
@@ -138,13 +140,23 @@ PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 #   to write a short digest and Telegram-sends that. State lives in
 #   `pwa_diagnostics_state` (single doc, same pattern as recipe_draft_state).
 #
-#   "0 9 * * *"  IG Content Agent (HANDOFF_ig-marketing-affiliate-agent-design.md,
-#   2026-08-24) — once/day placeholder time (09:00 UTC), Jackie can retime here.
-#   Generates IG_CONTENT_BATCH_SIZE drafts (alternating uiu/affiliate) and sends
-#   each to the IG review Telegram bot with Approve/Reject buttons — nothing is
-#   published to Instagram until a human taps Approve (POST /api/ig-webhook).
-#   Same fire also runs the IG token expiry check (services/instagram.ts
-#   getTokenExpiry, alert-only — see jobs/igTokenHealth.ts for why this does
-#   NOT attempt an automated refresh).
+#   "0 9 * * *"  IG token expiry check only (services/instagram.ts getTokenExpiry,
+#   alert-only — see jobs/igTokenHealth.ts for why this does NOT attempt an
+#   automated refresh). Organic IG Content Agent generation used to also fire
+#   here (HANDOFF_ig-marketing-affiliate-agent-design.md, 2026-08-24) but moved
+#   to manual-trigger-only 2026-09-02 (cc_prompt_affiliate_cadence.md) — Jackie
+#   fires POST /api/admin/ig-content-batch-run herself, IG_CONTENT_BATCH_SIZE
+#   organic drafts per call, sent to the IG review Telegram bot with
+#   Approve/Reject buttons same as before.
+#
+#   "0 8 * * *"  Affiliate cadence (cc_prompt_affiliate_cadence.md, 2026-09-02) —
+#   fires daily but only actually generates once every AFFILIATE_CRON_INTERVAL_DAYS
+#   (3) calendar days (igContentAgent.ts's runAffiliateCron); other fires are a
+#   cheap no-op single Mongo read. Generates ONE affiliate draft, sent to the same
+#   Telegram review bot with the same Approve/Reject flow — nothing publishes to
+#   Instagram without a human tap. Deliberately a separate schedule from 09:00 so
+#   the two don't fire in the same invocation. Independent of collageThemeIndex
+#   (igContentAgent.ts's nextCollageTheme) — the 9-product collage post type stays
+#   manual-only (POST /api/admin/ig-content/collage) and does not share this cron.
 [triggers]
-crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *", "0 9 * * *"]
+crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *"]

@@ -20,7 +20,7 @@ import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
 import { runDiagnostics, type DiagnosticsRunResult } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
-import { runIgContentBatch, generateAndSendCollage, type BatchSummary } from "./jobs/igContentAgent";
+import { runIgContentBatch, runAffiliateCron, generateAndSendCollage, type BatchSummary } from "./jobs/igContentAgent";
 import { renderCollageImage } from "./services/collageImage";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { igWebhookRouter } from "./routes/igWebhook";
@@ -232,8 +232,9 @@ app.post("/api/admin/pwa-diagnostics-test-telegram", async (c) => {
   }
 });
 
-// Manual trigger for the IG Content Agent batch (HANDOFF_ig-marketing-affiliate-agent-design.md
-// §3) — generates a batch of drafts and sends each to the IG review Telegram chat with
+// Manual trigger for the IG Content Agent organic batch (HANDOFF_ig-marketing-affiliate-agent-design.md
+// §3; cc_prompt_affiliate_cadence.md, 2026-09-02 — organic-only now, IG_CONTENT_BATCH_SIZE drafts
+// per call, Jackie fires this herself). Sends each to the IG review Telegram chat with
 // Approve/Reject buttons. There is no dry-run flag here: every draft is real content sent
 // for review, but nothing gets published to Instagram until a human taps Approve.
 app.post("/api/admin/ig-content-batch-run", async (c) => {
@@ -249,6 +250,29 @@ app.post("/api/admin/ig-content-batch-run", async (c) => {
   } catch (err) {
     console.error("[uiu-api] ig-content-batch-run error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "IG content batch run failed" } };
+    return c.json(body, 502);
+  }
+});
+
+// cc_prompt_affiliate_cadence.md, 2026-09-02 — on-demand trigger for the affiliate cron logic
+// (normally fires from scheduled() at "0 8 * * *"). Exists so the calendar-day gate can be
+// verified without waiting 3 real days: fire this repeatedly and read `ran`/`reason` back.
+app.post("/api/admin/ig-affiliate-cron-run", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const result = await runAffiliateCron(c.env);
+    const body: ApiResponse<{ ran: boolean; reason: string; daysSinceLast: number | null; draftId: string | null }> = {
+      ok: true,
+      data: { ...result, draftId: result.draftId ? result.draftId.toHexString() : null },
+    };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-affiliate-cron-run error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Affiliate cron run failed" } };
     return c.json(body, 502);
   }
 });
@@ -357,35 +381,37 @@ export default {
       return;
     }
     if (event.cron === "0 9 * * *") {
-      // HANDOFF_ig-marketing-affiliate-agent-design.md §3 — once/day batch (placeholder
-      // 09:00 UTC; Jackie can retime via wrangler.toml). Token health check piggybacks on
-      // the same trigger rather than adding a third cron string for a check this cheap.
-      ctx.waitUntil(
-        runIgContentBatch(env)
-          .then((summary) => {
-            console.log("[uiu-api] cron igContentAgent:", JSON.stringify(summary));
-            // runIgContentBatch never rejects on a per-slot error (see igContentAgent.ts's
-            // per-slot try/catch — the exact mechanism that hid the 2026-08-29/31 OpenRouter
-            // 402 outage, since "resolved with sent:0" looks identical to a graceful skip run
-            // at this level). requested>0 && sent===0 is the same "all slots failed" signature.
-            const ok = summary.requested === 0 || summary.sent > 0;
-            return recordCronRun(env, {
-              jobName: "igContentAgent",
-              ok,
-              itemsProcessed: summary.sent,
-              errorMessage: ok ? undefined : `all ${summary.requested} slots skipped/failed (sent:0) — check wrangler tail for the underlying per-slot error`,
-            }).catch(() => {});
-          })
-          .catch((err) => {
-            const errorMessage = err instanceof Error ? err.message : String(err);
-            console.error("[uiu-api] cron igContentAgent failed:", errorMessage);
-            return recordCronRun(env, { jobName: "igContentAgent", ok: false, errorMessage }).catch(() => {});
-          }),
-      );
+      // cc_prompt_affiliate_cadence.md, 2026-09-02: organic generation moved to manual-trigger-only
+      // (POST /api/admin/ig-content-batch-run, Jackie fires it herself) — this fire is now JUST the
+      // IG token expiry check. Kept on its own long-standing schedule rather than folding into the
+      // new affiliate cron below so retiming one doesn't retime the other.
       ctx.waitUntil(
         checkIgTokenHealth(env).catch((err) => {
           console.error("[uiu-api] cron igTokenHealth failed:", err instanceof Error ? err.message : String(err));
         }),
+      );
+      return;
+    }
+    if (event.cron === "0 8 * * *") {
+      // cc_prompt_affiliate_cadence.md, 2026-09-02 — daily fire, but runAffiliateCron only
+      // actually generates once every 3 calendar days (see its own comment); other fires are a
+      // cheap no-op (one Mongo read). 08:00 UTC = UK morning, deliberately ahead of the 09:00
+      // token-health fire and clear of dailyRecipeDraft's 07/10 slots.
+      ctx.waitUntil(
+        runAffiliateCron(env)
+          .then((result) => {
+            console.log("[uiu-api] cron affiliateCadence:", JSON.stringify(result));
+            return recordCronRun(env, {
+              jobName: "affiliateCadence",
+              ok: true,
+              itemsProcessed: result.ran ? 1 : 0,
+            }).catch(() => {});
+          })
+          .catch((err) => {
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            console.error("[uiu-api] cron affiliateCadence failed:", errorMessage);
+            return recordCronRun(env, { jobName: "affiliateCadence", ok: false, errorMessage }).catch(() => {});
+          }),
       );
       return;
     }

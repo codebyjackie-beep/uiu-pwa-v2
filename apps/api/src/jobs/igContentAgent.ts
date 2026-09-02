@@ -144,6 +144,32 @@ async function setLastAffiliateCategory(env: DbEnv, category: string): Promise<v
   });
 }
 
+/** cc_prompt_affiliate_cadence.md, 2026-09-02 — calendar-day cadence tracker for the affiliate
+ * cron, same singleton-doc pattern as lastAffiliateCategory above (not a post-count counter,
+ * deliberately: a count-based "every Nth post" cadence drifts with organic volume, a calendar
+ * cadence doesn't). */
+async function getLastAffiliateGeneratedAt(env: DbEnv): Promise<string | null> {
+  return withDb(env, async (db) => {
+    const doc = await db.collection<Document>(STATE_COLLECTION).findOne({ _id: "pillars" } as unknown as Document);
+    return (doc?.lastAffiliateGeneratedAt as string | undefined) ?? null;
+  });
+}
+
+async function setLastAffiliateGeneratedAt(env: DbEnv, iso: string): Promise<void> {
+  await withDb(env, async (db) => {
+    await db.collection(STATE_COLLECTION).updateOne({ _id: "pillars" } as unknown as Document, { $set: { lastAffiliateGeneratedAt: iso } }, { upsert: true });
+  });
+}
+
+/** UTC calendar-date difference (not a raw ms/24h division) — a cron that fires at a slightly
+ * different wall-clock time each day must still count "days" the way a human would. */
+function daysBetweenUtcDates(fromIso: string, to: Date): number {
+  const from = new Date(fromIso);
+  const fromUtc = Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate());
+  const toUtc = Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), to.getUTCDate());
+  return Math.round((toUtc - fromUtc) / 86400000);
+}
+
 async function recentHashtags(env: DbEnv): Promise<string[]> {
   return withDb(env, async (db) => {
     const docs = await db
@@ -460,32 +486,56 @@ export interface BatchSummary {
 }
 
 /**
- * 2026-08-31 brand merge (Jackie): affiliate content now publishes to @useitup.app alongside
- * organic recipe content, so both content types land in the same IG grid. Jackie's own example
- * ratio ("5條organic先1條affiliate") sets the interleave: every Nth slot is affiliate, the rest
- * organic. With the current IG_CONTENT_BATCH_SIZE=6 that's exactly 5 organic + 1 affiliate per
- * batch; a larger batch size repeats the same 5:1 pattern rather than changing the ratio.
+ * cc_prompt_affiliate_cadence.md, 2026-09-02 (Jackie): organic and affiliate generation are now
+ * two independent paths, not one interleaved batch. Organic stays manual-trigger-only (Jackie
+ * fires POST /api/admin/ig-content-batch-run herself, IG_CONTENT_BATCH_SIZE organic drafts per
+ * call — default 3, was 5-of-6 under the old interleave). Affiliate moved to its own cron
+ * (runAffiliateCron below), gated on calendar days rather than post count.
  */
-const AFFILIATE_EVERY_N = 6;
 
-/** Cron entry point — generates a batch (organic:affiliate interleaved per AFFILIATE_EVERY_N) and sends each to Telegram for review. */
+/** Manual-trigger entry point (POST /api/admin/ig-content-batch-run) — generates
+ * IG_CONTENT_BATCH_SIZE organic drafts and sends each to Telegram for review. Never touches
+ * affiliate content; see runAffiliateCron for that path. */
 export async function runIgContentBatch(env: IgContentAgentEnv): Promise<BatchSummary> {
-  const batchSize = Number(env.IG_CONTENT_BATCH_SIZE) || 6;
+  const batchSize = Number(env.IG_CONTENT_BATCH_SIZE) || 3;
   let sent = 0;
   let skipped = 0;
   for (let i = 0; i < batchSize; i++) {
-    const target: TargetAccount = (i + 1) % AFFILIATE_EVERY_N === 0 ? "affiliate" : "uiu";
     try {
-      const id = await generateAndSendOne(env, target);
+      const id = await generateAndSendOne(env, "uiu");
       if (id) sent++;
       else skipped++;
     } catch (err) {
-      console.error(`[uiu-api] igContentAgent generateAndSendOne(${target}) failed:`, err instanceof Error ? err.message : String(err));
+      console.error("[uiu-api] igContentAgent generateAndSendOne(uiu) failed:", err instanceof Error ? err.message : String(err));
       skipped++;
     }
   }
   return { requested: batchSize, sent, skipped };
 }
+
+/** cc_prompt_affiliate_cadence.md — every 3 calendar days (UTC date, not exact 72h), generates
+ * ONE affiliate draft and sends it to Telegram for review same as organic — approve/reject is
+ * unchanged, only the trigger is now a cron instead of riding along on the organic batch. Called
+ * both from scheduled() ("0 8 * * *") and from POST /api/admin/ig-affiliate-cron-run for
+ * on-demand verification (fire it repeatedly to prove the day-gate actually skips). */
+export async function runAffiliateCron(env: IgContentAgentEnv): Promise<{ ran: boolean; reason: string; daysSinceLast: number | null; draftId: ObjectId | null }> {
+  const lastAt = await getLastAffiliateGeneratedAt(env);
+  const now = new Date();
+  const daysSinceLast = lastAt ? daysBetweenUtcDates(lastAt, now) : null;
+  if (lastAt !== null && daysSinceLast! < AFFILIATE_CRON_INTERVAL_DAYS) {
+    return { ran: false, reason: `only ${daysSinceLast} day(s) since last affiliate draft (need ${AFFILIATE_CRON_INTERVAL_DAYS})`, daysSinceLast, draftId: null };
+  }
+  const draftId = await generateAndSendOne(env, "affiliate");
+  if (draftId) {
+    await setLastAffiliateGeneratedAt(env, now.toISOString());
+    return { ran: true, reason: "generated", daysSinceLast, draftId };
+  }
+  // Skipped slot (e.g. no ASIN found) — do NOT stamp lastAffiliateGeneratedAt, so the next cron
+  // fire retries rather than silently going another 3 days with nothing sent.
+  return { ran: false, reason: "generateAndSendOne returned null (no product resolved) — will retry next fire", daysSinceLast, draftId: null };
+}
+
+const AFFILIATE_CRON_INTERVAL_DAYS = 3;
 
 export interface DecisionResult {
   ok: boolean;

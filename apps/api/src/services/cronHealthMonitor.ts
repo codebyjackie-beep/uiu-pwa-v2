@@ -13,7 +13,7 @@ import type { Document } from "mongodb";
 import { withDb, type DbEnv } from "../db";
 import { sendTelegram, type TelegramEnv } from "./telegram";
 
-export type MonitoredJobName = "igContentAgent" | "dailyRecipeDraft" | "pwaDiagnostics";
+export type MonitoredJobName = "igContentAgent" | "affiliateCadence" | "dailyRecipeDraft" | "pwaDiagnostics";
 
 interface CronRunLogDoc {
   jobName: MonitoredJobName;
@@ -42,7 +42,8 @@ export async function recordCronRun(
  * job already has (see dailyRecipeDraft.ts's BATCH_SIZE comment) without false-alarming.
  */
 const JOB_EXPECTATIONS: Record<MonitoredJobName, { maxIntervalMinutes: number }> = {
-  igContentAgent: { maxIntervalMinutes: 24 * 60 + 60 }, // daily 09:00 UTC + 1h buffer
+  igContentAgent: { maxIntervalMinutes: 24 * 60 + 60 }, // daily 09:00 UTC + 1h buffer (token-health check only, 2026-09-02)
+  affiliateCadence: { maxIntervalMinutes: 24 * 60 + 60 }, // fires daily 08:00 UTC (even on its own no-op days it still calls recordCronRun)
   dailyRecipeDraft: { maxIntervalMinutes: 3 * 60 + 30 }, // fires every 3h (event.cron "0 4,7,10,13,16,19,22 * * *")
   pwaDiagnostics: { maxIntervalMinutes: 60 + 15 }, // hourly
 };
