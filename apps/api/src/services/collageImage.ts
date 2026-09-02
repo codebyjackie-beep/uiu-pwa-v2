@@ -50,7 +50,7 @@ const GRID_LEFT = 50;
 const GRID_RIGHT = 1030;
 const COLS = 3;
 const GAP = 18;
-const CAPTION_H = 34; // reserved below each tile for the unboxed product-name line
+const CAPTION_H = 54; // reserved below each tile for the unboxed product-name line (up to 2 lines)
 
 const ACCENT = "#16a34a";
 const BG = "#F5EDE0"; // warm cream — replaces the old dead-black canvas
@@ -137,9 +137,10 @@ function renderTile(tile: Tile, index: number, photo: { dataUri: string; width: 
   const cx = tile.x + tile.w / 2;
   const cy = tile.y + tile.h / 2;
   const captionY = tile.y + tile.h + 20;
-  const captionLines = wrapText(caption, 17, tile.w, 1);
+  const captionLines = wrapText(caption, 17, tile.w + 24, 2);
+  const captionTspans = captionLines.map((line, li) => `<tspan x="${cx}" y="${captionY + li * 21}">${escapeXml(line)}</tspan>`).join("");
   const captionSvg = captionLines.length
-    ? `<text x="${cx}" y="${captionY}" font-family="Hook" font-weight="700" font-size="17" fill="${TEXT_DARK}" text-anchor="middle">${escapeXml(captionLines[0]!)}</text>`
+    ? `<text font-family="Hook" font-weight="700" font-size="17" fill="${TEXT_DARK}" text-anchor="middle">${captionTspans}</text>`
     : "";
 
   if (!photo) {
