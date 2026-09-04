@@ -76,13 +76,22 @@ const AMAZON_IMAGE_RE = /(?<!\[)!\[\]\((https?:\/\/m\.media-amazon\.com\/images\
 // blur, see cc_prompt_collage_inventory_shortfall_fix.md).
 const AMAZON_SIZE_SUFFIX_RE = /\._[\w-]+_(?=\.[a-z]+$)/i;
 
-// 2026-09-04: Amazon's own generic "no photo available" placeholder graphic — confirmed live
-// on a real collage where two completely unrelated ASINs ("Toaster with wide slots" and "Soup
-// maker") both resolved to this exact same media ID, which is only possible for a site-wide
-// static asset, not a per-product photo. Rejecting it here (both scrapeProductImage() and
-// searchProductImageByAsin() check this) sends the caller down the same "no image found" path
-// as any other resolution failure, rather than shipping a wrong graphic as if it were real.
-const KNOWN_PLACEHOLDER_MEDIA_IDS = new Set(["01S5bawZYgL"]);
+// 2026-09-04: known non-product static graphics that Amazon's own gallery/scrape markdown can
+// surface in place of an actual photo of the item:
+//  - "01S5bawZYgL": the generic "no photo available" placeholder — confirmed live on a real
+//    collage where two completely unrelated ASINs ("Toaster with wide slots" and "Soup maker")
+//    both resolved to this exact same media ID, which is only possible for a site-wide static
+//    asset, not a per-product photo.
+//  - "51-XBqrXUyL": a generic "Recycled Blended Claim Standard" sustainability certification
+//    badge — confirmed live on a "Rice cooker with steamer basket" collage tile, i.e. a
+//    materials-certification graphic unrelated to the product's own appearance, the kind of
+//    thing Amazon embeds site-wide on any listing carrying that certification.
+// Rejecting these (both scrapeProductImage() and searchProductImageByAsin() check this) sends
+// the caller down the same "no image found" path as any other resolution failure, rather than
+// shipping a wrong graphic as if it were real. This is a denylist of specific known-bad IDs,
+// not a general badge detector — new certification/placeholder graphics found live should be
+// added here the same way.
+const KNOWN_PLACEHOLDER_MEDIA_IDS = new Set(["01S5bawZYgL", "51-XBqrXUyL"]);
 
 /** Rejects a resolved Amazon image URL that is a known non-product graphic: the generic
  * "no photo" placeholder (see KNOWN_PLACEHOLDER_MEDIA_IDS) or a video-thumbnail still that has
