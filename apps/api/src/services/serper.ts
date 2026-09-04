@@ -68,8 +68,32 @@ export interface ProductImageResult {
 // caught re-verifying the force-backfill run below: B081JTZNRS, the one actually-published
 // affiliate post, got overwritten with a Harry Potter promo banner under the looser regex).
 const AMAZON_IMAGE_RE = /(?<!\[)!\[\]\((https?:\/\/m\.media-amazon\.com\/images\/I\/[^)\s]+\.(?:jpg|jpeg|png))\)/;
-/** Amazon media CDN size modifier, e.g. `._SS75_` / `._SL1500_` in `.../41abc._SS75_.jpg` — stripping it serves the unscaled original. */
-const AMAZON_SIZE_SUFFIX_RE = /\._[A-Z]{2}\d+_(?=\.[a-z]+$)/;
+// Amazon media CDN size/variant modifier, e.g. `._SS75_` / `._SL1500_` / the compound
+// `._AC_UL34_SS42_` — stripping it serves the unscaled original. 2026-09-04 widened from a
+// single `[A-Z]{2}\d+` tag to `[\w-]+` (matches any run of Amazon's chained tags, e.g. the
+// `_AC_UL34_SS42_` case which the old narrower pattern missed and left as a real but tiny
+// 34x42px thumbnail — found live on a collage's "Hand blender" tile rendering as a blown-up
+// blur, see cc_prompt_collage_inventory_shortfall_fix.md).
+const AMAZON_SIZE_SUFFIX_RE = /\._[\w-]+_(?=\.[a-z]+$)/i;
+
+// 2026-09-04: Amazon's own generic "no photo available" placeholder graphic — confirmed live
+// on a real collage where two completely unrelated ASINs ("Toaster with wide slots" and "Soup
+// maker") both resolved to this exact same media ID, which is only possible for a site-wide
+// static asset, not a per-product photo. Rejecting it here (both scrapeProductImage() and
+// searchProductImageByAsin() check this) sends the caller down the same "no image found" path
+// as any other resolution failure, rather than shipping a wrong graphic as if it were real.
+const KNOWN_PLACEHOLDER_MEDIA_IDS = new Set(["01S5bawZYgL"]);
+
+/** Rejects a resolved Amazon image URL that is a known non-product graphic: the generic
+ * "no photo" placeholder (see KNOWN_PLACEHOLDER_MEDIA_IDS) or a video-thumbnail still that has
+ * Amazon's play-button icon baked into the pixels (`...-play-button-overlay_...` in the URL) —
+ * neither is a usable static product photo, and unlike the placeholder there's no reliable way
+ * to fetch a clean still for the same asset, so this is a flat reject rather than a URL rewrite. */
+function isRejectedAmazonImage(url: string): boolean {
+  if (/-play-button-overlay/i.test(url)) return true;
+  const idMatch = /\/images\/I\/([^./]+)/.exec(url);
+  return idMatch ? KNOWN_PLACEHOLDER_MEDIA_IDS.has(idMatch[1]!) : false;
+}
 
 /**
  * 2026-08-28 rewrite (Jackie: a real live post linked a TOMEEM double-grinder ASIN but
@@ -99,6 +123,7 @@ export async function scrapeProductImage(env: SerperEnv, productUrl: string): Pr
   const data = (await res.json()) as { markdown?: string };
   const match = AMAZON_IMAGE_RE.exec(data.markdown ?? "");
   if (!match) return null;
+  if (isRejectedAmazonImage(match[1]!)) return null;
   const imageUrl = match[1]!.replace(AMAZON_SIZE_SUFFIX_RE, "");
   return { imageUrl, source: "amazon_scrape" };
 }
@@ -130,7 +155,9 @@ export async function searchProductImageByAsin(env: SerperEnv, asin: string): Pr
   const data = (await res.json()) as {
     images?: Array<{ imageUrl?: string; link?: string; imageWidth?: number; imageHeight?: number }>;
   };
-  const matches = (data.images ?? []).filter((img) => img.link?.includes(`/dp/${asin}`) && img.imageUrl?.includes("m.media-amazon.com"));
+  const matches = (data.images ?? []).filter(
+    (img) => img.link?.includes(`/dp/${asin}`) && img.imageUrl?.includes("m.media-amazon.com") && !isRejectedAmazonImage(img.imageUrl),
+  );
   // Prefer the largest result — the ASIN-verified matches include both full-size gallery
   // photos and small thumbnail crops, and the thumbnail isn't worth publishing.
   matches.sort((a, b) => (b.imageWidth ?? 0) * (b.imageHeight ?? 0) - (a.imageWidth ?? 0) * (a.imageHeight ?? 0));

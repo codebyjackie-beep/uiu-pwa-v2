@@ -534,10 +534,12 @@ export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentPro
       theme,
       // The idea prompt asks for 16 candidate products (buffer for lookup failures) but the grid
       // only ships `shipCount` of them (see above) — the LLM sometimes echoes "16" into its own
-      // headline text (e.g. "16 Kitchen Gadgets..."), which would then visibly mismatch the grid.
-      // Force any leading count in the headline to match what's actually shown.
+      // headline AND subtitle text (e.g. "16 Kitchen Gadgets..." / "16 space-saving picks..."),
+      // confirmed live on a real 9-product draft whose subtitle still read "16 space-saving picks
+      // for UK gardens" — visibly mismatching the grid. Force any leading count in either to
+      // match what's actually shown.
       headline: idea.headline.replace(/^\d+(?=\s)/, String(shipCount)),
-      subtitle: idea.subtitle,
+      subtitle: idea.subtitle.replace(/^\d+(?=\s)/, String(shipCount)),
       caption,
       hashtags,
       products,
