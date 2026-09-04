@@ -340,8 +340,9 @@ const AFFILIATE_COLLAGE_SYSTEM_PROMPT =
   "searchQuery is what you'd type into a shopping search engine to find that exact product on " +
   "amazon.co.uk, and benefitLine is a short (under 8 words) reason to want it — shown both under the " +
   "product's photo in the grid AND as its caption bullet, so it must work as both. Provide exactly " +
-  "12 products so some can be dropped if unavailable. Do NOT include hashtags or a link anywhere — " +
-  "both are added separately by code.";
+  "16 products so some can be dropped if unavailable — prefer commonly-sold, easy-to-find product " +
+  "types over obscure/niche ones so more of them actually resolve to a real Amazon listing. Do NOT " +
+  "include hashtags or a link anywhere — both are added separately by code.";
 
 export interface CollageProductIdea {
   productName: string;
@@ -359,7 +360,7 @@ interface CollageIdea {
 
 async function suggestCollageIdea(env: OpenRouterEnv, theme: string, recentProductNames: string[]): Promise<CollageIdea> {
   const userPrompt =
-    `Theme: "${theme}". Suggest 12 candidate products for a UK audience.` +
+    `Theme: "${theme}". Suggest 16 candidate products for a UK audience.` +
     (recentProductNames.length > 0 ? ` Avoid repeating these recently-recommended products: ${recentProductNames.join("; ")}.` : "");
   const parsed = (await callOpenRouterJson(env, AFFILIATE_COLLAGE_SYSTEM_PROMPT, userPrompt)) as Partial<CollageIdea>;
   if (!parsed.headline || !parsed.subtitle || !parsed.hookQuestion || !parsed.cta || !Array.isArray(parsed.products) || parsed.products.length === 0) {
@@ -420,26 +421,29 @@ async function resolveCollageCandidate(env: AffiliateEnv, candidate: CollageProd
   };
 }
 
-// collageImage.ts's 3x3 grid renderer requires exactly this many products (see that file's header
-// comment on why V1 is a fixed grid) — a theme attempt either resolves all of them or is discarded,
-// no partial-grid rendering.
+// cc_prompt_collage_inventory_shortfall_fix.md (2026-09-04): collageImage.ts's masonry layout
+// scales to any tile count, so this is no longer all-or-nothing at 9 — a theme ships whatever it
+// resolved, up to this ideal count, as long as it cleared COLLAGE_MIN_COUNT. Below the minimum,
+// a thin/off-niche grid is still discarded rather than published.
 const COLLAGE_TARGET_COUNT = 9;
+const COLLAGE_MIN_COUNT = 6;
 const COLLAGE_RESOLVE_CHUNK_SIZE = 4;
-const MAX_COLLAGE_THEME_ATTEMPTS = 2;
+const MAX_COLLAGE_THEME_ATTEMPTS = 3;
 
 /**
- * Resolves candidates in bounded-concurrency chunks (not all 12 at once, not fully serial — a
- * collage does up to 3 Serper calls per candidate, ~36 calls unbounded is both slow and risks a
+ * Resolves candidates in bounded-concurrency chunks (not all 16 at once, not fully serial — a
+ * collage does up to 3 Serper calls per candidate, ~48 calls unbounded is both slow and risks a
  * single Worker invocation's time limit).
  *
- * cc_prompt_collage_cutout_fallback_style.md (2026-09-02): unlike before, this no longer stops the
- * moment COLLAGE_TARGET_COUNT succeed — Jackie's real-batch review found the old white-card
- * fallback (used whenever cutoutImage.ts declines a busy/non-white photo) looked jarringly out of
- * place next to 7 clean cutout "stickers". Root cause fix: always try to resolve the full
- * candidate pool (up to ~12 ideas) so generateAffiliateCollageDraft() can prefer the
- * cutout-successful ones and only reach for a cutout-failed candidate when there aren't enough
- * clean ones to fill the grid. Bounded cost is still the same ~12 candidates this always tried to
- * resolve *some* of; the only change is not stopping 1-3 candidates early once 9 succeed.
+ * cc_prompt_collage_cutout_fallback_style.md (2026-09-02): this doesn't stop the moment
+ * COLLAGE_TARGET_COUNT succeed — Jackie's real-batch review found the old white-card fallback
+ * (used whenever cutoutImage.ts declines a busy/non-white photo) looked jarringly out of place
+ * next to 7 clean cutout "stickers". Root cause fix: always try to resolve the full candidate
+ * pool (16 ideas, raised from 12 by cc_prompt_collage_inventory_shortfall_fix.md 2026-09-04 —
+ * themes were repeatedly landing at only 5-6 resolved out of 12, below even the lowered
+ * COLLAGE_MIN_COUNT) so generateAffiliateCollageDraft() can prefer the cutout-successful ones
+ * and only reach for a cutout-failed candidate when there aren't enough clean ones to fill the
+ * grid. The only change from "stop early" is not stopping 1-3 candidates short once 9 succeed.
  */
 async function resolveCollageCandidates(env: AffiliateEnv, candidates: CollageProductIdea[]): Promise<ResolvedCollageProduct[]> {
   const resolved: ResolvedCollageProduct[] = [];
@@ -480,15 +484,17 @@ export interface AffiliateCollageDraft {
   subtitle: string;
   caption: string;
   hashtags: string[];
-  products: ResolvedCollageProduct[]; // exactly COLLAGE_TARGET_COUNT
+  products: ResolvedCollageProduct[]; // COLLAGE_MIN_COUNT..COLLAGE_TARGET_COUNT (6-9)
 }
 
 /**
  * Full collage pipeline: theme -> candidate ideas -> per-candidate ASIN/category/photo resolution
- * -> caption assembly. Returns null if fewer than COLLAGE_MIN_ACCEPTABLE candidates resolved after
+ * -> caption assembly. Returns null if fewer than COLLAGE_MIN_COUNT candidates resolved after
  * MAX_COLLAGE_THEME_ATTEMPTS tries — caller should skip this run rather than publish a thin/off-niche
- * collage. `theme` is chosen by the caller (jobs/igContentAgent.ts owns the rotation counter, same
- * pattern as nextUiuPillar) so this function stays a pure "given a theme, build the post" step.
+ * collage. Otherwise ships whatever resolved, up to COLLAGE_TARGET_COUNT (cc_prompt_collage_
+ * inventory_shortfall_fix.md, 2026-09-04 — no longer all-or-nothing at exactly 9). `theme` is
+ * chosen by the caller (jobs/igContentAgent.ts owns the rotation counter, same pattern as
+ * nextUiuPillar) so this function stays a pure "given a theme, build the post" step.
  */
 export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentProductNames: string[], theme: string): Promise<AffiliateCollageDraft | null> {
   for (let attempt = 0; attempt < MAX_COLLAGE_THEME_ATTEMPTS; attempt++) {
@@ -501,8 +507,8 @@ export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentPro
     }
 
     const resolved = await resolveCollageCandidates(env, idea.products);
-    if (resolved.length < COLLAGE_TARGET_COUNT) {
-      console.log(`[uiu-api] igContentGen: collage theme "${theme}" only resolved ${resolved.length}/${COLLAGE_TARGET_COUNT} products — ${attempt + 1 < MAX_COLLAGE_THEME_ATTEMPTS ? "retrying" : "giving up"}`);
+    if (resolved.length < COLLAGE_MIN_COUNT) {
+      console.log(`[uiu-api] igContentGen: collage theme "${theme}" only resolved ${resolved.length}/${COLLAGE_MIN_COUNT} min products — ${attempt + 1 < MAX_COLLAGE_THEME_ATTEMPTS ? "retrying" : "giving up"}`);
       continue;
     }
     // Prefer candidates whose photo actually cut out cleanly (stable partition — each group keeps
@@ -510,9 +516,13 @@ export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentPro
     // genuinely aren't enough clean ones to fill it. See resolveCollageCandidates()'s header.
     const cutoutOk = resolved.filter((p) => p.cutout !== null);
     const cutoutFailed = resolved.filter((p) => p.cutout === null);
-    const products = [...cutoutOk, ...cutoutFailed].slice(0, COLLAGE_TARGET_COUNT);
+    // Ship as many as resolved, up to the ideal target — not forced to exactly 9 any more (see
+    // COLLAGE_MIN_COUNT above), so a theme with 6-8 in-scope products still gets a smaller grid
+    // instead of being discarded.
+    const shipCount = Math.min(resolved.length, COLLAGE_TARGET_COUNT);
+    const products = [...cutoutOk, ...cutoutFailed].slice(0, shipCount);
     const cutoutUsed = products.filter((p) => p.cutout !== null).length;
-    console.log(`[uiu-api] igContentGen: collage theme "${theme}" resolved ${resolved.length} candidates (${cutoutOk.length} cutout-clean) — shipping ${cutoutUsed}/${COLLAGE_TARGET_COUNT} as cutouts`);
+    console.log(`[uiu-api] igContentGen: collage theme "${theme}" resolved ${resolved.length} candidates (${cutoutOk.length} cutout-clean) — shipping ${cutoutUsed}/${shipCount} as cutouts`);
 
     const categories = Array.from(new Set(products.map((p) => p.category)));
     const hashtags = await researchHashtags(env, `${theme} ${categories.join(" ")}`, [], AFFILIATE_FALLBACK_HASHTAGS);
@@ -522,11 +532,11 @@ export async function generateAffiliateCollageDraft(env: AffiliateEnv, recentPro
       targetAccount: "affiliate",
       postType: "collage",
       theme,
-      // The idea prompt asks for 12 candidate products (buffer for lookup failures) but the
-      // grid always ships exactly COLLAGE_TARGET_COUNT — the LLM sometimes echoes "12" into its
-      // own headline text (e.g. "12 Kitchen Gadgets..."), which would then visibly mismatch the
-      // 9-cell grid. Force any leading count in the headline to match what's actually shown.
-      headline: idea.headline.replace(/^\d+(?=\s)/, String(COLLAGE_TARGET_COUNT)),
+      // The idea prompt asks for 16 candidate products (buffer for lookup failures) but the grid
+      // only ships `shipCount` of them (see above) — the LLM sometimes echoes "16" into its own
+      // headline text (e.g. "16 Kitchen Gadgets..."), which would then visibly mismatch the grid.
+      // Force any leading count in the headline to match what's actually shown.
+      headline: idea.headline.replace(/^\d+(?=\s)/, String(shipCount)),
       subtitle: idea.subtitle,
       caption,
       hashtags,

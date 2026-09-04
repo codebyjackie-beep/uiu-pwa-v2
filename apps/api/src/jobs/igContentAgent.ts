@@ -435,7 +435,7 @@ export async function generateAndSendCollage(env: IgContentAgentEnv): Promise<Ob
   const theme = await nextCollageTheme(env);
   const recents = await recentProductNames(env);
   const draft = await generateAffiliateCollageDraft(env, recents, theme);
-  if (!draft) return null; // fewer than 9 in-scope products resolved for this theme — skip
+  if (!draft) return null; // fewer than COLLAGE_MIN_COUNT (6) in-scope products resolved for this theme — skip
 
   let imageUrl: string;
   try {

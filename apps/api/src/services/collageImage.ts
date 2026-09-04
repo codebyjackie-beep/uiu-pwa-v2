@@ -46,7 +46,7 @@ export interface CollageProductCell {
 export interface RenderCollageImageParams {
   headline: string;
   subtitle: string;
-  products: CollageProductCell[]; // exactly 9, caller's responsibility
+  products: CollageProductCell[]; // 6-10, caller's responsibility (see COLLAGE_MIN_COUNT/COLLAGE_TARGET_COUNT in igContentGen.ts)
 }
 
 const CANVAS_W = 1080;
@@ -193,8 +193,12 @@ function renderTile(tile: Tile, index: number, photo: { dataUri: string; width: 
 /** Renders a 1080x1350 IG post: serif headline band, irregular moodboard of cutout/fallback product tiles, CTA bar. */
 export async function renderCollageImage(params: RenderCollageImageParams): Promise<Uint8Array> {
   const count = params.products.length;
-  if (count < 8 || count > 10) {
-    throw new Error(`renderCollageImage expects 8-10 products, got ${count}`);
+  // cc_prompt_collage_inventory_shortfall_fix.md (2026-09-04): lowered from 8-10 — a theme with
+  // fewer in-scope products now ships a smaller grid instead of being discarded entirely.
+  // buildMoodboardLayout()'s 3-column masonry already scales to any count with no fixed-grid
+  // assumption, so no layout change was needed to support this.
+  if (count < 6 || count > 10) {
+    throw new Error(`renderCollageImage expects 6-10 products, got ${count}`);
   }
 
   const [photos] = await Promise.all([
