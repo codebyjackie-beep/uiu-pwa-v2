@@ -102,7 +102,9 @@ interface Tile {
   rotate: number;
 }
 
-const ROTATIONS = [-2.5, 2, -1.5, 2.5, -2, 1.5, -2.5, 2];
+// cc_prompt_collage_visual_final_polish.md (2026-09-06): widened from ±1.5~2.5° — that range
+// read as "barely tilted" rather than a die-cut sticker dropped onto a moodboard.
+const ROTATIONS = [-6, 5, -4, 6, -5, 4, -6, 5];
 
 /**
  * Irregular masonry: 3 columns, shortest-column-first placement, one larger "hero" tile
@@ -111,16 +113,28 @@ const ROTATIONS = [-2.5, 2, -1.5, 2.5, -2, 1.5, -2.5, 2];
  * then scale tile heights down (never up) if the simulated layout would overflow the
  * available vertical space, so this still works if product count/region size ever changes.
  */
+// cc_prompt_collage_visual_final_polish.md (2026-09-06): at low product counts (6-7) the
+// shortest-column-first greedy placement structurally converges toward an even 2-per-column
+// split, which reads as a regular grid instead of a moodboard. Deterministic per-tile jitter
+// (seeded by index, not Math.random) breaks that symmetry while keeping renders reproducible.
+function jitterFactor(index: number): number {
+  const pseudoRandom = Math.abs(Math.sin(index * 12.9898) * 43758.5453) % 1;
+  return 0.85 + pseudoRandom * 0.3; // 0.85 - 1.15
+}
+
 function buildMoodboardLayout(count: number): Tile[] {
   const availW = GRID_RIGHT - GRID_LEFT;
   const availH = GRID_BOTTOM - GRID_TOP;
   const colW = (availW - GAP * (COLS - 1)) / COLS;
+  const applyJitter = count <= 7;
 
   const nominal: Array<{ w: number; h: number; rotate: number; col?: number }> = [];
   nominal.push({ w: colW, h: colW * 1.55, rotate: 0, col: 0 }); // hero
   for (let i = 1; i < count; i++) {
     const h = colW * (i % 2 === 0 ? 0.95 : 1.2);
-    nominal.push({ w: colW, h, rotate: ROTATIONS[(i - 1) % ROTATIONS.length]! });
+    const w = applyJitter ? colW * jitterFactor(i) : colW;
+    const jitteredH = applyJitter ? h * jitterFactor(i + 17) : h;
+    nominal.push({ w, h: jitteredH, rotate: ROTATIONS[(i - 1) % ROTATIONS.length]! });
   }
 
   const place = (scale: number): { tiles: Tile[]; requiredH: number } => {
@@ -130,7 +144,9 @@ function buildMoodboardLayout(count: number): Tile[] {
       const h = spec.h * scale;
       const w = spec.w;
       const col = spec.col ?? colHeights.indexOf(Math.min(...colHeights));
-      const x = GRID_LEFT + col * (colW + GAP);
+      // Center jittered width within its column slot (rather than left-aligning) so a wider tile
+      // spills evenly into both neighbors instead of overlapping only one.
+      const x = GRID_LEFT + col * (colW + GAP) + (colW - w) / 2;
       const y = GRID_TOP + colHeights[col]!;
       tiles.push({ x, y, w, h, rotate: spec.rotate });
       colHeights[col] = colHeights[col]! + h + GAP + CAPTION_H;
@@ -166,9 +182,14 @@ function renderTile(tile: Tile, index: number, photo: { dataUri: string; width: 
     const h = photo.height * scale;
     const x = cx - w / 2;
     const y = cy - h / 2;
+    // cc_prompt_collage_visual_final_polish.md (2026-09-06): a plain drop shadow reads as "just a
+    // photo" when the cutout's silhouette is already boxy (e.g. storage bins). A white sticker-edge
+    // stroke traced around the same silhouette (via feMorphology dilate on the image's own alpha,
+    // painted white, then the photo on top) reads as "die-cut sticker" regardless of product shape.
     return `
   <g transform="rotate(${tile.rotate} ${cx} ${cy})">
     <rect x="${x - 6}" y="${y - 6 + 10}" width="${w + 12}" height="${h + 12}" fill="#000000" opacity="0.14" filter="url(#tileShadow)" />
+    <image href="${photo.dataUri}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet" filter="url(#stickerEdge)" />
     <image href="${photo.dataUri}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid meet" />
   </g>
   ${captionSvg}`;
@@ -239,6 +260,11 @@ export async function renderCollageImage(params: RenderCollageImageParams): Prom
   <defs>
     <filter id="tileShadow" x="-30%" y="-30%" width="160%" height="160%">
       <feGaussianBlur stdDeviation="6" />
+    </filter>
+    <filter id="stickerEdge" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="6" result="dilated" />
+      <feFlood flood-color="#ffffff" result="white" />
+      <feComposite in="white" in2="dilated" operator="in" />
     </filter>
     <radialGradient id="fallbackVignette" cx="50%" cy="45%" r="62%">
       <stop offset="55%" stop-color="#ffffff" stop-opacity="1" />
