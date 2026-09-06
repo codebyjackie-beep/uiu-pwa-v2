@@ -104,6 +104,25 @@ function isRejectedAmazonImage(url: string): boolean {
   return idMatch ? KNOWN_PLACEHOLDER_MEDIA_IDS.has(idMatch[1]!) : false;
 }
 
+// 2026-09-06 (cc_prompt_collage_wrong_product_image_followup.md, Case 1: "Food processor"
+// B0D7CJZN7D resolved to a "400W Powerful Motor" cutaway/A+-content graphic instead of the
+// hero photo): Amazon's real gallery photos are served with a `_AC_S{L,X,Y}<size>_` suffix
+// (e.g. `_AC_SL1500_`, `_AC_SX679_`, `_AC_SY879_`), while inline/A+-content feature graphics
+// embedded in the listing's page body — the kind scrapeProductImage()'s readability-style
+// markdown excerpt can surface before it reaches the actual gallery — are served with the
+// unconstrained-fit + quality-level pair `_AC_UF<w>,<h>_QL<n>_` instead (confirmed live: the
+// motor-diagram URL was `713DgkPO5tL._AC_UF894,1000_QL80_.jpg`, no `_SL`/`_SX`/`_SY` present).
+const AMAZON_GALLERY_SIZE_SUFFIX_RE = /\._AC_S[LXY]\d+_/i;
+const AMAZON_INLINE_CONTENT_SUFFIX_RE = /\._AC_UF[\d,]+_QL\d+_/i;
+
+/** True if the URL looks like an inline A+-content feature graphic rather than an actual
+ * gallery product photo (see AMAZON_INLINE_CONTENT_SUFFIX_RE comment). Only flags the
+ * UF+QL pattern when no gallery-style SL/SX/SY suffix is also present, since a genuine gallery
+ * photo should never carry both. */
+function looksLikeInlineContentImage(url: string): boolean {
+  return AMAZON_INLINE_CONTENT_SUFFIX_RE.test(url) && !AMAZON_GALLERY_SIZE_SUFFIX_RE.test(url);
+}
+
 /**
  * 2026-08-28 rewrite (Jackie: a real live post linked a TOMEEM double-grinder ASIN but
  * showed a single-grinder photo) — the previous version searched Serper Shopping/Images by
@@ -121,6 +140,12 @@ function isRejectedAmazonImage(url: string): boolean {
  * matching image (caller skips the product-photo and falls back to the generic Pexels search)
  * — never falls back to a keyword search that could return a different product's photo, and
  * never falls back to "just take the first image" that could return a banner ad.
+ *
+ * 2026-09-06 addendum: the readability-style excerpt can surface an inline A+-content feature
+ * graphic (see looksLikeInlineContentImage) before the actual gallery hero photo — this now
+ * scans ALL unwrapped `![]()` matches in the markdown in order and skips any rejected or
+ * inline-content-flagged one, instead of just taking the first match unconditionally. Still
+ * returns null (never a best-guess) if no candidate survives, same as before.
  */
 export async function scrapeProductImage(env: SerperEnv, productUrl: string): Promise<ProductImageResult | null> {
   const res = await fetch("https://scrape.serper.dev", {
@@ -130,11 +155,15 @@ export async function scrapeProductImage(env: SerperEnv, productUrl: string): Pr
   });
   if (!res.ok) return null;
   const data = (await res.json()) as { markdown?: string };
-  const match = AMAZON_IMAGE_RE.exec(data.markdown ?? "");
-  if (!match) return null;
-  if (isRejectedAmazonImage(match[1]!)) return null;
-  const imageUrl = match[1]!.replace(AMAZON_SIZE_SUFFIX_RE, "");
-  return { imageUrl, source: "amazon_scrape" };
+  const markdown = data.markdown ?? "";
+  for (const match of markdown.matchAll(new RegExp(AMAZON_IMAGE_RE.source, "g"))) {
+    const url = match[1]!;
+    if (isRejectedAmazonImage(url)) continue;
+    if (looksLikeInlineContentImage(url)) continue;
+    const imageUrl = url.replace(AMAZON_SIZE_SUFFIX_RE, "");
+    return { imageUrl, source: "amazon_scrape" };
+  }
+  return null;
 }
 
 /**
