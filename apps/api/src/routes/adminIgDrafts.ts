@@ -32,53 +32,6 @@ function toIgDraft(doc: Document): Omit<IgContentDraft, "_id"> & { _id: string }
   return { ...(doc as unknown as IgContentDraft), _id: String(doc._id) };
 }
 
-/**
- * TEMPORARY diagnostic route — cc_prompt_collage_wrong_product_image_followup.md Part B.
- * Dumps the RAW `site:amazon.co.uk {asin}` Google Images candidate list that
- * searchProductImageByAsin() searches over (same query/filter, but returns every ASIN-verified
- * candidate instead of just the largest pick) so Jackie/cloud can see whether a cleaner
- * product-only photo existed and lost out to a staged/lifestyle photo on pixel count alone.
- * Does NOT change searchProductImageByAsin()'s own selection logic. TO BE REMOVED after this
- * diagnosis is reported — do not leave this route deployed.
- */
-adminIgDraftsRouter.get("/debug-image-candidates", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
-  const asin = c.req.query("asin");
-  if (!asin) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "?asin= required" } };
-    return c.json(body, 400);
-  }
-  try {
-    const res = await fetch("https://google.serper.dev/images", {
-      method: "POST",
-      headers: { "X-API-KEY": c.env.SERPER_API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ q: `site:amazon.co.uk ${asin}`, gl: "uk" }),
-    });
-    if (!res.ok) {
-      const errBody = await res.text().catch(() => "");
-      const body: ApiResponse<never> = { ok: false, error: { code: "serper_error", message: `${res.status} ${errBody.slice(0, 300)}` } };
-      return c.json(body, 502);
-    }
-    const data = (await res.json()) as {
-      images?: Array<{ imageUrl?: string; link?: string; imageWidth?: number; imageHeight?: number; title?: string }>;
-    };
-    const all = data.images ?? [];
-    const asinVerified = all.filter((img) => img.link?.includes(`/dp/${asin}`) && img.imageUrl?.includes("m.media-amazon.com"));
-    const body: ApiResponse<{ asin: string; totalReturned: number; asinVerifiedCount: number; asinVerified: typeof asinVerified; allRaw: typeof all }> = {
-      ok: true,
-      data: { asin, totalReturned: all.length, asinVerifiedCount: asinVerified.length, asinVerified, allRaw: all },
-    };
-    return c.json(body);
-  } catch (err) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: err instanceof Error ? err.message : String(err) } };
-    return c.json(body, 500);
-  }
-});
-
 /** `?status=` optional. Pass "all" for every status, omit for the default (all, most recent first). */
 /**
  * Cross-checks each approved draft's publishedMediaId against the Instagram
