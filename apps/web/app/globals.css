@@ -2450,6 +2450,39 @@ a {
   font-size: 13px;
 }
 
+.kitchen-picks-preview {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.kitchen-picks-preview__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--uiu-border);
+  overflow: hidden;
+  padding-bottom: 8px;
+}
+
+.kitchen-picks-preview__image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--uiu-overlay);
+}
+
+.kitchen-picks-preview__name {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* --- Meal Planner: "What should I eat?" (HANDOFF_tonight-suggestion.md) --- */
 
 .tonight-suggestion {

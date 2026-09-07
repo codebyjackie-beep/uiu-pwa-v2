@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { ApiResponse, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
+import type { AffiliateProduct, ApiResponse, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -27,9 +27,12 @@ export function ShopPage() {
 
   const [toast, setToast] = useState<string | null>(null);
 
+  const [kitchenPicks, setKitchenPicks] = useState<AffiliateProduct[]>([]);
+
   useEffect(() => {
     void loadRestock();
     void loadManual();
+    void loadKitchenPicks();
   }, []);
 
   useEffect(() => {
@@ -56,6 +59,12 @@ export function ShopPage() {
     const { parsed } = await fetchJson<ShoppingListItem[]>("/api/shopping-list");
     if (parsed && parsed.ok) setManualItems(parsed.data);
     setManualLoading(false);
+  }
+
+  async function loadKitchenPicks() {
+    // /api/affiliate-products already sorts by lastUsedAt desc — most-recent-first, take top 4.
+    const { parsed } = await fetchJson<AffiliateProduct[]>("/api/affiliate-products");
+    if (parsed && parsed.ok) setKitchenPicks(parsed.data.slice(0, 4));
   }
 
   async function markBought(item: ShopRestockItem) {
@@ -200,6 +209,19 @@ export function ShopPage() {
       <section className="shop-section">
         <h2>Kitchen Picks</h2>
         <p className="admin-drafts-page__sub">Products we&apos;ve recommended on Instagram.</p>
+
+        {kitchenPicks.length > 0 ? (
+          <div className="kitchen-picks-preview">
+            {kitchenPicks.map((p) => (
+              <div key={p.asin} className="kitchen-picks-preview__item">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="kitchen-picks-preview__image" src={p.imageUrl} alt={p.productName} />
+                <span className="kitchen-picks-preview__name">{p.productName}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
         <Link href="/shop-affiliate" className="wizard-secondary-button">
           Browse Kitchen Picks
         </Link>
