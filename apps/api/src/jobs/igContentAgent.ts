@@ -518,11 +518,11 @@ export async function runIgContentBatch(env: IgContentAgentEnv): Promise<BatchSu
  * unchanged, only the trigger is now a cron instead of riding along on the organic batch. Called
  * both from scheduled() ("0 8 * * *") and from POST /api/admin/ig-affiliate-cron-run for
  * on-demand verification (fire it repeatedly to prove the day-gate actually skips). */
-export async function runAffiliateCron(env: IgContentAgentEnv, force = false): Promise<{ ran: boolean; reason: string; daysSinceLast: number | null; draftId: ObjectId | null }> {
+export async function runAffiliateCron(env: IgContentAgentEnv): Promise<{ ran: boolean; reason: string; daysSinceLast: number | null; draftId: ObjectId | null }> {
   const lastAt = await getLastAffiliateGeneratedAt(env);
   const now = new Date();
   const daysSinceLast = lastAt ? daysBetweenUtcDates(lastAt, now) : null;
-  if (!force && lastAt !== null && daysSinceLast! < AFFILIATE_CRON_INTERVAL_DAYS) {
+  if (lastAt !== null && daysSinceLast! < AFFILIATE_CRON_INTERVAL_DAYS) {
     return { ran: false, reason: `only ${daysSinceLast} day(s) since last affiliate draft (need ${AFFILIATE_CRON_INTERVAL_DAYS})`, daysSinceLast, draftId: null };
   }
   const draftId = await generateAndSendOne(env, "affiliate");
