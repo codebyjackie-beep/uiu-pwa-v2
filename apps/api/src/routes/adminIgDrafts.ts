@@ -193,6 +193,87 @@ adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
   }
 });
 
+interface InsightsRow {
+  pillar?: string;
+  category?: string;
+  hook?: string;
+  targetAccount: "uiu" | "affiliate";
+  insights7d: { reach: number; likes: number; comments: number; saved: number; shares: number };
+}
+
+function engagementRate(row: InsightsRow["insights7d"]): number {
+  if (row.reach <= 0) return 0;
+  return (row.likes + row.comments + row.saved + row.shares) / row.reach;
+}
+
+function groupAverage<T extends InsightsRow>(rows: T[], keyOf: (row: T) => string | undefined): Array<{ key: string; count: number; avgReach: number; avgEngagementRate: number }> {
+  const buckets = new Map<string, { reachSum: number; engagementSum: number; count: number }>();
+  for (const row of rows) {
+    const key = keyOf(row);
+    if (!key) continue;
+    const bucket = buckets.get(key) ?? { reachSum: 0, engagementSum: 0, count: 0 };
+    bucket.reachSum += row.insights7d.reach;
+    bucket.engagementSum += engagementRate(row.insights7d);
+    bucket.count += 1;
+    buckets.set(key, bucket);
+  }
+  return Array.from(buckets.entries())
+    .map(([key, b]) => ({ key, count: b.count, avgReach: b.reachSum / b.count, avgEngagementRate: b.engagementSum / b.count }))
+    .sort((a, b) => b.avgEngagementRate - a.avgEngagementRate);
+}
+
+function hookLengthBucket(hook: string): string {
+  if (hook.length < 40) return "short (<40 chars)";
+  if (hook.length <= 80) return "medium (40-80 chars)";
+  return "long (>80 chars)";
+}
+
+/**
+ * cc_prompt_ig_insights_tracking.md, 2026-09-07 — read-only aggregate over drafts that already
+ * have a 7-day insights snapshot (jobs/igInsights.ts). No self-optimizing logic (V1 explicitly
+ * excludes that per the prompt) — just a sorted JSON report for a human to read and decide from.
+ */
+adminIgDraftsRouter.get("/insights-report", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const docs = await withDb(c.env, (db) => db.collection("ig_content_drafts").find({ insights7d: { $exists: true } }).toArray());
+    const rows: InsightsRow[] = docs.map((d) => ({
+      pillar: d.pillar as string | undefined,
+      category: d.category as string | undefined,
+      hook: d.hook as string | undefined,
+      targetAccount: d.targetAccount as "uiu" | "affiliate",
+      insights7d: d.insights7d as InsightsRow["insights7d"],
+    }));
+
+    const byPillar = groupAverage(
+      rows.filter((r) => r.targetAccount === "uiu"),
+      (r) => r.pillar,
+    );
+    const byHookLength = groupAverage(
+      rows.filter((r) => !!r.hook),
+      (r) => hookLengthBucket(r.hook!),
+    );
+    const byCategory = groupAverage(
+      rows.filter((r) => r.targetAccount === "affiliate"),
+      (r) => r.category,
+    );
+
+    const body: ApiResponse<{ sampleSize: number; byPillar: typeof byPillar; byHookLength: typeof byHookLength; byCategory: typeof byCategory }> = {
+      ok: true,
+      data: { sampleSize: rows.length, byPillar, byHookLength, byCategory },
+    };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-drafts insights-report error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to build insights report" } };
+    return c.json(body, 502);
+  }
+});
+
 adminIgDraftsRouter.get("/", async (c) => {
   const token = c.req.header("X-Admin-Token");
   if (!token || token !== c.env.ADMIN_TOKEN) {

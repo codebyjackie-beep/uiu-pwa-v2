@@ -105,7 +105,7 @@ IG_ID_AFFILIATE = "17841443611128346"
 # that one points FROM the web Worker TO this one; happen to be the same host today.
 PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 
-# Five independent crons — scheduled() in index.ts branches on event.cron, the
+# Six independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:
 #   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC).
 #
@@ -158,5 +158,14 @@ PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 #   the two don't fire in the same invocation. Independent of collageThemeIndex
 #   (igContentAgent.ts's nextCollageTheme) — the 9-product collage post type stays
 #   manual-only (POST /api/admin/ig-content/collage) and does not share this cron.
+#
+#   "30 * * * *"  IG insights snapshot cron (cc_prompt_ig_insights_tracking.md, 2026-09-07) —
+#   hourly, offset 30min from the diagnostics cron above so the two never fire in the same
+#   invocation. Reads /{media-id}/insights (reach/likes/comments/saved/shares) for published
+#   drafts crossing the 24h or 7d mark since publishedAt, stores the snapshot on the same
+#   ig_content_drafts doc (jobs/igInsights.ts). insightsFetched.h24/d7 flags make each window a
+#   one-shot attempt — later fires skip rows already attempted (success OR error), so a media id
+#   that 403s (e.g. pre-2026-08-31-brand-merge media on the retired @kura.nook account) doesn't
+#   get retried every hour forever.
 [triggers]
-crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *"]
+crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *"]

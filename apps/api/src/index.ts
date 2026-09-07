@@ -23,6 +23,7 @@ import { sendTelegram } from "./services/telegram";
 import { runIgContentBatch, runAffiliateCron, generateAndSendCollage, type BatchSummary } from "./jobs/igContentAgent";
 import { renderCollageImage } from "./services/collageImage";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
+import { runInsightsSnapshotCron } from "./jobs/igInsights";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
@@ -277,6 +278,27 @@ app.post("/api/admin/ig-affiliate-cron-run", async (c) => {
   }
 });
 
+// cc_prompt_ig_insights_tracking.md, 2026-09-07 — on-demand trigger for the insights snapshot
+// cron (normally fires from scheduled() at "30 * * * *"). Exists so the 24h/7d windows can be
+// verified without waiting for the real clock — fire this against a draft whose publishedAt is
+// already >=24h/>=7d in the past and read the summary counts back.
+app.post("/api/admin/ig-insights-cron-run", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const result = await runInsightsSnapshotCron(c.env);
+    const body: ApiResponse<typeof result> = { ok: true, data: result };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] ig-insights-cron-run error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Insights cron run failed" } };
+    return c.json(body, 502);
+  }
+});
+
 // Manual trigger for a multi-product collage post (cc_prompt_multiproduct_collage.md, 2026-09-01)
 // — groups 9 same-theme affiliate products into one catalog-grid image driving traffic to
 // useitup.uk/shop-affiliate. Manual-trigger only for V1 (confirmed with Jackie): not wired into
@@ -411,6 +433,25 @@ export default {
             const errorMessage = err instanceof Error ? err.message : String(err);
             console.error("[uiu-api] cron affiliateCadence failed:", errorMessage);
             return recordCronRun(env, { jobName: "affiliateCadence", ok: false, errorMessage }).catch(() => {});
+          }),
+      );
+      return;
+    }
+    if (event.cron === "30 * * * *") {
+      // cc_prompt_ig_insights_tracking.md, 2026-09-07 — hourly, offset 30min from the diagnostics
+      // cron so the two never fire in the same invocation. Each fire is a cheap no-op for drafts
+      // whose 24h/7d window hasn't arrived yet or was already fetched (see runInsightsSnapshotCron's
+      // query filter).
+      ctx.waitUntil(
+        runInsightsSnapshotCron(env)
+          .then((result) => {
+            console.log("[uiu-api] cron igInsights:", JSON.stringify(result));
+            return recordCronRun(env, { jobName: "igInsights", ok: true, itemsProcessed: result.fetched24h + result.fetched7d }).catch(() => {});
+          })
+          .catch((err) => {
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            console.error("[uiu-api] cron igInsights failed:", errorMessage);
+            return recordCronRun(env, { jobName: "igInsights", ok: false, errorMessage }).catch(() => {});
           }),
       );
       return;

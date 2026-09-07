@@ -68,6 +68,16 @@ export interface IgContentDraft {
   publishedAt?: string;
   publishedMediaId?: string;
   error?: string;
+  /** cc_prompt_ig_insights_tracking.md, 2026-09-07 — /insights snapshots taken 24h and 7d after
+   * publish. `insightsFetched` marks each snapshot attempted (success OR error) so the cron never
+   * retries the same window twice; `insightsError24h`/`insightsError7d` hold the failure reason
+   * for rows the Graph API can't/won't answer for (e.g. pre-brand-merge media published to the
+   * retired @kura.nook account, which now 403s under the merged @useitup.app token). */
+  insights24h?: { reach: number; likes: number; comments: number; saved: number; shares: number; fetchedAt: string };
+  insights7d?: { reach: number; likes: number; comments: number; saved: number; shares: number; fetchedAt: string };
+  insightsFetched?: { h24?: boolean; d7?: boolean };
+  insightsError24h?: string;
+  insightsError7d?: string;
 }
 
 export interface IgContentAgentEnv extends DbEnv, OpenRouterEnv, SerperEnv, PexelsEnv, AtlasCloudEnv, TelegramIgEnv, AffiliateEnv {

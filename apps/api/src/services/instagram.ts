@@ -100,3 +100,45 @@ export async function getTokenExpiry(accessToken: string): Promise<Date | null> 
 function redactToken(body: string, token: string): string {
   return body.split(token).join("[redacted]").slice(0, 200);
 }
+
+export interface MediaInsights {
+  reach: number;
+  likes: number;
+  comments: number;
+  saved: number;
+  shares: number;
+}
+
+/**
+ * cc_prompt_ig_insights_tracking.md, 2026-09-07 — reads post-level performance via the
+ * Graph API's /{media-id}/insights (metric list: reach,likes,comments,saved,shares). Callers
+ * must pass the *same* account whose token was actually used to publish the media (accountFor's
+ * mapping) — querying with the wrong account's token 400s/403s even though both accounts are
+ * technically valid Page Access Tokens, same reasoning as adminIgDrafts.ts's verify-media route.
+ * Throws on any failure (network, non-2xx, missing metric) — callers decide how to degrade
+ * (e.g. the insights cron records the error per-draft and moves on rather than crashing the batch).
+ */
+export async function getMediaInsights(account: InstagramAccount, mediaId: string): Promise<MediaInsights> {
+  const url = new URL(`https://graph.facebook.com/${GRAPH_VERSION}/${mediaId}/insights`);
+  url.searchParams.set("metric", "reach,likes,comments,saved,shares");
+  url.searchParams.set("access_token", account.accessToken);
+
+  const res = await fetch(url);
+  const json = (await res.json()) as {
+    data?: Array<{ name: string; values?: Array<{ value?: number }> }>;
+    error?: { message?: string; code?: number };
+  };
+  if (!res.ok) {
+    const message = json.error?.message ?? `HTTP ${res.status}`;
+    throw new Error(`Instagram media insights failed: ${message}`);
+  }
+  const metrics = json.data ?? [];
+  const valueFor = (name: string): number => metrics.find((m) => m.name === name)?.values?.[0]?.value ?? 0;
+  return {
+    reach: valueFor("reach"),
+    likes: valueFor("likes"),
+    comments: valueFor("comments"),
+    saved: valueFor("saved"),
+    shares: valueFor("shares"),
+  };
+}
