@@ -2110,6 +2110,8 @@ a {
 
 .fridge-page {
   padding: var(--space);
+  max-width: 640px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -2313,6 +2315,8 @@ a {
 
 .shop-page {
   padding: var(--space);
+  max-width: 640px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -2564,6 +2568,8 @@ a {
 
 .health-page {
   padding: var(--space);
+  max-width: 640px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
