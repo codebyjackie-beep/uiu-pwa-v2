@@ -264,7 +264,9 @@ app.post("/api/admin/ig-affiliate-cron-run", async (c) => {
     return c.json(body, 401);
   }
   try {
-    const result = await runAffiliateCron(c.env);
+    const forcePayload = await c.req.json().catch(() => null);
+    const force = forcePayload?.force === true;
+    const result = await runAffiliateCron(c.env, force);
     const body: ApiResponse<{ ran: boolean; reason: string; daysSinceLast: number | null; draftId: string | null }> = {
       ok: true,
       data: { ...result, draftId: result.draftId ? result.draftId.toHexString() : null },
