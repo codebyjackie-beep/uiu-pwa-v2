@@ -97,6 +97,11 @@ export interface Recipe {
    * Already present as a bare field (no type) on themealdb_import.cjs docs; added here so
    * TS write paths (adminRecipeDrafts/adminRecipes) can set it too. */
   needs_review?: boolean;
+  /** Present on 71/1006 recipes — set by scripts/mark_nutrition_unavailable.cjs for recipes where
+   * the cost engine resolved zero ingredient lines to nutrition data (matchedLines===0, see
+   * scripts/recompute_recipes_nutrition.cjs). `nutrition` on these docs is a stale/never-computed
+   * {0,0,0,0} snapshot, not a genuine zero — UI must show "Nutrition not available" instead of it. */
+  nutritionUnavailable?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -130,6 +135,8 @@ export interface RecipeListItem {
   /** Projected from Recipe.enrichmentAttempted — lets the client distinguish "still calculating"
    * from "enrichment ran and genuinely found nothing" (HANDOFF_recipe-missing-ingredients-enrichment.md §3). */
   enrichmentAttempted?: boolean;
+  /** Projected from Recipe.nutritionUnavailable — see that field's doc comment. */
+  nutritionUnavailable?: boolean;
 }
 
 export interface RecipeListPage {
@@ -411,6 +418,8 @@ export interface MealPlanEntryView {
     ingredientNames: string[];
     /** Trimmed from recipe_cost.lines, for the Meals tab's per-ingredient price breakdown (§2.2). Empty when no cost doc yet. */
     costLines: RecipeDetailCostLine[];
+    /** Projected from Recipe.nutritionUnavailable — see that field's doc comment. */
+    nutritionUnavailable?: boolean;
   };
 }
 
@@ -750,6 +759,8 @@ export interface MealSuggestion {
   /** Null only in the (expected-empty) case a >=80%-coverage candidate somehow lacks a cost doc. */
   cost: RecipeListItemCost | null;
   calories: number | null;
+  /** Projected from Recipe.nutritionUnavailable — see that field's doc comment. */
+  nutritionUnavailable?: boolean;
   /** Sum of expiry-weighted fridge_stock matches (see HANDOFF for the 3/2/1 weighting). */
   fridgeMatchScore: number;
   /** Fridge item names that matched this recipe's ingredients, for the "uses N items expiring soon" UI hint. */

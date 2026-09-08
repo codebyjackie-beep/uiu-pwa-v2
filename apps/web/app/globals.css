@@ -490,6 +490,14 @@ a {
   color: var(--uiu-muted);
 }
 
+.macro-tiles__unavailable {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--uiu-muted);
+  padding: 10px 4px;
+  text-align: center;
+}
+
 .recipe-detail__meta-row {
   display: flex;
   gap: 16px;

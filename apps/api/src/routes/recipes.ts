@@ -71,6 +71,7 @@ function toListItem(doc: Document, cost: RecipeListItem["cost"]): RecipeListItem
     cost,
     ingredientCount: Array.isArray(doc.ingredients) ? doc.ingredients.length : 0,
     enrichmentAttempted: doc.enrichmentAttempted as boolean | undefined,
+    nutritionUnavailable: doc.nutritionUnavailable as boolean | undefined,
   };
 }
 

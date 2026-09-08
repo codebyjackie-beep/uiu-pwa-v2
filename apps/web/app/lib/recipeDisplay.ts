@@ -34,6 +34,15 @@ export function costPendingLabel(recipe: { enrichmentAttempted?: boolean; ingred
   return "calculating…";
 }
 
+/** Recipe.nutritionUnavailable (HANDOFF: "0 cal / 0g" -> "Nutrition not available") — set for the
+ * 71 recipes where the cost engine resolved zero ingredient lines to nutrition data, whose stored
+ * `nutrition` is a stale/never-computed {0,0,0,0} snapshot rather than a genuine zero. */
+export const NUTRITION_NOT_AVAILABLE = "Nutrition not available";
+
+export function isNutritionUnavailable(recipe: { nutritionUnavailable?: boolean }): boolean {
+  return recipe.nutritionUnavailable === true;
+}
+
 export function mealTypeBadge(recipe: MealTagged): string | null {
   if (recipe.mealType && MEAL_TYPES.includes(recipe.mealType.toLowerCase())) {
     return capitalize(recipe.mealType);

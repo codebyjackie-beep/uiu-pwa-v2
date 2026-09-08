@@ -82,6 +82,7 @@ mealSuggestionsRouter.get("/", async (c) => {
             }
           : null,
       calories: recipe.calories,
+      nutritionUnavailable: recipe.nutritionUnavailable,
       fridgeMatchScore,
       matchedFridgeItems,
     }));

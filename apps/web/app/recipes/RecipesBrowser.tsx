@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, RecipeListItem } from "@uiu/shared";
-import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
+import { costPendingLabel, isNutritionUnavailable, mealTypeBadge, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
   DIETARY_PREDICATES,
@@ -264,7 +264,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
                 </div>
                 <p className="recipe-card__title">{recipe.title}</p>
                 <div className="recipe-card__macros">
-                  <span>{Math.round(recipe.nutrition.calories)} cal</span>
+                  <span>{isNutritionUnavailable(recipe) ? NUTRITION_NOT_AVAILABLE : `${Math.round(recipe.nutrition.calories)} cal`}</span>
                   <span>{recipe.ingredientCount} items</span>
                 </div>
               </div>

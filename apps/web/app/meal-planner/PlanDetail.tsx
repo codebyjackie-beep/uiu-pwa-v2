@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, MealPlanSetDetail, ShoppingListFromIngredientResponse } from "@uiu/shared";
 import { MealPlannerBoard } from "./MealPlannerBoard";
+import { NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
 function formatCost(value: number): string {
   return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
@@ -140,6 +141,12 @@ export function PlanDetail({ planId, onBack }: Props) {
   const totalProtein = sumMacro(days, "protein");
   const totalCarbs = sumMacro(days, "carbs");
   const totalFat = sumMacro(days, "fat");
+  const allEntries = days.flatMap((d) => d.entries);
+  // Every meal in this plan resolved zero nutrition data -> the week totals below are a stale
+  // {0,0,0,0} sum, not a genuine zero (same "Nutrition not available" signal as the recipe
+  // card/detail page). A plan with a mix of available/unavailable meals still shows its (partial,
+  // real) sum as before — this only fires for the all-unavailable edge case.
+  const weekNutritionUnavailable = allEntries.length > 0 && allEntries.every((e) => e.recipe.nutritionUnavailable === true);
   const totalCookMinutes = days.reduce(
     (sum, d) => sum + d.entries.reduce((s, e) => s + e.recipe.prepTimeMinutes + e.recipe.cookTimeMinutes, 0),
     0,
@@ -184,11 +191,11 @@ export function PlanDetail({ planId, onBack }: Props) {
           <div className="meal-planner-overview__grid">
             <OverviewStat label="Total cost" value={formatCost(weekTotalCost)} />
             <OverviewStat label="Meals" value={String(mealsCount)} />
-            <OverviewStat label="Calories" value={`${Math.round(weekTotalCalories)}`} />
+            <OverviewStat label="Calories" value={weekNutritionUnavailable ? NUTRITION_NOT_AVAILABLE : `${Math.round(weekTotalCalories)}`} />
             <OverviewStat label="Cook time" value={`${Math.round(totalCookMinutes)} min`} />
-            <OverviewStat label="Protein" value={`${Math.round(totalProtein)} g`} />
-            <OverviewStat label="Carbs" value={`${Math.round(totalCarbs)} g`} />
-            <OverviewStat label="Fat" value={`${Math.round(totalFat)} g`} />
+            <OverviewStat label="Protein" value={weekNutritionUnavailable ? NUTRITION_NOT_AVAILABLE : `${Math.round(totalProtein)} g`} />
+            <OverviewStat label="Carbs" value={weekNutritionUnavailable ? NUTRITION_NOT_AVAILABLE : `${Math.round(totalCarbs)} g`} />
+            <OverviewStat label="Fat" value={weekNutritionUnavailable ? NUTRITION_NOT_AVAILABLE : `${Math.round(totalFat)} g`} />
             <OverviewStat label="Items" value={String(itemsCount)} />
           </div>
         </div>

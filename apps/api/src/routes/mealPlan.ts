@@ -69,6 +69,7 @@ export function toEntryView(doc: Document, recipeById: Map<string, Document>, co
       cookTimeMinutes: (recipe?.cookTimeMinutes as number | undefined) ?? 0,
       ingredientNames: ingredients.map((i) => String(i.name ?? "").trim().toLowerCase()).filter(Boolean),
       costLines: toCostLines(cost),
+      nutritionUnavailable: recipe?.nutritionUnavailable === true,
     },
   };
 }

@@ -50,6 +50,8 @@ export interface PoolRecipe {
    * coverage-threshold filter (HANDOFF_tonight-suggestion.md) — read-only, doesn't change selectMealPlan. */
   adjustedCoveragePct: number | null;
   mealSlots: Set<MealSlot>;
+  /** Projected from Recipe.nutritionUnavailable — see that field's doc comment in packages/shared. */
+  nutritionUnavailable: boolean;
 }
 
 const MEAL_SLOT_TAGS: Record<string, MealSlot[]> = {
@@ -159,6 +161,7 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
     basket: costDoc && (costDoc.basket as number) > 0 ? (costDoc.basket as number) : null,
     adjustedCoveragePct: costDoc ? (costDoc.adjustedCoveragePct as number) : null,
     mealSlots: deriveMealSlots(titleLower, tags),
+    nutritionUnavailable: doc.nutritionUnavailable === true,
   };
 }
 

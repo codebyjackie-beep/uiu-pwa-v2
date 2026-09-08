@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ApiResponse, MealPlanSetSummary, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
 import { todayDayIndex } from "../lib/dates";
+import { isNutritionUnavailable, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
 const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
   { value: "breakfast", label: "Breakfast" },
@@ -134,7 +135,11 @@ export function TonightSuggestion() {
                   <p className="recipe-card__title">{s.title}</p>
                   <div className="recipe-card__macros">
                     <span className="recipe-card__price">{s.cost ? formatCost(s.cost.perServing) : "—"}</span>
-                    {s.calories != null ? <span>{Math.round(s.calories)} cal</span> : null}
+                    {isNutritionUnavailable(s) ? (
+                      <span>{NUTRITION_NOT_AVAILABLE}</span>
+                    ) : s.calories != null ? (
+                      <span>{Math.round(s.calories)} cal</span>
+                    ) : null}
                   </div>
                   {s.matchedFridgeItems.length > 0 ? (
                     <p className="tonight-suggestion__match">

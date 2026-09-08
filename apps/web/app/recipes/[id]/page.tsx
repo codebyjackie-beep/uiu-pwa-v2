@@ -6,7 +6,9 @@ import {
   formatIngredientQuantity,
   formatIngredientStorePrice,
   ingredientName,
+  isNutritionUnavailable,
   mealTypeBadge,
+  NUTRITION_NOT_AVAILABLE,
 } from "../../lib/recipeDisplay";
 
 function lineFor(recipe: RecipeDetail, ingredient: RecipeDetail["ingredients"][number]): RecipeDetailCostLine | undefined {
@@ -63,24 +65,28 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
             {costPendingLabel({ enrichmentAttempted: recipe.enrichmentAttempted, ingredientCount: recipe.ingredients.length })}
           </p>
         )}
-        <div className="macro-tiles">
-          <div className="macro-tile">
-            <span className="macro-tile__value">{Math.round(recipe.nutrition.calories)}</span>
-            <span className="macro-tile__label">Cal</span>
+        {isNutritionUnavailable(recipe) ? (
+          <p className="macro-tiles__unavailable">{NUTRITION_NOT_AVAILABLE}</p>
+        ) : (
+          <div className="macro-tiles">
+            <div className="macro-tile">
+              <span className="macro-tile__value">{Math.round(recipe.nutrition.calories)}</span>
+              <span className="macro-tile__label">Cal</span>
+            </div>
+            <div className="macro-tile">
+              <span className="macro-tile__value">{Math.round(recipe.nutrition.protein)}g</span>
+              <span className="macro-tile__label">Protein</span>
+            </div>
+            <div className="macro-tile">
+              <span className="macro-tile__value">{Math.round(recipe.nutrition.carbs)}g</span>
+              <span className="macro-tile__label">Carbs</span>
+            </div>
+            <div className="macro-tile">
+              <span className="macro-tile__value">{Math.round(recipe.nutrition.fat)}g</span>
+              <span className="macro-tile__label">Fat</span>
+            </div>
           </div>
-          <div className="macro-tile">
-            <span className="macro-tile__value">{Math.round(recipe.nutrition.protein)}g</span>
-            <span className="macro-tile__label">Protein</span>
-          </div>
-          <div className="macro-tile">
-            <span className="macro-tile__value">{Math.round(recipe.nutrition.carbs)}g</span>
-            <span className="macro-tile__label">Carbs</span>
-          </div>
-          <div className="macro-tile">
-            <span className="macro-tile__value">{Math.round(recipe.nutrition.fat)}g</span>
-            <span className="macro-tile__label">Fat</span>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="recipe-detail__meta-row">

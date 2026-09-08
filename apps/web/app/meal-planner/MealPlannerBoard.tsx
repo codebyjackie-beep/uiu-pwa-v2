@@ -11,7 +11,7 @@ import type {
   RecipeListPage,
 } from "@uiu/shared";
 import { dayIndexLabel, todayDayIndex } from "../lib/dates";
-import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
+import { costPendingLabel, isNutritionUnavailable, mealTypeBadge, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
 function formatRecipePrice(cost: RecipeListItem["cost"]) {
   if (!cost || cost.basket <= 0) return null;
@@ -231,7 +231,9 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                                 <span className="recipe-card__price">
                                   {entry.recipe.costPerServing != null ? formatCost(entry.recipe.costPerServing) : "—"}
                                 </span>
-                                {entry.recipe.calories != null ? (
+                                {isNutritionUnavailable(entry.recipe) ? (
+                                  <span>{NUTRITION_NOT_AVAILABLE}</span>
+                                ) : entry.recipe.calories != null ? (
                                   <span>{Math.round(entry.recipe.calories)} cal</span>
                                 ) : null}
                               </div>
@@ -332,7 +334,7 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                       </div>
                       <p className="recipe-card__title">{recipe.title}</p>
                       <div className="recipe-card__macros">
-                        <span>{Math.round(recipe.nutrition.calories)} cal</span>
+                        <span>{isNutritionUnavailable(recipe) ? NUTRITION_NOT_AVAILABLE : `${Math.round(recipe.nutrition.calories)} cal`}</span>
                         <span>{recipe.ingredientCount} items</span>
                       </div>
                     </div>
