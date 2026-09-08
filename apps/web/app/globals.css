@@ -831,6 +831,18 @@ a {
   gap: 8px;
 }
 
+.meal-planner-customize-link {
+  align-self: center;
+  color: var(--uiu-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.meal-planner-customize-link:hover {
+  color: var(--accent);
+}
+
 .meal-planner-plan-grid {
   display: flex;
   flex-direction: column;

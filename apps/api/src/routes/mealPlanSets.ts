@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import type { Document, ObjectId as ObjectIdType } from "mongodb";
+import type { Db, Document, ObjectId as ObjectIdType } from "mongodb";
 import type { ApiResponse, MealPlanDaySummary, MealPlanGeneratorInput, MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
 import { MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
@@ -24,6 +24,40 @@ const AUTO_FILL_INPUT: MealPlanGeneratorInput = {
 };
 
 export const mealPlanSetsRouter = new Hono<{ Bindings: DbEnv }>();
+
+/**
+ * Monotonic "Weekly Plan N" counter (fixes count+1 naming collisions —
+ * cc_prompt_meal_plan_duplicate_investigation.md: deleting a non-last plan
+ * shrinks countDocuments({}), so a later count+1 could land on an N that's
+ * still in use by a surviving plan). Stored in its own single-doc collection
+ * so a delete never moves the counter backwards. Lazily initialized on first
+ * use from the highest "Weekly Plan N" name already present, so it never
+ * collides with pre-existing plans.
+ */
+async function getNextPlanNumber(db: Db): Promise<number> {
+  const seqCollection = db.collection<{ _id: string; nextPlanNumber: number }>("meal_plan_sequence");
+  const existing = await seqCollection.findOne({ _id: "meal_plan_set" });
+  if (!existing) {
+    const setDocs = await db.collection("meal_plan_sets").find({}, { projection: { name: 1 } }).toArray();
+    let maxN = 0;
+    for (const d of setDocs) {
+      const m = /^Weekly Plan (\d+)$/.exec((d.name as string) ?? "");
+      if (m) maxN = Math.max(maxN, parseInt(m[1]!, 10));
+    }
+    try {
+      await seqCollection.insertOne({ _id: "meal_plan_set", nextPlanNumber: maxN + 1 });
+    } catch {
+      // Lost the init race to a concurrent request — the doc now exists, fall through to $inc below.
+    }
+  }
+
+  const updated = await seqCollection.findOneAndUpdate(
+    { _id: "meal_plan_set" },
+    { $inc: { nextPlanNumber: 1 } },
+    { returnDocument: "after" },
+  );
+  return updated!.nextPlanNumber - 1;
+}
 
 type SummaryEntry = {
   dayIndex: number;
@@ -109,8 +143,9 @@ mealPlanSetsRouter.post("/", async (c) => {
 
     const result = await withDb(c.env, async (db) => {
       const now = new Date().toISOString();
+      const planNumber = name ? undefined : await getNextPlanNumber(db);
       const setDoc = {
-        name: name ?? `Weekly Plan ${count + 1}`,
+        name: name ?? `Weekly Plan ${planNumber}`,
         isActive: false,
         createdAt: now,
       };

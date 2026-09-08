@@ -166,8 +166,12 @@ export function MealPlannerView({ initialSets }: Props) {
         <button type="button" className="wizard-primary-button" disabled={creating || atLimit} onClick={buildPlan}>
           {creating ? "Building…" : "Build a plan for me"}
         </button>
-        <Link href="/meal-planner/generate" className="wizard-secondary-button">
-          Generate with AI
+        {/* Secondary, low-visual-weight entry to the 9-step wizard — pre-filled with the
+            same defaults "Build a plan for me" uses, so it reads as "see what you'll get,
+            tweak if you want" rather than a second competing main button.
+            See cc_prompt_meal_plan_duplicate_investigation.md. */}
+        <Link href="/meal-planner/generate" className="meal-planner-customize-link">
+          Customize before building →
         </Link>
       </div>
       {atLimit ? (
