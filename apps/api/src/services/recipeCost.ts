@@ -101,14 +101,25 @@ export type UnitClassification =
  * "medium, thinly sliced" all resolve to their real base unit.
  */
 export function classifyUnit(rawUnit: string | null | undefined): UnitClassification {
-  let s = String(rawUnit || "").toLowerCase().trim();
-  s = s.replace(/\([^)]*\)?/g, "").trim();
-  s = s.split(",")[0]!.trim();
-  const words = s.split(/\s+/).filter(Boolean);
+  let original = String(rawUnit || "").trim();
+  original = original.replace(/\([^)]*\)?/g, "").trim();
+  original = original.split(",")[0]!.trim();
+  const originalWords = original.split(/\s+/).filter(Boolean);
+  const words = originalWords.map((w) => w.toLowerCase());
 
   if (words.length === 0) return { type: "count", unit: "" };
 
-  for (const word of words) {
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i]!;
+    // Bare single-letter "T"/"t" is ambiguous under case-insensitive lookup (both lowercase to
+    // "t", which VOLUME_TO_ML maps only to teaspoon/5ml). Disambiguate by original case: exact
+    // "T" = tablespoon (15ml), exact "t" = teaspoon (5ml) -- see
+    // cc_prompt_tablespoon_teaspoon_case_bug.md (2026-09-09). Every other unit word stays
+    // case-insensitive as before ("Tbsp"/"TABLESPOON" already resolve correctly since their
+    // lowercase forms are distinct table keys — only the bare single letter collides).
+    if (word === "t") {
+      return { type: "volume", unit: originalWords[i] === "T" ? "tbsp" : "t" };
+    }
     if (VOLUME_TO_ML[word] !== undefined) return { type: "volume", unit: word };
     if (WEIGHT_TO_G[word] !== undefined) return { type: "weight", unit: word };
     if (UNCONVERTIBLE_UNITS.has(word)) return { type: "unconvertible", unit: word };
@@ -118,7 +129,7 @@ export function classifyUnit(rawUnit: string | null | undefined): UnitClassifica
   }
   if (words.every((w) => COUNT_FILLER_WORDS.has(w))) return { type: "count", unit: words[0]! };
 
-  return { type: "unmapped", raw: s };
+  return { type: "unmapped", raw: words.join(" ") };
 }
 
 export type NormalizeQtyResult =
