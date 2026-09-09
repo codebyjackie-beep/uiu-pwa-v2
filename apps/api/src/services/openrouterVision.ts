@@ -129,6 +129,11 @@ const PHOTO_RECIPE_PROMPT_PREFIX = (count: number) =>
   "Regardless of what language the source text is written in (Chinese, Cantonese, or any other language), " +
   "translate the title, description, ingredient names, and steps into English. Do not leave any part of the " +
   "output in the original language. " +
+  `Each ingredient's "name" field MUST contain ONLY the ingredient's name — never a quantity, a unit word, ` +
+  `a quantity range, or any instruction/parenthetical text. Put every number and unit (including ranges ` +
+  `like "3 to 5" or count words like "pcs"/"pieces") into "quantity"/"unit" instead. If handwriting is ` +
+  `illegible for a given word, do not guess a single stray letter as the ingredient name — omit that ` +
+  `ingredient line entirely rather than transcribing a fragment. ` +
   "Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: " +
   '{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ' +
   '"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}. ' +

@@ -308,6 +308,15 @@ export async function parseRecipeFromText(env: OpenRouterEnv, text: string): Pro
       `Regardless of what language the source text is written in (Chinese, Cantonese, or any other ` +
       `language), translate the title, description, ingredient names, and steps into English. Do not ` +
       `leave any part of the output in the original language.\n\n` +
+      `Each ingredient's "name" field MUST contain ONLY the ingredient's name (e.g. "garlic cloves", ` +
+      `"lemon", "basil") — never a quantity, a unit word, a quantity range, or any instruction/` +
+      `parenthetical text. Put every number and unit (including ranges like "3 to 5" or count words ` +
+      `like "pcs"/"pieces") into "quantity"/"unit" instead, and drop any commentary like "you can use ` +
+      `regular basil instead" entirely rather than folding it into the name. For example, from the ` +
+      `input line "3 to 5 pcs lemon (you can use regular basil instead)" produce ` +
+      `{"name": "lemon", "quantity": 5, "unit": "pcs"} — never {"name": "to 5 pcs lemon (you can use ` +
+      `regular basil instead)", ...}. If a line is illegible or too garbled to identify a real ` +
+      `ingredient, omit that line entirely rather than guessing a fragment.\n\n` +
       `Text:\n"""\n${trimmed}\n"""\n\n` +
       `Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: ` +
       `{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ` +

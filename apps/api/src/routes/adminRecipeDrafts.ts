@@ -357,7 +357,9 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: never auto-publish a
       // draft whose ingredient lines look like an unparsed label blob (>=3 consecutive
       // quantity=0/unit='' lines) — flag needs_review instead of setting isPublic true.
-      const guardResult = ingredientTextGuard(draft.ingredients as { quantity: number; unit: string }[]);
+      // Also catches per-name fragments (cc_prompt_recipe_import_parser_fragments.md,
+      // 2026-09-09) — a quantity/instruction leftover leaked into the name itself.
+      const guardResult = ingredientTextGuard(draft.ingredients as { quantity: number; unit: string; name: string }[]);
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: draft.title as string,
         description: (draft.description as string) ?? "",

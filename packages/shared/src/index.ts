@@ -853,12 +853,19 @@ export const API_VERSION = "0.1.0" as const;
 export interface IngredientTextGuardLine {
   quantity: number;
   unit: string;
+  /** Optional — when present, each line's name is also checked by
+   * ingredientNameLooksLikeFragment() (cc_prompt_recipe_import_parser_fragments.md,
+   * 2026-09-09). Every existing caller already passes full ingredient objects that
+   * have this field, so no call site needs to change to benefit. */
+  name?: string;
 }
 
 export interface IngredientTextGuardResult {
   suspicious: boolean;
   /** Longest run of consecutive quantity===0 && unit==='' lines found. */
   maxConsecutiveZeroQtyRun: number;
+  /** Names that tripped ingredientNameLooksLikeFragment(), if any. */
+  fragmentLikeNames: string[];
   reason?: string;
 }
 
@@ -866,6 +873,28 @@ export interface IngredientTextGuardResult {
  * 8 known-bad recipes had 9/9 lines trip this; ordinary recipes with the
  * occasional "salt to taste" (quantity 0, unit '') line don't run 3 in a row. */
 export const INGREDIENT_TEXT_GUARD_THRESHOLD = 3;
+
+// cc_prompt_recipe_import_parser_fragments.md (2026-09-09) — the LLM-based recipe
+// parsers (parseRecipeFromText / extractRecipeFromPhotos) sometimes leak a quantity
+// word, a leftover unit abbreviation, or a whole instruction clause into the
+// "name" field instead of the real ingredient name. Patterns below were derived
+// from and verified against real fragment names already live in canonical_ingredients
+// (e.g. "to 5 garlic cloves", "pcs lemon", "you can use regular basil", "i gem
+// lettuce") with a live false-positive scan across all 756 canonical_ingredients
+// names and 1000+ raw recipe ingredient names — every match found was itself a
+// genuine fragment, not a real ingredient name. Deliberately narrow (word-boundary
+// "to"/"pcs"/"you", leading lone-letter) rather than broad words like "regular" or
+// "optional", which have legitimate uses (e.g. "cola (regular)", "bacon bits
+// (optional)").
+const QUANTITY_RANGE_LEFTOVER = /\bto\s+\d+\b|\b\d+\s+to\b/i;
+const INSTRUCTION_OR_UNIT_LEFTOVER = /\byou\b|\bpcs?\b/i;
+const LEADING_LONE_LETTER = /^[a-z]\s+/i;
+
+export function ingredientNameLooksLikeFragment(name: string): boolean {
+  const trimmed = name.trim();
+  if (!trimmed) return false;
+  return QUANTITY_RANGE_LEFTOVER.test(trimmed) || INSTRUCTION_OR_UNIT_LEFTOVER.test(trimmed) || LEADING_LONE_LETTER.test(trimmed);
+}
 
 export function ingredientTextGuard(lines: IngredientTextGuardLine[]): IngredientTextGuardResult {
   let maxRun = 0;
@@ -878,12 +907,29 @@ export function ingredientTextGuard(lines: IngredientTextGuardLine[]): Ingredien
       currentRun = 0;
     }
   }
-  const suspicious = maxRun >= INGREDIENT_TEXT_GUARD_THRESHOLD;
+  const fragmentLikeNames = lines
+    .map((l) => l.name)
+    .filter((n): n is string => typeof n === "string" && ingredientNameLooksLikeFragment(n));
+
+  const runSuspicious = maxRun >= INGREDIENT_TEXT_GUARD_THRESHOLD;
+  const suspicious = runSuspicious || fragmentLikeNames.length > 0;
+
+  const reasons: string[] = [];
+  if (runSuspicious) {
+    reasons.push(
+      `${maxRun} consecutive ingredient lines with quantity===0 && unit==='' — looks like an unparsed comma-separated ingredients-label blob rather than a real recipe ingredient list.`,
+    );
+  }
+  if (fragmentLikeNames.length > 0) {
+    reasons.push(
+      `${fragmentLikeNames.length} ingredient name(s) look like leftover quantity/instruction text rather than a real ingredient name: ${fragmentLikeNames.map((n) => `"${n}"`).join(", ")}.`,
+    );
+  }
+
   return {
     suspicious,
     maxConsecutiveZeroQtyRun: maxRun,
-    reason: suspicious
-      ? `${maxRun} consecutive ingredient lines with quantity===0 && unit==='' — looks like an unparsed comma-separated ingredients-label blob rather than a real recipe ingredient list.`
-      : undefined,
+    fragmentLikeNames,
+    reason: reasons.length > 0 ? reasons.join(" ") : undefined,
   };
 }
