@@ -890,10 +890,46 @@ const QUANTITY_RANGE_LEFTOVER = /\bto\s+\d+\b|\b\d+\s+to\b/i;
 const INSTRUCTION_OR_UNIT_LEFTOVER = /\byou\b|\bpcs?\b/i;
 const LEADING_LONE_LETTER = /^[a-z]\s+/i;
 
+// cc_prompt_fragment_guard_instruction_text_gap.md (2026-09-09) — a second gap: a whole
+// instruction *sentence* leaking into the name field (e.g. "add chicken and stir until it
+// melts"), which none of the 3 narrow patterns above catch (no quantity-range/unit-word/
+// leading-lone-letter shape — it's a normal-looking multi-word English clause). Heuristic:
+// >=5 words AND >=2 distinct instruction verbs from a curated list. Both thresholds are
+// needed together — verified against the full corpus (756 canonical_ingredients names +
+// 1651 distinct raw recipe/draft ingredient names): a plain word-count-or-single-verb
+// version false-positived on real ingredients like "quinoa and brown rice mix" (matches
+// "mix" as a verb, but here it's a noun naming a store-bought product) and on garnish
+// descriptors like "Fresh Parsley, chopped (for garnish)". Deliberately excludes verbs that
+// double as common ingredient nouns (mix, season, spread, top, cook) to avoid that class of
+// false positive. Result: 0 false positives across the full corpus. Known trade-off: a
+// single-verb long instruction clause (e.g. a hypothetical "sprinkle a little lemon juice on
+// the soup") would NOT be caught by this heuristic — none of that shape exists in current
+// live data, but it's a real gap, not a guarantee.
+const INSTRUCTION_VERBS = [
+  "add", "stir", "melt", "melts", "melted", "whisk", "fold", "pour", "sprinkle", "garnish",
+  "drain", "simmer", "preheat", "discard", "marinate", "knead", "drizzle", "combine", "toss",
+  "blend", "beat", "boil", "chop", "dice", "mince", "slice", "cover", "cool", "chill", "rest",
+  "reduce", "remove", "heat",
+];
+const INSTRUCTION_VERB_RE = new RegExp(`\\b(${INSTRUCTION_VERBS.join("|")})\\b`, "gi");
+
+function looksLikeInstructionSentence(name: string): boolean {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (words.length < 5) return false;
+  const verbMatches = name.match(INSTRUCTION_VERB_RE);
+  const distinctVerbs = new Set((verbMatches || []).map((v) => v.toLowerCase()));
+  return distinctVerbs.size >= 2;
+}
+
 export function ingredientNameLooksLikeFragment(name: string): boolean {
   const trimmed = name.trim();
   if (!trimmed) return false;
-  return QUANTITY_RANGE_LEFTOVER.test(trimmed) || INSTRUCTION_OR_UNIT_LEFTOVER.test(trimmed) || LEADING_LONE_LETTER.test(trimmed);
+  return (
+    QUANTITY_RANGE_LEFTOVER.test(trimmed) ||
+    INSTRUCTION_OR_UNIT_LEFTOVER.test(trimmed) ||
+    LEADING_LONE_LETTER.test(trimmed) ||
+    looksLikeInstructionSentence(trimmed)
+  );
 }
 
 export function ingredientTextGuard(lines: IngredientTextGuardLine[]): IngredientTextGuardResult {
