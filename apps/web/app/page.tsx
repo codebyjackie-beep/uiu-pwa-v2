@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
 import { apiGet } from "./lib/api";
 import { InstallButton } from "./InstallButton";
+import { OnboardingOverlay } from "./OnboardingOverlay";
 
 const QUICK_ACTIONS = [
   { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices", modifier: "recipes" },
@@ -31,6 +32,7 @@ export default async function Home() {
 
   return (
     <div className="home-page">
+      <OnboardingOverlay />
       <section className="home-hero">
         <p className="home-hero__eyebrow">UseItUp · v2</p>
         <h1 className="home-hero__title">Welcome back</h1>
