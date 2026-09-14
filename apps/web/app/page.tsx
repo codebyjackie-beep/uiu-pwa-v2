@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import type { MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
-import { apiGet } from "./lib/api";
+import { apiGet, apiPost } from "./lib/api";
 import { InstallButton } from "./InstallButton";
 import { OnboardingOverlay } from "./OnboardingOverlay";
 
@@ -18,6 +20,22 @@ function formatCost(value: number): string {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  const { userId } = await auth();
+  if (!userId) redirect("/how-it-works");
+
+  const user = await currentUser();
+  if (user) {
+    const email = user.primaryEmailAddress?.emailAddress ?? "";
+    if (email) {
+      // Get-or-create in the `users` collection (HANDOFF_auth-subscription-front-page.md
+      // Milestone 1). Idempotent (findOne-then-insert on the backend) — fine to call on
+      // every Home load rather than only wiring a Clerk webhook for this milestone. Awaited
+      // (not fire-and-forget) because Workers can suspend background work after the response
+      // is sent — see apps/api/src/db.ts's per-request client note for the same reasoning.
+      await apiPost("/api/users/sync", { clerkUserId: userId, email });
+    }
+  }
+
   const setsRes = await apiGet<MealPlanSetSummary[]>("/api/meal-plan-sets");
   const activeSummary = setsRes.ok ? setsRes.data.find((s) => s.isActive) : undefined;
 

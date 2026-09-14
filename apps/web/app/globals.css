@@ -43,7 +43,180 @@ a {
 
 .app-shell {
   min-height: 100vh;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); /* clears the fixed bottom nav, incl. gesture-nav safe area */
+  padding-bottom: calc(72px + 28px + env(safe-area-inset-bottom, 0px)); /* clears the fixed bottom nav + site-footer strip, incl. gesture-nav safe area */
+}
+
+/* HANDOFF_auth-subscription-front-page.md Milestone 1 — persistent "How it works" link,
+   a thin strip sitting just above the fixed bottom nav so it's reachable while signed in too. */
+.site-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
+  background: var(--uiu-surface);
+  border-top: 1px solid var(--uiu-border);
+  z-index: 9;
+}
+
+.site-footer__link {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--uiu-muted);
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space);
+  background: var(--uiu-surface);
+}
+
+/* --- /how-it-works (HANDOFF_auth-subscription-front-page.md Milestone 1) --- */
+
+.how-it-works-page {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 2);
+  padding: calc(var(--space) * 1.5) var(--space);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.how-it-works-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  padding-top: var(--space);
+}
+
+.how-it-works-hero__eyebrow {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.how-it-works-hero__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--uiu-green-ink);
+  line-height: 1.2;
+}
+
+.how-it-works-hero__subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--uiu-muted);
+}
+
+.how-it-works-hero__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.how-it-works-section__title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.how-it-works-feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.how-it-works-feature-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--uiu-border);
+  border-radius: var(--radius);
+}
+
+.how-it-works-feature-list__icon {
+  flex: none;
+  font-size: 22px;
+}
+
+.how-it-works-feature-list__label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.how-it-works-feature-list__hint {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+
+.how-it-works-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.how-it-works-steps__card {
+  position: relative;
+  padding: 16px 16px 16px 44px;
+  background: var(--card);
+  border: 1px solid var(--uiu-border);
+  border-radius: var(--radius);
+}
+
+.how-it-works-steps__badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--uiu-white);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.how-it-works-steps__text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--fg);
+}
+
+@media (min-width: 720px) {
+  .how-it-works-steps {
+    flex-direction: row;
+  }
+
+  .how-it-works-steps__card {
+    flex: 1;
+  }
 }
 
 /* --- Bottom nav (6 tabs, Recipes-style active state = accent color) --- */

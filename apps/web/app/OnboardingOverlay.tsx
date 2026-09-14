@@ -2,21 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useInstallPrompt } from "./lib/useInstallPrompt";
+import { FEATURE_CARDS, HOW_IT_WORKS } from "./lib/onboardingContent";
 
 const SEEN_KEY = "uiu_onboarding_seen";
-
-const FEATURE_CARDS = [
-  { icon: "🍳", label: "Browse Recipes", hint: "Real UK prices" },
-  { icon: "🧊", label: "Scan Fridge", hint: "Track what you've got" },
-  { icon: "🛒", label: "Compare Prices", hint: "Shop smarter" },
-  { icon: "❤️", label: "Track Health", hint: "Macros & BMI" },
-] as const;
-
-const HOW_IT_WORKS = [
-  "Track what's in your fridge",
-  "Get recipes & a shopping list that fits your budget",
-  "Cook, log, and cut food waste",
-] as const;
 
 /** First-open onboarding overlay on the Home tab (HANDOFF_welcome-page-onboarding.md).
  * Not a route — a modal layered over Home. Shown once per browser (localStorage flag),

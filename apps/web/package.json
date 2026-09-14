@@ -12,11 +12,13 @@
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.9.2",
     "@uiu/shared": "*",
     "@zxing/browser": "^0.2.1",
+    "jose": "^6.2.12",
     "next": "15.5.21",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react": "^19.0.8",
+    "react-dom": "^19.0.8"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.20.2",

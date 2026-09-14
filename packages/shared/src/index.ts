@@ -969,3 +969,18 @@ export function ingredientTextGuard(lines: IngredientTextGuardLine[]): Ingredien
     reason: reasons.length > 0 ? reasons.join(" ") : undefined,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Auth / accounts  (collection: users — HANDOFF_auth-subscription-front-page.md
+// Milestone 1. One document per Clerk identity; created lazily on first sign-in.)
+// ---------------------------------------------------------------------------
+
+export type SubscriptionStatus = "free" | "active" | "cancelled";
+
+export interface UiuUser {
+  _id: ObjectIdHex;
+  clerkUserId: string;
+  email: string;
+  createdAt: ISODate;
+  subscriptionStatus: SubscriptionStatus;
+}

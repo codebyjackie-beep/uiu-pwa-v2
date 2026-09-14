@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { BottomNav } from "./components/BottomNav";
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
+import { SiteFooter } from "./components/SiteFooter";
 
 export const metadata: Metadata = {
   title: "UseItUp",
@@ -26,9 +28,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
-        {!isPublicShop && <ServiceWorkerKillSwitch />}
-        <div className="app-shell">{children}</div>
-        {!isPublicShop && <BottomNav />}
+        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/how-it-works">
+          {!isPublicShop && <ServiceWorkerKillSwitch />}
+          <div className="app-shell">{children}</div>
+          {!isPublicShop && <SiteFooter />}
+          {!isPublicShop && <BottomNav />}
+        </ClerkProvider>
       </body>
     </html>
   );

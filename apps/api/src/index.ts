@@ -27,6 +27,7 @@ import { runInsightsSnapshotCron } from "./jobs/igInsights";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
+import { usersRouter } from "./routes/users";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 
@@ -138,6 +139,7 @@ app.route("/api/meal-suggestions", mealSuggestionsRouter);
 app.route("/api/favourite-recipes", favouriteRecipesRouter);
 app.route("/api/shop", shopRouter);
 app.route("/api/shopping-list", shoppingListRouter);
+app.route("/api/users", usersRouter);
 app.route("/api/health", healthRouter);
 app.route("/api/recipe-import", recipeImportRouter);
 app.route("/api/recipe-browse", recipeBrowseStateRouter);
