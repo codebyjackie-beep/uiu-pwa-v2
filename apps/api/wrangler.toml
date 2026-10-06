@@ -104,6 +104,11 @@ IG_ID_AFFILIATE = "17841443611128346"
 # API_BASE_URL (apps/web/wrangler.toml) but a separate var — this one points AT this Worker,
 # that one points FROM the web Worker TO this one; happen to be the same host today.
 PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
+# cc_prompt_milestone1_followup_fixes.md gap 1 — same public value as apps/web's
+# NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (apps/web/wrangler.toml). Publishable keys are designed to
+# be shipped to the browser, so duplicating it here (not a secret) is fine — src/clerkAuth.ts
+# decodes it to find Clerk's JWKS endpoint for independent session-token verification.
+CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXYk"
 
 # Six independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:

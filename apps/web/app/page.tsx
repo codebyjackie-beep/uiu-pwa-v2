@@ -20,7 +20,7 @@ function formatCost(value: number): string {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const { userId } = await auth();
+  const { userId, getToken } = await auth();
   if (!userId) redirect("/how-it-works");
 
   const user = await currentUser();
@@ -32,7 +32,12 @@ export default async function Home() {
       // every Home load rather than only wiring a Clerk webhook for this milestone. Awaited
       // (not fire-and-forget) because Workers can suspend background work after the response
       // is sent — see apps/api/src/db.ts's per-request client note for the same reasoning.
-      await apiPost("/api/users/sync", { clerkUserId: userId, email });
+      //
+      // cc_prompt_milestone1_followup_fixes.md gap 1 — the session JWT is forwarded so
+      // apps/api can independently verify it (apps/api/src/clerkAuth.ts) rather than trusting
+      // clerkUserId as plain request-body input.
+      const token = await getToken();
+      await apiPost("/api/users/sync", { clerkUserId: userId, email }, token ? { Authorization: `Bearer ${token}` } : undefined);
     }
   }
 

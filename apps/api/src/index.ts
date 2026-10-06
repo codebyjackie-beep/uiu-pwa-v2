@@ -99,6 +99,9 @@ type Bindings = {
   // 2026-08-25 addendum — public URL of this Worker itself, used to build the branded-image
   // URL (services/igMediaStore.ts) that Instagram/shop.useitup.uk fetch. Not a secret.
   PUBLIC_API_BASE_URL: string;
+  // cc_prompt_milestone1_followup_fixes.md gap 1 — same public value as apps/web's
+  // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, used by src/clerkAuth.ts to find Clerk's JWKS endpoint.
+  CLERK_PUBLISHABLE_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
