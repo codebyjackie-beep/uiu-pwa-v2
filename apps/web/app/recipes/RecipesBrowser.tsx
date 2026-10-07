@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import type { ApiResponse, RecipeListItem } from "@uiu/shared";
-import { costPendingLabel, isNutritionUnavailable, mealTypeBadge, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
+import type { ApiResponse, FavouriteRecipe, RecipeListItem } from "@uiu/shared";
+import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
   DIETARY_PREDICATES,
@@ -49,6 +49,12 @@ function formatPrice(cost: RecipeListItem["cost"]) {
   return `£${cost.basket.toFixed(2)}`;
 }
 
+/** prep + cook, cc_prompt_recipe-list-redesign-and-cook-mode.md Part A §1 — 0 means
+ * "no time data", not "instant", so the meta row omits it entirely rather than showing "0 min". */
+function totalTimeMinutes(recipe: RecipeListItem): number {
+  return (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
+}
+
 function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
@@ -58,6 +64,8 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [mealTypes, setMealTypes] = useState<FilterMealType[]>([]);
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
   const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
+  const [favouritesOnly, setFavouritesOnly] = useState(false);
+  const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
   const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
   const [sharePrefill, setSharePrefill] = useState<{ url?: string; text?: string } | null>(null);
   const [randomTen, setRandomTen] = useState<RecipeListItem[]>(() => pickRandom(items, RANDOM_BROWSE_SIZE));
@@ -81,6 +89,39 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       window.history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
     }
   }, []);
+
+  // Same fetch-on-mount + optimistic toggle pattern as MealPlannerBoard.tsx's favourite
+  // heart — independent of Recipe.isFavorite/favoriteCount, see favouriteRecipes.ts header.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await fetch("/api/favourite-recipes");
+      const parsed = (await res.json().catch(() => null)) as ApiResponse<FavouriteRecipe[]> | null;
+      if (!cancelled && parsed?.ok) setFavouriteIds(new Set(parsed.data.map((f) => f.recipeId)));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function toggleFavourite(recipeId: string) {
+    const isFav = favouriteIds.has(recipeId);
+    setFavouriteIds((prev) => {
+      const next = new Set(prev);
+      if (isFav) next.delete(recipeId);
+      else next.add(recipeId);
+      return next;
+    });
+    if (isFav) {
+      await fetch(`/api/favourite-recipes/${recipeId}`, { method: "DELETE" });
+    } else {
+      await fetch("/api/favourite-recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipeId }),
+      });
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -110,11 +151,14 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     setRandomTen(pickRandom(items, RANDOM_BROWSE_SIZE));
   }
 
-  const hasActiveFilters = search.trim() !== "" || mealTypes.length > 0 || dietary.length > 0 || priceBuckets.length > 0;
+  const hasActiveFilters =
+    search.trim() !== "" || mealTypes.length > 0 || dietary.length > 0 || priceBuckets.length > 0 || favouritesOnly;
 
   const filtered = useMemo(() => {
     const searchLower = search.trim().toLowerCase();
     return items.filter((recipe) => {
+      if (favouritesOnly && !favouriteIds.has(recipe._id)) return false;
+
       if (searchLower) {
         const titleMatch = recipe.title.toLowerCase().includes(searchLower);
         const tagMatch = recipe.tags.some((t) => t.toLowerCase().includes(searchLower));
@@ -139,7 +183,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
 
       return true;
     });
-  }, [items, search, mealTypes, dietary, priceBuckets]);
+  }, [items, search, mealTypes, dietary, priceBuckets, favouritesOnly, favouriteIds]);
 
   // No filters active: random 10 + Refresh (HANDOFF_recipes-page-manual-entry-and-refresh.md
   // §B). Any filter active: unchanged — show every match, no count limit
@@ -155,6 +199,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     setMealTypes([]);
     setDietary([]);
     setPriceBuckets([]);
+    setFavouritesOnly(false);
   }
 
   return (
@@ -183,6 +228,19 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
           value={search}
           onChange={(e) => updateFilter(setSearch, e.target.value)}
         />
+
+        <div className="recipes-filters__group">
+          <span className="recipes-filters__group-label">Favourites</span>
+          <div className="recipes-filters__chips">
+            <button
+              type="button"
+              className={`chip${favouritesOnly ? " chip--active" : ""}`}
+              onClick={() => setFavouritesOnly(!favouritesOnly)}
+            >
+              ♥ Favourites only
+            </button>
+          </div>
+        </div>
 
         <div className="recipes-filters__group">
           <span className="recipes-filters__group-label">Meal type</span>
@@ -245,8 +303,10 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       <div className="recipe-list">
         {visible.map((recipe) => {
           const mealBadge = mealTypeBadge(recipe);
+          const totalMin = totalTimeMinutes(recipe);
+          const isFavourite = favouriteIds.has(recipe._id);
           return (
-            <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card">
+            <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card recipe-card--browse">
               {recipe.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img className="recipe-card__image" src={recipe.imageUrl} alt="" />
@@ -255,19 +315,33 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
               )}
               <div className="recipe-card__body">
                 <div className="recipe-card__header">
-                  {mealBadge ? <span className="badge">{mealBadge}</span> : <span />}
+                  <p className="recipe-card__title">{recipe.title}</p>
                   {formatPrice(recipe.cost) ? (
                     <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
                   ) : (
                     <span className="recipe-card__price recipe-card__price--pending">{costPendingLabel(recipe)}</span>
                   )}
                 </div>
-                <p className="recipe-card__title">{recipe.title}</p>
-                <div className="recipe-card__macros">
-                  <span>{isNutritionUnavailable(recipe) ? NUTRITION_NOT_AVAILABLE : `${Math.round(recipe.nutrition.calories)} cal`}</span>
-                  <span>{recipe.ingredientCount} items</span>
+                {recipe.description ? <p className="recipe-card__description">{recipe.description}</p> : null}
+                <div className="recipe-card__meta">
+                  {mealBadge ? <span className="badge">{mealBadge}</span> : null}
+                  {totalMin > 0 ? <span>⏱ {totalMin} min</span> : null}
+                  <span>👥 {recipe.servings}</span>
                 </div>
               </div>
+              <button
+                type="button"
+                className={`recipe-card__favourite${isFavourite ? " recipe-card__favourite--active" : ""}`}
+                aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+                aria-pressed={isFavourite}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  void toggleFavourite(recipe._id);
+                }}
+              >
+                {isFavourite ? "♥" : "♡"}
+              </button>
             </Link>
           );
         })}
