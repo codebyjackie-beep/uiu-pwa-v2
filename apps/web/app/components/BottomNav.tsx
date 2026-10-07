@@ -87,6 +87,8 @@ const TABS = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  // cc_prompt_recipe-list-redesign-and-cook-mode.md Part C — cook mode is full-screen.
+  if (pathname.endsWith("/cook")) return null;
 
   return (
     <nav className="bottom-nav">

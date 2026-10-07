@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { RecipeDetail, RecipeDetailCostLine } from "@uiu/shared";
 import { apiGet } from "../../lib/api";
 import {
@@ -50,6 +51,12 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
       )}
 
       <h1 className="recipe-detail__title">{recipe.title}</h1>
+
+      {recipe.steps.length > 0 && (
+        <Link href={`/recipes/${id}/cook`} className="recipe-detail__cook-cta">
+          Start cooking
+        </Link>
+      )}
 
       <div className="cost-hero">
         <div className="cost-hero__header">
