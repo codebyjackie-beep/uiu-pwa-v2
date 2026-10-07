@@ -46,6 +46,30 @@ a {
   padding-bottom: calc(72px + 28px + env(safe-area-inset-bottom, 0px)); /* clears the fixed bottom nav + site-footer strip, incl. gesture-nav safe area */
 }
 
+/* cc_prompt_milestone1_followup_fixes_2.md Task 1 — reserves space so the fixed
+   .account-header never overlaps each page's first card (e.g. Home's "Welcome back" hero). */
+.app-shell--with-account-header {
+  padding-top: calc(56px + env(safe-area-inset-top, 0px));
+}
+
+/* Account control, top-right, aligned to the same right edge as the 640px content
+   column every page uses (max-width: 640px; margin: 0 auto) rather than the viewport edge. */
+.account-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+}
+
+.account-header__inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) var(--space) 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 /* HANDOFF_auth-subscription-front-page.md Milestone 1 — persistent "How it works" link,
    a thin strip sitting just above the fixed bottom nav so it's reachable while signed in too. */
 .site-footer {
@@ -1053,10 +1077,23 @@ a {
    3 tiles' rules. */
 .home-quick-action--recipes {
   background: var(--uiu-green-ink);
+}
+
+/* cc_prompt_milestone1_followup_fixes_2.md Task 2 — all 4 tiles sit on a dark
+   photo/gradient background, so label/hint need light text on every one of them,
+   not just --recipes (which was the only modifier setting this, leaving the other
+   3 labels rendering in the site-wide dark --fg color — invisible on dark). */
+.home-quick-action--recipes,
+.home-quick-action--fridge,
+.home-quick-action--shop,
+.home-quick-action--health {
   color: var(--uiu-white);
 }
 
-.home-quick-action--recipes .home-quick-action__hint {
+.home-quick-action--recipes .home-quick-action__hint,
+.home-quick-action--fridge .home-quick-action__hint,
+.home-quick-action--shop .home-quick-action__hint,
+.home-quick-action--health .home-quick-action__hint {
   color: rgba(255, 255, 255, 0.72);
 }
 
