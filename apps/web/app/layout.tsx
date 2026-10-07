@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import "./globals.css";
-import { AccountHeader } from "./components/AccountHeader";
+import { AppHeader } from "./components/AppHeader";
 import { BottomNav } from "./components/BottomNav";
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
 import { SiteFooter } from "./components/SiteFooter";
@@ -33,8 +33,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/how-it-works">
           {!isPublicShop && <ServiceWorkerKillSwitch />}
-          {!isPublicShop && <AccountHeader isSignedIn={!!userId} />}
-          <div className={!isPublicShop && userId ? "app-shell app-shell--with-account-header" : "app-shell"}>
+          {!isPublicShop && <AppHeader isSignedIn={!!userId} />}
+          <div className={!isPublicShop && userId ? "app-shell app-shell--with-app-header" : "app-shell"}>
             {children}
           </div>
           {!isPublicShop && <SiteFooter />}

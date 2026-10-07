@@ -46,28 +46,38 @@ a {
   padding-bottom: calc(72px + 28px + env(safe-area-inset-bottom, 0px)); /* clears the fixed bottom nav + site-footer strip, incl. gesture-nav safe area */
 }
 
-/* cc_prompt_milestone1_followup_fixes_2.md Task 1 — reserves space so the fixed
-   .account-header never overlaps each page's first card (e.g. Home's "Welcome back" hero). */
-.app-shell--with-account-header {
+/* cc_prompt_account_header_to_app_header.md — reserves space so the fixed .app-header
+   never overlaps each page's first card (e.g. Home's "Welcome back" hero). */
+.app-shell--with-app-header {
   padding-top: calc(56px + env(safe-area-inset-top, 0px));
 }
 
-/* Account control, top-right, aligned to the same right edge as the 640px content
-   column every page uses (max-width: 640px; margin: 0 auto) rather than the viewport edge. */
-.account-header {
+/* App header: UseItUp wordmark left, account control right, aligned to the same
+   640px content column every page uses (max-width: 640px; margin: 0 auto). Solid
+   background + border (not transparent) so scrolled content doesn't show through. */
+.app-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 20;
+  background: var(--bg);
+  border-bottom: 1px solid var(--uiu-border);
 }
 
-.account-header__inner {
+.app-header__inner {
   max-width: 640px;
   margin: 0 auto;
   padding: calc(10px + env(safe-area-inset-top, 0px)) var(--space) 10px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header__wordmark {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--uiu-green-ink);
 }
 
 /* HANDOFF_auth-subscription-front-page.md Milestone 1 — persistent "How it works" link,
@@ -802,14 +812,6 @@ a {
   border-radius: var(--radius);
   background: linear-gradient(135deg, var(--uiu-surface-2), var(--uiu-surface));
   border: 1px solid var(--uiu-border);
-}
-
-.home-hero__eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 6px;
 }
 
 .home-hero__title {

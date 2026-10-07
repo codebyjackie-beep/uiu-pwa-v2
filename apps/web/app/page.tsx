@@ -57,7 +57,6 @@ export default async function Home() {
     <div className="home-page">
       <OnboardingOverlay />
       <section className="home-hero">
-        <p className="home-hero__eyebrow">UseItUp · v2</p>
         <h1 className="home-hero__title">Welcome back</h1>
         <p className="home-hero__subtitle">
           Plan meals, track your fridge, shop smart, and stay healthy — all in one place.
