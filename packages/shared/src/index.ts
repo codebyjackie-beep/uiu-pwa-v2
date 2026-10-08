@@ -351,7 +351,12 @@ export interface RecipeCostLine {
 export interface RecipeCost {
   /** Absent on fresh engine output (recipe_cost_NEW.json) — populated once inserted into DB. */
   _id?: ObjectIdHex;
-  /** FK to recipes._id. */
+  /** FK to recipes._id. Unlike the other ObjectIdHex fields in this file, this one is NOT a
+   * wire-serialized hex string — it's stored as a raw BSON ObjectId in Mongo (recipes.ts,
+   * mealPlan.ts, mealPlanGenerator.ts, precomputeRecipeCosts.ts, recipeImport.ts, fridgeRecipeGen.ts
+   * and recipeDraftApproval.ts all query/insert it as `recipe._id` directly, never `.toString()`'d).
+   * The ObjectIdHex alias here is a type-level simplification (this field isn't sent over HTTP on
+   * its own), not a claim about actual storage shape — don't `.toString()` it when writing this doc. */
   recipeId: ObjectIdHex;
   /** Total basket cost in GBP. */
   basket: number;
