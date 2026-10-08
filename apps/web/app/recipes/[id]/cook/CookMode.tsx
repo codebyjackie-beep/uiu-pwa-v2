@@ -54,6 +54,32 @@ function loadProgress(recipeId: string): Progress | null {
   }
 }
 
+export interface InitialCookState {
+  resumeChoice: "prompt" | "resolved";
+  savedProgress: Progress | null;
+}
+
+/**
+ * Pure decision logic for the resume bug fix (2026-10-08): given whatever was loaded from
+ * localStorage and the recipe's current step count, decide whether to show the resume prompt
+ * and, if so, with what (clamped) progress. Kept outside the component so it can be unit
+ * tested without mounting React — `stepCount` may legitimately differ from when `saved` was
+ * written (recipe edited since), so `current`/`done` are clamped/filtered defensively rather
+ * than trusted as-is.
+ */
+export function initialCookState(saved: Progress | null, stepCount: number): InitialCookState {
+  if (!saved || stepCount <= 0 || saved.current >= stepCount) {
+    return { resumeChoice: "resolved", savedProgress: null };
+  }
+  const current = Math.min(Math.max(saved.current, 0), stepCount - 1);
+  const done = saved.done.filter((n) => n >= 0 && n < stepCount);
+  const hasResumableProgress = done.length > 0 || saved.current > 0;
+  if (!hasResumableProgress) {
+    return { resumeChoice: "resolved", savedProgress: null };
+  }
+  return { resumeChoice: "prompt", savedProgress: { current, done } };
+}
+
 function saveProgress(recipeId: string, progress: Progress) {
   try {
     localStorage.setItem(progressKey(recipeId), JSON.stringify(progress));
@@ -117,7 +143,7 @@ function playBeep() {
 }
 
 export function CookMode({ recipeId, title, imageUrl, steps, ingredients }: Props) {
-  const [resumeChoice, setResumeChoice] = useState<"pending" | "resolved">("pending");
+  const [resumeChoice, setResumeChoice] = useState<"pending" | "prompt" | "resolved">("pending");
   const [savedProgress, setSavedProgress] = useState<Progress | null>(null);
   const [current, setCurrent] = useState(0);
   const [done, setDone] = useState<Set<number>>(new Set());
@@ -134,13 +160,14 @@ export function CookMode({ recipeId, title, imageUrl, steps, ingredients }: Prop
   const [speechSupported, setSpeechSupported] = useState(false);
 
   // Read saved state once on mount; resume prompt shows only when there's real progress to offer.
+  // 2026-10-08 fix: resumeChoice must be set in BOTH branches (previously the "has progress"
+  // branch only set savedProgress and left resumeChoice stuck at "pending" forever, which
+  // rendered a permanent blank loading div since that check ran before the savedProgress check).
   useEffect(() => {
     const saved = loadProgress(recipeId);
-    if (saved && saved.done.length > 0 && saved.current < steps.length) {
-      setSavedProgress(saved);
-    } else {
-      setResumeChoice("resolved");
-    }
+    const initial = initialCookState(saved, steps.length);
+    setSavedProgress(initial.savedProgress);
+    setResumeChoice(initial.resumeChoice);
     setPrepared(loadPrepared(recipeId));
     setSpeechSupported(typeof window !== "undefined" && "speechSynthesis" in window);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -317,7 +344,7 @@ export function CookMode({ recipeId, title, imageUrl, steps, ingredients }: Prop
     return <div className="cook-mode cook-mode--loading" />;
   }
 
-  if (savedProgress) {
+  if (resumeChoice === "prompt" && savedProgress) {
     return (
       <div className="cook-mode cook-mode--prompt">
         <div className="cook-mode__prompt-card">
