@@ -1,0 +1,287 @@
+{
+  "generatedAt": "2026-10-08T21:38:31.273Z",
+  "totalPending": 923,
+  "counts": {
+    "auto_approve": 404,
+    "auto_reject": 168,
+    "pending": 351,
+    "pendingDueToImage": 0,
+    "pendingOtherReasons": 351
+  },
+  "rejectReasonCounts": {
+    "calories_out_of_range": 167,
+    "macro_calorie_mismatch": 6,
+    "servings_out_of_range": 1
+  },
+  "samples": {
+    "auto_approve": [
+      {
+        "id": "6a7180494431d1bb950aa54f",
+        "title": "Goldilocks Coconut Chia Porridge with Warm Cinnamon Pear and Walnut Crunch",
+        "caloriesPerServing": 981,
+        "adjustedCoveragePct": 80,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa550",
+        "title": "Dill-Citrus Salmon Breakfast Frittata",
+        "caloriesPerServing": 622,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa551",
+        "title": "Miso Chicken Noodle Soup with Spinach and Quail Eggs",
+        "caloriesPerServing": 886,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa554",
+        "title": "Thai Coconut Beetroot Soup with Lime, Ginger, and Tofu",
+        "caloriesPerServing": 301,
+        "adjustedCoveragePct": 80,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa559",
+        "title": "Lemon-Lentil Soup with Parsley and Warm Spices",
+        "caloriesPerServing": 851,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a1a",
+        "title": "Lemon-Dill Salmon Skillet Frittata",
+        "caloriesPerServing": 632,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a1c",
+        "title": "Warm Pumpkin and Chickpea Curry Sabzi",
+        "caloriesPerServing": 253,
+        "adjustedCoveragePct": 85.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a1d",
+        "title": "Herbed Mushroom Crêpes with White Wine Cream Sauce",
+        "caloriesPerServing": 1124,
+        "adjustedCoveragePct": 85.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a23",
+        "title": "Lemon-Kissed Lebanese Lentil Soup",
+        "caloriesPerServing": 1078,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a26",
+        "title": "Crisp Ginger Chicken and Cabbage Salad with Sesame-Lime Dressing",
+        "caloriesPerServing": 825,
+        "adjustedCoveragePct": 81.3,
+        "reasons": [],
+        "pendingDueToImage": false
+      }
+    ],
+    "auto_reject": [
+      {
+        "id": "6a7180494431d1bb950aa552",
+        "title": "Gujarati-Style Dry Mung Bean Curry",
+        "caloriesPerServing": 0,
+        "adjustedCoveragePct": 75,
+        "reasons": [
+          "calories_out_of_range:0",
+          "macro_calorie_mismatch"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa553",
+        "title": "Crêpes de Champignons with Shallot Cream Sauce",
+        "caloriesPerServing": 1564,
+        "adjustedCoveragePct": 92.9,
+        "reasons": [
+          "calories_out_of_range:1564"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa556",
+        "title": "Crispy Garlic-Lemon Chili Broccoli with Chickpeas",
+        "caloriesPerServing": 8,
+        "adjustedCoveragePct": 88.9,
+        "reasons": [
+          "calories_out_of_range:8"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa558",
+        "title": "Protein-Rich Mushroom, Lentil & Quinoa Shepherd's Pie",
+        "caloriesPerServing": 2536,
+        "adjustedCoveragePct": 90,
+        "reasons": [
+          "calories_out_of_range:2536"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa55b",
+        "title": "Mexican Corn-Avocado Salsa Tacos",
+        "caloriesPerServing": 1736,
+        "adjustedCoveragePct": 100,
+        "reasons": [
+          "calories_out_of_range:1736"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a1b",
+        "title": "Crispy Japanese Curry Puff Pockets with Chicken and Quail Egg",
+        "caloriesPerServing": 1749,
+        "adjustedCoveragePct": 84.6,
+        "reasons": [
+          "calories_out_of_range:1749"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a20",
+        "title": "Lemon-Chili Garlic Broccoli Skillet",
+        "caloriesPerServing": 8,
+        "adjustedCoveragePct": 100,
+        "reasons": [
+          "calories_out_of_range:8"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a21",
+        "title": "Quick-Pickled Cabbage and Shrimp Kimchi Bowl",
+        "caloriesPerServing": 2004,
+        "adjustedCoveragePct": 83.3,
+        "reasons": [
+          "calories_out_of_range:2004"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a22",
+        "title": "British Mushroom and Quinoa Cottage Pie",
+        "caloriesPerServing": 2681,
+        "adjustedCoveragePct": 89.5,
+        "reasons": [
+          "calories_out_of_range:2681"
+        ],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a25",
+        "title": "Charred Corn and Avocado Salsa with Lime, Cilantro, and Jalapeño",
+        "caloriesPerServing": 0,
+        "adjustedCoveragePct": 88.9,
+        "reasons": [
+          "calories_out_of_range:0",
+          "macro_calorie_mismatch"
+        ],
+        "pendingDueToImage": false
+      }
+    ],
+    "pending": [
+      {
+        "id": "6a6cf98462b4d1c6f7f9047c",
+        "title": "Winter Kimchi Radish Soup with Tofu and Cabbage",
+        "caloriesPerServing": 385,
+        "adjustedCoveragePct": 72.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa54c",
+        "title": "Goldilocks Coconut Chia Porridge with Mango-Lime Quinoa Crunch",
+        "caloriesPerServing": 839,
+        "adjustedCoveragePct": 63.6,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa54d",
+        "title": "Raspberry Goat Cheese Crunch Salad Cups",
+        "caloriesPerServing": 232,
+        "adjustedCoveragePct": 77.8,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa54e",
+        "title": "Spinach, Asparagus, and Mushroom Breakfast Frittata with Goat Cheese",
+        "caloriesPerServing": 558,
+        "adjustedCoveragePct": 55.6,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa555",
+        "title": "Greek-Style Lemon Baked Fish with Tomatoes, Olives, and Feta",
+        "caloriesPerServing": 268,
+        "adjustedCoveragePct": 72.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa557",
+        "title": "Sparkling Kimchi-Style Cabbage with Gingered Shrimp",
+        "caloriesPerServing": 826,
+        "adjustedCoveragePct": 76.9,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa55a",
+        "title": "Bruschetta-Style Roma Tomato Toasts with Basil and Goat Cheese",
+        "caloriesPerServing": 1392,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a16",
+        "title": "Golden-Swirl Chia Morning Porridge",
+        "caloriesPerServing": 404,
+        "adjustedCoveragePct": 66.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a17",
+        "title": "Raspberry Goat Cheese Crunch Cups",
+        "caloriesPerServing": 116,
+        "adjustedCoveragePct": 75,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a18",
+        "title": "Spinach, Asparagus, and Mushroom Cheddar Frittata",
+        "caloriesPerServing": 710,
+        "adjustedCoveragePct": 55.6,
+        "reasons": [],
+        "pendingDueToImage": false
+      }
+    ],
+    "pendingDueToImage": []
+  }
+}

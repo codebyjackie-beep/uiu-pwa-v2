@@ -107,7 +107,7 @@ export async function approveRecipeDraft(
     computedAt: now,
     priceCacheStamp: 0,
   };
-  await db.collection("recipe_cost").insertOne({ ...recipeCostDoc, recipeId: insertResult.insertedId } as unknown as Document);
+  await db.collection("recipe_cost").insertOne({ ...recipeCostDoc } as unknown as Document);
 
   await db.collection("recipe_drafts").updateOne(
     { _id: new ObjectId(draftId) },

@@ -18,7 +18,7 @@
  */
 const fs = require("fs");
 const path = require("path");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 const API_ROOT = path.resolve(__dirname, "..");
 const WRITE = process.argv.includes("--write");
@@ -60,8 +60,14 @@ function loadDevVars() {
     const recipesToDelete = await db.collection("recipes").find({ autoApprovedBatchId: BATCH_ID }).toArray();
     const draftsToRevert = await db.collection("recipe_drafts").find({ "triage.batchId": BATCH_ID }).toArray();
     const recipeIds = recipesToDelete.map((r) => r._id.toString());
+    // recipe_cost.recipeId was historically stored as a raw ObjectId by a bug in
+    // approveRecipeDraft() (fixed 2026-10-08) instead of the string the RecipeCost
+    // type declares — match both shapes so this works on docs written before and
+    // after that fix (every doc created by today's real triage batch is still the
+    // old ObjectId shape).
+    const recipeObjectIds = recipesToDelete.map((r) => r._id);
     const costsToDelete = recipeIds.length
-      ? await db.collection("recipe_cost").find({ recipeId: { $in: recipeIds } }).toArray()
+      ? await db.collection("recipe_cost").find({ recipeId: { $in: [...recipeIds, ...recipeObjectIds] } }).toArray()
       : [];
 
     const approvedDrafts = draftsToRevert.filter((d) => d.triage?.action === "auto_approve");
@@ -88,7 +94,7 @@ function loadDevVars() {
       ? await db.collection("recipes").deleteMany({ autoApprovedBatchId: BATCH_ID })
       : { deletedCount: 0 };
     const deleteCostsResult = recipeIds.length
-      ? await db.collection("recipe_cost").deleteMany({ recipeId: { $in: recipeIds } })
+      ? await db.collection("recipe_cost").deleteMany({ recipeId: { $in: [...recipeIds, ...recipeObjectIds] } })
       : { deletedCount: 0 };
     const revertResult = await db.collection("recipe_drafts").updateMany(
       { "triage.batchId": BATCH_ID },
