@@ -310,10 +310,6 @@ a {
   font-size: 14px;
 }
 
-.recipes-page__save-from-link {
-  margin-bottom: var(--space);
-}
-
 .recipe-import-form input,
 .recipe-import-form textarea {
   padding: 10px 12px;
@@ -584,6 +580,89 @@ a {
   color: var(--uiu-muted);
 }
 
+.recipes-filters__chiprow {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--space) * -1);
+  padding: 0 var(--space);
+}
+
+.recipes-filters__chiprow::-webkit-scrollbar {
+  display: none;
+}
+
+.recipes-filters__chiprow .chip {
+  flex: none;
+  white-space: nowrap;
+}
+
+.recipes-filters__searchrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recipes-filters__searchrow .recipes-filters__search {
+  flex: 1;
+}
+
+.recipes-filters__filters-button {
+  flex: none;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--uiu-border);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 13px;
+  font-family: var(--font);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.recipes-filters__filters-button--active {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--uiu-white);
+  font-weight: 600;
+}
+
+.recipes-filters-sheet__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 12px var(--space) calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--uiu-border);
+}
+
+.recipes-filters-sheet__footer .wizard-primary-button {
+  flex: 1;
+}
+
+.recipes-fab {
+  position: fixed;
+  right: max(16px, calc((100vw - 640px) / 2 + 16px));
+  bottom: calc(72px + 28px + 16px + env(safe-area-inset-bottom, 0px));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--uiu-green-ink);
+  color: var(--uiu-white);
+  font-size: 28px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  z-index: 15;
+  cursor: pointer;
+}
+
 .recipes-filters__group {
   display: flex;
   flex-direction: column;
@@ -625,8 +704,7 @@ a {
 .recipes-filters__status {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   padding-top: 4px;
   font-size: 13px;
   color: var(--uiu-muted);
