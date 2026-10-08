@@ -102,6 +102,11 @@ export interface Recipe {
    * scripts/recompute_recipes_nutrition.cjs). `nutrition` on these docs is a stale/never-computed
    * {0,0,0,0} snapshot, not a genuine zero — UI must show "Nutrition not available" instead of it. */
   nutritionUnavailable?: boolean;
+  /** Set only when this recipe was created by scripts/triage_recipe_drafts.cjs's auto-approve
+   * path (cc_prompt_recipe_drafts_auto_triage.md, 2026-10-08) instead of a human admin click —
+   * lets the admin UI's "Auto-approved" filter chip find them, and lets
+   * rollback_recipe_drafts_triage.cjs find exactly what one batch run created. */
+  autoApprovedBatchId?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -702,6 +707,14 @@ export interface RecipeDraft {
    * show an image before approve, and lets approve copy it straight into the new Recipe doc
    * instead of re-calling Pexels. Absent/null for older drafts created before this field existed. */
   imageUrl?: string | null;
+  /** Set only when status became "rejected" via scripts/triage_recipe_drafts.cjs's auto-reject
+   * path or the admin "Reject selected" bulk action (cc_prompt_recipe_drafts_auto_triage.md,
+   * 2026-10-08) — human single-reject via POST /:id/reject predates this field and leaves it unset. */
+  rejectedReason?: string;
+  /** Set only on drafts touched by scripts/triage_recipe_drafts.cjs (auto-approve or
+   * auto-reject) — batchId groups everything one run did so rollback_recipe_drafts_triage.cjs
+   * can undo exactly one run; reasons is the human-readable rule list that fired. */
+  triage?: { batchId: string; action: "auto_approve" | "auto_reject"; reasons: string[]; at: ISODate };
 }
 
 /** One cell of the 4 (meal slot) x 10 (DIETARY_FILTERS key) gap matrix. */

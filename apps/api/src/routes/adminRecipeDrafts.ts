@@ -4,12 +4,13 @@
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import { ingredientTextGuard, type ApiResponse, type CanonicalIngredient, type CanonicalPriceCacheEntry, type Recipe, type RecipeCost, type RecipeCostLine, type RecipeDraft, type RecipeDraftStatus } from "@uiu/shared";
+import { type ApiResponse, type CanonicalIngredient, type CanonicalPriceCacheEntry, type Recipe, type RecipeCostLine, type RecipeDraft, type RecipeDraftStatus } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { dailyRecipeDraft, type DailyRecipeDraftEnv, type DailyRecipeDraftSummary } from "../jobs/dailyRecipeDraft";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
+import { approveRecipeDraft, rejectRecipeDraft } from "../services/recipeDraftApproval";
 
 export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
 
@@ -341,96 +342,7 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
     return c.json(body, 400);
   }
   try {
-    const result = await withDb(c.env, async (db) => {
-      const draft = await db.collection("recipe_drafts").findOne({ _id: new ObjectId(id) });
-      if (!draft) return { notFound: true as const };
-      if (draft.status !== "pending") return { alreadyDecided: true as const };
-
-      const now = new Date().toISOString();
-      // Prefer the image already fetched at draft-creation time (HANDOFF_recipe-image-gaps.md
-      // §2) — saves a Pexels call and keeps what the reviewer saw in sync with what gets
-      // published. Only fall back to a fresh lookup for older drafts that predate this field.
-      const draftImageUrl = draft.imageUrl as string | null | undefined;
-      const imageUrl = draftImageUrl
-        ? draftImageUrl
-        : await findRecipePhoto(c.env, draft.title as string).catch(() => null);
-      // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: never auto-publish a
-      // draft whose ingredient lines look like an unparsed label blob (>=3 consecutive
-      // quantity=0/unit='' lines) — flag needs_review instead of setting isPublic true.
-      // Also catches per-name fragments (cc_prompt_recipe_import_parser_fragments.md,
-      // 2026-09-09) — a quantity/instruction leftover leaked into the name itself.
-      const guardResult = ingredientTextGuard(draft.ingredients as { quantity: number; unit: string; name: string }[]);
-      const recipeDoc: Omit<Recipe, "_id"> = {
-        title: draft.title as string,
-        description: (draft.description as string) ?? "",
-        isPublic: !guardResult.suspicious,
-        needs_review: guardResult.suspicious || undefined,
-        userId: null,
-        ingredients: draft.ingredients as Recipe["ingredients"],
-        steps: draft.steps as string[],
-        tags: draft.tags as string[],
-        servings: draft.servings as number,
-        prepTimeMinutes: draft.prepTimeMinutes as number,
-        cookTimeMinutes: draft.cookTimeMinutes as number,
-        imageUrl: imageUrl ?? "",
-        nutrition: draft.nutrition as Recipe["nutrition"],
-        source: draft.importMethod === "photo-ocr" ? "photo_import"
-          : draft.importMethod === "fridge_generated" ? "fridge_generated"
-          : draft.sourceUrl ? "social_import"
-          : "ai_daily_draft",
-        sourcePlatform: (draft.sourcePlatform as Recipe["sourcePlatform"]) ?? null,
-        sourceUrl: (draft.sourceUrl as string) ?? undefined,
-        collectionIds: [],
-        isFavorite: false,
-        viewCount: 0,
-        favoriteCount: 0,
-        __v: 0,
-        createdAt: now,
-        updatedAt: now,
-        mealType: draft.mealType as string | undefined,
-      };
-      const insertResult = await db.collection("recipes").insertOne(recipeDoc as unknown as Document);
-
-      // HANDOFF_recipe-drafts-approve-fresh-cost.md — recompute live with the
-      // real engine against the just-inserted recipe doc, same pattern as
-      // GET /:id/cost-lines, instead of copying draft.costPreview's stale
-      // aggregate-only numbers (which always wrote lines:[] and zeroed counts).
-      const ingredientsCol = db.collection<Document>("canonical_ingredients");
-      const priceCol = db.collection<Document>("canonical_price_cache");
-      const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
-      const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
-      const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
-      const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
-      const quarantinedNames = new Set(
-        allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
-      );
-      const index = await buildAliasIndex(ingredientsCol);
-      const resolveFn = (rawName: string) => resolve(rawName, index);
-      const cost = costRecipe({ ...recipeDoc, _id: insertResult.insertedId } as unknown as Recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-
-      const recipeCostDoc: Omit<RecipeCost, "_id"> = {
-        recipeId: insertResult.insertedId.toString(),
-        basket: cost.basket,
-        currency: cost.currency,
-        coveragePct: cost.coveragePct,
-        adjustedCoveragePct: cost.adjustedCoveragePct,
-        totalLines: cost.totalLines,
-        priceableCount: cost.priceableCount,
-        adjustedTotal: cost.adjustedTotal,
-        adjustedPriceable: cost.adjustedPriceable,
-        pantryLineCount: cost.pantryLineCount,
-        junkLineCount: cost.junkLineCount,
-        perServing: cost.perServing,
-        lines: cost.lines as unknown as RecipeCostLine[],
-        unpriceableReasons: cost.unpriceableReasons,
-        computedAt: now,
-        priceCacheStamp: 0,
-      };
-      await db.collection("recipe_cost").insertOne({ ...recipeCostDoc, recipeId: insertResult.insertedId } as unknown as Document);
-
-      await db.collection("recipe_drafts").updateOne({ _id: new ObjectId(id) }, { $set: { status: "approved" } });
-      return { insertedId: insertResult.insertedId.toString() };
-    });
+    const result = await withDb(c.env, (db) => approveRecipeDraft(db, c.env, id));
 
     if ("notFound" in result) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Draft not found" } };
@@ -460,11 +372,13 @@ adminRecipeDraftsRouter.post("/:id/reject", async (c) => {
     const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Invalid draft id" } };
     return c.json(body, 400);
   }
+  const payload = await c.req.json().catch(() => null);
+  const rejectedReason = payload && typeof payload === "object" && typeof (payload as Record<string, unknown>).rejectedReason === "string"
+    ? ((payload as Record<string, unknown>).rejectedReason as string)
+    : undefined;
   try {
-    const result = await withDb(c.env, (db) =>
-      db.collection("recipe_drafts").updateOne({ _id: new ObjectId(id), status: "pending" }, { $set: { status: "rejected" } }),
-    );
-    if (result.matchedCount === 0) {
+    const result = await withDb(c.env, (db) => rejectRecipeDraft(db, id, { rejectedReason }));
+    if ("notFound" in result) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Draft not found or not pending" } };
       return c.json(body, 404);
     }

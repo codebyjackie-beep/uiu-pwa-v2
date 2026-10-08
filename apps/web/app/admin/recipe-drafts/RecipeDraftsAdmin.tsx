@@ -8,11 +8,18 @@ type Session = "loading" | "authed" | "anon";
 
 type StatusFilter = RecipeDraftStatus | "all";
 
-const STATUS_TABS: { value: StatusFilter; label: string }[] = [
-  { value: "pending", label: "Pending" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
-  { value: "all", label: "All" },
+// "Auto-approved"/"Needs review" (cc_prompt_recipe_drafts_auto_triage.md Part 3) aren't
+// RecipeDraftStatus values — they're a client-side filter on top of the underlying status
+// fetch, keyed off the `triage` tag the auto-triage script writes.
+type UiFilter = StatusFilter | "auto_approved" | "needs_review";
+
+const STATUS_TABS: { value: UiFilter; label: string; fetchStatus: StatusFilter }[] = [
+  { value: "pending", label: "Pending", fetchStatus: "pending" },
+  { value: "needs_review", label: "Needs review", fetchStatus: "pending" },
+  { value: "approved", label: "Approved", fetchStatus: "approved" },
+  { value: "auto_approved", label: "Auto-approved", fetchStatus: "approved" },
+  { value: "rejected", label: "Rejected", fetchStatus: "rejected" },
+  { value: "all", label: "All", fetchStatus: "all" },
 ];
 
 const PAGE_SIZE = 25;
@@ -87,11 +94,14 @@ export function RecipeDraftsAdmin() {
   const [loggingIn, setLoggingIn] = useState(false);
   const [sessionNotice, setSessionNotice] = useState<string | null>(null);
 
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("pending");
+  const [uiFilter, setUiFilter] = useState<UiFilter>("pending");
   const [page, setPage] = useState(1);
   const [drafts, setDrafts] = useState<RecipeDraft[]>([]);
   const [loading, setLoading] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchProgress, setBatchProgress] = useState<{ done: number; total: number; action: "approve" | "reject" } | null>(null);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -109,11 +119,21 @@ export function RecipeDraftsAdmin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const fetchStatus = STATUS_TABS.find((t) => t.value === uiFilter)?.fetchStatus ?? "pending";
+
   useEffect(() => {
     if (session !== "authed") return;
-    void loadDrafts(statusFilter);
+    setSelectedIds(new Set());
+    void loadDrafts(fetchStatus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter]);
+  }, [fetchStatus]);
+
+  const visibleDrafts =
+    uiFilter === "auto_approved"
+      ? drafts.filter((d) => d.triage?.action === "auto_approve")
+      : uiFilter === "needs_review"
+        ? drafts.filter((d) => d.status === "pending" && d.triage?.action !== "auto_approve")
+        : drafts;
 
   useEffect(() => {
     if (!toast) return;
@@ -158,7 +178,7 @@ export function RecipeDraftsAdmin() {
     }
     setPassword("");
     setSession("authed");
-    void loadDrafts(statusFilter);
+    void loadDrafts(fetchStatus);
   }
 
   async function loadCostLines(id: string) {
@@ -220,26 +240,78 @@ export function RecipeDraftsAdmin() {
     setToast("已儲存。");
   }
 
+  /** Shared single-item decision call, reused by both the per-card button and the
+   * batch approve/reject loop (cc_prompt_recipe_drafts_auto_triage.md Part 3) — the
+   * batch loop drives its own confirm/progress UI around this instead of duplicating
+   * the fetch/401/error handling per call site. */
+  async function performDecision(id: string, action: "approve" | "reject"): Promise<boolean> {
+    const { res, parsed } = await fetchJson<{ recipeId: string } | { id: string }>(`/api/admin/recipe-drafts/${id}/${action}`, {
+      method: "POST",
+    });
+    if (res.status === 401) {
+      setSession("anon");
+      setSessionNotice("Session 已過期，請重新登入。");
+      return false;
+    }
+    if (!parsed || !parsed.ok) return false;
+    setDrafts((prev) => prev.filter((d) => d._id !== id));
+    return true;
+  }
+
   async function decide(id: string, action: "approve" | "reject") {
     if (action === "reject" && !window.confirm("確定要 reject 呢條 draft？呢個動作唔會再顯示喺 pending 列表。")) {
       return;
     }
     setDecidingId(id);
-    const { res, parsed } = await fetchJson<{ recipeId: string } | { id: string }>(`/api/admin/recipe-drafts/${id}/${action}`, {
-      method: "POST",
-    });
+    const ok = await performDecision(id, action);
     setDecidingId(null);
-    if (res.status === 401) {
-      setSession("anon");
-      setSessionNotice("Session 已過期，請重新登入。");
-      return;
+    setToast(ok ? (action === "approve" ? "已 approve，已加入 recipes。" : "已 reject。") : `${action} 失敗，請重試。`);
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  const pendingOnPageIds = visibleDrafts
+    .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    .filter((d) => d.status === "pending")
+    .map((d) => d._id);
+  const allOnPageSelected = pendingOnPageIds.length > 0 && pendingOnPageIds.every((id) => selectedIds.has(id));
+
+  function toggleSelectAllOnPage() {
+    setSelectedIds((prev) => {
+      if (allOnPageSelected) {
+        const next = new Set(prev);
+        pendingOnPageIds.forEach((id) => next.delete(id));
+        return next;
+      }
+      return new Set([...prev, ...pendingOnPageIds]);
+    });
+  }
+
+  async function runBatch(action: "approve" | "reject") {
+    const ids = [...selectedIds].filter((id) => drafts.find((d) => d._id === id)?.status === "pending");
+    if (ids.length === 0) return;
+    const confirmMsg =
+      action === "approve"
+        ? `確定要 approve 呢 ${ids.length} 條 draft？`
+        : `確定要 reject 呢 ${ids.length} 條 draft？呢個動作唔會再顯示喺 pending 列表。`;
+    if (!window.confirm(confirmMsg)) return;
+    setBatchProgress({ done: 0, total: ids.length, action });
+    let okCount = 0;
+    for (let i = 0; i < ids.length; i++) {
+      const ok = await performDecision(ids[i]!, action);
+      if (ok) okCount++;
+      setBatchProgress({ done: i + 1, total: ids.length, action });
     }
-    if (!parsed || !parsed.ok) {
-      setToast(parsed && !parsed.ok ? `${action} 失敗：${parsed.error.message}` : `${action} 失敗，請重試。`);
-      return;
-    }
-    setDrafts((prev) => prev.filter((d) => d._id !== id));
-    setToast(action === "approve" ? "已 approve，已加入 recipes。" : "已 reject。");
+    setBatchProgress(null);
+    setSelectedIds(new Set());
+    setToast(`${action === "approve" ? "Approve" : "Reject"} 完成：${okCount}/${ids.length} 成功。`);
   }
 
   if (session === "loading") {
@@ -286,8 +358,8 @@ export function RecipeDraftsAdmin() {
           <button
             key={t.value}
             type="button"
-            className={`wizard-chip${statusFilter === t.value ? " wizard-chip--selected" : ""}`}
-            onClick={() => setStatusFilter(t.value)}
+            className={`wizard-chip${uiFilter === t.value ? " wizard-chip--selected" : ""}`}
+            onClick={() => setUiFilter(t.value)}
           >
             {t.label}
           </button>
@@ -297,15 +369,50 @@ export function RecipeDraftsAdmin() {
       {toast ? <p className="admin-drafts-toast">{toast}</p> : null}
       {listError ? <p className="admin-drafts-error">{listError}</p> : null}
       {loading ? <p className="admin-drafts-page__sub">載入緊…</p> : null}
-      {!loading && drafts.length === 0 && !listError ? <p className="admin-drafts-page__sub">冇 {statusFilter} 嘅 draft。</p> : null}
-      {!loading && drafts.length > 0 ? <p className="admin-drafts-page__sub">共 {drafts.length} 條 draft</p> : null}
+      {!loading && visibleDrafts.length === 0 && !listError ? <p className="admin-drafts-page__sub">冇符合嘅 draft。</p> : null}
+      {!loading && visibleDrafts.length > 0 ? <p className="admin-drafts-page__sub">共 {visibleDrafts.length} 條 draft</p> : null}
+
+      {pendingOnPageIds.length > 0 ? (
+        <div className="admin-drafts-batch-bar">
+          <label className="admin-drafts-batch-bar__selectall">
+            <input type="checkbox" checked={allOnPageSelected} onChange={toggleSelectAllOnPage} />
+            Select all on this page
+          </label>
+          <button
+            type="button"
+            className="wizard-primary-button"
+            disabled={selectedIds.size === 0 || batchProgress !== null}
+            onClick={() => runBatch("approve")}
+          >
+            Approve selected ({selectedIds.size})
+          </button>
+          <button
+            type="button"
+            className="admin-drafts-reject-button"
+            disabled={selectedIds.size === 0 || batchProgress !== null}
+            onClick={() => runBatch("reject")}
+          >
+            Reject selected ({selectedIds.size})
+          </button>
+          {batchProgress ? (
+            <span className="admin-drafts-page__sub">
+              {batchProgress.action === "approve" ? "Approving" : "Rejecting"} {batchProgress.done}/{batchProgress.total}…
+            </span>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="admin-drafts-list">
-        {drafts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((d) => {
+        {visibleDrafts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((d) => {
           const expanded = expandedId === d._id;
           const isEditing = editingId === d._id;
           return (
             <div key={d._id} className="admin-drafts-card">
+              {d.status === "pending" ? (
+                <label className="admin-drafts-card__select" onClick={(e) => e.stopPropagation()}>
+                  <input type="checkbox" checked={selectedIds.has(d._id)} onChange={() => toggleSelect(d._id)} />
+                </label>
+              ) : null}
               <button
                 type="button"
                 className="admin-drafts-card__header"
@@ -341,6 +448,15 @@ export function RecipeDraftsAdmin() {
                 {d.nutrition.calories} cal · {d.nutrition.protein}g protein · {d.nutrition.carbs}g carbs · {d.nutrition.fat}g fat ·{" "}
                 {relativeTime(d.createdAt)}
               </p>
+
+              {d.triage ? (
+                <p className="admin-drafts-triage">
+                  {d.triage.action === "auto_approve" ? "✅ Auto-approved" : "🚫 Auto-rejected"} (batch {d.triage.batchId}): {d.triage.reasons.join("; ")}
+                </p>
+              ) : null}
+              {d.status === "rejected" && d.rejectedReason && !d.triage ? (
+                <p className="admin-drafts-triage">Reject reason: {d.rejectedReason}</p>
+              ) : null}
 
               {expanded ? (
                 isEditing && edit ? (
@@ -415,7 +531,7 @@ export function RecipeDraftsAdmin() {
         })}
       </div>
 
-      {drafts.length > 0 ? (
+      {visibleDrafts.length > 0 ? (
         <div className="recipes-page__pagination">
           {page > 1 ? (
             <button type="button" onClick={() => setPage((p) => p - 1)}>
@@ -425,9 +541,9 @@ export function RecipeDraftsAdmin() {
             <span aria-disabled="true">← Prev</span>
           )}
           <span>
-            Page {page} / {Math.max(1, Math.ceil(drafts.length / PAGE_SIZE))}
+            Page {page} / {Math.max(1, Math.ceil(visibleDrafts.length / PAGE_SIZE))}
           </span>
-          {page < Math.ceil(drafts.length / PAGE_SIZE) ? (
+          {page < Math.ceil(visibleDrafts.length / PAGE_SIZE) ? (
             <button type="button" onClick={() => setPage((p) => p + 1)}>
               Next →
             </button>
