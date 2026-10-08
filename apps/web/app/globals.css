@@ -804,6 +804,9 @@ a {
   position: relative;
   z-index: 1;
   flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -917,6 +920,9 @@ a {
 .cook-mode__timers {
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -973,6 +979,9 @@ a {
 .cook-mode__sheet {
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
   background: var(--uiu-white);
   border-top: 1px solid var(--uiu-border);
   border-radius: 20px 20px 0 0;
