@@ -461,7 +461,7 @@ export default {
       );
       return;
     }
-    if (event.cron === "0 4,7,10,13,16,19,22 * * *") {
+    if (event.cron === "0 7 * * *") {
       ctx.waitUntil(
         dailyRecipeDraft(env, false)
           .then((summary) => {

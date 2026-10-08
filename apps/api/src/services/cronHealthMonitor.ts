@@ -44,7 +44,7 @@ export async function recordCronRun(
 const JOB_EXPECTATIONS: Record<MonitoredJobName, { maxIntervalMinutes: number }> = {
   igContentAgent: { maxIntervalMinutes: 24 * 60 + 60 }, // daily 09:00 UTC + 1h buffer (token-health check only, 2026-09-02)
   affiliateCadence: { maxIntervalMinutes: 24 * 60 + 60 }, // fires daily 08:00 UTC (even on its own no-op days it still calls recordCronRun)
-  dailyRecipeDraft: { maxIntervalMinutes: 3 * 60 + 30 }, // fires every 3h (event.cron "0 4,7,10,13,16,19,22 * * *")
+  dailyRecipeDraft: { maxIntervalMinutes: 24 * 60 + 60 }, // 2026-10-08: fires once/day 07:00 UTC (event.cron "0 7 * * *"), was every 3h
   pwaDiagnostics: { maxIntervalMinutes: 60 + 15 }, // hourly
   igInsights: { maxIntervalMinutes: 60 + 15 }, // hourly (offset :30 from pwaDiagnostics)
 };

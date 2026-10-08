@@ -169,11 +169,13 @@ export type IdeaSpec = GapIdeaSpec | RotationIdeaSpec;
 export function buildIdeaSpecs(
   priorityTargets: GapMatrixCell[],
   state: DraftStateDoc,
+  totalSpecs: number = 20,
 ): { specs: IdeaSpec[]; nextState: DraftStateDoc; draftedTargets: GapTarget[] } {
-  const gapTargets = priorityTargets.slice(0, 5);
+  const gapQuota = Math.max(0, Math.min(5, Math.min(priorityTargets.length, Math.round(totalSpecs / 4))));
+  const gapTargets = priorityTargets.slice(0, gapQuota);
   const gapSpecs: GapIdeaSpec[] = gapTargets.map((t) => ({ kind: "gap", slot: t.slot, dietary: t.dietary, countBefore: t.count }));
 
-  const rotationCount = 20 - gapSpecs.length;
+  const rotationCount = totalSpecs - gapSpecs.length;
   const rotationSpecs: RotationIdeaSpec[] = [];
   let cuisineIdx = state.lastCuisineIndex;
   let dietIdx = state.lastDietIndex;

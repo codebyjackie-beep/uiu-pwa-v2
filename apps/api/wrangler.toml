@@ -109,6 +109,11 @@ PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 # be shipped to the browser, so duplicating it here (not a secret) is fine — src/clerkAuth.ts
 # decodes it to find Clerk's JWKS endpoint for independent session-token verification.
 CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXYk"
+# cc_prompt_recipe_drafts_auto_triage.md Part 1, 2026-10-08 — Jackie 拍板減慢生成
+# (recipe_drafts backlog 923 pending vs 207 live, 人手睇唔切). Daily idea-spec quota,
+# read by jobs/dailyRecipeDraft.ts (falls back to 20 if unset/invalid). Was 20/day;
+# tune here without a redeploy.
+RECIPE_DRAFTS_PER_DAY = "3"
 
 # Six independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:
@@ -120,19 +125,19 @@ CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXY
 #   digit (1278/1791 = 71.35678%). scheduled() runs with dryRun:false, so this
 #   weekly refresh now recomputes over real production data going forward.
 #
-#   "0 4,7,10,13,16,19,22 * * *"  Daily recipe draft agent
-#   (HANDOFF_daily-recipe-draft-agent.md). Fires 7x/day (every 3h) instead of
-#   once — 2026-08-05 subrequest-cap fix: dailyRecipeDraft() now only attempts
-#   BATCH_SIZE(3) idea specs per invocation and persists the rest of the day's
-#   20-spec queue in `recipe_draft_state`, so 7 fires * 3 = 21 >= 20 specs
-#   guarantees the queue drains within a day even if a batch mostly fails.
-#   Once today's queue is empty, later same-day fires are a cheap no-op
-#   (single Mongo read, returns immediately). Cron string is a single
-#   comma-hour-list entry (Cloudflare fires it 7x, event.cron reports back
-#   the exact same string each time), not 7 separate array entries — keeps
-#   the event.cron === match in index.ts a single string comparison.
-#   Only ever writes to `recipe_drafts` (status:"pending") — never touches
-#   `recipes`/`recipe_cost` until a human clicks Approve in the admin page.
+#   "0 7 * * *"  Daily recipe draft agent (HANDOFF_daily-recipe-draft-agent.md).
+#   2026-10-08 (cc_prompt_recipe_drafts_auto_triage.md Part 1): Jackie cut the
+#   daily quota from 20 to RECIPE_DRAFTS_PER_DAY(3) specs/day because the
+#   recipe_drafts backlog (923 pending vs 207 live) was growing faster than she
+#   could review manually, and most drafts now auto-triage anyway (see Part 2 —
+#   adminRecipeDrafts.ts / scripts/triage_recipe_drafts.cjs). Fires once/day
+#   (was 7x/day, every 3h, pre-2026-10-08) because one invocation now easily
+#   drains the whole day's 3-spec quota within Cloudflare's per-invocation
+#   subrequest cap (see DEFAULT_DRAFTS_PER_DAY comment in dailyRecipeDraft.ts) —
+#   the old 7-fires-to-drain-20 batching/resume machinery still exists but is a
+#   harmless no-op at this quota size. Only ever writes to `recipe_drafts`
+#   (status:"pending") — never touches `recipes`/`recipe_cost` directly
+#   (triage/approve does that separately).
 #
 #   "0 * * * *"  PWA diagnostics + monitor (HANDOFF_pwa-diagnostics-monitor.md,
 #   2026-08-23) — hourly. No VM, no fixed persona (supersedes the old
@@ -173,4 +178,4 @@ CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXY
 #   that 403s (e.g. pre-2026-08-31-brand-merge media on the retired @kura.nook account) doesn't
 #   get retried every hour forever.
 [triggers]
-crons = ["0 3 * * 1", "0 4,7,10,13,16,19,22 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *"]
+crons = ["0 3 * * 1", "0 7 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *"]

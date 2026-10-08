@@ -27,7 +27,10 @@ import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
-export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv, PexelsEnv {}
+export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv, PexelsEnv {
+  /** wrangler.toml [vars] — how many drafts/day, tunable without a redeploy. Defaults to 20 (pre-2026-10-08 behavior) if unset. */
+  RECIPE_DRAFTS_PER_DAY?: string;
+}
 
 export interface DailyRecipeDraftSummary {
   dryRun: boolean;
@@ -37,25 +40,27 @@ export interface DailyRecipeDraftSummary {
   created: number;
   skippedDuplicates: number;
   drafts: Array<{ title: string; sourceInspiration: string; gapTarget?: GapTarget }>;
-  /** Batching status (see BATCH_SIZE below) — each invocation only attempts a slice of the day's 20 specs to stay well under Cloudflare's per-invocation subrequest cap. */
+  /** Batching status (see DEFAULT_DRAFTS_PER_DAY below) — normally one invocation drains the whole day's quota (RECIPE_DRAFTS_PER_DAY); the resume machinery only kicks in if the quota is ever raised above what one invocation can safely attempt under Cloudflare's subrequest cap. */
   batch: { attempted: number; remainingAfterThisRun: number; queueDate: string; alreadyCompletedToday: boolean };
 }
 
 /**
- * How many idea specs a single invocation attempts. Cloudflare enforces a
- * per-invocation subrequest cap (observed live 2026-08-04: exactly 50,
- * "Too many subrequests by single Worker invocation" fired 50 times when all
- * 20 specs + their retries ran in one go). Each spec can burn up to
- * MAX_ATTEMPTS * 2 subrequests (1 Spoonacular fetch, occasionally doubled by
- * its own 429 retry, + 1 OpenRouter draft call), plus a handful of Mongo
- * queries shared across the whole invocation — so BATCH_SIZE=3 with
- * MAX_ATTEMPTS=3 caps a single run at roughly 3*(3*2)=18 idea/draft
- * subrequests, leaving comfortable headroom under 50. The remaining specs
- * stay queued in `recipe_draft_state` and are picked up by the next cron
- * fire (wrangler.toml now fires this job several times a day instead of
- * once) until the day's 20 are done, then rotation state commits once.
+ * Fallback daily quota if RECIPE_DRAFTS_PER_DAY is unset (pre-2026-10-08
+ * behavior: 20/day). Cloudflare enforces a per-invocation subrequest cap
+ * (observed live 2026-08-04: exactly 50, "Too many subrequests by single
+ * Worker invocation" fired 50 times when all 20 specs + their retries ran in
+ * one go). Each spec can burn up to MAX_ATTEMPTS * 2 subrequests (1
+ * Spoonacular fetch, occasionally doubled by its own 429 retry, + 1
+ * OpenRouter draft call) — 2026-10-08: Jackie cut the daily quota to 3/day
+ * (recipe_drafts backlog of 923 pending vs 207 live recipes was growing
+ * faster than she could review), which conveniently also means one cron
+ * fire now drains the ENTIRE day's quota in a single invocation
+ * (3*(3*2)=18 subrequests, same headroom as before) — no more multi-fire
+ * batching/resume needed day-to-day. The queue/resume machinery below is
+ * kept intact (harmless no-op at quota<=BATCH_SIZE) in case the quota is
+ * ever raised back above what one invocation can safely attempt.
  */
-const BATCH_SIZE = 3;
+const DEFAULT_DRAFTS_PER_DAY = 20;
 
 function ideaQuery(spec: IdeaSpec): { query: string; diet?: string; cuisine?: string } {
   if (spec.kind === "gap") {
@@ -65,6 +70,10 @@ function ideaQuery(spec: IdeaSpec): { query: string; diet?: string; cuisine?: st
 }
 
 export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false): Promise<DailyRecipeDraftSummary> {
+  const parsedQuota = env.RECIPE_DRAFTS_PER_DAY ? parseInt(env.RECIPE_DRAFTS_PER_DAY, 10) : NaN;
+  const totalSpecs = Number.isFinite(parsedQuota) && parsedQuota > 0 ? parsedQuota : DEFAULT_DRAFTS_PER_DAY;
+  const BATCH_SIZE = totalSpecs;
+
   const today = new Date().toISOString().slice(0, 10);
   const pool = await buildPool(env);
   const gapMatrix = computeGapMatrix(pool);
@@ -92,7 +101,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
   } else if (!dryRun && state.queue && state.queue.date === today && state.queue.specs.length > 0) {
     queue = state.queue;
   } else {
-    const built = buildIdeaSpecs(priorityTargets, state);
+    const built = buildIdeaSpecs(priorityTargets, state, totalSpecs);
     queue = {
       date: today,
       specs: built.specs,
