@@ -23,6 +23,7 @@ import type {
   MealSlot,
   UkAllergen,
 } from "@uiu/shared";
+import { classifyRecipeMealTypes } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 
 // ---------------------------------------------------------------------------
@@ -54,90 +55,18 @@ export interface PoolRecipe {
   nutritionUnavailable: boolean;
 }
 
-const MEAL_SLOT_TAGS: Record<string, MealSlot[]> = {
-  breakfast: ["breakfast"],
-  brunch: ["breakfast", "lunch"],
-  lunch: ["lunch"],
-  dinner: ["dinner"],
-  snack: ["snack"],
-};
-
 /**
- * Soup keyword list (HANDOFF_meal-planner-slot-scoring-fix.md Bug 1,
- * 2026-08-03). Keyword-based against title+tags, not calorie-threshold-based
- * — some desserts exceed 500 kcal, so calories can't distinguish them.
- * Deliberately no "broth" in SOUP_KEYWORDS: some pasta dishes are "with
- * broth" and would be wrongly caught.
- *
- * Dessert used to be keyword-matched the same way (DESSERT_KEYWORDS incl.
- * "cake"/"pie"/"tart"/"pudding"/"muffin") but a full production scan
- * (HANDOFF_dessert-keyword-savory-fix.md, 2026-08-04) found that produced 35
- * false positives — genuine savory dishes whose name/tags happen to contain
- * a dessert word (Crab Cakes Eggs Benedict, Fish Pie, Shepherd's Pie, Yorkshire
- * Puddings, Flamiche, Cream Cheese Tart, etc.) — and 0 true positives it
- * caught that the "dessert" tag didn't already cover (all 77 dessert-tagged
- * recipes without a keyword match, e.g. Churros/Flan/Tiramisu-style dishes,
- * were being silently mis-slotted into lunch/dinner anyway). Dessert
- * detection is now tag-based only (see isDessert below), consistent with
- * how every other meal slot (breakfast/lunch/dinner/snack) is already
- * determined via MEAL_SLOT_TAGS.
+ * Slot eligibility comes from classifyRecipeMealTypes() in @uiu/shared — the same function the
+ * Recipes page chips use, so the two can't drift (cc_prompt_recipe_data_cleanup.md Part 10).
+ * Tags plus a recognised `mealType` drive it; no signal defaults to lunch+dinner, soups are
+ * never dinner, desserts are never lunch/dinner. Only the four planner slots are kept —
+ * "dessert"/"appetizer" are display classes, not slots.
  */
-const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
-
-function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-/**
- * Word-boundary match, not raw substring (HANDOFF_dessert-keyword-substring-fix.md,
- * 2026-08-04) — plain .includes() let the "starter" tag false-match "tart" in
- * DESSERT_KEYWORDS, misclassifying starter/soup recipes as dessert. \b boundaries
- * still match "tart" as a whole word (e.g. a recipe/tag literally called "tart").
- * Trailing `s?` keeps plural titles/tags matching (e.g. "Cookies", "Muffins") —
- * without it \b...\b stops matching once a plural "s" is appended, which would
- * be a regression (verified against all 200 recipes, see the summary's diff).
- */
-function matchesAny(text: string, keywords: string[]): boolean {
-  return keywords.some((k) => new RegExp(`\\b${escapeRegex(k)}s?\\b`, "i").test(text));
-}
-
-/**
- * Tags-based, not mealType-based (see file header). Recipes with no
- * recognizable meal-slot tag default to lunch+dinner — a product judgment
- * call for the 58/197 recipes with zero signal (mostly savoury mains),
- * not a hard rule. Soup and dessert overrides below apply regardless of
- * whether the slots came from a tag or the fallback (a recipe tagged
- * "dinner" that's actually soup still shouldn't show up at dinner).
- */
-function deriveMealSlots(titleLower: string, tagsLower: string[]): Set<MealSlot> {
-  const isDessert = tagsLower.includes("dessert");
-  const isSoup = matchesAny(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAny(t, SOUP_KEYWORDS));
-
+function deriveMealSlots(recipe: { title: string; tags: string[]; mealType?: string }): Set<MealSlot> {
   const slots = new Set<MealSlot>();
-  for (const tag of tagsLower) {
-    const mapped = MEAL_SLOT_TAGS[tag];
-    if (mapped) for (const s of mapped) slots.add(s);
+  for (const c of classifyRecipeMealTypes(recipe)) {
+    if (c === "breakfast" || c === "lunch" || c === "dinner" || c === "snack") slots.add(c);
   }
-
-  if (slots.size === 0) {
-    if (isDessert) {
-      slots.add("snack");
-    } else if (isSoup) {
-      slots.add("lunch");
-    } else {
-      slots.add("lunch");
-      slots.add("dinner");
-    }
-  }
-
-  // Soup is never dinner-eligible (lunch is fine); dessert is never
-  // lunch/dinner-eligible — regardless of tag vs fallback origin above.
-  if (isSoup) slots.delete("dinner");
-  if (isDessert) {
-    slots.delete("lunch");
-    slots.delete("dinner");
-  }
-
   return slots;
 }
 
@@ -145,7 +74,6 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
   const tags: string[] = Array.isArray(doc.tags) ? (doc.tags as string[]).map((t) => String(t).toLowerCase()) : [];
   const ingredients: Document[] = Array.isArray(doc.ingredients) ? (doc.ingredients as Document[]) : [];
   const nutrition = doc.nutrition as Document | undefined;
-  const titleLower = String(doc.title ?? "").toLowerCase();
   return {
     id: (doc._id as ObjectIdType).toString(),
     title: doc.title as string,
@@ -160,7 +88,7 @@ function toPoolRecipe(doc: Document, costDoc: Document | null): PoolRecipe {
     costPerServing: costDoc && (costDoc.perServing as number) > 0 ? (costDoc.perServing as number) : null,
     basket: costDoc && (costDoc.basket as number) > 0 ? (costDoc.basket as number) : null,
     adjustedCoveragePct: costDoc ? (costDoc.adjustedCoveragePct as number) : null,
-    mealSlots: deriveMealSlots(titleLower, tags),
+    mealSlots: deriveMealSlots({ title: String(doc.title ?? ""), tags, mealType: doc.mealType as string | undefined }),
     nutritionUnavailable: doc.nutritionUnavailable === true,
   };
 }

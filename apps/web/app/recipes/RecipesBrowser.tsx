@@ -361,7 +361,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
 
       <div className="recipe-list">
         {visible.map((recipe) => {
-          const mealBadge = mealTypeBadge(recipe);
+          const mealBadge = mealTypeBadge(recipe, mealTypes);
           const totalMin = totalTimeMinutes(recipe);
           const isFavourite = favouriteIds.has(recipe._id);
           return (

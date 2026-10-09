@@ -1,91 +1,16 @@
-import type { RecipeListItem } from "@uiu/shared";
+import { classifyRecipeMealTypes, type RecipeListItem, type RecipeMealClass } from "@uiu/shared";
 
 /**
- * Recipes-page filter classification (HANDOFF_recipes-page-filters.md, 2026-08-04).
- * Meal-type detection is a manual copy of MEAL_SLOT_TAGS/deriveMealSlots/DESSERT_KEYWORDS/
- * SOUP_KEYWORDS from apps/api/src/services/mealPlanGenerator.ts, kept identical on purpose
- * so a recipe's meal-type filter match agrees with what the meal planner would slot it into.
- * That file's PoolRecipe isn't reusable here (different runtime, DB-joined shape), so the
- * keyword lists/logic are duplicated rather than imported — keep both in sync by hand.
+ * Recipes-page filter classification. Meal-type detection lives in @uiu/shared
+ * (classifyRecipeMealTypes) and is also what apps/api/src/services/mealPlanGenerator.ts uses
+ * for slot eligibility, so a recipe's chip match always agrees with what the meal planner would
+ * slot it into (cc_prompt_recipe_data_cleanup.md Part 10).
  */
 
-export type FilterMealType = "breakfast" | "lunch" | "dinner" | "snack" | "dessert" | "appetizer";
+export type FilterMealType = RecipeMealClass;
 
-const MEAL_SLOT_TAGS: Record<string, Array<"breakfast" | "lunch" | "dinner" | "snack">> = {
-  breakfast: ["breakfast"],
-  brunch: ["breakfast", "lunch"],
-  lunch: ["lunch"],
-  dinner: ["dinner"],
-  snack: ["snack"],
-};
-
-/**
- * Dessert used to be keyword-matched (DESSERT_KEYWORDS incl. "cake"/"pie"/
- * "tart"/"pudding"/"muffin") but a full production scan
- * (HANDOFF_dessert-keyword-savory-fix.md, 2026-08-04) found that produced 35
- * false positives — genuine savory dishes whose name/tags happen to contain
- * a dessert word (Crab Cakes Eggs Benedict, Fish Pie, Shepherd's Pie, Yorkshire
- * Puddings, Flamiche, Cream Cheese Tart, etc.) — and 0 true positives it
- * caught beyond what the "dessert" tag already covers. Dessert detection is
- * now tag-based only (see isDessert below), consistent with mealPlanGenerator.ts.
- */
-const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
-
-function escapeRegex(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-/**
- * Word-boundary match, not raw substring (HANDOFF_dessert-keyword-substring-fix.md,
- * 2026-08-04) — kept in sync with mealPlanGenerator.ts's matchesAny(); see file header.
- * Trailing `s?` keeps plural titles/tags matching (e.g. "Cookies", "Muffins").
- */
-function matchesAny(text: string, keywords: string[]): boolean {
-  return keywords.some((k) => new RegExp(`\\b${escapeRegex(k)}s?\\b`, "i").test(text));
-}
-
-/** Same fallback/soup/dessert-override rules as deriveMealSlots(); see file header. */
 export function classifyMealTypes(recipe: Pick<RecipeListItem, "title" | "tags" | "mealType">): Set<FilterMealType> {
-  const titleLower = recipe.title.toLowerCase();
-  // Auto-approved recipes (ai_daily_draft) store their meal category in `mealType` and carry no
-  // breakfast/lunch/dinner tag, so treat a recognised `mealType` as one more tag. Unrecognised
-  // values (the field also holds junk such as "healthy"/"trending") are ignored by the lookups.
-  const tagsLower = recipe.tags.map((t) => t.toLowerCase());
-  const mealTypeLower = recipe.mealType?.trim().toLowerCase();
-  if (mealTypeLower && !tagsLower.includes(mealTypeLower)) tagsLower.push(mealTypeLower);
-
-  const isDessert = tagsLower.includes("dessert");
-  const isSoup = matchesAny(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAny(t, SOUP_KEYWORDS));
-
-  const slots = new Set<"breakfast" | "lunch" | "dinner" | "snack">();
-  for (const tag of tagsLower) {
-    const mapped = MEAL_SLOT_TAGS[tag];
-    if (mapped) for (const s of mapped) slots.add(s);
-  }
-
-  if (slots.size === 0) {
-    if (isDessert) slots.add("snack");
-    else if (isSoup) slots.add("lunch");
-    else {
-      slots.add("lunch");
-      slots.add("dinner");
-    }
-  }
-
-  if (isSoup) {
-    slots.delete("dinner");
-    // A soup whose only slot was dinner (e.g. mealType "dinner") would otherwise match no chip.
-    if (slots.size === 0 && !isDessert) slots.add("lunch");
-  }
-  if (isDessert) {
-    slots.delete("lunch");
-    slots.delete("dinner");
-  }
-
-  const result: Set<FilterMealType> = new Set(slots);
-  if (isDessert) result.add("dessert");
-  if (tagsLower.includes("appetizer")) result.add("appetizer");
-  return result;
+  return classifyRecipeMealTypes(recipe);
 }
 
 /**

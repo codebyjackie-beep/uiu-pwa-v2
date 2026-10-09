@@ -1002,3 +1002,95 @@ export interface UiuUser {
   createdAt: ISODate;
   subscriptionStatus: SubscriptionStatus;
 }
+
+// ---------------------------------------------------------------------------
+// Meal-type classification — single source of truth for the Recipes page chips/badges (web)
+// and the meal-plan generator's slot eligibility (api). Previously hand-copied in both places
+// ("kept identical on purpose"); cc_prompt_recipe_data_cleanup.md Part 10 found them drifting.
+// ---------------------------------------------------------------------------
+
+export type RecipeMealClass = "breakfast" | "lunch" | "dinner" | "snack" | "dessert" | "appetizer";
+
+/** Display order when a recipe belongs to several classes and no chip is selected. */
+export const RECIPE_MEAL_CLASS_PRIORITY: RecipeMealClass[] = [
+  "breakfast",
+  "lunch",
+  "dinner",
+  "snack",
+  "dessert",
+  "appetizer",
+];
+
+type MealSlotClass = "breakfast" | "lunch" | "dinner" | "snack";
+
+const MEAL_SLOT_TAGS: Record<string, MealSlotClass[]> = {
+  breakfast: ["breakfast"],
+  brunch: ["breakfast", "lunch"],
+  lunch: ["lunch"],
+  dinner: ["dinner"],
+  snack: ["snack"],
+};
+
+// Deliberately no "broth": some pasta dishes are "with broth". Dessert detection is tag-based
+// only (keyword matching produced 35 false positives — HANDOFF_dessert-keyword-savory-fix.md).
+const SOUP_KEYWORDS = ["soup", "chowder", "bisque"];
+
+function escapeRegexLiteral(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Word-boundary match; trailing `s?` keeps plurals matching.
+function matchesAnyKeyword(text: string, keywords: string[]): boolean {
+  return keywords.some((k) => new RegExp(`\\b${escapeRegexLiteral(k)}s?\\b`, "i").test(text));
+}
+
+/**
+ * Classifies a recipe into meal classes. A recognised `mealType` counts as one more tag
+ * (auto-approved recipes carry their category there and no breakfast/lunch/dinner tag);
+ * unrecognised values (the field also holds junk such as "healthy"/"trending") are ignored.
+ * No recognised slot → dessert=snack, soup=lunch, else lunch+dinner. Soup is never dinner
+ * (falls back to lunch if dinner was its only slot); dessert is never lunch/dinner.
+ */
+export function classifyRecipeMealTypes(recipe: {
+  title: string;
+  tags: string[];
+  mealType?: string;
+}): Set<RecipeMealClass> {
+  const titleLower = recipe.title.toLowerCase();
+  const tagsLower = recipe.tags.map((t) => t.toLowerCase());
+  const mealTypeLower = recipe.mealType?.trim().toLowerCase();
+  if (mealTypeLower && !tagsLower.includes(mealTypeLower)) tagsLower.push(mealTypeLower);
+
+  const isDessert = tagsLower.includes("dessert");
+  const isSoup =
+    matchesAnyKeyword(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAnyKeyword(t, SOUP_KEYWORDS));
+
+  const slots = new Set<MealSlotClass>();
+  for (const tag of tagsLower) {
+    const mapped = MEAL_SLOT_TAGS[tag];
+    if (mapped) for (const s of mapped) slots.add(s);
+  }
+
+  if (slots.size === 0) {
+    if (isDessert) slots.add("snack");
+    else if (isSoup) slots.add("lunch");
+    else {
+      slots.add("lunch");
+      slots.add("dinner");
+    }
+  }
+
+  if (isSoup) {
+    slots.delete("dinner");
+    if (slots.size === 0 && !isDessert) slots.add("lunch");
+  }
+  if (isDessert) {
+    slots.delete("lunch");
+    slots.delete("dinner");
+  }
+
+  const result = new Set<RecipeMealClass>(slots);
+  if (isDessert) result.add("dessert");
+  if (tagsLower.includes("appetizer")) result.add("appetizer");
+  return result;
+}

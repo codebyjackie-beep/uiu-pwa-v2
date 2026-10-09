@@ -1,4 +1,4 @@
-import type { RecipeDetailCostLine } from "@uiu/shared";
+import { RECIPE_MEAL_CLASS_PRIORITY, type RecipeDetailCostLine } from "@uiu/shared";
 import { classifyMealTypes, type FilterMealType } from "./recipeFilters";
 
 interface MealTagged {
@@ -7,22 +7,6 @@ interface MealTagged {
   tags: string[];
 }
 
-const MEAL_TYPES = ["breakfast", "brunch", "lunch", "dinner", "snack", "dessert", "appetizer", "side dish"];
-
-/**
- * Fixed display priority when classifyMealTypes() returns multiple slots (e.g. a "brunch"
- * tag maps to both breakfast+lunch) — picks the one closest to "this is mainly a morning
- * meal" intent rather than depending on DB tag array order (HANDOFF, 2026-08-04 badge fix).
- */
-const BADGE_PRIORITY: FilterMealType[] = ["breakfast", "lunch", "dinner", "snack", "dessert"];
-
-/**
- * Derived from classifyMealTypes() (recipeFilters.ts) — the same logic that decides which
- * meal-type filter a recipe matches — so the badge shown always agrees with the filter that
- * surfaced it. Previously this independently `.find()`-ed the recipe's own `tags` array,
- * which picked whatever meal-type tag happened to be stored first and could show e.g. "Brunch"
- * on a recipe the Breakfast filter matched (2026-08-04 Task B bug).
- */
 /**
  * "calculating…" should only appear while a cost is genuinely pending — for recipes where
  * enrichment already ran and found zero ingredients, cost will never arrive, so show a
@@ -43,12 +27,17 @@ export function isNutritionUnavailable(recipe: { nutritionUnavailable?: boolean 
   return recipe.nutritionUnavailable === true;
 }
 
-export function mealTypeBadge(recipe: MealTagged): string | null {
-  if (recipe.mealType && MEAL_TYPES.includes(recipe.mealType.toLowerCase())) {
-    return capitalize(recipe.mealType);
-  }
-  const slots = classifyMealTypes(recipe);
-  const match = BADGE_PRIORITY.find((slot) => slots.has(slot));
+/**
+ * Meal-type badge, derived from classifyMealTypes() — the logic that decides which chip a
+ * recipe matches. With chips selected and the recipe in one of them, show that chip (so a card
+ * inside the Dinner chip never says LUNCH); otherwise the first class in
+ * RECIPE_MEAL_CLASS_PRIORITY (breakfast → lunch → dinner → snack → dessert → appetizer).
+ */
+export function mealTypeBadge(recipe: MealTagged, activeChips: FilterMealType[] = []): string | null {
+  const classes = classifyMealTypes(recipe);
+  const match =
+    RECIPE_MEAL_CLASS_PRIORITY.find((c) => activeChips.includes(c) && classes.has(c)) ??
+    RECIPE_MEAL_CLASS_PRIORITY.find((c) => classes.has(c));
   return match ? capitalize(match) : null;
 }
 
