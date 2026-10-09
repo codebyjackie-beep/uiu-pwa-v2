@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
+import { requireClerkAuth } from "./clerkAuth";
 import { recipesRouter } from "./routes/recipes";
 import { mealPlanRouter } from "./routes/mealPlan";
 import { mealPlanSetsRouter } from "./routes/mealPlanSets";
@@ -109,6 +110,32 @@ const app = new Hono<{ Bindings: Bindings }>();
 // Same-origin in production (web + api both on Cloudflare). CORS is permissive here only
 // to keep local `wrangler dev` + `next dev` on separate ports talking during development.
 app.use("*", cors());
+
+// M2: every per-user route requires a verified Clerk session — apps/api has its own public
+// workers.dev URL, so the web layer alone is not a gate. userId is taken from the token `sub` only.
+for (const path of [
+  "/api/meal-plan",
+  "/api/meal-plan/*",
+  "/api/meal-plan-sets",
+  "/api/meal-plan-sets/*",
+  "/api/fridge-stock",
+  "/api/fridge-stock/*",
+  "/api/meal-suggestions",
+  "/api/meal-suggestions/*",
+  "/api/favourite-recipes",
+  "/api/favourite-recipes/*",
+  "/api/shop",
+  "/api/shop/*",
+  "/api/shopping-list",
+  "/api/shopping-list/*",
+  "/api/health/*",
+  "/api/recipe-browse",
+  "/api/recipe-browse/*",
+  "/api/recipes/generate-from-fridge",
+  "/api/recipes/save-fridge-recipe",
+]) {
+  app.use(path, requireClerkAuth);
+}
 
 app.get("/health", (c) => {
   const body: ApiResponse<HealthCheck> = {

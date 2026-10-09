@@ -22,7 +22,7 @@ function toShoppingListItem(doc: Document): ShoppingListItem {
 
 shoppingListRouter.get("/", async (c) => {
   try {
-    const docs = await withDb(c.env, (db) => db.collection("shopping_list_items").find({}).sort({ addedAt: 1 }).toArray());
+    const docs = await withDb(c.env, (db) => db.collection("shopping_list_items").find({ userId: c.var.clerkUserId }).sort({ addedAt: 1 }).toArray());
     const body: ApiResponse<ShoppingListItem[]> = { ok: true, data: docs.map(toShoppingListItem) };
     return c.json(body);
   } catch (err) {
@@ -41,7 +41,7 @@ shoppingListRouter.post("/", async (c) => {
   }
 
   try {
-    const doc = { text: text.trim(), checked: false, addedAt: new Date().toISOString() };
+    const doc = { userId: c.var.clerkUserId, text: text.trim(), checked: false, addedAt: new Date().toISOString() };
     const inserted = await withDb(c.env, async (db) => {
       const result = await db.collection("shopping_list_items").insertOne(doc);
       return { ...doc, _id: result.insertedId };
@@ -73,14 +73,14 @@ shoppingListRouter.post("/from-ingredient", async (c) => {
         if (canonicalDoc) {
           const fridgeMatch = await db
             .collection("fridge_stock")
-            .findOne({ canonicalIngredientId: canonicalDoc._id as ObjectIdType });
+            .findOne({ userId: c.var.clerkUserId, canonicalIngredientId: canonicalDoc._id as ObjectIdType });
           if (fridgeMatch) return true;
         }
       }
 
       // Fallback: exact/substring name match against fridge_stock.ingredientName,
       // reusing recipeDraftGenerator's title-dedup rule per the handoff.
-      const fridgeDocs = await db.collection("fridge_stock").find({}, { projection: { ingredientName: 1 } }).toArray();
+      const fridgeDocs = await db.collection("fridge_stock").find({ userId: c.var.clerkUserId }, { projection: { ingredientName: 1 } }).toArray();
       const fridgeNames = fridgeDocs.map((d) => d.ingredientName as string);
       return findTitleMatch(ingredientName, fridgeNames) !== null;
     });
@@ -90,7 +90,7 @@ shoppingListRouter.post("/from-ingredient", async (c) => {
       return c.json(body);
     }
 
-    const doc = { text: ingredientName.trim(), checked: false, addedAt: new Date().toISOString() };
+    const doc = { userId: c.var.clerkUserId, text: ingredientName.trim(), checked: false, addedAt: new Date().toISOString() };
     const inserted = await withDb(c.env, async (db) => {
       const result = await db.collection("shopping_list_items").insertOne(doc);
       return { ...doc, _id: result.insertedId as ObjectIdType };
@@ -123,7 +123,7 @@ shoppingListRouter.patch("/:id", async (c) => {
 
   try {
     const result = await withDb(c.env, (db) =>
-      db.collection("shopping_list_items").findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { checked: payload.checked } }, { returnDocument: "after" }),
+      db.collection("shopping_list_items").findOneAndUpdate({ _id: new ObjectId(id), userId: c.var.clerkUserId }, { $set: { checked: payload.checked } }, { returnDocument: "after" }),
     );
     if (!result) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "shopping_list_item not found" } };
@@ -148,7 +148,7 @@ shoppingListRouter.delete("/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const result = await db.collection("shopping_list_items").deleteOne({ _id: new ObjectId(id) });
+      const result = await db.collection("shopping_list_items").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       return result.deletedCount > 0;
     });
     if (!deleted) {

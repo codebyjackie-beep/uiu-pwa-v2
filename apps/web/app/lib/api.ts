@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { auth } from "@clerk/nextjs/server";
 import type { ApiResponse } from "@uiu/shared";
 
 /**
@@ -25,11 +26,28 @@ function apiBaseUrl(env: ServiceBindingEnv): string {
   return base;
 }
 
+/**
+ * M2: apps/api derives the user from the Clerk session token (`sub`) only, so every call made
+ * on behalf of a signed-in user forwards it as `Authorization: Bearer` — including over the
+ * service binding. Callers that pass their own Authorization or an admin token are left alone.
+ */
+async function withAuth(headers?: Record<string, string>): Promise<Record<string, string> | undefined> {
+  if (headers && (headers.Authorization || headers["X-Admin-Token"])) return headers;
+  try {
+    const { getToken } = await auth();
+    const token = await getToken();
+    if (token) return { ...headers, Authorization: `Bearer ${token}` };
+  } catch {
+    // No Clerk request context (e.g. build-time or cron) — go unauthenticated; the API will 401 user routes.
+  }
+  return headers;
+}
+
 export async function apiGet<T>(path: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
   try {
     const env = await resolveEnv();
     const url = `${apiBaseUrl(env)}${path}`;
-    const init: RequestInit = { cache: "no-store", headers };
+    const init: RequestInit = { cache: "no-store", headers: await withAuth(headers) };
     const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
     if (!res.ok) {
       console.error("[uiu-web] apiGet non-ok response:", path, res.status);
@@ -53,7 +71,7 @@ async function apiSend<T>(
     const url = `${apiBaseUrl(env)}${path}`;
     const init: RequestInit = {
       method,
-      headers: { ...(jsonBody !== undefined ? { "Content-Type": "application/json" } : {}), ...headers },
+      headers: { ...(jsonBody !== undefined ? { "Content-Type": "application/json" } : {}), ...(await withAuth(headers)) },
       body: jsonBody !== undefined ? JSON.stringify(jsonBody) : undefined,
     };
     const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
@@ -81,8 +99,8 @@ export function apiPatch<T>(path: string, jsonBody: unknown, headers?: Record<st
   return apiSend<T>("PATCH", path, jsonBody, headers);
 }
 
-export function apiDelete<T>(path: string): Promise<ApiResponse<T>> {
-  return apiSend<T>("DELETE", path);
+export function apiDelete<T>(path: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  return apiSend<T>("DELETE", path, undefined, headers);
 }
 
 /** Same as apiSend but forwards a multipart/form-data body (image uploads) — no JSON.stringify,
@@ -91,7 +109,7 @@ export async function apiPostForm<T>(path: string, form: FormData): Promise<ApiR
   try {
     const env = await resolveEnv();
     const url = `${apiBaseUrl(env)}${path}`;
-    const init: RequestInit = { method: "POST", body: form };
+    const init: RequestInit = { method: "POST", body: form, headers: await withAuth() };
     const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
     const parsed = (await res.json().catch(() => null)) as ApiResponse<T> | null;
     if (!parsed) {

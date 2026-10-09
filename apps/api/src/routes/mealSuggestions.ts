@@ -38,7 +38,7 @@ mealSuggestionsRouter.get("/", async (c) => {
     const now = new Date();
     const [pool, fridgeDocs] = await Promise.all([
       buildPool(c.env),
-      withDb(c.env, (db) => db.collection("fridge_stock").find({ expiresAt: { $gt: now.toISOString() } }).toArray()),
+      withDb(c.env, (db) => db.collection("fridge_stock").find({ userId: c.var.clerkUserId, expiresAt: { $gt: now.toISOString() } }).toArray()),
     ]);
 
     const fridgeItems = fridgeDocs.map((d) => ({

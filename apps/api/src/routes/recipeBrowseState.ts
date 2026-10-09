@@ -2,7 +2,7 @@
  * HANDOFF_recipes-page-manual-entry-and-refresh.md §B — server-tracked daily
  * quota for the "random 10 + Refresh" default browse view. Single doc,
  * same pattern as recipe_draft_state (recipeDraftGenerator.ts readDraftState).
- * Server UTC date — single-user product feature, no timezone precision needed.
+ * Per-user (Milestone 2): one doc per Clerk user, keyed by userId. Server UTC date.
  */
 import { Hono } from "hono";
 import type { Document } from "mongodb";
@@ -17,9 +17,9 @@ function todayUTC(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-async function readCount(env: DbEnv): Promise<number> {
+async function readCount(env: DbEnv, userId: string): Promise<number> {
   return withDb(env, async (db) => {
-    const doc = (await db.collection("recipe_browse_state").findOne({})) as Document | null;
+    const doc = (await db.collection("recipe_browse_state").findOne({ userId })) as Document | null;
     if (!doc || doc.date !== todayUTC()) return 0;
     return (doc.refreshCount as number) ?? 0;
   });
@@ -27,7 +27,7 @@ async function readCount(env: DbEnv): Promise<number> {
 
 recipeBrowseStateRouter.get("/refresh-status", async (c) => {
   try {
-    const count = await readCount(c.env);
+    const count = await readCount(c.env, c.var.clerkUserId);
     const body: ApiResponse<{ remainingToday: number }> = { ok: true, data: { remainingToday: Math.max(0, DAILY_LIMIT - count) } };
     return c.json(body);
   } catch (err) {
@@ -41,14 +41,15 @@ recipeBrowseStateRouter.post("/refresh", async (c) => {
   try {
     const result = await withDb(c.env, async (db) => {
       const today = todayUTC();
-      const doc = (await db.collection("recipe_browse_state").findOne({})) as Document | null;
+      const userId = c.var.clerkUserId;
+      const doc = (await db.collection("recipe_browse_state").findOne({ userId })) as Document | null;
       const currentCount = doc && doc.date === today ? ((doc.refreshCount as number) ?? 0) : 0;
       if (currentCount >= DAILY_LIMIT) return { limitReached: true as const };
 
       const nextCount = currentCount + 1;
       await db.collection("recipe_browse_state").updateOne(
-        {},
-        { $set: { date: today, refreshCount: nextCount, updatedAt: new Date().toISOString() } },
+        { userId },
+        { $set: { userId, date: today, refreshCount: nextCount, updatedAt: new Date().toISOString() } },
         { upsert: true },
       );
       return { remainingToday: DAILY_LIMIT - nextCount };

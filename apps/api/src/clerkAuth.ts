@@ -42,6 +42,10 @@ export interface ClerkAuthEnv {
 declare module "hono" {
   interface ContextVariableMap {
     clerkUserId: string;
+    /** Authorized-party claim of the verified token (the origin that minted it), when present. */
+    clerkAzp: string | undefined;
+    /** `email` claim of the verified token, when the Clerk session template includes it. */
+    clerkTokenEmail: string | undefined;
   }
 }
 
@@ -60,6 +64,8 @@ export const requireClerkAuth: MiddlewareHandler<{ Bindings: ClerkAuthEnv }> = a
       return c.json({ ok: false, error: { code: "unauthorized", message: "Token missing sub" } }, 401);
     }
     c.set("clerkUserId", payload.sub);
+    c.set("clerkAzp", typeof payload.azp === "string" ? payload.azp : undefined);
+    c.set("clerkTokenEmail", typeof payload.email === "string" ? payload.email : undefined);
   } catch (err) {
     console.error("[uiu-api] Clerk token verification failed:", err instanceof Error ? err.message : String(err));
     return c.json({ ok: false, error: { code: "unauthorized", message: "Invalid or expired token" } }, 401);

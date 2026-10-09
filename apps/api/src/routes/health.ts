@@ -44,7 +44,7 @@ function toProfile(doc: Document): UserHealthProfile {
 
 healthRouter.get("/profile", async (c) => {
   try {
-    const doc = await withDb(c.env, (db) => db.collection("user_health_profiles").findOne({}));
+    const doc = await withDb(c.env, (db) => db.collection("user_health_profiles").findOne({ userId: c.var.clerkUserId }));
     const body: ApiResponse<UserHealthProfile | null> = { ok: true, data: doc ? toProfile(doc) : null };
     return c.json(body);
   } catch (err) {
@@ -84,7 +84,7 @@ healthRouter.put("/profile", async (c) => {
   try {
     const updatedAt = new Date().toISOString();
     const doc = { heightCm, weightKg, goal, targetWeightKg, updatedAt };
-    await withDb(c.env, (db) => db.collection("user_health_profiles").updateOne({}, { $set: doc }, { upsert: true }));
+    await withDb(c.env, (db) => db.collection("user_health_profiles").updateOne({ userId: c.var.clerkUserId }, { $set: { ...doc, userId: c.var.clerkUserId } }, { upsert: true }));
     const body: ApiResponse<UserHealthProfile> = { ok: true, data: doc as UserHealthProfile };
     return c.json(body);
   } catch (err) {
@@ -104,7 +104,7 @@ healthRouter.get("/weight-logs", async (c) => {
   const limit = Math.min(Math.max(Number(c.req.query("limit")) || 12, 1), 52);
   try {
     const docs = await withDb(c.env, (db) =>
-      db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(limit).toArray(),
+      db.collection("weight_logs").find({ userId: c.var.clerkUserId }).sort({ loggedAt: -1 }).limit(limit).toArray(),
     );
     const body: ApiResponse<WeightLogEntry[]> = { ok: true, data: docs.map(toWeightLog).reverse() };
     return c.json(body);
@@ -125,12 +125,12 @@ healthRouter.post("/weight-logs", async (c) => {
 
   try {
     const loggedAt = new Date().toISOString();
-    const doc = { weightKg, loggedAt };
+    const doc = { userId: c.var.clerkUserId, weightKg, loggedAt };
     const inserted = await withDb(c.env, async (db) => {
       const result = await db.collection("weight_logs").insertOne(doc);
       // Keep the profile's "latest known weight" in sync, matching HANDOFF §3
       // (profile.weightKg = quick-read latest, weight_logs = the timeline).
-      await db.collection("user_health_profiles").updateOne({}, { $set: { weightKg, updatedAt: loggedAt } });
+      await db.collection("user_health_profiles").updateOne({ userId: c.var.clerkUserId }, { $set: { weightKg, updatedAt: loggedAt } });
       return { ...doc, _id: result.insertedId };
     });
     const body: ApiResponse<WeightLogEntry> = { ok: true, data: toWeightLog(inserted) };
@@ -161,13 +161,13 @@ healthRouter.patch("/weight-logs/:id", async (c) => {
     const updated = await withDb(c.env, async (db) => {
       const result = await db
         .collection("weight_logs")
-        .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { weightKg } }, { returnDocument: "after" });
+        .findOneAndUpdate({ _id: new ObjectId(id), userId: c.var.clerkUserId }, { $set: { weightKg } }, { returnDocument: "after" });
       if (!result) return null;
       // Keep the profile's "latest known weight" in sync when the edited entry
       // is the most recent one (HANDOFF_health-weight-log-profile-sync.md §1).
-      const latest = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(1).toArray();
+      const latest = await db.collection("weight_logs").find({ userId: c.var.clerkUserId }).sort({ loggedAt: -1 }).limit(1).toArray();
       if (latest[0] && latest[0]._id.toString() === result._id.toString()) {
-        await db.collection("user_health_profiles").updateOne({}, { $set: { weightKg, updatedAt: new Date().toISOString() } });
+        await db.collection("user_health_profiles").updateOne({ userId: c.var.clerkUserId }, { $set: { weightKg, updatedAt: new Date().toISOString() } });
       }
       return result;
     });
@@ -194,10 +194,10 @@ healthRouter.delete("/weight-logs/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const latestBefore = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(1).toArray();
+      const latestBefore = await db.collection("weight_logs").find({ userId: c.var.clerkUserId }).sort({ loggedAt: -1 }).limit(1).toArray();
       const wasLatest = latestBefore[0]?._id.toString() === id;
 
-      const result = await db.collection("weight_logs").deleteOne({ _id: new ObjectId(id) });
+      const result = await db.collection("weight_logs").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       if (result.deletedCount === 0) return false;
 
       // Keep the profile's "latest known weight" in sync when the deleted entry
@@ -205,11 +205,11 @@ healthRouter.delete("/weight-logs/:id", async (c) => {
       // If none remain, leave user_health_profiles.weightKg untouched rather than
       // clearing it — the BMI card should still show a value.
       if (wasLatest) {
-        const latestAfter = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(1).toArray();
+        const latestAfter = await db.collection("weight_logs").find({ userId: c.var.clerkUserId }).sort({ loggedAt: -1 }).limit(1).toArray();
         if (latestAfter[0]) {
           await db
             .collection("user_health_profiles")
-            .updateOne({}, { $set: { weightKg: latestAfter[0].weightKg, updatedAt: new Date().toISOString() } });
+            .updateOne({ userId: c.var.clerkUserId }, { $set: { weightKg: latestAfter[0].weightKg, updatedAt: new Date().toISOString() } });
         }
       }
       return true;
@@ -261,7 +261,7 @@ healthRouter.get("/meal-logs", async (c) => {
   try {
     const since = rangeStart(range).toISOString();
     const docs = await withDb(c.env, (db) =>
-      db.collection("meal_logs").find({ loggedAt: { $gte: since } }).sort({ loggedAt: -1 }).toArray(),
+      db.collection("meal_logs").find({ userId: c.var.clerkUserId, loggedAt: { $gte: since } }).sort({ loggedAt: -1 }).toArray(),
     );
     const entries = docs.map(toMealLog);
     const totals = entries.reduce<MealLogTotals>(
@@ -307,6 +307,7 @@ healthRouter.post("/meal-logs", async (c) => {
     const estimate = await estimateMealNutrition(c.env, dataUrl);
     const loggedAt = new Date().toISOString();
     const doc = {
+      userId: c.var.clerkUserId,
       photoUrl: null as string | null,
       calories: estimate.calories,
       protein: estimate.protein,
@@ -357,7 +358,7 @@ healthRouter.patch("/meal-logs/:id", async (c) => {
         return c.json(body, 400);
       }
 
-      const existing = await withDb(c.env, (db) => db.collection("meal_logs").findOne({ _id: new ObjectId(id) }));
+      const existing = await withDb(c.env, (db) => db.collection("meal_logs").findOne({ _id: new ObjectId(id), userId: c.var.clerkUserId }));
       if (!existing) {
         const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "meal_logs entry not found" } };
         return c.json(body, 404);
@@ -378,7 +379,7 @@ healthRouter.patch("/meal-logs/:id", async (c) => {
 
       const updated = await withDb(c.env, (db) =>
         db.collection("meal_logs").findOneAndUpdate(
-          { _id: new ObjectId(id) },
+          { _id: new ObjectId(id), userId: c.var.clerkUserId },
           {
             $set: {
               quantityG,
@@ -419,7 +420,7 @@ healthRouter.patch("/meal-logs/:id", async (c) => {
 
     const updated = await withDb(c.env, (db) =>
       db.collection("meal_logs").findOneAndUpdate(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id), userId: c.var.clerkUserId },
         { $set: { calories, protein, carbs, fat } },
         { returnDocument: "after" },
       ),
@@ -447,7 +448,7 @@ healthRouter.delete("/meal-logs/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const result = await db.collection("meal_logs").deleteOne({ _id: new ObjectId(id) });
+      const result = await db.collection("meal_logs").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       return result.deletedCount > 0;
     });
     if (!deleted) {
@@ -483,6 +484,7 @@ healthRouter.post("/meal-logs/manual", async (c) => {
   try {
     const loggedAt = new Date().toISOString();
     const doc = {
+      userId: c.var.clerkUserId,
       photoUrl: null as string | null,
       calories,
       protein: Number.isFinite(protein) ? protein : 0,
@@ -552,6 +554,7 @@ healthRouter.post("/meal-logs/barcode", async (c) => {
   try {
     const loggedAt = new Date().toISOString();
     const doc = {
+      userId: c.var.clerkUserId,
       photoUrl: null as string | null,
       calories,
       protein: Number.isFinite(protein) ? protein : 0,
@@ -622,7 +625,7 @@ function buildCoachContext(profile: UserHealthProfile | null, recentWeights: Wei
 healthRouter.get("/coach", async (c) => {
   try {
     const docs = await withDb(c.env, (db) =>
-      db.collection("nutrition_coach_history").find({}).sort({ createdAt: -1 }).limit(COACH_HISTORY_LIMIT).toArray(),
+      db.collection("nutrition_coach_history").find({ userId: c.var.clerkUserId }).sort({ createdAt: -1 }).limit(COACH_HISTORY_LIMIT).toArray(),
     );
     const body: ApiResponse<NutritionCoachMessage[]> = { ok: true, data: docs.map(toCoachMessage).reverse() };
     return c.json(body);
@@ -645,14 +648,14 @@ healthRouter.post("/coach", async (c) => {
     const { historyDocs, profileDoc, weightDocs, todayTotals } = await withDb(c.env, async (db) => {
       const historyDocs = await db
         .collection("nutrition_coach_history")
-        .find({})
+        .find({ userId: c.var.clerkUserId })
         .sort({ createdAt: -1 })
         .limit(COACH_HISTORY_LIMIT)
         .toArray();
-      const profileDoc = await db.collection("user_health_profiles").findOne({});
-      const weightDocs = await db.collection("weight_logs").find({}).sort({ loggedAt: -1 }).limit(5).toArray();
+      const profileDoc = await db.collection("user_health_profiles").findOne({ userId: c.var.clerkUserId });
+      const weightDocs = await db.collection("weight_logs").find({ userId: c.var.clerkUserId }).sort({ loggedAt: -1 }).limit(5).toArray();
       const todayStart = rangeStart("today").toISOString();
-      const mealDocs = await db.collection("meal_logs").find({ loggedAt: { $gte: todayStart } }).toArray();
+      const mealDocs = await db.collection("meal_logs").find({ userId: c.var.clerkUserId, loggedAt: { $gte: todayStart } }).toArray();
       const todayTotals = mealDocs.reduce<MealLogTotals>(
         (sum, e) => ({
           calories: sum.calories + (e.calories as number),
@@ -681,9 +684,9 @@ healthRouter.post("/coach", async (c) => {
     const reply = await chatWithCoach(c.env, messages);
 
     const inserted = await withDb(c.env, async (db) => {
-      const userDoc = { role: "user" as const, content: message, createdAt: new Date().toISOString() };
+      const userDoc = { userId: c.var.clerkUserId, role: "user" as const, content: message, createdAt: new Date().toISOString() };
       const userResult = await db.collection("nutrition_coach_history").insertOne(userDoc);
-      const assistantDoc = { role: "assistant" as const, content: reply, createdAt: new Date().toISOString() };
+      const assistantDoc = { userId: c.var.clerkUserId, role: "assistant" as const, content: reply, createdAt: new Date().toISOString() };
       const assistantResult = await db.collection("nutrition_coach_history").insertOne(assistantDoc);
       return { user: { ...userDoc, _id: userResult.insertedId }, assistant: { ...assistantDoc, _id: assistantResult.insertedId } };
     });
@@ -710,7 +713,7 @@ healthRouter.delete("/coach/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const result = await db.collection("nutrition_coach_history").deleteOne({ _id: new ObjectId(id) });
+      const result = await db.collection("nutrition_coach_history").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       return result.deletedCount > 0;
     });
     if (!deleted) {

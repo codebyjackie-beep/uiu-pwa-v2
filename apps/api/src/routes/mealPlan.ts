@@ -76,10 +76,10 @@ export function toEntryView(doc: Document, recipeById: Map<string, Document>, co
 
 /** Joins a plan's meal_plans entries against recipes/recipe_cost in two batched queries.
  * Shared by mealPlanSets.ts (per-card board) so the recipe/cost join logic lives in one place. */
-export async function loadEntryViewsForPlan(db: Db, ObjectId: Awaited<ReturnType<typeof getMongoModule>>["ObjectId"], planId: InstanceType<typeof ObjectId>): Promise<MealPlanEntryView[]> {
+export async function loadEntryViewsForPlan(db: Db, ObjectId: Awaited<ReturnType<typeof getMongoModule>>["ObjectId"], planId: InstanceType<typeof ObjectId>, userId: string): Promise<MealPlanEntryView[]> {
   const entryDocs = await db
     .collection("meal_plans")
-    .find({ planId })
+    .find({ planId, userId })
     .sort({ dayIndex: 1, mealSlot: 1 })
     .toArray();
 
@@ -134,15 +134,21 @@ mealPlanRouter.post("/", async (c) => {
       return c.json(body, 400);
     }
 
+    const userId = c.var.clerkUserId;
     const result = await withDb(c.env, async (db) => {
       const target = resolveWriteTarget(ObjectId, payload);
       if (target === "bad_request") return target;
+
+      // The target plan card must belong to the caller — otherwise a user could write into someone else's plan.
+      const ownedPlan = await db.collection("meal_plan_sets").findOne({ _id: target.planId, userId }, { projection: { _id: 1 } });
+      if (!ownedPlan) return null;
 
       const recipe = await db.collection("recipes").findOne({ _id: new ObjectId(recipeId) });
       if (!recipe) return null;
 
       const now = new Date().toISOString();
       const doc = {
+        userId,
         planId: target.planId,
         dayIndex: target.dayIndex,
         mealSlot,
@@ -163,7 +169,7 @@ mealPlanRouter.post("/", async (c) => {
       return c.json(body, 400);
     }
     if (!result) {
-      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe or plan not found" } };
       return c.json(body, 404);
     }
 
@@ -194,7 +200,7 @@ mealPlanRouter.post("/:id/refresh", async (c) => {
 
   try {
     const result = await withDb(c.env, async (db) => {
-      const entryDoc = await db.collection("meal_plans").findOne({ _id: new ObjectId(id) });
+      const entryDoc = await db.collection("meal_plans").findOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       if (!entryDoc) return null;
 
       const pool = await buildPool(c.env);
@@ -207,7 +213,7 @@ mealPlanRouter.post("/:id/refresh", async (c) => {
 
       const chosen = candidates[Math.floor(Math.random() * candidates.length)]!;
       const chosenObjectId = new ObjectId(chosen.id);
-      await db.collection("meal_plans").updateOne({ _id: entryDoc._id }, { $set: { recipeId: chosenObjectId } });
+      await db.collection("meal_plans").updateOne({ _id: entryDoc._id, userId: c.var.clerkUserId }, { $set: { recipeId: chosenObjectId } });
 
       const [recipe, costDoc] = await Promise.all([
         db.collection("recipes").findOne({ _id: chosenObjectId }),
@@ -318,7 +324,7 @@ mealPlanRouter.delete("/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const result = await db.collection("meal_plans").deleteOne({ _id: new ObjectId(id) });
+      const result = await db.collection("meal_plans").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       return result.deletedCount > 0;
     });
     if (!deleted) {

@@ -1,6 +1,6 @@
 /**
- * HANDOFF_fridge.md — fridge_stock CRUD. No auth (same convention as
- * recipes/meal_plans — this isn't an admin-only surface).
+ * HANDOFF_fridge.md — fridge_stock CRUD. Per-user (Milestone 2): requireClerkAuth is applied in
+ * index.ts and every query is scoped to the token sub (c.var.clerkUserId).
  */
 import { Hono, type Context } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
@@ -90,7 +90,7 @@ fridgeStockRouter.get("/ingredient-options", async (c) => {
 
 fridgeStockRouter.get("/", async (c) => {
   try {
-    const docs = await withDb(c.env, (db) => db.collection("fridge_stock").find({}).sort({ expiresAt: 1 }).toArray());
+    const docs = await withDb(c.env, (db) => db.collection("fridge_stock").find({ userId: c.var.clerkUserId }).sort({ expiresAt: 1 }).toArray());
     const body: ApiResponse<FridgeStockItem[]> = { ok: true, data: docs.map(toFridgeStockItem) };
     return c.json(body);
   } catch (err) {
@@ -144,6 +144,7 @@ fridgeStockRouter.post("/", async (c) => {
         isPantry = !!canonicalDoc?.is_pantry;
       }
       const doc = {
+        userId: c.var.clerkUserId,
         ingredientName: ingredientName.trim(),
         canonicalIngredientId: canonicalId,
         quantity,
@@ -210,7 +211,7 @@ fridgeStockRouter.patch("/:id", async (c) => {
     const result = await withDb(c.env, async (db) => {
       const updated = await db
         .collection("fridge_stock")
-        .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: update }, { returnDocument: "after" });
+        .findOneAndUpdate({ _id: new ObjectId(id), userId: c.var.clerkUserId }, { $set: update }, { returnDocument: "after" });
       return updated;
     });
     if (!result) {
@@ -236,7 +237,7 @@ fridgeStockRouter.delete("/:id", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const result = await db.collection("fridge_stock").deleteOne({ _id: new ObjectId(id) });
+      const result = await db.collection("fridge_stock").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       return result.deletedCount > 0;
     });
     if (!deleted) {

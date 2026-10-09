@@ -1,7 +1,7 @@
 /**
  * HANDOFF_meal-planner-plan-v2.md §2.2 #3 — favourite_recipes CRUD. Independent of
  * Recipe.isFavorite/favoriteCount (unused legacy fields, deliberately not reused — see
- * handoff). No auth, same convention as meal_plans/fridge_stock (not an admin surface).
+ * handoff). Per-user (Milestone 2): requireClerkAuth is applied in index.ts; every query is scoped to the token sub.
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
@@ -20,7 +20,7 @@ function toFavourite(doc: Document): FavouriteRecipe {
 
 favouriteRecipesRouter.get("/", async (c) => {
   try {
-    const docs = await withDb(c.env, (db) => db.collection("favourite_recipes").find({}).toArray());
+    const docs = await withDb(c.env, (db) => db.collection("favourite_recipes").find({ userId: c.var.clerkUserId }).toArray());
     const body: ApiResponse<FavouriteRecipe[]> = { ok: true, data: docs.map(toFavourite) };
     return c.json(body);
   } catch (err) {
@@ -45,12 +45,21 @@ favouriteRecipesRouter.post("/", async (c) => {
       return c.json(body, 400);
     }
 
+    const userId = c.var.clerkUserId;
     const result = await withDb(c.env, async (db) => {
-      const existing = await db.collection("favourite_recipes").findOne({ recipeId: new ObjectId(recipeId) });
+      const col = db.collection("favourite_recipes");
+      const existing = await col.findOne({ userId, recipeId: new ObjectId(recipeId) });
       if (existing) return existing;
-      const doc = { recipeId: new ObjectId(recipeId), addedAt: new Date().toISOString() };
-      const inserted = await db.collection("favourite_recipes").insertOne(doc);
-      return { ...doc, _id: inserted.insertedId };
+      const doc = { userId, recipeId: new ObjectId(recipeId), addedAt: new Date().toISOString() };
+      try {
+        const inserted = await col.insertOne(doc);
+        return { ...doc, _id: inserted.insertedId };
+      } catch (err) {
+        // Lost a race against the unique {userId, recipeId} index — the doc exists now.
+        const winner = await col.findOne({ userId, recipeId: new ObjectId(recipeId) });
+        if (winner) return winner;
+        throw err;
+      }
     });
 
     const body: ApiResponse<FavouriteRecipe> = { ok: true, data: toFavourite(result) };
@@ -72,7 +81,7 @@ favouriteRecipesRouter.delete("/:recipeId", async (c) => {
 
   try {
     const deleted = await withDb(c.env, async (db) => {
-      const result = await db.collection("favourite_recipes").deleteOne({ recipeId: new ObjectId(recipeId) });
+      const result = await db.collection("favourite_recipes").deleteOne({ userId: c.var.clerkUserId, recipeId: new ObjectId(recipeId) });
       return result.deletedCount > 0;
     });
     if (!deleted) {

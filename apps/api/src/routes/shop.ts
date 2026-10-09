@@ -15,7 +15,7 @@ shopRouter.get("/restock-list", async (c) => {
     const items = await withDb(c.env, async (db) => {
       const stockDocs = await db
         .collection("fridge_stock")
-        .find({ needsRestock: true })
+        .find({ userId: c.var.clerkUserId, needsRestock: true })
         .sort({ ingredientName: 1 })
         .toArray();
 

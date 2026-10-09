@@ -34,25 +34,25 @@ export const mealPlanSetsRouter = new Hono<{ Bindings: DbEnv }>();
  * use from the highest "Weekly Plan N" name already present, so it never
  * collides with pre-existing plans.
  */
-async function getNextPlanNumber(db: Db): Promise<number> {
+async function getNextPlanNumber(db: Db, userId: string): Promise<number> {
   const seqCollection = db.collection<{ _id: string; nextPlanNumber: number }>("meal_plan_sequence");
-  const existing = await seqCollection.findOne({ _id: "meal_plan_set" });
+  const existing = await seqCollection.findOne({ _id: userId });
   if (!existing) {
-    const setDocs = await db.collection("meal_plan_sets").find({}, { projection: { name: 1 } }).toArray();
+    const setDocs = await db.collection("meal_plan_sets").find({ userId }, { projection: { name: 1 } }).toArray();
     let maxN = 0;
     for (const d of setDocs) {
       const m = /^Weekly Plan (\d+)$/.exec((d.name as string) ?? "");
       if (m) maxN = Math.max(maxN, parseInt(m[1]!, 10));
     }
     try {
-      await seqCollection.insertOne({ _id: "meal_plan_set", nextPlanNumber: maxN + 1 });
+      await seqCollection.insertOne({ _id: userId, nextPlanNumber: maxN + 1 });
     } catch {
       // Lost the init race to a concurrent request — the doc now exists, fall through to $inc below.
     }
   }
 
   const updated = await seqCollection.findOneAndUpdate(
-    { _id: "meal_plan_set" },
+    { _id: userId },
     { $inc: { nextPlanNumber: 1 } },
     { returnDocument: "after" },
   );
@@ -94,13 +94,14 @@ function toSummary(setDoc: Document, entries: SummaryEntry[]): MealPlanSetSummar
 
 // GET /api/meal-plan-sets — up to 4 plan cards for the library grid.
 mealPlanSetsRouter.get("/", async (c) => {
+  const userId = c.var.clerkUserId;
   try {
     const data = await withDb(c.env, async (db) => {
       const { ObjectId } = await getMongoModule();
-      const setDocs = await db.collection("meal_plan_sets").find({}).sort({ createdAt: 1 }).toArray();
+      const setDocs = await db.collection("meal_plan_sets").find({ userId }).sort({ createdAt: 1 }).toArray();
       const summaries: MealPlanSetSummary[] = [];
       for (const setDoc of setDocs) {
-        const entries = await loadEntryViewsForPlan(db, ObjectId, setDoc._id as InstanceType<typeof ObjectId>);
+        const entries = await loadEntryViewsForPlan(db, ObjectId, setDoc._id as InstanceType<typeof ObjectId>, userId);
         summaries.push(toSummary(setDoc, entries));
       }
       return summaries;
@@ -126,11 +127,12 @@ mealPlanSetsRouter.post("/", async (c) => {
   const payload = await c.req.json().catch(() => null);
   const name = typeof payload?.name === "string" && payload.name.trim() ? payload.name.trim() : undefined;
   const skipGenerate = payload?.skipGenerate === true;
+  const userId = c.var.clerkUserId;
 
   try {
     const { ObjectId } = await getMongoModule();
 
-    const count = await withDb(c.env, (db) => db.collection("meal_plan_sets").countDocuments({}));
+    const count = await withDb(c.env, (db) => db.collection("meal_plan_sets").countDocuments({ userId }));
     if (count >= MEAL_PLAN_SET_LIMIT) {
       const body: ApiResponse<never> = {
         ok: false,
@@ -143,8 +145,9 @@ mealPlanSetsRouter.post("/", async (c) => {
 
     const result = await withDb(c.env, async (db) => {
       const now = new Date().toISOString();
-      const planNumber = name ? undefined : await getNextPlanNumber(db);
+      const planNumber = name ? undefined : await getNextPlanNumber(db, userId);
       const setDoc = {
+        userId,
         name: name ?? `Weekly Plan ${planNumber}`,
         isActive: false,
         createdAt: now,
@@ -155,6 +158,7 @@ mealPlanSetsRouter.post("/", async (c) => {
       if (generated) {
         const entryDocs = generated.days.flatMap((day, i) =>
           day.entries.map((entry) => ({
+            userId,
             planId,
             dayIndex: i + 1,
             mealSlot: entry.mealSlot,
@@ -166,7 +170,7 @@ mealPlanSetsRouter.post("/", async (c) => {
         if (entryDocs.length > 0) await db.collection("meal_plans").insertMany(entryDocs);
       }
 
-      const entries = await loadEntryViewsForPlan(db, ObjectId, planId);
+      const entries = await loadEntryViewsForPlan(db, ObjectId, planId, userId);
       return toSummary({ ...setDoc, _id: planId }, entries);
     });
 
@@ -190,10 +194,10 @@ mealPlanSetsRouter.get("/:id", async (c) => {
     }
 
     const result = await withDb(c.env, async (db) => {
-      const setDoc = await db.collection("meal_plan_sets").findOne({ _id: new ObjectId(id) });
+      const setDoc = await db.collection("meal_plan_sets").findOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
       if (!setDoc) return null;
 
-      const entries = await loadEntryViewsForPlan(db, ObjectId, setDoc._id as InstanceType<typeof ObjectId>);
+      const entries = await loadEntryViewsForPlan(db, ObjectId, setDoc._id as InstanceType<typeof ObjectId>, c.var.clerkUserId);
       const dayMap = new Map<number, typeof entries>();
       for (const entry of entries) {
         const list = dayMap.get(entry.dayIndex) ?? [];
@@ -248,11 +252,12 @@ mealPlanSetsRouter.post("/:id/activate", async (c) => {
 
     const result = await withDb(c.env, async (db) => {
       const objectId = new ObjectId(id);
-      const setDoc = await db.collection("meal_plan_sets").findOne({ _id: objectId });
+      const userId = c.var.clerkUserId;
+      const setDoc = await db.collection("meal_plan_sets").findOne({ _id: objectId, userId });
       if (!setDoc) return null;
 
-      await db.collection("meal_plan_sets").updateMany({ _id: { $ne: objectId } }, { $set: { isActive: false } });
-      await db.collection("meal_plan_sets").updateOne({ _id: objectId }, { $set: { isActive: true } });
+      await db.collection("meal_plan_sets").updateMany({ userId, _id: { $ne: objectId } }, { $set: { isActive: false } });
+      await db.collection("meal_plan_sets").updateOne({ _id: objectId, userId }, { $set: { isActive: true } });
       return true;
     });
 
@@ -281,11 +286,12 @@ mealPlanSetsRouter.delete("/:id", async (c) => {
 
     const result = await withDb(c.env, async (db) => {
       const objectId = new ObjectId(id);
-      const setDoc = await db.collection("meal_plan_sets").findOne({ _id: objectId });
+      const userId = c.var.clerkUserId;
+      const setDoc = await db.collection("meal_plan_sets").findOne({ _id: objectId, userId });
       if (!setDoc) return null;
 
-      await db.collection("meal_plans").deleteMany({ planId: objectId });
-      await db.collection("meal_plan_sets").deleteOne({ _id: objectId });
+      await db.collection("meal_plans").deleteMany({ planId: objectId, userId });
+      await db.collection("meal_plan_sets").deleteOne({ _id: objectId, userId });
       return { wasActive: setDoc.isActive as boolean };
     });
 

@@ -6,8 +6,9 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
  * dashboard, so a signed-out visitor never hits a bare login wall. Everything else (the 5
  * other tabs) is gated; a signed-out hit redirects to /sign-in.
  *
- * API routes stay public for now — Milestone 2 adds per-user data scoping + backend auth
- * checks. Data is still global at this milestone, so there is nothing sensitive to gate yet.
+ * `/api/(.*)` stays public at the middleware layer on purpose: the route handlers proxy to
+ * apps/api, which does the real gating (requireClerkAuth, userId from the token `sub`) as of M2 —
+ * the API workers.dev URL is public, so the web layer alone could never be the gate.
  */
 const isPublicRoute = createRouteMatcher([
   "/",
