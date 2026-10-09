@@ -14,8 +14,8 @@ import { withDb, getMongoModule, type DbEnv } from "../db";
 export const recipesRouter = new Hono<{ Bindings: DbEnv }>();
 
 const DEFAULT_LIMIT = 20;
-// Raised from 100 so the Recipes page filter UI (HANDOFF_recipes-page-filters.md) can fetch
-// the full 198-recipe set in one call for client-side filtering.
+// Per-request page cap. Clients that need the whole set (Recipes page) page through using
+// `total` rather than relying on this being larger than the collection.
 const MAX_LIMIT = 250;
 
 function escapeRegex(value: string): string {
@@ -93,7 +93,9 @@ recipesRouter.get("/", async (c) => {
       const [docs, count] = await Promise.all([
         collection
           .find(filter)
-          .sort({ title: 1 })
+          // _id tiebreak keeps skip/limit pagination stable when titles collide, so a client
+          // paging through the full set never sees a duplicate or skips a row.
+          .sort({ title: 1, _id: 1 })
           .skip((page - 1) * limit)
           .limit(limit)
           .toArray(),
