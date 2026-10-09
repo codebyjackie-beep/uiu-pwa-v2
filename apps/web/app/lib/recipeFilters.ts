@@ -9,7 +9,7 @@ import type { RecipeListItem } from "@uiu/shared";
  * keyword lists/logic are duplicated rather than imported — keep both in sync by hand.
  */
 
-export type FilterMealType = "breakfast" | "lunch" | "dinner" | "snack" | "dessert";
+export type FilterMealType = "breakfast" | "lunch" | "dinner" | "snack" | "dessert" | "appetizer";
 
 const MEAL_SLOT_TAGS: Record<string, Array<"breakfast" | "lunch" | "dinner" | "snack">> = {
   breakfast: ["breakfast"],
@@ -45,9 +45,14 @@ function matchesAny(text: string, keywords: string[]): boolean {
 }
 
 /** Same fallback/soup/dessert-override rules as deriveMealSlots(); see file header. */
-export function classifyMealTypes(recipe: Pick<RecipeListItem, "title" | "tags">): Set<FilterMealType> {
+export function classifyMealTypes(recipe: Pick<RecipeListItem, "title" | "tags" | "mealType">): Set<FilterMealType> {
   const titleLower = recipe.title.toLowerCase();
+  // Auto-approved recipes (ai_daily_draft) store their meal category in `mealType` and carry no
+  // breakfast/lunch/dinner tag, so treat a recognised `mealType` as one more tag. Unrecognised
+  // values (the field also holds junk such as "healthy"/"trending") are ignored by the lookups.
   const tagsLower = recipe.tags.map((t) => t.toLowerCase());
+  const mealTypeLower = recipe.mealType?.trim().toLowerCase();
+  if (mealTypeLower && !tagsLower.includes(mealTypeLower)) tagsLower.push(mealTypeLower);
 
   const isDessert = tagsLower.includes("dessert");
   const isSoup = matchesAny(titleLower, SOUP_KEYWORDS) || tagsLower.some((t) => matchesAny(t, SOUP_KEYWORDS));
@@ -67,7 +72,11 @@ export function classifyMealTypes(recipe: Pick<RecipeListItem, "title" | "tags">
     }
   }
 
-  if (isSoup) slots.delete("dinner");
+  if (isSoup) {
+    slots.delete("dinner");
+    // A soup whose only slot was dinner (e.g. mealType "dinner") would otherwise match no chip.
+    if (slots.size === 0 && !isDessert) slots.add("lunch");
+  }
   if (isDessert) {
     slots.delete("lunch");
     slots.delete("dinner");
@@ -75,6 +84,7 @@ export function classifyMealTypes(recipe: Pick<RecipeListItem, "title" | "tags">
 
   const result: Set<FilterMealType> = new Set(slots);
   if (isDessert) result.add("dessert");
+  if (tagsLower.includes("appetizer")) result.add("appetizer");
   return result;
 }
 

@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import type { MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
+import type { MealPlanSetDetail, MealPlanSetSummary, RecipeListPage } from "@uiu/shared";
 import { apiGet, apiPost } from "./lib/api";
 import { InstallButton } from "./InstallButton";
 import { OnboardingOverlay } from "./OnboardingOverlay";
 
+// The Recipes hint is filled in at render time from the live recipe total (see Home()).
 const QUICK_ACTIONS = [
-  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "214 recipes with real UK prices", modifier: "recipes" },
+  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "", modifier: "recipes" },
   { href: "/fridge", icon: "🧊", label: "Scan Fridge", hint: "Track what you've got", modifier: "fridge" },
   { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices", modifier: "shop" },
   { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI", modifier: "health" },
@@ -41,7 +42,14 @@ export default async function Home() {
     }
   }
 
-  const setsRes = await apiGet<MealPlanSetSummary[]>("/api/meal-plan-sets");
+  const [setsRes, recipeCountRes] = await Promise.all([
+    apiGet<MealPlanSetSummary[]>("/api/meal-plan-sets"),
+    apiGet<RecipeListPage>("/api/recipes?limit=1"),
+  ]);
+  // No hard-coded fallback number: if the total can't be fetched, drop the count entirely.
+  const recipesHint = recipeCountRes.ok
+    ? `${recipeCountRes.data.total} recipes with real UK prices`
+    : "Recipes with real UK prices";
   const activeSummary = setsRes.ok ? setsRes.data.find((s) => s.isActive) : undefined;
 
   const detailRes = activeSummary
@@ -133,7 +141,7 @@ export default async function Home() {
             >
               <span className="home-quick-action__icon">{action.icon}</span>
               <span className="home-quick-action__label">{action.label}</span>
-              <span className="home-quick-action__hint">{action.hint}</span>
+              <span className="home-quick-action__hint">{action.modifier === "recipes" ? recipesHint : action.hint}</span>
             </Link>
           ))}
         </div>

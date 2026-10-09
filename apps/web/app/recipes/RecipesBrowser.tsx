@@ -32,6 +32,7 @@ const MEAL_TYPE_OPTIONS: { key: FilterMealType; label: string }[] = [
   { key: "dinner", label: "Dinner" },
   { key: "snack", label: "Snack" },
   { key: "dessert", label: "Dessert" },
+  { key: "appetizer", label: "Appetizer" },
 ];
 
 const DIETARY_OPTIONS: { key: FilterDietary; label: string }[] = [
