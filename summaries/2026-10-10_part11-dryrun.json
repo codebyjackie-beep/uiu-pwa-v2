@@ -1,0 +1,5159 @@
+{
+  "generatedAt": "2026-10-10T16:00:28.758Z",
+  "dryRun": true,
+  "summary": {
+    "thresholds": {
+      "strong": {
+        "ING_MIN": 0.7,
+        "TITLE_MIN": 0.5,
+        "ING_FLOOR": 0.5
+      },
+      "medium": {
+        "MED_TITLE_HI": 0.8,
+        "MED_ING_HI": 0.4,
+        "MED_SHARED": 4,
+        "MED_KEYEQ_ING": 0.3
+      }
+    },
+    "withdrawByTier": {
+      "strong": 72,
+      "medium": 113
+    },
+    "publicTotal": 611,
+    "groups": 111,
+    "recipesInGroups": 296,
+    "suggestedWithdraw": 72,
+    "mediumCandidates": 113,
+    "protectedInGroups": 15,
+    "publicAfterWithdrawStrongOnly": 539,
+    "publicAfterWithdrawStrongAndMedium": 426,
+    "matchaSmoothieGroup": [
+      {
+        "groupId": 9,
+        "size": 5,
+        "keep": "Matcha Almond Avocado Sunrise Smoothie Bowl"
+      }
+    ]
+  },
+  "withdrawIds": [
+    "6ac80db8b0ca951a2fbf753a",
+    "6ac80d84b0ca951a2fbf7486",
+    "6ac80d8fb0ca951a2fbf74aa",
+    "6ac80d7ab0ca951a2fbf7462",
+    "6ac80d7eb0ca951a2fbf746e",
+    "6ac80dceb0ca951a2fbf7586",
+    "6ac80d97b0ca951a2fbf74c6",
+    "6ac80d7db0ca951a2fbf746c",
+    "6ac80e1ab0ca951a2fbf7696",
+    "6ac80e22b0ca951a2fbf76b0",
+    "6ac80e2fb0ca951a2fbf76de",
+    "6ac80db7b0ca951a2fbf7538",
+    "6ac80de7b0ca951a2fbf75e0",
+    "6ac80df5b0ca951a2fbf7610",
+    "6ac80d64b0ca951a2fbf7414",
+    "6ac80d6bb0ca951a2fbf742c",
+    "6ac80d89b0ca951a2fbf7496",
+    "6ac80e2cb0ca951a2fbf76d4",
+    "6ac80e14b0ca951a2fbf767e",
+    "6ac80df1b0ca951a2fbf7602",
+    "6ac80e2bb0ca951a2fbf76ce",
+    "6ac80db4b0ca951a2fbf752c",
+    "6ac80d5db0ca951a2fbf73fe",
+    "6ac80db4b0ca951a2fbf752e",
+    "6ac80dc5b0ca951a2fbf7566",
+    "6ac80e04b0ca951a2fbf7648",
+    "6ac80e14b0ca951a2fbf7680",
+    "6ac80dfab0ca951a2fbf7622",
+    "6ac80e0cb0ca951a2fbf7662",
+    "6ac80df1b0ca951a2fbf7604",
+    "6ac80decb0ca951a2fbf75f2",
+    "6ac80df9b0ca951a2fbf761e",
+    "6ac80dabb0ca951a2fbf750c",
+    "6ac80d94b0ca951a2fbf74be",
+    "6ac80d90b0ca951a2fbf74b0",
+    "6ac80d75b0ca951a2fbf7452",
+    "6ac80dc9b0ca951a2fbf7576",
+    "6a764aa7868ba264d93c01bc",
+    "6ac80da2b0ca951a2fbf74ec",
+    "6ac80e00b0ca951a2fbf7638",
+    "6ac80d69b0ca951a2fbf7426",
+    "6ac80dbfb0ca951a2fbf7552",
+    "6ac80e35b0ca951a2fbf76f2",
+    "6ac80d8db0ca951a2fbf74a4",
+    "6ac80d6fb0ca951a2fbf743c",
+    "6ac80de1b0ca951a2fbf75cc",
+    "6ac80dd1b0ca951a2fbf7594",
+    "6a7511c23f26e2492feeb982",
+    "6ac80d7cb0ca951a2fbf746a",
+    "6ac80d7bb0ca951a2fbf7466",
+    "6ac80e20b0ca951a2fbf76aa",
+    "6ac80d9ab0ca951a2fbf74d0",
+    "6ac80daab0ca951a2fbf750a",
+    "6ac80e36b0ca951a2fbf76f6",
+    "6ac80d77b0ca951a2fbf7458",
+    "6ac80dbbb0ca951a2fbf7544",
+    "6ac80d72b0ca951a2fbf7446",
+    "6ac80df0b0ca951a2fbf7600",
+    "6ac80e33b0ca951a2fbf76ec",
+    "6ac80d64b0ca951a2fbf7416",
+    "6ac80e18b0ca951a2fbf768c",
+    "6ac80d60b0ca951a2fbf7408",
+    "6ac80df7b0ca951a2fbf761a",
+    "6ac80dffb0ca951a2fbf7634",
+    "6ac80d5fb0ca951a2fbf7404",
+    "6ac80d62b0ca951a2fbf740e",
+    "6ac80e1db0ca951a2fbf769e",
+    "6ac80e26b0ca951a2fbf76be",
+    "6ac80e06b0ca951a2fbf764e",
+    "6ac80e31b0ca951a2fbf76e4",
+    "6ac80dbab0ca951a2fbf7542",
+    "69b09f21118169bbfaa697b5"
+  ],
+  "mediumCandidateIds": [
+    "6ac80d88b0ca951a2fbf7492",
+    "6ac80dbcb0ca951a2fbf754a",
+    "6ac80e3ab0ca951a2fbf7704",
+    "6ac80e0eb0ca951a2fbf766a",
+    "6ac80e0ab0ca951a2fbf765c",
+    "6ac80da7b0ca951a2fbf7500",
+    "6ac80db8b0ca951a2fbf753c",
+    "6ac80e2db0ca951a2fbf76d6",
+    "6ac80e06b0ca951a2fbf764c",
+    "6ac80da8b0ca951a2fbf7502",
+    "6ac80da5b0ca951a2fbf74f8",
+    "6ac80e1db0ca951a2fbf76a0",
+    "6ac80e2ab0ca951a2fbf76cc",
+    "6ac80d9fb0ca951a2fbf74e2",
+    "6ac80e16b0ca951a2fbf7686",
+    "6ac80e3cb0ca951a2fbf770c",
+    "6ac80e39b0ca951a2fbf7700",
+    "6ac80ddeb0ca951a2fbf75c0",
+    "6ac80de3b0ca951a2fbf75d2",
+    "6ac80d74b0ca951a2fbf744c",
+    "6ac80d7eb0ca951a2fbf7470",
+    "6ac80d87b0ca951a2fbf748e",
+    "6ac80d8eb0ca951a2fbf74a6",
+    "6ac80d90b0ca951a2fbf74ae",
+    "6ac80d7cb0ca951a2fbf7468",
+    "6ac80e09b0ca951a2fbf7658",
+    "6ac80ddbb0ca951a2fbf75b4",
+    "6ac80dffb0ca951a2fbf7636",
+    "6ac80d68b0ca951a2fbf7422",
+    "6ac80e30b0ca951a2fbf76e0",
+    "6ac80dd8b0ca951a2fbf75ac",
+    "6ac80dc4b0ca951a2fbf7564",
+    "6ac80dc0b0ca951a2fbf7556",
+    "6ac80d92b0ca951a2fbf74b6",
+    "6ac80de8b0ca951a2fbf75e4",
+    "6ac80de0b0ca951a2fbf75c6",
+    "6ac80d96b0ca951a2fbf74c4",
+    "6ac80dd6b0ca951a2fbf75a4",
+    "6ac80d71b0ca951a2fbf7444",
+    "6ac80d7ab0ca951a2fbf7460",
+    "6ac80dfdb0ca951a2fbf762e",
+    "6ac80e02b0ca951a2fbf763e",
+    "6ac80df6b0ca951a2fbf7614",
+    "6ac80e11b0ca951a2fbf7674",
+    "6ac80dc7b0ca951a2fbf756e",
+    "6ac80da4b0ca951a2fbf74f4",
+    "6ac80dafb0ca951a2fbf751a",
+    "6ac80d9ab0ca951a2fbf74d2",
+    "6ac80dd2b0ca951a2fbf7596",
+    "6ac80dbbb0ca951a2fbf7546",
+    "6ac80dc1b0ca951a2fbf7558",
+    "6ac80d9db0ca951a2fbf74dc",
+    "6ac80e28b0ca951a2fbf76c4",
+    "6ac80dadb0ca951a2fbf7514",
+    "6ac80dddb0ca951a2fbf75bc",
+    "6ac80e38b0ca951a2fbf76fc",
+    "6ac80dadb0ca951a2fbf7516",
+    "6ac80da0b0ca951a2fbf74e8",
+    "6ac80e1fb0ca951a2fbf76a6",
+    "6ac80dacb0ca951a2fbf7510",
+    "6a711d7f401468e5cba9701d",
+    "6ac80e32b0ca951a2fbf76ea",
+    "6ac80da9b0ca951a2fbf7508",
+    "6ac80dcbb0ca951a2fbf757c",
+    "6ac80dafb0ca951a2fbf751c",
+    "6ac80e2fb0ca951a2fbf76dc",
+    "6ac80dfeb0ca951a2fbf7632",
+    "6ac80dfab0ca951a2fbf7624",
+    "6ac80e26b0ca951a2fbf76c0",
+    "6ac80dccb0ca951a2fbf7582",
+    "6a6cfaa6901ee72fdac214a9",
+    "6a6cfaa3901ee72fdac214a1",
+    "6ac80d65b0ca951a2fbf7418",
+    "6ac80d66b0ca951a2fbf741a",
+    "6ac80e1eb0ca951a2fbf76a2",
+    "6ac80e0eb0ca951a2fbf766c",
+    "6a7514362ba18e08ad720e80",
+    "6ac80de9b0ca951a2fbf75e6",
+    "6ac80d68b0ca951a2fbf7424",
+    "6ac80d99b0ca951a2fbf74ce",
+    "6ac80d86b0ca951a2fbf748a",
+    "6ac80d78b0ca951a2fbf745a",
+    "6ac80de2b0ca951a2fbf75d0",
+    "6ac80db1b0ca951a2fbf7524",
+    "6ac80dd9b0ca951a2fbf75b0",
+    "6ac80e24b0ca951a2fbf76b8",
+    "6ac80dd8b0ca951a2fbf75aa",
+    "6ac80da1b0ca951a2fbf74ea",
+    "6ac80d9bb0ca951a2fbf74d6",
+    "6ac80e0bb0ca951a2fbf7660",
+    "6ac80dcfb0ca951a2fbf758c",
+    "6ac80d83b0ca951a2fbf7480",
+    "6ac80d75b0ca951a2fbf7450",
+    "6ac80e12b0ca951a2fbf767a",
+    "6ac80e0cb0ca951a2fbf7664",
+    "6a88c731b58cdb4d516136af",
+    "6ac80d82b0ca951a2fbf747c",
+    "6ac80da0b0ca951a2fbf74e6",
+    "6ac80d8cb0ca951a2fbf74a0",
+    "6ac80d8cb0ca951a2fbf74a2",
+    "6ac80de1b0ca951a2fbf75ca",
+    "6ac80dbfb0ca951a2fbf7554",
+    "6ac80e34b0ca951a2fbf76f0",
+    "6ac80df6b0ca951a2fbf7616",
+    "6ac80d78b0ca951a2fbf745c",
+    "6ac80de5b0ca951a2fbf75d8",
+    "6ac80e2bb0ca951a2fbf76d0",
+    "6ac80e28b0ca951a2fbf76c6",
+    "6ac80d61b0ca951a2fbf740a",
+    "6ac80daeb0ca951a2fbf7518",
+    "6ac80e0db0ca951a2fbf7666",
+    "6ac80d7bb0ca951a2fbf7464",
+    "6ac80e0fb0ca951a2fbf766e"
+  ],
+  "groups": [
+    {
+      "groupId": 1,
+      "tier": "medium",
+      "size": 9,
+      "keep": {
+        "recipeId": "6ac80d98b0ca951a2fbf74ca",
+        "title": "Moroccan-Spiced Meatball Lettuce Bites with Lemon-Parsley Yogurt",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d88b0ca951a2fbf7492",
+          "title": "Moroccan-Spiced Lamb Meatball Bites with Herbed Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dbcb0ca951a2fbf754a",
+          "title": "Moroccan-Spiced Beef Bites with Herby Lemon Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e3ab0ca951a2fbf7704",
+          "title": "Moroccan-Spiced Meatball Bites with Harissa Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e0eb0ca951a2fbf766a",
+          "title": "Moroccan-Spiced Lambless Meatball Bites with Herbed Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e0ab0ca951a2fbf765c",
+          "title": "Moroccan-Spiced Meatball Skewers with Lemon-Parsley Dip",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.43,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80da7b0ca951a2fbf7500",
+          "title": "Moroccan-Spiced Meatball Bites with Herbed Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80db8b0ca951a2fbf753c",
+          "title": "Moroccan-Spiced Meatball Bites with Lemony Herb Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.52,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e2db0ca951a2fbf76d6",
+          "title": "Moroccan-Spiced Beef Meatball Bites with Lemon-Garlic Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 2,
+      "tier": "medium",
+      "size": 8,
+      "keep": {
+        "recipeId": "6ac80dc7b0ca951a2fbf7570",
+        "title": "Mushroom and Lentil Shepherd's Pie with Cheddar Potato Topping",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e06b0ca951a2fbf764c",
+          "title": "Mushroom and Lentil Shepherd's Pie with Parsley Potato Crust",
+          "source": "ai_daily_draft",
+          "coverage": 93.75,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.63,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80da8b0ca951a2fbf7502",
+          "title": "Mushroom and Lentil Shepherd's Pie with Cheesy Potato Top",
+          "source": "ai_daily_draft",
+          "coverage": 89.47368421052632,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80da5b0ca951a2fbf74f8",
+          "title": "Mushroom and Lentil Cottage Pie with Parsley Potato Topping",
+          "source": "ai_daily_draft",
+          "coverage": 88.23529411764706,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e1db0ca951a2fbf76a0",
+          "title": "Mushroom and Chickpea Shepherd's Pie with Cheddar Mash",
+          "source": "ai_daily_draft",
+          "coverage": 94.73684210526315,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.4,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e2ab0ca951a2fbf76cc",
+          "title": "Mushroom and Lentil Shepherd’s Pie with Cheddar Potatoes",
+          "source": "ai_daily_draft",
+          "coverage": 94.44444444444444,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.58,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d9fb0ca951a2fbf74e2",
+          "title": "Mushroom and Lentil Shepherd’s Pie with Rosemary Mash",
+          "source": "ai_daily_draft",
+          "coverage": 94.44444444444444,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.6,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e16b0ca951a2fbf7686",
+          "title": "Mushroom, Lentil, and Potato Topping Pie",
+          "source": "ai_daily_draft",
+          "coverage": 93.33333333333333,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 3,
+      "tier": "medium",
+      "size": 7,
+      "keep": {
+        "recipeId": "6ac80dd4b0ca951a2fbf759e",
+        "title": "Miso Broth Noodles with Ginger, Bok Choy, and Tofu",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e3cb0ca951a2fbf770c",
+          "title": "Clear Miso Noodle Bowl with Ginger, Mushrooms, and Bok Choy",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e39b0ca951a2fbf7700",
+          "title": "Miso Chicken Noodle Soup with Bok Choy and Ginger",
+          "source": "ai_daily_draft",
+          "coverage": 92.3076923076923,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.63,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80ddeb0ca951a2fbf75c0",
+          "title": "Silken Miso Noodle Soup with Ginger, Bok Choy, and Scallions",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80de3b0ca951a2fbf75d2",
+          "title": "Miso Chicken Noodle Soup with Ginger, Bok Choy, and Rice Noodles",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d74b0ca951a2fbf744c",
+          "title": "Miso Noodle Soup with Ginger and Bok Choy",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.56,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d7eb0ca951a2fbf7470",
+          "title": "Miso Broth Noodles with Bok Choy and Ginger",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.86,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 4,
+      "tier": "strong",
+      "size": 6,
+      "keep": {
+        "recipeId": "6ac80db0b0ca951a2fbf7520",
+        "title": "Skillet Turkey-Style Sausage, Chard & Sweet Potato Morning Hash",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80db8b0ca951a2fbf753a",
+          "title": "Turkey Sausage, Chard & Sweet Potato Skillet Scramble",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.85,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d84b0ca951a2fbf7486",
+          "title": "Skillet Turkey-Style Sausage, Chard, and Sweet Potato Morning Scramble",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d8fb0ca951a2fbf74aa",
+          "title": "Turkey Sausage, Chard & Sweet Potato Breakfast Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.85,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d7ab0ca951a2fbf7462",
+          "title": "Skillet Turkey-Style Morning Hash with Chard and Sweet Potato",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.88,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d7eb0ca951a2fbf746e",
+          "title": "Skillet Turkey & Sweet Potato Chard Scramble",
+          "source": "ai_daily_draft",
+          "coverage": 88.88888888888889,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.85,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 5,
+      "tier": "strong",
+      "size": 5,
+      "keep": {
+        "recipeId": "6ac80d8eb0ca951a2fbf74a8",
+        "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 90,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dceb0ca951a2fbf7586",
+          "title": "Spring Garden Breakfast Frittata with Mushrooms, Asparagus, and Goat Cheese",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.92,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d97b0ca951a2fbf74c6",
+          "title": "Herbed Spinach, Asparagus & Mushroom Breakfast Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.85,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d7db0ca951a2fbf746c",
+          "title": "Golden Spinach, Asparagus, and Mushroom Breakfast Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e1ab0ca951a2fbf7696",
+          "title": "Spinach, Mushroom, and Asparagus Cheese Skillet Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 6,
+      "tier": "strong",
+      "size": 5,
+      "keep": {
+        "recipeId": "6ac80de2b0ca951a2fbf75ce",
+        "title": "Spinach-Ricotta Lasagna Rolls with Peppery Tomato-Parmesan Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 84.61538461538461,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e22b0ca951a2fbf76b0",
+          "title": "Spinach Ricotta Lasagna Rolls with Peppery Marinara",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.78,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e2fb0ca951a2fbf76de",
+          "title": "Spinach and Ricotta Lasagna Rolls with Peppery Tomato-Parmesan Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.6,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80db7b0ca951a2fbf7538",
+          "title": "Spinach and Ricotta Lasagna Rolls with Peppery Pecorino Marinara",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.76,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80de7b0ca951a2fbf75e0",
+          "title": "Spinach and Ricotta Lasagna Rolls with Peppery Pecorino-Style Tomato Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.82,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 7,
+      "tier": "strong",
+      "size": 5,
+      "keep": {
+        "recipeId": "6a750fc40d9d66e08011e8b7",
+        "title": "Silken Miso Noodle Soup with Ginger and Greens",
+        "source": "ai_daily_draft",
+        "coverage": 91.66666666666666,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80df5b0ca951a2fbf7610",
+          "title": "Ginger-Miso Noodle Broth with Greens and Tofu",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d64b0ca951a2fbf7414",
+          "title": "Clear Miso Noodle Soup with Ginger, Tofu, and Greens",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d6bb0ca951a2fbf742c",
+          "title": "Miso Broth Noodles with Ginger and Greens",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d89b0ca951a2fbf7496",
+          "title": "Miso-Ginger Broth with Rice Noodles and Greens",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 8,
+      "tier": "medium",
+      "size": 5,
+      "keep": {
+        "recipeId": "6ac80d83b0ca951a2fbf7482",
+        "title": "Romesco-Style Sun-Dried Tomato Chickpea Bake",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d87b0ca951a2fbf748e",
+          "title": "Spanish Romesco Chickpea Bake with Sun-Dried Tomato Notes",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.45,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d8eb0ca951a2fbf74a6",
+          "title": "Romesco-Style Roasted Pepper and Sun-Dried Tomato Chickpeas",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.65,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d90b0ca951a2fbf74ae",
+          "title": "Roasted Pepper and Sun-Dried Tomato Romesco with Chickpeas",
+          "source": "ai_daily_draft",
+          "coverage": 91.66666666666666,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.56,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d7cb0ca951a2fbf7468",
+          "title": "Romesco-Style Sun-Dried Tomato Chickpea Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 9,
+      "tier": "medium",
+      "size": 5,
+      "keep": {
+        "recipeId": "6ac80e2cb0ca951a2fbf76d2",
+        "title": "Matcha Almond Avocado Sunrise Smoothie Bowl",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e09b0ca951a2fbf7658",
+          "title": "Almond Meadow Matcha Breakfast Smoothie Bowl",
+          "source": "ai_daily_draft",
+          "coverage": 91.66666666666666,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80ddbb0ca951a2fbf75b4",
+          "title": "Matcha Almond Green Sunrise Smoothie",
+          "source": "ai_daily_draft",
+          "coverage": 88.88888888888889,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dffb0ca951a2fbf7636",
+          "title": "Almond Matcha Sunrise Power Smoothie Bowl",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.63,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d68b0ca951a2fbf7422",
+          "title": "Almond Matcha Sunrise Breakfast Smoothie",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.56,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 10,
+      "tier": "medium",
+      "size": 5,
+      "keep": {
+        "recipeId": "6ac80e38b0ca951a2fbf76fe",
+        "title": "Crisp Chinese Chicken Salad with Sesame-Lime Crunch",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e30b0ca951a2fbf76e0",
+          "title": "Crisp Chinese Chicken Salad with Lime-Ginger Sesame Crunch",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.88,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dd8b0ca951a2fbf75ac",
+          "title": "Crisp Chinese Chicken Salad with Sesame-Lime Greens",
+          "source": "ai_daily_draft",
+          "coverage": 94.11764705882352,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.46,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dc4b0ca951a2fbf7564",
+          "title": "Citrus Sesame Chicken Crunch Salad",
+          "source": "ai_daily_draft",
+          "coverage": 88.23529411764706,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dc0b0ca951a2fbf7556",
+          "title": "Crisp Ginger Chicken Salad with Sesame-Lime Dressing",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.67,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 11,
+      "tier": "medium",
+      "size": 5,
+      "keep": {
+        "recipeId": "6ac80e09b0ca951a2fbf765a",
+        "title": "Light Sesame Rice Noodles with Beef, Spinach, and Mushrooms",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d92b0ca951a2fbf74b6",
+          "title": "Ginger-Sesame Rice Noodle Stir-Fry with Spinach and Mushroom",
+          "source": "ai_daily_draft",
+          "coverage": 92.3076923076923,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.58,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80de8b0ca951a2fbf75e4",
+          "title": "Gingery Rice Noodles with Mushrooms and Spinach",
+          "source": "ai_daily_draft",
+          "coverage": 91.66666666666666,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.56,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80de0b0ca951a2fbf75c6",
+          "title": "Gingered Rice Noodle Skillet with Spinach, Mushrooms, and Sesame Chicken",
+          "source": "ai_daily_draft",
+          "coverage": 86.66666666666667,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.45,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d96b0ca951a2fbf74c4",
+          "title": "Ginger-Sesame Rice Noodles with Spinach and Mushrooms",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.53,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 12,
+      "tier": "strong",
+      "size": 4,
+      "keep": {
+        "recipeId": "6ac80e18b0ca951a2fbf768e",
+        "title": "Golden Mushroom-Spring Frittata with Spinach and Asparagus",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e2cb0ca951a2fbf76d4",
+          "title": "Golden Spinach-Asparagus Breakfast Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 91.66666666666666,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e14b0ca951a2fbf767e",
+          "title": "Spinach, Asparagus, and Mushroom Cheesy Skillet Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.93,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80df1b0ca951a2fbf7602",
+          "title": "Sunrise Skillet Frittata with Spinach, Asparagus, and Mushrooms",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 13,
+      "tier": "medium",
+      "size": 4,
+      "keep": {
+        "recipeId": "6ac80dd0b0ca951a2fbf7590",
+        "title": "Spinach, Asparagus, and Mushroom Breakfast Skillet Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dd6b0ca951a2fbf75a4",
+          "title": "Golden Morning Frittata with Mushrooms, Asparagus & Spinach",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d71b0ca951a2fbf7444",
+          "title": "Garden Skillet Frittata with Mushrooms, Asparagus, Spinach, and Goat Cheese",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.53,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d7ab0ca951a2fbf7460",
+          "title": "Skillet Breakfast Frittata with Spinach, Asparagus, and Two-Cheese Melt",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.53,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 14,
+      "tier": "medium",
+      "size": 4,
+      "keep": {
+        "recipeId": "6ac80dfbb0ca951a2fbf7628",
+        "title": "Sweet Potato Turkey Sloppy Joes with Smoky Pepper Skillet",
+        "source": "ai_daily_draft",
+        "coverage": 92.85714285714286,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dfdb0ca951a2fbf762e",
+          "title": "Sweet Potato Turkey Skillet Joes",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.52,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e02b0ca951a2fbf763e",
+          "title": "Smoky Sweet Potato Turkey Joes",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.65,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80df6b0ca951a2fbf7614",
+          "title": "Smoky Sweet Potato Turkey Sloppy Joes",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.45,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 15,
+      "tier": "medium",
+      "size": 4,
+      "keep": {
+        "recipeId": "6ac80dbdb0ca951a2fbf754c",
+        "title": "Smoky Slow Cooker Beef and Bean Chili",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e11b0ca951a2fbf7674",
+          "title": "Slow Cooker Smoky Turkey and Bean Chili",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dc7b0ca951a2fbf756e",
+          "title": "Smoky Slow-Cooked Beef Chili",
+          "source": "ai_daily_draft",
+          "coverage": 93.33333333333333,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.4,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80da4b0ca951a2fbf74f4",
+          "title": "Slow Cooker Smoky Black Bean Chili",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 16,
+      "tier": "medium",
+      "size": 4,
+      "keep": {
+        "recipeId": "6ac80db3b0ca951a2fbf752a",
+        "title": "Garden Mushroom Cottage Pie with Quinoa Mash",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dafb0ca951a2fbf751a",
+          "title": "Mushroom, Lentil and Quinoa Cottage Pie",
+          "source": "ai_daily_draft",
+          "coverage": 95,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.63,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d9ab0ca951a2fbf74d2",
+          "title": "Mushroom and Lentil Cottage Pie with Mustard Mash",
+          "source": "ai_daily_draft",
+          "coverage": 94.44444444444444,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dd2b0ca951a2fbf7596",
+          "title": "Mushroom & Quinoa Cottage Pie with Cheddar Mash",
+          "source": "ai_daily_draft",
+          "coverage": 88.88888888888889,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.52,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 17,
+      "tier": "medium",
+      "size": 4,
+      "keep": {
+        "recipeId": "6ac80d5db0ca951a2fbf73fc",
+        "title": "Garden Sunrise Frittata with Spinach, Asparagus, and Mushrooms",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dbbb0ca951a2fbf7546",
+          "title": "Garden-Bright Cheddar Frittata with Spinach, Asparagus, and Mushrooms",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.59,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dc1b0ca951a2fbf7558",
+          "title": "Sunrise Spinach-Asparagus Skillet Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d9db0ca951a2fbf74dc",
+          "title": "Keto Breakfast Frittata with Spinach, Asparagus, and Mushrooms",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.69,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 18,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80db7b0ca951a2fbf7536",
+        "title": "Citrus Herb Red Quinoa Salad with Cucumber, Tomato, and Mint",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e2bb0ca951a2fbf76ce",
+          "title": "Citrus Herb Red Quinoa Salad with Cucumber, Chickpeas, and Mint",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.72,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80db4b0ca951a2fbf752c",
+          "title": "Red Quinoa Tabbouleh-Style Salad with Cucumber, Herbs, and Lemon",
+          "source": "ai_daily_draft",
+          "coverage": 80,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 19,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80dbcb0ca951a2fbf7548",
+        "title": "Turkey Sausage, Chard & Sweet Potato Breakfast Hash Scramble",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d5db0ca951a2fbf73fe",
+          "title": "Sweet Potato, Chard & Turkey Breakfast Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.77,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80db4b0ca951a2fbf752e",
+          "title": "Sweet Potato, Chard & Turkey Breakfast Hash Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 20,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80dfcb0ca951a2fbf762c",
+        "title": "Spinach-Asparagus Mushroom Breakfast Bake with Parmesan and Mozzarella",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dc5b0ca951a2fbf7566",
+          "title": "Spinach, Asparagus & Mushroom Breakfast Frittata with Mozzarella and Parmesan",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e04b0ca951a2fbf7648",
+          "title": "Asparagus Mushroom Spinach Breakfast Frittata with Mozzarella and Parmesan",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.93,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 21,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80dfeb0ca951a2fbf7630",
+        "title": "Mushroom and Lentil Shepherd’s Pie with Parsley Mash",
+        "source": "ai_daily_draft",
+        "coverage": 82.35294117647058,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e14b0ca951a2fbf7680",
+          "title": "Mushroom and Lentil Shepherd’s Pie with Potato-Celery Mash",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dfab0ca951a2fbf7622",
+          "title": "Mushroom and Lentil Cottage Pie with Parsley Mash",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 22,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80df8b0ca951a2fbf761c",
+        "title": "Miso Chicken Noodle Soup with Ginger, Greens, and Green Onion",
+        "source": "ai_daily_draft",
+        "coverage": 81.81818181818183,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e0cb0ca951a2fbf7662",
+          "title": "Miso Chicken Noodle Soup with Greens and Soft Egg",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80df1b0ca951a2fbf7604",
+          "title": "Ginger Chicken Miso Noodle Soup with Bok Choy",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.81,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 23,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80defb0ca951a2fbf75fc",
+        "title": "Sweet Potato Turkey Sloppy Joes with Smoky Tomato Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80decb0ca951a2fbf75f2",
+          "title": "Sweet Potato and Turkey Sloppy Joes with Smoky Tomato Glaze",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.7,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80df9b0ca951a2fbf761e",
+          "title": "Sweet Potato Turkey Sloppy Joes with Cheesy Potato Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 93.75,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.7,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 24,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80dd1b0ca951a2fbf7592",
+        "title": "Skillet Turkey-Style Breakfast Scramble with Chard and Sweet Potato",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dabb0ca951a2fbf750c",
+          "title": "Skillet Turkey-Style Sausage Scramble with Chard, Sweet Potato & Herbs",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.86,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d94b0ca951a2fbf74be",
+          "title": "Turkey-Style Sausage, Chard & Sweet Potato Breakfast Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.73,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 25,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80d97b0ca951a2fbf74c8",
+        "title": "Sweet Potato, Turkey Sausage, and Chard Breakfast Skillet",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d90b0ca951a2fbf74b0",
+          "title": "Turkey-Sausage Style Breakfast Skillet with Chard and Sweet Potato",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.73,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80d75b0ca951a2fbf7452",
+          "title": "Sweet Potato, Chard & Turkey Sausage Breakfast Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.83,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 26,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80d8ab0ca951a2fbf7498",
+        "title": "Crisp Chicken, Jicama, and Ginger Salad with Sesame Citrus Dressing",
+        "source": "ai_daily_draft",
+        "coverage": 93.33333333333333,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dc9b0ca951a2fbf7576",
+          "title": "Ginger-Sesame Chicken Salad with Crunchy Cabbage and Citrus Dressing",
+          "source": "ai_daily_draft",
+          "coverage": 86.66666666666667,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6a764aa7868ba264d93c01bc",
+          "title": "Crisp Chinese Chicken Salad with Sesame-Ginger Citrus Dressing",
+          "source": "ai_daily_draft",
+          "coverage": 82.35294117647058,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.8,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 27,
+      "tier": "strong",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80d61b0ca951a2fbf740c",
+        "title": "Spinach, Asparagus & Mushroom Breakfast Frittata with Two Cheeses",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80da2b0ca951a2fbf74ec",
+          "title": "Asparagus, Mushroom, and Spinach Cheddar Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.73,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e00b0ca951a2fbf7638",
+          "title": "Spinach-Asparagus Mushroom Breakfast Frittata with Two Cheeses",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.59,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 28,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80dc2b0ca951a2fbf755c",
+        "title": "Buckwheat Crepes with Wild Mushroom, White Wine, and Herb Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 80,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e28b0ca951a2fbf76c4",
+          "title": "Buckwheat Crepes with Mushroom-Shallot Herb Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.43,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dadb0ca951a2fbf7514",
+          "title": "Wild Mushroom Crepes with White Wine Parsley Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.45,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 29,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80d88b0ca951a2fbf7494",
+        "title": "Smoky Black Bean and Pepper Taco Filling",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dddb0ca951a2fbf75bc",
+          "title": "Smoky Black Bean and Pepper Taco Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.63,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e38b0ca951a2fbf76fc",
+          "title": "Charred Black Bean and Pepper Taco Filling",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.67,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 30,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80dc2b0ca951a2fbf755e",
+        "title": "Slow-Simmered Beef Chili with Roasted Tomato and Black Beans",
+        "source": "ai_daily_draft",
+        "coverage": 89.47368421052632,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dadb0ca951a2fbf7516",
+          "title": "Slow-Cooked Beef Chili with Black Beans and Tomatoes",
+          "source": "ai_daily_draft",
+          "coverage": 82.35294117647058,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.54,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80da0b0ca951a2fbf74e8",
+          "title": "Smoky Slow Cooker Beef and Black Bean Chili",
+          "source": "ai_daily_draft",
+          "coverage": 81.25,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 31,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80e1cb0ca951a2fbf769c",
+        "title": "Chicken Miso Soba Soup with Greens and Quail Eggs",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e1fb0ca951a2fbf76a6",
+          "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.52,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dacb0ca951a2fbf7510",
+          "title": "Chicken Miso Noodle Soup with Spinach and Quail Eggs",
+          "source": "ai_daily_draft",
+          "coverage": 91.66666666666666,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 32,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80de6b0ca951a2fbf75dc",
+        "title": "Mushroom and Lentil Cottage Pie with Cheddar Potatoes",
+        "source": "ai_daily_draft",
+        "coverage": 94.73684210526315,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6a711d7f401468e5cba9701d",
+          "title": "British Mushroom and Lentil Cottage Pie",
+          "source": "ai_daily_draft",
+          "coverage": 94.44444444444444,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.56,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e32b0ca951a2fbf76ea",
+          "title": "Mushroom, Lentil and Potato Cottage Pie",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.54,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 33,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80db3b0ca951a2fbf7528",
+        "title": "Kimchi-Style Cabbage with Sesame Shrimp and Rice",
+        "source": "ai_daily_draft",
+        "coverage": 92.85714285714286,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80da9b0ca951a2fbf7508",
+          "title": "Quick-Pickled Kimchi Cabbage with Sesame Shrimp",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.65,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dcbb0ca951a2fbf757c",
+          "title": "Crisp Kimchi-Style Cabbage with Salmon and Sesame Rice",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 34,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80ddcb0ca951a2fbf75b8",
+        "title": "Herbed Red Quinoa Tabbouleh-Style Salad with Cucumber, Tomato, and Sumac",
+        "source": "ai_daily_draft",
+        "coverage": 88.88888888888889,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dafb0ca951a2fbf751c",
+          "title": "Herbed Red Quinoa Salad with Cucumber, Tomato, and Sumac Dressing",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80e2fb0ca951a2fbf76dc",
+          "title": "Herbed Red Quinoa Salad with Cucumber, Tomato, and Mint",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.56,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 35,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80d9fb0ca951a2fbf74e4",
+        "title": "Tuscan-Style Seafood Stew with Tomatoes, Fennel, and White Wine",
+        "source": "ai_daily_draft",
+        "coverage": 87.5,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dfeb0ca951a2fbf7632",
+          "title": "Tuscan-Style Seafood Stew with Fennel and White Wine",
+          "source": "ai_daily_draft",
+          "coverage": 86.66666666666667,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.86,
+          "ingredientJaccardToKeeper": 0.4,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dfab0ca951a2fbf7624",
+          "title": "Tuscan-Style Seafood Stew with Tomato, Fennel, and White Wine",
+          "source": "ai_daily_draft",
+          "coverage": 81.25,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 36,
+      "tier": "medium",
+      "size": 3,
+      "keep": {
+        "recipeId": "6ac80e3bb0ca951a2fbf7708",
+        "title": "Spinach and Ricotta Lasagna Rolls with Peppery Tomato Marinara",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e26b0ca951a2fbf76c0",
+          "title": "Spinach-Ricotta Lasagna Rolls with Peppery Pecorino Tomato Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.58,
+          "usedBy": []
+        },
+        {
+          "recipeId": "6ac80dccb0ca951a2fbf7582",
+          "title": "Spinach-and-Ricotta Lasagna Rolls with Peppery Pecorino Tomato Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.43,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 37,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d80b0ca951a2fbf7478",
+        "title": "Keto Morning Garden Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d69b0ca951a2fbf7426",
+          "title": "Garden Morning Frittata with Three Cheeses",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.8,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 38,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dc8b0ca951a2fbf7572",
+        "title": "Spinach-Ricotta Lasagna Rolls with Peppery Tomato Marinara",
+        "source": "ai_daily_draft",
+        "coverage": 84.61538461538461,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dbfb0ca951a2fbf7552",
+          "title": "Spinach-and-Mozzarella Lasagna Rolls with Peppery Tomato Pecorino Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.81,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 39,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e1bb0ca951a2fbf7698",
+        "title": "Sun-Dried Tomato Herb Breakfast Eggs with Spinach and Goat Cheese",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e35b0ca951a2fbf76f2",
+          "title": "Baked Eggs with Sun-Dried Tomato, Spinach, and Herbed Goat Cheese",
+          "source": "ai_daily_draft",
+          "coverage": 80,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.64,
+          "ingredientJaccardToKeeper": 1,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 40,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d91b0ca951a2fbf74b4",
+        "title": "Sweet Potato Chicken Sloppy Joes with Smoky Tomato Slaw",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d8db0ca951a2fbf74a4",
+          "title": "Sweet Potato-Style Sloppy Joes with Chicken and Black Beans",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 41,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dcab0ca951a2fbf7578",
+        "title": "Savory Turkey-Style Scramble with Sweet Potato, Chard & Herb Finish",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d6fb0ca951a2fbf743c",
+          "title": "Sweet Potato Turkey Sausage Chard Skillet Scramble",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 42,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80ddbb0ca951a2fbf75b6",
+        "title": "British Mushroom, Lentil and Cheddar Shepherd's Pie",
+        "source": "ai_daily_draft",
+        "coverage": 95,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80de1b0ca951a2fbf75cc",
+          "title": "Mushroom, Lentil & Quinoa Shepherd's Pie with Cheddar Mash",
+          "source": "ai_daily_draft",
+          "coverage": 89.47368421052632,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.72,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 43,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80de5b0ca951a2fbf75da",
+        "title": "Moroccan-Spiced Lamb Bites with Herbed Goat Cheese",
+        "source": "ai_daily_draft",
+        "coverage": 93.75,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dd1b0ca951a2fbf7594",
+          "title": "Moroccan-Spiced Lamb Bite Skewers with Herbed Yogurt Dip",
+          "source": "ai_daily_draft",
+          "coverage": 81.25,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.8,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 44,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d6bb0ca951a2fbf742e",
+        "title": "Crisp Chinese Chicken Salad with Ginger-Sesame Rice Noodles",
+        "source": "ai_daily_draft",
+        "coverage": 93.33333333333333,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6a7511c23f26e2492feeb982",
+          "title": "Crisp Ginger Chicken and Cabbage Salad with Sesame Rice Noodles",
+          "source": "ai_daily_draft",
+          "coverage": 94.11764705882352,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.78,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 45,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dceb0ca951a2fbf7588",
+        "title": "Moroccan-Spiced Chicken Meatball Bites with Lemon Herb Yogurt",
+        "source": "ai_daily_draft",
+        "coverage": 93.33333333333333,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d7cb0ca951a2fbf746a",
+          "title": "Moroccan-Spiced Meatball Bites with Lemon Herb Yogurt",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.88,
+          "ingredientJaccardToKeeper": 0.74,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 46,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80ddab0ca951a2fbf75b2",
+        "title": "Light Korean-Style Rice Noodles with Spinach and Mushrooms",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d7bb0ca951a2fbf7466",
+          "title": "Lighter Korean-Style Rice Noodles with Beef, Mushrooms, and Spinach",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 47,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e10b0ca951a2fbf7672",
+        "title": "Kimchi-Style Miso Shrimp Rice Bowls",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e20b0ca951a2fbf76aa",
+          "title": "Quick Kimchi-Style Salmon Rice Bowls",
+          "source": "ai_daily_draft",
+          "coverage": 92.3076923076923,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.72,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 48,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d8bb0ca951a2fbf749c",
+        "title": "Light Korean-Style Glass Noodles with Spinach, Mushrooms, and Chicken",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d9ab0ca951a2fbf74d0",
+          "title": "Light Korean-Style Glass Noodles with Spinach and Mushrooms",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.86,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 49,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dd7b0ca951a2fbf75a6",
+        "title": "British Mushroom and Lentil Shepherd's Pie with Quinoa-Parsnip Topping",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80daab0ca951a2fbf750a",
+          "title": "Mushroom, Lentil, and Quinoa Shepherd's Pie",
+          "source": "ai_daily_draft",
+          "coverage": 95,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.77,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 50,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e25b0ca951a2fbf76bc",
+        "title": "Cheddar-Quark Style Protein Scones with Chives and Bacon",
+        "source": "ai_daily_draft",
+        "coverage": 90,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e36b0ca951a2fbf76f6",
+          "title": "Cheddar Potato Corn Scones with Bacon and Chives",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 51,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d85b0ca951a2fbf7488",
+        "title": "Miso Broth with Rice Noodles, Spinach, and Ginger",
+        "source": "ai_daily_draft",
+        "coverage": 90,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d77b0ca951a2fbf7458",
+          "title": "Miso Broth Noodle Bowl with Spinach and Ginger",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.77,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 52,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80deab0ca951a2fbf75ec",
+        "title": "Crisp Ginger Chicken Salad with Sesame Rice Crunch",
+        "source": "ai_daily_draft",
+        "coverage": 87.5,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dbbb0ca951a2fbf7544",
+          "title": "Ginger-Sesame Chicken Crunch Salad",
+          "source": "ai_daily_draft",
+          "coverage": 81.25,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.76,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 53,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d93b0ca951a2fbf74ba",
+        "title": "Mango-Berry Sunrise Breakfast Swirl",
+        "source": "ai_daily_draft",
+        "coverage": 87.5,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d72b0ca951a2fbf7446",
+          "title": "Sunrise Mango-Berry Swirl Breakfast Smoothies",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.83,
+          "ingredientJaccardToKeeper": 0.7,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 54,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80df3b0ca951a2fbf760c",
+        "title": "Cider-Scented Mushroom Shepherd's Pie",
+        "source": "ai_daily_draft",
+        "coverage": 86.66666666666667,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80df0b0ca951a2fbf7600",
+          "title": "Mushroom, Lentil, and Ale Shepherd's Pie",
+          "source": "ai_daily_draft",
+          "coverage": 89.47368421052632,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.74,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 55,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e36b0ca951a2fbf76f8",
+        "title": "Pomegranate-Style Citrus Quinoa Tabbouleh Salad",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e33b0ca951a2fbf76ec",
+          "title": "Citrus Herb Quinoa Tabbouleh-Style Salad",
+          "source": "ai_daily_draft",
+          "coverage": 80,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.86,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 56,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80df4b0ca951a2fbf760e",
+        "title": "Spiced Moroccan-Style Chicken Bites with Lemon Yogurt Dip",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d64b0ca951a2fbf7416",
+          "title": "Moroccan-Spiced Meatball Snack Bites with Lemon Herb Dip",
+          "source": "ai_daily_draft",
+          "coverage": 92.3076923076923,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 57,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e07b0ca951a2fbf7652",
+        "title": "Crispy Japanese Curry Chicken Puffs",
+        "source": "ai_daily_draft",
+        "coverage": 80,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e18b0ca951a2fbf768c",
+          "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+          "source": "ai_daily_draft",
+          "coverage": 81.25,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.8,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 58,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d66b0ca951a2fbf741c",
+        "title": "Mediterranean Baked Basa with Tomatoes, Olives, and Herbs",
+        "source": "ai_daily_draft",
+        "coverage": 80,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d60b0ca951a2fbf7408",
+          "title": "Greek-Style Baked Basa with Tomatoes, Olives, and Feta",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.85,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 59,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dc5b0ca951a2fbf7568",
+        "title": "Moroccan-Spiced Meatball Skewers with Lemon Herb Dip",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80df7b0ca951a2fbf761a",
+          "title": "Harissa-Spiced Moroccan Meatball Skewers with Lemon-Parsley Dip",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 60,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d94b0ca951a2fbf74bc",
+        "title": "Miso Chicken Noodle Soup with Ginger and Spinach",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dffb0ca951a2fbf7634",
+          "title": "Miso-Ginger Chicken Noodle Bowl",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 61,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80df7b0ca951a2fbf7618",
+        "title": "Greek Baked Fish with Tomatoes, Feta, and Lemon",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d5fb0ca951a2fbf7404",
+          "title": "Mediterranean Lemon-Garlic Baked Fish with Tomatoes, Olives, and Feta",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.73,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 62,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d6cb0ca951a2fbf7432",
+        "title": "Smoked Salmon & Herb Breakfast Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d62b0ca951a2fbf740e",
+          "title": "Smoked Salmon and Herb Breakfast Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.53,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 63,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80da3b0ca951a2fbf74f0",
+        "title": "Mushroom Crepes with Herbed White Wine Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 93.33333333333333,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e1db0ca951a2fbf769e",
+          "title": "Mushroom Crepes with Herbed Goat Cheese Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.75,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 64,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dd3b0ca951a2fbf7598",
+        "title": "Citrus Herb Red Quinoa Tabbouleh with Chickpeas and Cucumber",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e26b0ca951a2fbf76be",
+          "title": "Red Quinoa Tabbouleh-Inspired Salad with Herbs, Cucumber, and Lemon",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.71,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 65,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e03b0ca951a2fbf7644",
+        "title": "Tuscan Tomato Seafood Stew with Fennel and Herbs",
+        "source": "ai_daily_draft",
+        "coverage": 86.66666666666667,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e06b0ca951a2fbf764e",
+          "title": "Tuscan Shrimp and Scallop Stew with Fennel and Tomato",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.7,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 66,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80db6b0ca951a2fbf7532",
+        "title": "Buckwheat Crêpes with Mushroom-Shallot Cream and Herb Salad",
+        "source": "ai_daily_draft",
+        "coverage": 86.66666666666667,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e31b0ca951a2fbf76e4",
+          "title": "Mushroom Crêpes with Herb-Shallot Vegetarian Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.7,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 67,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80debb0ca951a2fbf75ee",
+        "title": "Spinach-Ricotta Lasagna Rolls with Peppery Pecorino Tomatoe Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dbab0ca951a2fbf7542",
+          "title": "Spinach-Ricotta Lasagna Rolls with Peppery Tomatoe Pecorino Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "strong",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 68,
+      "tier": "strong",
+      "size": 2,
+      "keep": {
+        "recipeId": "69b09f21118169bbfaa697b4",
+        "title": "Avocado Tomato & Mozzarella Panini/sandwiches",
+        "source": "spoonacular",
+        "coverage": 80,
+        "hasImage": false,
+        "imageShared": false,
+        "descGood": false,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "69b09f21118169bbfaa697b5",
+          "title": "Avocado Tomato & Mozzarella Panini",
+          "source": "spoonacular",
+          "coverage": 80,
+          "hasImage": false,
+          "imageShared": false,
+          "descGood": false,
+          "tier": "strong",
+          "titleJaccardToKeeper": 0.8,
+          "ingredientJaccardToKeeper": 1,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 69,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d5ab0ca951a2fbf73f2",
+        "title": "Lemon-Dill Salmon Skillet Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6a6cfaa6901ee72fdac214a9",
+          "title": "Lemon-Dill Salmon Breakfast Frittata",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.57,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 70,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a6cfaa5901ee72fdac214a7",
+        "title": "Goldilocks Coconut Chia Breakfast Porridge",
+        "source": "ai_daily_draft",
+        "coverage": 88.88888888888889,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          },
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          },
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6a6cfaa3901ee72fdac214a1",
+          "title": "Goldilocks Vanilla Chia Quinoa Breakfast Porridge",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.4,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 71,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d6cb0ca951a2fbf7430",
+        "title": "Golden Spinach-Asparagus Skillet Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d65b0ca951a2fbf7418",
+          "title": "Garden Skillet Frittata with Spinach, Asparagus, and Mushroom Cheese",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 72,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d6fb0ca951a2fbf743a",
+        "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
+        "source": "ai_daily_draft",
+        "coverage": 90,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d66b0ca951a2fbf741a",
+          "title": "Dill Salmon Breakfast Frittata with Asparagus and Tomato",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.6,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 73,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d84b0ca951a2fbf7484",
+        "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": [
+          {
+            "via": "meal_plan",
+            "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3"
+          }
+        ]
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e1eb0ca951a2fbf76a2",
+          "title": "Spinach Cloud Frittata with Goat Cheese and Basil",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.58,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": true
+    },
+    {
+      "groupId": 74,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e03b0ca951a2fbf7642",
+        "title": "Mushroom and Leek Shepherd’s Pie with Olive Oil Mash",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e0eb0ca951a2fbf766c",
+          "title": "Mushroom & Leek Shepherd's Pie with Thyme Potato Mash",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.65,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 75,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dbeb0ca951a2fbf7550",
+        "title": "Charred Corn Avocado Salsa",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6a7514362ba18e08ad720e80",
+          "title": "Charred Corn and Avocado Salsa with Lime-Roasted Jicama",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.64,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 76,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d91b0ca951a2fbf74b2",
+        "title": "Garlicky Black Bean Shrimp Breakfast Scramble",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80de9b0ca951a2fbf75e6",
+          "title": "Garlic-Skillet Shrimp and Black Bean Breakfast Scramble",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.53,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 77,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dc1b0ca951a2fbf755a",
+        "title": "Moroccan-Spiced Beef Meatball Skewers with Lemon Herb Dip",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d68b0ca951a2fbf7424",
+          "title": "Moroccan-Spiced Beef Meatball Bites with Lemon Yogurt Dip",
+          "source": "ai_daily_draft",
+          "coverage": 92.3076923076923,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 78,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e01b0ca951a2fbf763c",
+        "title": "Smoky Chicken Sweet Potato Fries with Herbed Yogurt Drizzle",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d99b0ca951a2fbf74ce",
+          "title": "Crispy Sweet Potato Chicken Fries with Smoky Yogurt Dip",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.6,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 79,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d8fb0ca951a2fbf74ac",
+        "title": "Smoky Sweet Potato Chicken Sloppy Joes",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d86b0ca951a2fbf748a",
+          "title": "Sweet Potato-Style Sloppy Joes with Chicken and Quinoa",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 80,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d8ab0ca951a2fbf749a",
+        "title": "High-Protein Sweet Potato Sloppy Joes with Chicken, Black Beans, and Quinoa",
+        "source": "ai_daily_draft",
+        "coverage": 94.44444444444444,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d78b0ca951a2fbf745a",
+          "title": "Sweet Potato Sloppy Joe Skillet Sandwiches with Chicken and Quinoa",
+          "source": "ai_daily_draft",
+          "coverage": 92.85714285714286,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 81,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a7127e01ce6ee40ea4dd659",
+        "title": "Sesame-Ginger Chinese Chicken Salad with Quail Egg Crunch",
+        "source": "ai_daily_draft",
+        "coverage": 94.44444444444444,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80de2b0ca951a2fbf75d0",
+          "title": "Crisp Ginger Chicken Salad with Sesame-Lime Crunch",
+          "source": "ai_daily_draft",
+          "coverage": 82.35294117647058,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 82,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80db9b0ca951a2fbf753e",
+        "title": "Gujarati-Style Dry Mung-Inspired Curry with Chickpeas and Spinach",
+        "source": "ai_daily_draft",
+        "coverage": 94.11764705882352,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80db1b0ca951a2fbf7524",
+          "title": "Gujarati-Style Dry Mung-Inspired Bean Curry",
+          "source": "ai_daily_draft",
+          "coverage": 92.3076923076923,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.46,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 83,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d74b0ca951a2fbf744e",
+        "title": "Sweet Potato-Style Chicken Sloppy Joes with Smoky Tomato-Pepper Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 94.11764705882352,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dd9b0ca951a2fbf75b0",
+          "title": "Smoky Sweet Potato Chicken Joes",
+          "source": "ai_daily_draft",
+          "coverage": 93.33333333333333,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 84,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e31b0ca951a2fbf76e6",
+        "title": "Lemon Herb Chickpea Gnocchi Skillet",
+        "source": "ai_daily_draft",
+        "coverage": 93.33333333333333,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e24b0ca951a2fbf76b8",
+          "title": "Mediterranean Chickpea Gnocchi Skillet with Tomato, Olive, and Herbs",
+          "source": "ai_daily_draft",
+          "coverage": 82.35294117647058,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.54,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 85,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dcfb0ca951a2fbf758a",
+        "title": "Za'atar Lentil Stuffed Flatbreads with Warm Tomato-Parsley Drizzle",
+        "source": "ai_daily_draft",
+        "coverage": 92.3076923076923,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dd8b0ca951a2fbf75aa",
+          "title": "Za'atar Lentil Stuffed Flatbread Pockets",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.43,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 86,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e13b0ca951a2fbf767c",
+        "title": "Lemony Potato Gnocchi with Tomato, Olive, and Herb Skillet",
+        "source": "ai_daily_draft",
+        "coverage": 90,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80da1b0ca951a2fbf74ea",
+          "title": "Lemon-Herb Sweet Potato Gnocchi with Tomato and Olive Ragout",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 87,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dcab0ca951a2fbf757a",
+        "title": "Keto Raspberry Arugula Avocado Crunch Cups",
+        "source": "ai_daily_draft",
+        "coverage": 87.5,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d9bb0ca951a2fbf74d6",
+          "title": "Crisp Raspberry Arugula Avocado Snack Cups",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": false,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.54,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 88,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d9bb0ca951a2fbf74d4",
+        "title": "Tuscan-Style Seafood Stew with Lemon, Olive Oil, and Herbs",
+        "source": "ai_daily_draft",
+        "coverage": 87.5,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e0bb0ca951a2fbf7660",
+          "title": "Tuscan-Style Seafood Stew with Lemon and Herbs",
+          "source": "ai_daily_draft",
+          "coverage": 88.88888888888889,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.71,
+          "ingredientJaccardToKeeper": 0.52,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 89,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80ddcb0ca951a2fbf75ba",
+        "title": "Spinach Lasagna Rolls with Crackly Pecorino-Style Marinara",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dcfb0ca951a2fbf758c",
+          "title": "Spinach Ricotta Lasagna Roll-Ups with Peppery Pecorino-Style Marinara",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 90,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d9cb0ca951a2fbf74d8",
+        "title": "Light Korean Glass Noodle Stir-Fry with Vegetables",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d83b0ca951a2fbf7480",
+          "title": "Light Korean-Style Glass Noodles with Vegetables and Sesame",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 91,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80defb0ca951a2fbf75fe",
+        "title": "Light Korean-Style Glass Noodles with Sesame Greens",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d75b0ca951a2fbf7450",
+          "title": "Light Korean-Style Glass Noodles with Mushrooms and Spinach",
+          "source": "ai_daily_draft",
+          "coverage": 88.88888888888889,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 92,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e35b0ca951a2fbf76f4",
+        "title": "Slow-Braised Beef Chili with Smoky Tomatoes and Beans",
+        "source": "ai_daily_draft",
+        "coverage": 85,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e12b0ca951a2fbf767a",
+          "title": "Slow-Cooked Smoky Beef Chili with Corn and Beans",
+          "source": "ai_daily_draft",
+          "coverage": 94.11764705882352,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.56,
+          "ingredientJaccardToKeeper": 0.41,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 93,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d6db0ca951a2fbf7434",
+        "title": "Smoky Butternut Squash, Black Bean, and Bulgur Chili",
+        "source": "ai_daily_draft",
+        "coverage": 80,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e0cb0ca951a2fbf7664",
+          "title": "Smoky Butternut Black Bean Chili with Bulgur",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.86,
+          "ingredientJaccardToKeeper": 0.46,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 94,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a863c85753b0060c3baeaf1",
+        "title": "Warm Chickpea, Mushroom, and Rice Noodle Bowl with Rosemary Tomato Broth",
+        "source": "fridge_generated",
+        "coverage": 8.333333333333332,
+        "hasImage": true,
+        "imageShared": false,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6a88c731b58cdb4d516136af",
+          "title": "Warm Chickpea, Mushroom, and Rice Noodle Salad",
+          "source": "fridge_generated",
+          "coverage": 16.666666666666664,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.58,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 95,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a751a4e526cdce47ad48561",
+        "title": "Red Quinoa Tabbouleh-Style Salad with Cucumber, Herbs, and Sumac",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d82b0ca951a2fbf747c",
+          "title": "Red Quinoa Tabbouleh-Style Salad with Herbs, Cucumber, and Lemon",
+          "source": "ai_daily_draft",
+          "coverage": 80,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 96,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80da8b0ca951a2fbf7504",
+        "title": "Ginger Miso Chicken Noodle Soup",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80da0b0ca951a2fbf74e6",
+          "title": "Miso Ginger Chicken Noodle Soup",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 1,
+          "ingredientJaccardToKeeper": 0.3,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 97,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dfcb0ca951a2fbf762a",
+        "title": "Greek Baked Fish with Tomato, Lemon, and Feta",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d8cb0ca951a2fbf74a0",
+          "title": "Greek Lemon-Baked Fish with Tomatoes, Olives, and Feta",
+          "source": "ai_daily_draft",
+          "coverage": 90.9090909090909,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.63,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 98,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d69b0ca951a2fbf7428",
+        "title": "Savory Turkey Sausage, Chard & Sweet Potato Morning Skillet",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d8cb0ca951a2fbf74a2",
+          "title": "Turkey Sausage Sweet Potato Skillet with Chard and Eggs",
+          "source": "ai_daily_draft",
+          "coverage": 100,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 99,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d71b0ca951a2fbf7442",
+        "title": "Moroccan-Spiced Meatball Bites with Lemon Goat Cheese Dip",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80de1b0ca951a2fbf75ca",
+          "title": "Moroccan-Spiced Lamb Meatball Snack Bites with Lemon Herb Dip",
+          "source": "ai_daily_draft",
+          "coverage": 93.75,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.55,
+          "ingredientJaccardToKeeper": 0.46,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 100,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a778ff09dc19b7f1586a456",
+        "title": "Silken Miso Noodle Bowl with Gingered Greens",
+        "source": "ai_daily_draft",
+        "coverage": 100,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80dbfb0ca951a2fbf7554",
+          "title": "Spring Miso Noodle Bowl with Ginger and Greens",
+          "source": "ai_daily_draft",
+          "coverage": 91.66666666666666,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 101,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a779161ae573aeff54b74dc",
+        "title": "Chinese Chicken Salad with Ginger-Sesame Crunch",
+        "source": "ai_daily_draft",
+        "coverage": 94.11764705882352,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e34b0ca951a2fbf76f0",
+          "title": "Sesame Ginger Chicken and Crunchy Greens Salad",
+          "source": "ai_daily_draft",
+          "coverage": 87.5,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.44,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 102,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80de4b0ca951a2fbf75d6",
+        "title": "Light Korean Beef and Vegetable Rice Bowl",
+        "source": "ai_daily_draft",
+        "coverage": 94.11764705882352,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80df6b0ca951a2fbf7616",
+          "title": "Light Korean Beef Bibimbap Bowl",
+          "source": "ai_daily_draft",
+          "coverage": 86.66666666666667,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.42,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 103,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d7fb0ca951a2fbf7472",
+        "title": "Light Korean-Inspired Noodle Stir-Fry with Spinach and Mushrooms",
+        "source": "ai_daily_draft",
+        "coverage": 92.85714285714286,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d78b0ca951a2fbf745c",
+          "title": "Light Korean-Style Mushroom Spinach Noodles",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.63,
+          "ingredientJaccardToKeeper": 0.48,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 104,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d81b0ca951a2fbf747a",
+        "title": "Sunrise Mango-Berry Swirl Breakfast Smoothie Bowl",
+        "source": "ai_daily_draft",
+        "coverage": 91.66666666666666,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80de5b0ca951a2fbf75d8",
+          "title": "Sunrise Mango-Berry Swirl Smoothie Bowls",
+          "source": "ai_daily_draft",
+          "coverage": 88.88888888888889,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.86,
+          "ingredientJaccardToKeeper": 0.69,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 105,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80dd3b0ca951a2fbf759a",
+        "title": "Warm Caprese Farro-Style Quinoa Bowl with Roasted Tomatoes and Basil",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e2bb0ca951a2fbf76d0",
+          "title": "Warm Caprese Quinoa Skillet with Roasted Tomatoes and Mozzarella",
+          "source": "ai_daily_draft",
+          "coverage": 90,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.59,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 106,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80da3b0ca951a2fbf74f2",
+        "title": "Mediterranean Chickpea Gnocchi with Tomato, Olive, and Herb Sauce",
+        "source": "ai_daily_draft",
+        "coverage": 90.9090909090909,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e28b0ca951a2fbf76c6",
+          "title": "Mediterranean Chickpea Gnocchi with Tomato, Olive, and Basil Sauce",
+          "source": "ai_daily_draft",
+          "coverage": 84.61538461538461,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.75,
+          "ingredientJaccardToKeeper": 0.5,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 107,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6a7b9e3091b580138f0b6685",
+        "title": "Lemon-Chili Broccoli Chicken Skillet",
+        "source": "ai_daily_draft",
+        "coverage": 88.88888888888889,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d61b0ca951a2fbf740a",
+          "title": "Garlicky Lemon Chili Broccoli Skillet",
+          "source": "ai_daily_draft",
+          "coverage": 85.71428571428571,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.67,
+          "ingredientJaccardToKeeper": 0.43,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 108,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e1ab0ca951a2fbf7694",
+        "title": "Kimchi-Inspired Spicy Cabbage and Shrimp Bowl",
+        "source": "ai_daily_draft",
+        "coverage": 85.71428571428571,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80daeb0ca951a2fbf7518",
+          "title": "Spicy Kimchi-Style Cabbage with Shrimp and Sesame",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.57,
+          "ingredientJaccardToKeeper": 0.45,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 109,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80d87b0ca951a2fbf7490",
+        "title": "Greek-Style Baked Fish with Tomatoes, Olives, and Herbs",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e0db0ca951a2fbf7666",
+          "title": "Mediterranean Baked Fish with Tomatoes, Feta, and Herbs",
+          "source": "ai_daily_draft",
+          "coverage": 83.33333333333334,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 110,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80de6b0ca951a2fbf75de",
+        "title": "Red Quinoa Herb Salad with Cucumber, Mint, and Sumac Lemon Dressing",
+        "source": "ai_daily_draft",
+        "coverage": 83.33333333333334,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80d7bb0ca951a2fbf7464",
+          "title": "Herbed Red Quinoa Salad with Cucumber, Tomato, and Sumac Lemon Dressing",
+          "source": "ai_daily_draft",
+          "coverage": 81.81818181818183,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.64,
+          "ingredientJaccardToKeeper": 0.47,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    },
+    {
+      "groupId": 111,
+      "tier": "medium",
+      "size": 2,
+      "keep": {
+        "recipeId": "6ac80e12b0ca951a2fbf7678",
+        "title": "Tuscan-Style Shrimp and Scallop Stew with Tomatoes and Herbs",
+        "source": "ai_daily_draft",
+        "coverage": 81.25,
+        "hasImage": true,
+        "imageShared": true,
+        "descGood": true,
+        "tier": "keeper",
+        "titleJaccardToKeeper": 1,
+        "ingredientJaccardToKeeper": 1,
+        "usedBy": []
+      },
+      "withdraw": [
+        {
+          "recipeId": "6ac80e0fb0ca951a2fbf766e",
+          "title": "Tuscan Prawn and Scallop Stew with Fennel and Tomatoes",
+          "source": "ai_daily_draft",
+          "coverage": 80,
+          "hasImage": true,
+          "imageShared": true,
+          "descGood": true,
+          "tier": "medium",
+          "titleJaccardToKeeper": 0.5,
+          "ingredientJaccardToKeeper": 0.46,
+          "usedBy": []
+        }
+      ],
+      "protectedKept": [],
+      "keeperIsProtected": false
+    }
+  ]
+}
