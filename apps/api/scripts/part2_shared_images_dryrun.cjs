@@ -94,10 +94,10 @@ async function headOk(url) {
 async function main() {
   const env = loadDevVars();
   pexelsKey = env.PEXELS_API_KEY;
-  const p11 = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../summaries/2026-10-10_part11-dryrun.json"), "utf8"));
+  const p11 = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../../summaries/" + (process.env.P11_FILE || "2026-10-10_part11-dryrun.json")), "utf8"));
   const withdrawSet = new Set(p11.withdrawIds);
   const mediumSet = new Set(p11.mediumCandidateIds || []);
-  const p11Keepers = new Set(p11.groups.map((g) => g.keep.recipeId));
+  const p11Keepers = new Set(p11.groups.flatMap((g) => g.keep ? [g.keep.recipeId] : g.recipes.filter((r) => r.action.startsWith("keep")).map((r) => r.recipeId)));
 
   const client = new MongoClient(env.MONGODB_URI, { serverSelectionTimeoutMS: 15000 });
   await client.connect();
@@ -226,7 +226,7 @@ async function main() {
     pexelsHttpCallsThisRun: pexelsCalls,
   };
   const out = { generatedAt: new Date().toISOString(), dryRun: true, summary, groups: groupsOut, needNewPhoto: needs };
-  const dest = path.resolve(__dirname, "../../../summaries/2026-10-10_part2-dryrun.json");
+  const dest = path.resolve(__dirname, "../../../summaries/" + (process.env.PART2_OUT || "2026-10-10_part2-dryrun.json"));
   fs.writeFileSync(dest, JSON.stringify(out, null, 2));
   console.log(JSON.stringify(summary, null, 2));
   console.log("wrote", dest);
