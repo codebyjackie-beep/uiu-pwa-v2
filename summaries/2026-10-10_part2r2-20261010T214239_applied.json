@@ -1,0 +1,85 @@
+{
+  "batchId": "part2r2-20261010T214239",
+  "mode": "part2r2",
+  "at": "2026-10-10T21:42:39.301Z",
+  "rows": [
+    {
+      "recipeId": "6ac80d84b0ca951a2fbf7484",
+      "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
+      "prev": "https://images.pexels.com/photos/5639286/pexels-photo-5639286.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/13119151/pexels-photo-13119151.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80dd0b0ca951a2fbf7590",
+      "title": "Spinach, Asparagus, and Mushroom Breakfast Skillet Frittata",
+      "prev": "https://images.pexels.com/photos/5639286/pexels-photo-5639286.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/14302150/pexels-photo-14302150.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80dc8b0ca951a2fbf7572",
+      "title": "Spinach-Ricotta Lasagna Rolls with Peppery Tomato Marinara",
+      "prev": "https://images.pexels.com/photos/12331836/pexels-photo-12331836.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/19589060/pexels-photo-19589060.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "69d1933f0ce7d5269f695271",
+      "title": "Grilled Prawn & Halloumi Skewers with Zucchini",
+      "prev": "https://img.spoonacular.com/ingredients_500x500/king-prawns,-peeled-and-deveined.jpg",
+      "now": "https://images.pexels.com/photos/6617983/pexels-photo-6617983.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "69d1933f0ce7d5269f695276",
+      "title": "Spicy Honey-Garlic King Prawns",
+      "prev": "https://img.spoonacular.com/ingredients_500x500/king-prawns,-peeled-and-deveined.jpg",
+      "now": "https://images.pexels.com/photos/8983397/pexels-photo-8983397.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "69d1933f0ce7d5269f695269",
+      "title": "Garlic Butter King Prawns with Crusty Bread",
+      "prev": "https://img.spoonacular.com/ingredients_500x500/king-prawns,-peeled-and-deveined.jpg",
+      "now": "https://images.pexels.com/photos/37648027/pexels-photo-37648027.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80db2b0ca951a2fbf7526",
+      "title": "Slow Cooker Smoky Three-Bean Chili",
+      "prev": "https://images.pexels.com/photos/7111387/pexels-photo-7111387.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/28286173/pexels-photo-28286173.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80e17b0ca951a2fbf768a",
+      "title": "Silky Spinach Paneer-Style Skillet",
+      "prev": "https://images.pexels.com/photos/31249589/pexels-photo-31249589.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/35041660/pexels-photo-35041660.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80e25b0ca951a2fbf76ba",
+      "title": "Korean-Spiced Cabbage and Basa Rice Bowls with Quick Tangy Crunch",
+      "prev": "https://images.pexels.com/photos/8890016/pexels-photo-8890016.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/5774010/pexels-photo-5774010.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80d59b0ca951a2fbf73ee",
+      "title": "Thai Coconut Beetroot Soup with Lime, Ginger, and Tofu",
+      "prev": "https://images.pexels.com/photos/19992964/pexels-photo-19992964.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/18743144/pexels-photo-18743144.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80e18b0ca951a2fbf768c",
+      "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+      "prev": "https://images.pexels.com/photos/5847549/pexels-photo-5847549.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/5881013/pexels-photo-5881013.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "6ac80e29b0ca951a2fbf76c8",
+      "title": "Mango-Glazed Pork Shoulder Sandwiches",
+      "prev": "https://images.pexels.com/photos/34495401/pexels-photo-34495401.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+      "now": "https://images.pexels.com/photos/5981144/pexels-photo-5981144.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
+    },
+    {
+      "recipeId": "69d1933f0ce7d5269f69526d",
+      "title": "Lemon Herb King Prawns with Roasted Asparagus & Cherry Tomatoes",
+      "prev": "https://img.spoonacular.com/ingredients_500x500/king-prawns,-peeled-and-deveined.jpg",
+      "now": ""
+    }
+  ]
+}

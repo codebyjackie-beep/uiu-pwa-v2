@@ -1,0 +1,122 @@
+{
+  "generatedAt": "2026-10-10T21:42:55.789Z",
+  "summary": {
+    "recipes": 2,
+    "withThreeCandidates": 2,
+    "pexelsHttpCalls": 6,
+    "excludedIdCount": 307,
+    "dryRun": true
+  },
+  "recipes": [
+    {
+      "recipeId": "6ac80d8eb0ca951a2fbf74a8",
+      "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
+      "rejectedPexelsId": 5182118,
+      "queries": [
+        "goat cheese frittata",
+        "asparagus frittata",
+        "spinach frittata slice"
+      ],
+      "candidates": [
+        {
+          "pexelsId": 19029774,
+          "alt": "Delicious fig and goat cheese toasts on a black plate with honey sauce.",
+          "query": "goat cheese frittata",
+          "altMatch": 0.67,
+          "srcMedium": "https://images.pexels.com/photos/19029774/pexels-photo-19029774.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "srcLarge": "https://images.pexels.com/photos/19029774/pexels-photo-19029774.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+          "pexelsPage": "https://www.pexels.com/photo/meal-with-fruit-on-plate-19029774/"
+        },
+        {
+          "pexelsId": 20321645,
+          "alt": "Delicious salad with cherry tomatoes, goat cheese, pear slices, and almonds on a gray plate.",
+          "query": "goat cheese frittata",
+          "altMatch": 0.67,
+          "srcMedium": "https://images.pexels.com/photos/20321645/pexels-photo-20321645.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "srcLarge": "https://images.pexels.com/photos/20321645/pexels-photo-20321645.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+          "pexelsPage": "https://www.pexels.com/photo/fresh-salad-on-a-gray-plate-20321645/"
+        },
+        {
+          "pexelsId": 31610393,
+          "alt": "Exquisite goat cheese platter garnished with berries and nuts, perfect for a gourmet meal.",
+          "query": "goat cheese frittata",
+          "altMatch": 0.67,
+          "srcMedium": "https://images.pexels.com/photos/31610393/pexels-photo-31610393.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "srcLarge": "https://images.pexels.com/photos/31610393/pexels-photo-31610393.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+          "pexelsPage": "https://www.pexels.com/photo/creative-goat-cheese-platter-with-berries-and-nuts-31610393/"
+        }
+      ],
+      "pexelsId": [
+        19029774,
+        20321645,
+        31610393
+      ],
+      "alt": [
+        "Delicious fig and goat cheese toasts on a black plate with honey sauce.",
+        "Delicious salad with cherry tomatoes, goat cheese, pear slices, and almonds on a gray plate.",
+        "Exquisite goat cheese platter garnished with berries and nuts, perfect for a gourmet meal."
+      ],
+      "srcMedium": [
+        "https://images.pexels.com/photos/19029774/pexels-photo-19029774.jpeg?auto=compress&cs=tinysrgb&h=350",
+        "https://images.pexels.com/photos/20321645/pexels-photo-20321645.jpeg?auto=compress&cs=tinysrgb&h=350",
+        "https://images.pexels.com/photos/31610393/pexels-photo-31610393.jpeg?auto=compress&cs=tinysrgb&h=350"
+      ],
+      "lessThan3": false
+    },
+    {
+      "recipeId": "69d1933f0ce7d5269f69526d",
+      "title": "Lemon Herb King Prawns with Roasted Asparagus & Cherry Tomatoes",
+      "rejectedPexelsId": 4050980,
+      "queries": [
+        "prawns asparagus",
+        "shrimp asparagus sheet pan",
+        "garlic lemon shrimp tomatoes"
+      ],
+      "candidates": [
+        {
+          "pexelsId": 6393615,
+          "alt": "Close-up of delicious seafood paella with shrimp, asparagus, and lemon in a rustic pan.",
+          "query": "shrimp asparagus sheet pan",
+          "altMatch": 0.75,
+          "srcMedium": "https://images.pexels.com/photos/6393615/pexels-photo-6393615.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "srcLarge": "https://images.pexels.com/photos/6393615/pexels-photo-6393615.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+          "pexelsPage": "https://www.pexels.com/photo/paella-dish-on-ceramic-plate-6393615/"
+        },
+        {
+          "pexelsId": 8633745,
+          "alt": "Close-up of flavorful shrimp garnished with garlic, lemon, and dill.",
+          "query": "garlic lemon shrimp tomatoes",
+          "altMatch": 0.75,
+          "srcMedium": "https://images.pexels.com/photos/8633745/pexels-photo-8633745.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "srcLarge": "https://images.pexels.com/photos/8633745/pexels-photo-8633745.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+          "pexelsPage": "https://www.pexels.com/photo/shrimp-dish-with-sliced-lemon-and-dill-garnish-8633745/"
+        },
+        {
+          "pexelsId": 4020560,
+          "alt": "Top view of ripe tomatoes on branch arranged amidst fresh yellow lemon and red chili peppers with garlic in pink food net",
+          "query": "garlic lemon shrimp tomatoes",
+          "altMatch": 0.75,
+          "srcMedium": "https://images.pexels.com/photos/4020560/pexels-photo-4020560.jpeg?auto=compress&cs=tinysrgb&h=350",
+          "srcLarge": "https://images.pexels.com/photos/4020560/pexels-photo-4020560.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
+          "pexelsPage": "https://www.pexels.com/photo/composition-of-assorted-vegetables-in-food-net-4020560/"
+        }
+      ],
+      "pexelsId": [
+        6393615,
+        8633745,
+        4020560
+      ],
+      "alt": [
+        "Close-up of delicious seafood paella with shrimp, asparagus, and lemon in a rustic pan.",
+        "Close-up of flavorful shrimp garnished with garlic, lemon, and dill.",
+        "Top view of ripe tomatoes on branch arranged amidst fresh yellow lemon and red chili peppers with garlic in pink food net"
+      ],
+      "srcMedium": [
+        "https://images.pexels.com/photos/6393615/pexels-photo-6393615.jpeg?auto=compress&cs=tinysrgb&h=350",
+        "https://images.pexels.com/photos/8633745/pexels-photo-8633745.jpeg?auto=compress&cs=tinysrgb&h=350",
+        "https://images.pexels.com/photos/4020560/pexels-photo-4020560.jpeg?auto=compress&cs=tinysrgb&h=350"
+      ],
+      "lessThan3": false
+    }
+  ]
+}
