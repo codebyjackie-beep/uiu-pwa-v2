@@ -25,7 +25,7 @@ const S = (f) => path.resolve(__dirname, "../../../summaries", f);
 async function main() {
   const mode = process.argv[2];
   const write = process.argv.includes("--write");
-  if (!["part11", "part2", "part2r2"].includes(mode)) throw new Error("mode must be part11|part2|part2r2");
+  if (!["part11", "part2", "part2r2", "part2r3"].includes(mode)) throw new Error("mode must be part11|part2|part2r2|part2r3");
   const { MONGODB_URI, MONGODB_DB } = loadDevVars();
   const client = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 15000 });
   await client.connect();
@@ -50,6 +50,20 @@ async function main() {
       const r = await col.updateMany({ _id: { $in: oids }, isPublic: true }, { $set: { isPublic: false, withdrawnAt: now, withdrawnBatch: batchId, withdrawnReason: "part11-dedupe-v3" } });
       console.log("BATCH", batchId, "matched", r.matchedCount, "modified", r.modifiedCount, "publicAfter", await col.countDocuments({ isPublic: true }));
       fs.writeFileSync(S(`2026-10-10_${batchId}_applied.json`), JSON.stringify({ batchId, mode, at: now.toISOString(), ids }, null, 2));
+    } else if (mode === "part2r3") {
+      // Round 3: Lemon Herb King Prawns (currently cleared, imageUrl "") -> Pexels 8633745. Goat Cheese Frittata untouched.
+      const rid = "69d1933f0ce7d5269f69526d", pid = 8633745;
+      const r3 = JSON.parse(fs.readFileSync(S("2026-10-10_part2-round3-dryrun.json"), "utf8")).recipes;
+      const cand = r3.find((x) => x.recipeId === rid).candidates.find((c) => c.pexelsId === pid);
+      if (!cand) throw new Error("pick not in round-3 candidates");
+      const d = await col.findOne({ _id: new ObjectId(rid) }, { projection: { imageUrl: 1, isPublic: 1, title: 1 } });
+      const usedElsewhere = await col.countDocuments({ imageUrl: cand.srcLarge });
+      console.log(JSON.stringify({ mode, write, title: d.title, currentImageUrl: d.imageUrl, isPublic: d.isPublic, newUrl: cand.srcLarge, newUrlAlreadyUsedByAnyRecipe: usedElsewhere }));
+      if (d.imageUrl !== "" || !d.isPublic || usedElsewhere) throw new Error("pre-check failed; refusing");
+      if (!write) return;
+      const r = await col.updateOne({ _id: d._id, imageUrl: "" }, { $set: { imageUrl: cand.srcLarge, imageUrlPrev: "", imageBatch: batchId, imageChangedAt: now, imagePexelsId: pid } });
+      console.log("BATCH", batchId, "modified", r.modifiedCount);
+      fs.writeFileSync(S(`2026-10-10_${batchId}_applied.json`), JSON.stringify({ batchId, mode, at: now.toISOString(), rows: [{ recipeId: rid, title: d.title, prev: "", now: cand.srcLarge }] }, null, 2));
     } else if (mode === "part2r2") {
       // Round-2 picks (Jackie-chosen) + clearing the dead-image recipe (UI falls back to the grey placeholder box).
       const PICKS = {
