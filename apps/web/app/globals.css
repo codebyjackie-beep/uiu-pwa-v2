@@ -291,6 +291,10 @@ a {
 
 .recipes-page {
   padding: var(--space);
+  /* cc_prompt_recipe_data_cleanup.md Part 5 — .app-shell only clears the bottom nav (100px); the
+     "+" FAB sits 116–172px above the bottom, so without this the last card's ♥ scrolls to rest
+     underneath it. 72px = FAB top (172px) − app-shell clearance (100px), plus a 16px gap. */
+  padding-bottom: calc(var(--space) + 88px);
   max-width: 640px;
   margin: 0 auto;
 }
@@ -1253,6 +1257,13 @@ a {
   font-size: 16px;
   font-weight: 400;
   font-style: italic;
+  color: var(--uiu-muted);
+}
+
+/* Part 1 — "£X.XX+" note on partially priced recipes (a tooltip alone isn't reachable on touch). */
+.cost-hero__note {
+  margin: -8px 0 14px;
+  font-size: 13px;
   color: var(--uiu-muted);
 }
 
