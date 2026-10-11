@@ -1,0 +1,1294 @@
+{
+  "generatedAt": "2026-10-11T20:58:32.556Z",
+  "basedOn": "summaries/part3_descriptions_dryrun_2026-10-11.json (dd13782)",
+  "model": "~openai/gpt-mini-latest",
+  "publicRecipes": 330,
+  "matching": 153,
+  "rewritten": 153,
+  "failed": 0,
+  "ukSpellingFixes": {
+    "counts": {
+      "cilantro": 4,
+      "scallion": 5,
+      "eggplant": 3,
+      "zucchini": 1,
+      "arugula": 1
+    },
+    "recipesChanged": 13
+  },
+  "ungrounded": [
+    {
+      "id": "69b1db93974afef25b93a45e",
+      "title": "Blackberry Clafoutis",
+      "words": [
+        "custard"
+      ],
+      "text": "Soft baked custard with juicy blackberries and a gentle almond-vanilla flavour, lightened by a simple flour and milk batter."
+    },
+    {
+      "id": "69b4aeaee736bc836fd51335",
+      "title": "Venison Stew",
+      "words": [
+        "gravy"
+      ],
+      "text": "Hearty venison stew with carrots, celery, mushrooms and potatoes in a rich, savoury gravy."
+    },
+    {
+      "id": "69b1db92974afef25b93a44d",
+      "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+      "words": [
+        "chilli"
+      ],
+      "text": "Chicken and roasted broccoli with creamy goat cheese, lemon and garlic, lifted by oregano and a little chilli heat."
+    },
+    {
+      "id": "69b4aeaee736bc836fd51334",
+      "title": "Easy Instant Pot Beef Tips and Rice",
+      "words": [
+        "gravy"
+      ],
+      "text": "Tender beef tips with onion and garlic in a rich mushroom gravy, served over rice for a hearty, comforting meal."
+    },
+    {
+      "id": "69c4766a7393a7f0235b89ca",
+      "title": "Banana Creme Brulee",
+      "words": [
+        "custard"
+      ],
+      "text": "Creamy vanilla custard with sweet banana and a crackly demerara top, this dessert feels rich and smooth with a fruity twist."
+    },
+    {
+      "id": "69b4b0505ee86d48cd96c66a",
+      "title": "Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise",
+      "words": [
+        "peppery"
+      ],
+      "text": "Smoked salmon with silky eggs and lemon dill hollandaise on multigrain bread, with peppery greens for a bright brunch bite."
+    },
+    {
+      "id": "69c7275f754babcc25875c8b",
+      "title": "Quinoa Tabouli Salad",
+      "words": [],
+      "validateError": "too long (161)",
+      "text": "Fresh, lemony quinoa tabouli with juicy tomatoes, cucumber, parsley and spring onions, lifted by garlic and olive oil. A bright, light salad with a grainy twist."
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd2",
+      "title": "Red quinoa cranberry arugula soup",
+      "words": [
+        "peppery"
+      ],
+      "text": "Tangy cranberries and peppery rocket brighten this coconut quinoa soup, with lemongrass and chilli adding a fresh, spicy lift."
+    },
+    {
+      "id": "6a42e050d33617bebef22d80",
+      "title": "Tart Raspberry Sorbet with a Hint of Heat",
+      "words": [
+        "cardamom"
+      ],
+      "text": "Tart raspberries and lime meet a gentle chilli kick, with cardamom and raspberry jam adding depth. Refreshing, fruity and a little fiery."
+    }
+  ],
+  "regenerated": [
+    {
+      "id": "69b1db93974afef25b93a45e",
+      "title": "Blackberry Clafoutis",
+      "was": "Soft baked custard with juicy blackberries and a gentle almond-vanilla flavour, lightened by a simple flour and milk batter.",
+      "now": "Soft baked blackberries in a light, eggy batter with almond meal and vanilla. Sweet, simple and softly fruity.",
+      "ungroundedWords": [
+        "custard"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51335",
+      "title": "Venison Stew",
+      "was": "Hearty venison stew with carrots, celery, mushrooms and potatoes in a rich, savoury gravy.",
+      "now": "Rich venison stew with tender potatoes, carrots, celery and mushrooms, balanced by onion and bell pepper. Hearty and comforting with a deep savoury finish.",
+      "ungroundedWords": [
+        "gravy"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "69b1db92974afef25b93a44d",
+      "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+      "was": "Chicken and roasted broccoli with creamy goat cheese, lemon and garlic, lifted by oregano and a little chilli heat.",
+      "now": "Tender chicken and roasted broccoli are brightened with lemon and creamy goat cheese, with a peppery, savoury finish.",
+      "ungroundedWords": [
+        "chilli"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51334",
+      "title": "Easy Instant Pot Beef Tips and Rice",
+      "was": "Tender beef tips with onion and garlic in a rich mushroom gravy, served over rice for a hearty, comforting meal.",
+      "now": "Tender sirloin beef tips in a savoury mushroom sauce with onion, made easy in the Instant Pot and served over rice.",
+      "ungroundedWords": [
+        "gravy"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89ca",
+      "title": "Banana Creme Brulee",
+      "was": "Creamy vanilla custard with sweet banana and a crackly demerara top, this dessert feels rich and smooth with a fruity twist.",
+      "now": "Creamy bananas and vanilla pod meet a crisp demerara sugar top for a simple, glossy brûlée with soft caramel notes.",
+      "ungroundedWords": [
+        "custard"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "69b4b0505ee86d48cd96c66a",
+      "title": "Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise",
+      "was": "Smoked salmon with silky eggs and lemon dill hollandaise on multigrain bread, with peppery greens for a bright brunch bite.",
+      "now": "Smoked salmon on multigrain bread with eggs and lemon dill hollandaise, rich and fresh with a silky finish.",
+      "ungroundedWords": [
+        "peppery"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c8b",
+      "title": "Quinoa Tabouli Salad",
+      "was": "Fresh, lemony quinoa tabouli with juicy tomatoes, cucumber, parsley and spring onions, lifted by garlic and olive oil. A bright, light salad with a grainy twist.",
+      "now": "Fresh and zingy quinoa tabouli with crisp cucumber, juicy tomatoes and plenty of parsley. Light lemon and garlic make it bright and satisfying.",
+      "ungroundedWords": [],
+      "validateError": "too long (161)",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd2",
+      "title": "Red quinoa cranberry arugula soup",
+      "was": "Tangy cranberries and peppery rocket brighten this coconut quinoa soup, with lemongrass and chilli adding a fresh, spicy lift.",
+      "now": "Tart cranberries and nutty quinoa make a bright soup, with baby rocket and coconut milk adding a fresh, creamy finish.",
+      "ungroundedWords": [
+        "peppery"
+      ],
+      "attempts": 1
+    },
+    {
+      "id": "6a42e050d33617bebef22d80",
+      "title": "Tart Raspberry Sorbet with a Hint of Heat",
+      "was": "Tart raspberries and lime meet a gentle chilli kick, with cardamom and raspberry jam adding depth. Refreshing, fruity and a little fiery.",
+      "now": "Sharp raspberry sorbet with lime and a gentle chilli kick for a bright, tangy finish.",
+      "ungroundedWords": [
+        "cardamom"
+      ],
+      "attempts": 1
+    }
+  ],
+  "skipped": [],
+  "finalGuardFailures": [],
+  "rewrites": [
+    {
+      "id": "69b5c9a95ee86d48cd96c673",
+      "title": "Chicken Rou Zao With Rice",
+      "before": "If you want to add more gluten free and dairy free recipes to your recipe box, Chicken Rou Zao With Rice might be a recipe you should try. This recipe makes 4 servings with 297 calories, 24g of protein, and 15g of fat each. For $2.4 per serving, this recipe covers 19% of your daily requirements of vitamins and minerals. Only a few people made this recipe, and 1 would say it hit the spot. This recipe from Foodista requires cloves, rice wine, mushroom, and sesame oil. It works well as a main course. From preparation to the plate, this recipe takes around 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 47%, which is good. Similar recipes include Taiwanese Meat Sauce With Rice (Lu Rou Fan), Taiwanese braised minced pork over rice (lu rou fan), and Xiao Kou Zao (Deep-Fried Sesame Balls).",
+      "after": "Fragrant ground chicken with soy, rice wine, star anise and five spice, sweetened with maple syrup for a rich, savoury-sweet bowl over rice.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a463",
+      "title": "Pesto & Yogurt Pasta",
+      "before": "Pesto & Yogurt Pasta requires around 45 minutes from start to finish. For $1.45 per serving, you get a main course that serves 4. One serving contains 373 calories, 12g of protein, and 15g of fat. This recipe from Foodista requires farfalle, parmesan cheese, garlic, and nuts. This recipe is liked by 9 foodies and cooks. Taking all factors into account, this recipe earns a spoonacular score of 92%, which is great. Users who liked this recipe also liked Pasta With Yogurt Pesto, Pasta with Yogurt Pesto, and Yogurt Pesto Pasta Salad.",
+      "after": "Creamy yogurt pasta with garlicky pesto, parsley, nuts and parmesan. Fresh, savoury and lightly tangy.",
+      "attempts": 1
+    },
+    {
+      "id": "69b5c9a95ee86d48cd96c675",
+      "title": "Chicken Porridge",
+      "before": "Chicken Porridge is a gluten free and dairy free recipe with 4 servings. This breakfast has 393 calories, 28g of protein, and 7g of fat per serving. For $2.2 per serving, this recipe covers 25% of your daily requirements of vitamins and minerals. This recipe from Foodista has 19 fans. If you have parsley, spring onion, julienne young ginger, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes roughly 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 84%. This score is tremendous. Chicken Porridge, Chicken and Leek Porridge, and Chicken Congee (Rice Porridge) are very similar to this recipe.",
+      "after": "Comforting rice porridge with tender chicken, fresh ginger and spring onion, lifted by parsley and pepper for a savoury, warming bowl.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4af41734a319b1f59a1c6",
+      "title": "Garlic Lime Grilled Chicken Salad",
+      "before": "Garlic Lime Grilled Chicken Salad is a gluten free recipe with 4 servings. For $2.53 per serving, this recipe covers 35% of your daily requirements of vitamins and minerals. This main course has 436 calories, 45g of protein, and 13g of fat per serving. This recipe is liked by 2 foodies and cooks. It is perfect for The Fourth Of July. A mixture of corn, mexican cheese, garlic, and a handful of other ingredients are all it takes to make this recipe so scrumptious. From preparation to the plate, this recipe takes about 30 minutes. It is brought to you by Foodista. Overall, this recipe earns a great spoonacular score of 84%. Garlic Lime Grilled Chicken Salad, Garlic-Lime Grilled Chicken Breasts with Cilantro-Corn Relish, and Lime Grilled Chicken Caesar Salad are very similar to this recipe.",
+      "after": "Zesty lime and garlic chicken with sweet corn, black beans and peppers, tossed with citrusy orange and fresh coriander for a bright, savoury salad.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Zesty lime and garlic chicken with sweet corn, black beans and peppers, tossed with citrusy orange and fresh cilantro for a bright, savoury salad."
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec0",
+      "title": "Moosewood Lentil Soup",
+      "before": "Moosewood Lentil Soup might be a good recipe to expand your main course recipe box. This gluten free, dairy free, lacto ovo vegetarian, and vegan recipe serves 6 and costs 74 cents per serving. One portion of this dish contains roughly 26g of protein, 4g of fat, and a total of 396 calories. A mixture of pepper, lentils, salt, and a handful of other ingredients are all it takes to make this recipe so yummy. 2 people found this recipe to be flavorful and satisfying. It is perfect for Autumn. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 95%. This score is spectacular. Similar recipes are Moosewood Lentil Soup, Moosewood Mushroom Barley Soup!, and Hungarian Mushroom Soup, from the Moosewood Cookbook.",
+      "after": "Hearty lentil soup with tomatoes, carrots and celery, lifted by garlic, herbs and lemon juice. Sweet brown sugar adds a gentle, distinctive depth.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a454",
+      "title": "Quick Chicken Enchilada Soup",
+      "before": "If you have approximately 45 minutes to spend in the kitchen, Quick Chicken Enchilada Soup might be a super gluten free recipe to try. One serving contains 646 calories, 34g of protein, and 25g of fat. This recipe serves 4 and costs $2.34 per serving. 92 people found this recipe to be yummy and satisfying. It is a rather cheap recipe for fans of Mexican food. Autumn will be even more special with this recipe. It is brought to you by Foodista. Head to the store and pick up cheese, milk, enchilada sauce, and a few other things to make it today. It works well as a main course. All things considered, we decided this recipe deserves a spoonacular score of 76%. This score is solid. Similar recipes are Quick Dinner Ideas: Cheesy Chicken Enchilada Soup, Quick and Easy Pressure Cooker Chicken Enchilada Soup, and Quick and Easy Pressure Cooker Chicken Enchilada Soup.",
+      "after": "Hearty chicken enchilada soup with sweet corn, black beans and tomatoes in a creamy, cheesy broth. Finished with crisp tortilla chips for a satisfying crunch.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a45d",
+      "title": "Berry Fruit Crumble",
+      "before": "If you have about 45 minutes to spend in the kitchen, Berry Fruit Crumble might be an excellent gluten free, dairy free, and fodmap friendly recipe to try. This recipe makes 6 servings with 159 calories, 2g of protein, and 9g of fat each. For $1.51 per serving, this recipe covers 4% of your daily requirements of vitamins and minerals. If you have berries, margarine, old fashion oatmeal, and a few other ingredients on hand, you can make it. It works well as a dessert. A few people made this recipe, and 18 would say it hit the spot. It is brought to you by Foodista. With a spoonacular score of 39%, this dish is rather bad. Similar recipes are Fig Crumble Dessert (fruit Crumble Recipe), Berry Crumble, and Mixed Berry Crumble.",
+      "after": "Sweet mixed berries with maple and cinnamon under a crisp oat and almond topping, making a cosy crumble with plenty of texture.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a45e",
+      "title": "Blackberry Clafoutis",
+      "before": "Blackberry Clafoutis might be a good recipe to expand your dessert repertoire. This recipe serves 2. One portion of this dish contains roughly 14g of protein, 15g of fat, and a total of 459 calories. For $1.47 per serving, this recipe covers 14% of your daily requirements of vitamins and minerals. 4 people have tried and liked this recipe. A mixture of blackberries, vanillan extract, milk, and a handful of other ingredients are all it takes to make this recipe so delicious. It is brought to you by Foodista. It is a good option if you're following a lacto ovo vegetarian diet. From preparation to the plate, this recipe takes around 45 minutes. With a spoonacular score of 40%, this dish is good. If you like this recipe, take a look at these similar recipes: Blackberry Clafoutis, Blue Velvet, Blackberry Curd, and Blackberry Lemon Cream Cheese Cupcakes, and Blackberry Beet Salad with Blackberry Balsamic Dressing.",
+      "after": "Soft baked blackberries in a light, eggy batter with almond meal and vanilla. Sweet, simple and softly fruity.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "69b4aeaee736bc836fd51331",
+      "title": "Chorizo and Beef Quinoa Stuffed Pepper",
+      "before": "Chorizo and Beef Quinoa Stuffed Pepper is a gluten free main course. One portion of this dish contains approximately 51g of protein, 37g of fat, and a total of 685 calories. This recipe serves 4 and costs $3.69 per serving. Plenty of people made this recipe, and 1254 would say it hit the spot. It is brought to you by Pink When. If you have bell peppers, chorizo, chili powder, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes approximately 30 minutes. With a spoonacular score of 93%, this dish is super. Similar recipes include Pepper-Stuffed Peppers with Chorizo, Chorizo & Red Pepper Stuffed Potatoes With Roasted Garlic Aioli, and QUINOAn AND GROUND TURKEY STUFFED PEPPER.",
+      "after": "Smoky chorizo and beef with quinoa, cumin and chilli, baked into a pepper with melty Monterey Jack and cheddar. Bold, hearty and full of savoury spice.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51335",
+      "title": "Venison Stew",
+      "before": "Venison Stew is a dairy free main course. This recipe serves 7. One serving contains 316 calories, 32g of protein, and 7g of fat. For $2.02 per serving, this recipe covers 30% of your daily requirements of vitamins and minerals. It can be enjoyed any time, but it is especially good for Autumn. 3 people found this recipe to be tasty and satisfying. Head to the store and pick up venison stew meat, baby carrots, bell pepper, and a few other things to make it today. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 86%. This score is tremendous. Similar recipes include Venison Bourguignon (Venison Stew), Venison Stew, and Venison Stew.",
+      "after": "Rich venison stew with tender potatoes, carrots, celery and mushrooms, balanced by onion and bell pepper. Hearty and comforting with a deep savoury finish.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df7b",
+      "title": "Butternut Squash Frittata",
+      "before": "The recipe Butternut Squash Frittata can be made in approximately 45 minutes. This recipe serves 1. Watching your figure? This gluten free recipe has 465 calories, 24g of protein, and 4g of fat per serving. For $3.4 per serving, this recipe covers 53% of your daily requirements of vitamins and minerals. A few people really liked this main course. This recipe from Foodista requires butternut squash, bell pepper, liquid egg substitute, and non-fat milk. 18 people have tried and liked this recipe. Overall, this recipe earns an awesome spoonacular score of 98%. If you like this recipe, you might also like recipes such as Butternut Squash Frittata, Butternut Squash Frittata, and Butternut Squash and Quinoa Frittata.",
+      "after": "Creamy goat cheese and sweet butternut squash make this frittata rich and comforting, with a light, fluffy egg base.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df7c",
+      "title": "Poached Egg With Spinach and Tomato",
+      "before": "Poached Egg With Spinach and Tomato is a dairy free and lacto ovo vegetarian recipe with 2 servings. One portion of this dish contains roughly 15g of protein, 20g of fat, and a total of 314 calories. For $2.3 per serving, this recipe covers 36% of your daily requirements of vitamins and minerals. It works best as a breakfast, and is done in about 20 minutes. If you have garlic, spinach leaves, grain bread, and a few other ingredients on hand, you can make it. 4 people have made this recipe and would make it again. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 89%, which is outstanding. If you like this recipe, take a look at these similar recipes: Sweet Potato with Bacon and Poached Egg, Simple Poached Egg Dinner, and Shrimp Udon w Fish Cakes & Poached Egg.",
+      "after": "Warm spinach and tomato top grain bread with a poached egg, garlic and a gentle chilli kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec2",
+      "title": "Delightful Kale and Cabbage Slaw",
+      "before": "Delightful Kale and Cabbage Slaw could be just the gluten free and dairy free recipe you've been looking for. For 62 cents per serving, this recipe covers 17% of your daily requirements of vitamins and minerals. This recipe serves 6. One portion of this dish contains roughly 3g of protein, 8g of fat, and a total of 122 calories. A mixture of mustard, salt, celery, and a handful of other ingredients are all it takes to make this recipe so scrumptious. This recipe from Foodista has 2 fans. From preparation to the plate, this recipe takes around 45 minutes. It will be a hit at your The Fourth Of July event. It works well as a very affordable side dish. Taking all factors into account, this recipe earns a spoonacular score of 93%, which is great. If you like this recipe, you might also like recipes such as Delightful Kale and Cabbage Slaw, Kale Slaw With Red Cabbage And Carrots, and Cabbage and Kale Slaw with Caraway Ranch Dressing.",
+      "after": "Crunchy cabbage and kale slaw with sharp red wine vinegar and mustard, lightly sweetened with agave for a fresh, lively side.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db92974afef25b93a44d",
+      "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+      "before": "If you want to add more gluten free recipes to your repertoire, Chicken and Roasted Broccoli Salad With Goat Cheese might be a recipe you should try. This side dish has 337 calories, 29g of protein, and 18g of fat per serving. For $2.06 per serving, this recipe covers 29% of your daily requirements of vitamins and minerals. This recipe serves 4. It is brought to you by Foodista. 2 people were glad they tried this recipe. From preparation to the plate, this recipe takes about 45 minutes. A mixture of chicken, sugar, a couple of pepper flakes, and a handful of other ingredients are all it takes to make this recipe so flavorful. Taking all factors into account, this recipe earns a spoonacular score of 92%, which is tremendous. If you like this recipe, take a look at these similar recipes: Chicken and Roasted Broccoli Salad with Goat Cheese, Roasted Beet, Avocado and Goat Cheese Spinach Salad with Chicken, and Creamy Goat Cheese Pasta with Roasted Broccoli and Sun-Dried Tomatoes.",
+      "after": "Tender chicken and roasted broccoli are brightened with lemon and creamy goat cheese, with a peppery, savoury finish.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "69b1db93974afef25b93a464",
+      "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+      "before": "You can never have too many main course recipes, so give Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs a try. One serving contains 543 calories, 17g of protein, and 16g of fat. For $1.57 per serving, this recipe covers 22% of your daily requirements of vitamins and minerals. This recipe serves 2. A mixture of butter, white wine, pasta, and a handful of other ingredients are all it takes to make this recipe so yummy. 209 people have tried and liked this recipe. It is brought to you by fullbellysisters.blogspot.com. From preparation to the plate, this recipe takes approximately 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 83%, which is tremendous. If you like this recipe, take a look at these similar recipes: Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs, Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs, and Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs.",
+      "after": "Garlicky pasta with tender cauliflower, spring onions and a buttery breadcrumb crunch. Savoury, peppery and comforting with a little white wine lift.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Garlicky pasta with tender cauliflower, scallions and a buttery breadcrumb crunch. Savoury, peppery and comforting with a little white wine lift."
+    },
+    {
+      "id": "69b1db93974afef25b93a462",
+      "title": "Italian Tuna Pasta",
+      "before": "Italian Tuna Pastan is a Mediterranean main course. Watching your figure? This dairy free and pescatarian recipe has 464 calories, 38g of protein, and 3g of fat per serving. For $2.09 per serving, this recipe covers 35% of your daily requirements of vitamins and minerals. This recipe serves 3. 1 person found this recipe to be yummy and satisfying. From preparation to the plate, this recipe takes around 20 minutes. It is brought to you by Foodista. A mixture of chillies, pasta shells, juice of lemon, and a handful of other ingredients are all it takes to make this recipe so tasty. Taking all factors into account, this recipe earns a spoonacular score of 93%, which is excellent. Try Italian Tuna Pasta Salad, Pastan and Tuna Salad (Ensalada de Pasta y Atún), and Raw tomato sauce for pasta, the Italian pastan alla crudaiola for similar recipes.",
+      "after": "Pasta shells with tuna, garlic, lemon, parsley and a hint of chilli, for a bright, savoury bite with fresh peppery lift.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a471",
+      "title": "Asparagus and Pea Soup: Real Convenience Food",
+      "before": "Asparagus and Pea Soup: Real Convenience Food requires approximately 20 minutes from start to finish. Watching your figure? This gluten free, dairy free, paleolithic, and lacto ovo vegetarian recipe has 217 calories, 11g of protein, and 8g of fat per serving. This recipe serves 2. For $1.78 per serving, this recipe covers 25% of your daily requirements of vitamins and minerals. Autumn will be even more special with this recipe. It works well as a hor d'oeuvre. 207 people have tried and liked this recipe. It is brought to you by fullbellysisters.blogspot.com. A mixture of vegetable broth, evoo, garlic, and a handful of other ingredients are all it takes to make this recipe so yummy. All things considered, we decided this recipe deserves a spoonacular score of 96%. This score is outstanding. Try Asparagus and Pea Soup: Real Convenience Food, Asparagus and Pea Soup: Real Convenience Food, and Asparagus and Pea Soup: Real Convenience Food for similar recipes.",
+      "after": "Fresh asparagus and sweet peas with garlic and onion in a light, green soup.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a473",
+      "title": "Red Kidney Bean Jambalaya",
+      "before": "Red Kidney Bean Jambalayan is a main course that serves 6. One portion of this dish contains approximately 18g of protein, 6g of fat, and a total of 393 calories. For $1.68 per serving, this recipe covers 33% of your daily requirements of vitamins and minerals. 53 people were glad they tried this recipe. A mixture of vegetable stock, tomatoes, onion, and a handful of other ingredients are all it takes to make this recipe so flavorful. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. This recipe is typical of Cajun cuisine. It is brought to you by foodandspice.blogspot.com. From preparation to the plate, this recipe takes roughly 45 minutes. Overall, this recipe earns a tremendous spoonacular score of 99%. Users who liked this recipe also liked Red Kidney Bean Jambalaya, Red Kidney Bean Salad, and Red Kidney Bean Curry.",
+      "after": "Smoky, savoury jambalaya with red kidney beans, brown rice and mixed veg. Herbs, garlic and liquid smoke give it a deep, hearty flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a474",
+      "title": "Cauliflower, Brown Rice, and Vegetable Fried Rice",
+      "before": "The recipe Cauliflower, Brown Rice, and Vegetable Fried Rice is ready in around 30 minutes and is definitely a great gluten free, dairy free, lacto ovo vegetarian, and vegan option for lovers of Chinese food. This recipe makes 8 servings with 248 calories, 7g of protein, and 13g of fat each. For $1.19 per serving, this recipe covers 19% of your daily requirements of vitamins and minerals. It works well as a hor d'oeuvre. 3689 people have made this recipe and would make it again. It is brought to you by fullbellysisters.blogspot.com. Head to the store and pick up broccoli, t grapeseed oil, sesame seeds, and a few other things to make it today. With a spoonacular score of 100%, this dish is amazing. Cauliflower, Brown Rice, and Vegetable Fried Rice, Cauliflower, Brown Rice, and Vegetable Fried Rice, and Cauliflower, Brown Rice, and Vegetable Fried Rice are very similar to this recipe.",
+      "after": "A savoury veggie fried rice with cauliflower and brown rice, brightened by spring onions, garlic and soy sauce. Topped with sesame seeds for a nutty finish.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "A savoury veggie fried rice with cauliflower and brown rice, brightened by scallions, garlic and soy sauce. Topped with sesame seeds for a nutty finish."
+    },
+    {
+      "id": "69b277e5f9069a06b5536b58",
+      "title": "Chicken Arrozcaldo",
+      "before": "The recipe Chicken Arrozcaldo can be made in around 45 minutes. This main course has 1449 calories, 75g of protein, and 107g of fat per serving. This recipe serves 9. For $4.93 per serving, this recipe covers 47% of your daily requirements of vitamins and minerals. 2 people have made this recipe and would make it again. It is a good option if you're following a gluten free and dairy free diet. If you have put-in the hardboiled eggs, add chicken and stir until it melts, salt and pepper, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. Overall, this recipe earns a solid spoonacular score of 64%. If you like this recipe, you might also like recipes such as Chicken Arrozcaldo, I Ain't Chicken Chicken: Crispy Roasted Chicken Breasts with Orange and Cardamom, and I Ain't Chicken Chicken: Crispy Roasted Chicken Breasts with Orange and Cardamom.",
+      "after": "Comforting chicken rice porridge with ginger, garlic and fish sauce, brightened with lemon and topped with fried garlic, green onion and quail eggs.",
+      "attempts": 1
+    },
+    {
+      "id": "69b277e5f9069a06b5536b5a",
+      "title": "Steamy Creamy Mushroom Risotto",
+      "before": "Steamy Creamy Mushroom Risotto is a Mediterranean main course. For $2.94 per serving, this recipe covers 31% of your daily requirements of vitamins and minerals. Watching your figure? This gluten free recipe has 992 calories, 32g of protein, and 42g of fat per serving. This recipe serves 2. If you have rice, bell pepper, water, and a few other ingredients on hand, you can make it. It is brought to you by spoonacular user dsky. From preparation to the plate, this recipe takes roughly 35 minutes. Similar recipes include Bacon & Crimini Mushroom Risotto, Farmer's Market Wild Mushroom Risotto, and Mushroom and Parmesan Brown Rice Risotto.",
+      "after": "Creamy mushroom risotto with chicken, parmesan and white wine for a rich, savoury flavour. Comforting and hearty with a silky finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd5132f",
+      "title": "Slow Cooker Beef Stew",
+      "before": "If you want to add more gluten free and dairy free recipes to your recipe box, Slow Cooker Beef Stew might be a recipe you should try. One serving contains 434 calories, 44g of protein, and 12g of fat. This recipe serves 6. For $2.7 per serving, this recipe covers 45% of your daily requirements of vitamins and minerals. It works best as a main course, and is done in approximately 8 hours and 10 minutes. If you have green onions, carrots, celery, and a few other ingredients on hand, you can make it. This recipe is liked by 57 foodies and cooks. Autumn will be even more special with this recipe. It is brought to you by Pink When. Taking all factors into account, this recipe earns a spoonacular score of 99%, which is awesome. Similar recipes include Slow Cooker Beef Stew, Slow Cooker Beef Stew, and Slow Cooker Beef Stew.",
+      "after": "Hearty beef stew with tender stew meat, carrots, celery and new potatoes in a rich, savoury broth with a creamy mushroom note.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51330",
+      "title": "Easy Vegetable Beef Soup",
+      "before": "You can never have too many main course recipes, so give Easy Vegetable Beef Soup a try. This dairy free recipe serves 8 and costs $3.45 per serving. One serving contains 566 calories, 45g of protein, and 19g of fat. 130 people were glad they tried this recipe. It will be a hit at your Autumn event. A mixture of salt, seasoning, on carrots, and a handful of other ingredients are all it takes to make this recipe so flavorful. It is brought to you by Pink When. From preparation to the plate, this recipe takes roughly 2 hours and 30 minutes. Taking all factors into account, this recipe earns a spoonacular score of 97%, which is awesome. Users who liked this recipe also liked Easy Vegetable Beef Soup, Easy Vegetable-Beef Soup, and Easy Vegetable Beef Soup.",
+      "after": "Hearty beef soup with tomatoes, potatoes and macaroni, packed with carrots, celery, beans and corn for a rich, savoury bowl.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4af41734a319b1f59a1c5",
+      "title": "Baked Chicken With Lemon & Garlic",
+      "before": "If you want to add more dairy free and ketogenic recipes to your repertoire, Baked Chicken With Lemon & Garlic might be a recipe you should try. This recipe makes 8 servings with 518 calories, 31g of protein, and 38g of fat each. For $1.13 per serving, this recipe covers 20% of your daily requirements of vitamins and minerals. Not a lot of people made this recipe, and 1 would say it hit the spot. A mixture of drizzles of olive oil, garlic, juice of lemon, and a handful of other ingredients are all it takes to make this recipe so flavorful. It works well as a reasonably priced main course. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 58%. This score is solid. Try Lemon Garlic Baked Chicken Breasts, Lemon Garlic Baked Chicken Drumsticks, and Lemon Garlic Baked Chicken Thighs for similar recipes.",
+      "after": "Zesty lemon and garlic lift tender baked chicken, with parsley and seasoned breadcrumbs adding a crisp, savoury finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec8",
+      "title": "Caponata Style Celery Spaghetti",
+      "before": "You can never have too many hor d'oeuvre recipes, so give Caponata Style Celery Spaghetti a try. One serving contains 379 calories, 9g of protein, and 15g of fat. This recipe serves 4. For $1.16 per serving, this recipe covers 14% of your daily requirements of vitamins and minerals. This recipe from Foodista has 1 fans. A mixture of garlic cloves, salt and pepper, rosemary, and a handful of other ingredients are all it takes to make this recipe so flavorful. It is a good option if you're following a dairy free, lacto ovo vegetarian, and vegan diet. From preparation to the plate, this recipe takes around 1 hour. With a spoonacular score of 74%, this dish is solid. If you like this recipe, you might also like recipes such as Seared steak with celery & pepper caponata, Caponata-Style Green Beans, and Spaghetti con Pollo y Salsa Criolla (Colombian-Style Spaghetti with Chicken).",
+      "after": "Bright tomato and garlic spaghetti with tender celery and aubergine, inspired by caponata for a tangy, savoury veggie dish.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Bright tomato and garlic spaghetti with tender celery and eggplant, inspired by caponata for a tangy, savoury veggie dish."
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec9",
+      "title": "Creamy Broccoli & Celery Soup",
+      "before": "Creamy Broccoli & Celery Soup might be just the hor d'oeuvre you are searching for. One portion of this dish contains roughly 5g of protein, 8g of fat, and a total of 135 calories. This recipe serves 4. For 88 cents per serving, this recipe covers 17% of your daily requirements of vitamins and minerals. Not a lot of people made this recipe, and 1 would say it hit the spot. It can be enjoyed any time, but it is especially good for Autumn. From preparation to the plate, this recipe takes about 30 minutes. A mixture of croutons, head broccoli, p of pepper, and a handful of other ingredients are all it takes to make this recipe so flavorful. It is brought to you by Foodista. It is a good option if you're following a gluten free, dairy free, and whole 30 diet. With a spoonacular score of 70%, this dish is good. Similar recipes are Creamy Celery Soup, Creamy Chinese Celery Soup, and 5:2 Diet - Broccoli and Celery Soup = 111 Calories.",
+      "after": "A smooth, savoury soup with fresh broccoli and celery in a light vegetable broth, finished simply with olive oil.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b3",
+      "title": "Thai Street Vendor Salmon Skewers",
+      "before": "Thai Street Vendor Salmon Skewers takes roughly 45 minutes from beginning to end. This main course has 324 calories, 36g of protein, and 11g of fat per serving. This recipe serves 4 and costs $4.43 per serving. 3 people were impressed by this recipe. This recipe from Foodista requires ginger, ground turmeric, lime, and fish sauce. It is a good option if you're following a gluten free, dairy free, fodmap friendly, and pescatarian diet. It is a pretty expensive recipe for fans of Asian food. Taking all factors into account, this recipe earns a spoonacular score of 94%, which is outstanding. Thai Street Vendor Salmon Skewers, Persian Street Vendor Kebabs, and Thai Street Chicken are very similar to this recipe.",
+      "after": "Sweet, salty and fiery salmon skewers with lime, ginger and chili sauce, finished with earthy turmeric and crisp yu choy.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b4",
+      "title": "Thai Shrimp",
+      "before": "If you want to add more gluten free, dairy free, and pescatarian recipes to your recipe box, Thai Shrimp might be a recipe you should try. One portion of this dish contains about 27g of protein, 7g of fat, and a total of 355 calories. This recipe serves 4 and costs $3.27 per serving. This recipe is typical of Asian cuisine. 11 person were impressed by this recipe. It works well as a pretty expensive main course. It is brought to you by Foodista. A mixture of chilies, fish sauce, soy sauce, and a handful of other ingredients are all it takes to make this recipe so tasty. From preparation to the plate, this recipe takes approximately 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 75%, which is solid. Similar recipes are Let's Get Together Thai Shrimp, Thai Shrimp, and Thai Shrimp.",
+      "after": "Salty-sweet shrimp with chilies, basil and green onions in a punchy soy-fish sauce. Bright, savoury and fragrant.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a453",
+      "title": "Quick and Easy Scallop Pasta",
+      "before": "If you have roughly 45 minutes to spend in the kitchen, Quick and Easy Scallop Pasta might be a spectacular pescatarian recipe to try. This recipe serves 2 and costs $3.35 per serving. One portion of this dish contains around 25g of protein, 43g of fat, and a total of 755 calories. It works well as a pretty expensive main course. Not a lot of people made this recipe, and 2 would say it hit the spot. It is brought to you by Foodista. If you have butter, parmesan cheese, round chives, and a few other ingredients on hand, you can make it. With a spoonacular score of 42%, this dish is good. Easy Scallop Pasta, Quick 'n Easy Pasta, and Quick and Easy Pasta Toss are very similar to this recipe.",
+      "after": "Silky scallops and ramen noodles in garlic, butter and white wine, finished with parmesan, lemon zest and chives. Light, savoury and a little luxurious.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51334",
+      "title": "Easy Instant Pot Beef Tips and Rice",
+      "before": "Easy Instant Pot Beef Tips and Rice takes around 30 minutes from beginning to end. Watching your figure? This gluten free and dairy free recipe has 371 calories, 53g of protein, and 11g of fat per serving. This recipe serves 4 and costs $2.2 per serving. 25 people have made this recipe and would make it again. Head to the store and pick up dale's seasoning sauce, onion, olive oil, and a few other things to make it today. It works well as a main course. It is brought to you by Pink When. Overall, this recipe earns a super spoonacular score of 93%. Users who liked this recipe also liked Instant Pot Beef Tips, Instant Pot Beef Tips, and Instant Pot Red Wine Beef Tips.",
+      "after": "Tender sirloin beef tips in a savoury mushroom sauce with onion, made easy in the Instant Pot and served over rice.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "69b4b0675ee86d48cd96c66f",
+      "title": "Baked Chicken with Citrus and Garlic Marinade",
+      "before": "Need a gluten free and dairy free main course? Baked Chicken with Citrus and Garlic Marinade could be a spectacular recipe to try. This recipe makes 6 servings with 375 calories, 24g of protein, and 29g of fat each. For 87 cents per serving, this recipe covers 16% of your daily requirements of vitamins and minerals. 1 person were impressed by this recipe. It is brought to you by Foodista. From preparation to the plate, this recipe takes around 1 hour and 30 minutes. Head to the store and pick up parsley, oregano, garlic, and a few other things to make it today. Taking all factors into account, this recipe earns a spoonacular score of 45%, which is good. If you like this recipe, you might also like recipes such as Flattened Cornish Game Hens With Garlic-citrus Marinade, Triple Citrus Chicken Marinade, and Citrus Chicken Breast Marinade.",
+      "after": "Citrusy lime and garlic make this baked chicken bright, savoury and fragrant. Onion, parsley and oregano add a simple herby finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df7d",
+      "title": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+      "before": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo) requires roughly 45 minutes from start to finish. One serving contains 390 calories, 8g of protein, and 22g of fat. This gluten free, dairy free, and lacto ovo vegetarian recipe serves 6 and costs $3.19 per serving. Head to the store and pick up chilies, rice vinegar, enoki mushrooms, and a few other things to make it today. 295 people found this recipe to be yummy and satisfying. It works well as a side dish. Plenty of people really liked this Vietnamese dish. It is brought to you by foodandspice.blogspot.com. Overall, this recipe earns an awesome spoonacular score of 94%. Similar recipes include Bánh xèo (Vietnamese Happy Pancakes), Banh Xeo (Bánh Xèo) – Savory Vietnamese Crêpe, and Banh Xeo (Vietnamese Crepes).",
+      "after": "Crisp, savoury pancakes with coconut, ginger and a fresh herby crunch, served with a fragrant chilli dipping sauce.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df82",
+      "title": "Baked Rigatoni",
+      "before": "Need a lacto ovo vegetarian main course? Baked Rigatoni could be a spectacular recipe to try. One serving contains 481 calories, 25g of protein, and 10g of fat. This recipe serves 6. For $1.86 per serving, this recipe covers 34% of your daily requirements of vitamins and minerals. 3 people have made this recipe and would make it again. A mixture of broccoli flowerets, basil, vegetable burger crumbles, and a handful of other ingredients are all it takes to make this recipe so flavorful. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. Overall, this recipe earns a spectacular spoonacular score of 93%. Users who liked this recipe also liked Rigatoni Al Forno (Baked Rigatoni) with Roasted Asparagus and On, Baked Rigatoni, and Baked Rigatoni.",
+      "after": "Hearty baked rigatoni with pasta sauce, tomatoes and mozzarella, lifted by basil, fennel and broccoli for a rich, savoury veggie bake.",
+      "attempts": 1
+    },
+    {
+      "id": "69bf43f8742c2d2d3b4e88c0",
+      "title": "Boozy Bbq Chicken",
+      "before": "Boozy Bbq Chicken could be just the gluten free and dairy free recipe you've been looking for. This recipe makes 6 servings with 725 calories, 32g of protein, and 33g of fat each. For $3.33 per serving, this recipe covers 40% of your daily requirements of vitamins and minerals. This recipe from Foodista requires wooden skewers, dijon mustard, molasses, and orange juice. It works well as a main course. From preparation to the plate, this recipe takes roughly 45 minutes. 72 people found this recipe to be flavorful and satisfying. Taking all factors into account, this recipe earns a spoonacular score of 93%, which is outstanding. Try Boozy BBQ Meatballs (in the crockpot), Boozy Bum Chicken, and Mirj's Boozy Maple Chicken for similar recipes.",
+      "after": "Sticky boozy BBQ chicken with sweet molasses, tangy mustard and soy, lifted by ginger, garlic and lemon, with veg and rice.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec4",
+      "title": "Vegan Colcannon Soup",
+      "before": "Vegan Colcannon Soup is an European recipe that serves 8. Watching your figure? This gluten free, dairy free, lacto ovo vegetarian, and whole 30 recipe has 203 calories, 7g of protein, and 5g of fat per serving. For $1.48 per serving, this recipe covers 25% of your daily requirements of vitamins and minerals. Autumn will be even more special with this recipe. 1 person were impressed by this recipe. It works well as a rather cheap hor d'oeuvre. This recipe from Foodista requires pepper, juice of lemon, garlic, and russet potatoes. From preparation to the plate, this recipe takes approximately 45 minutes. Overall, this recipe earns a great spoonacular score of 82%. Try Vegan Colcannon Soup, Vegan Colcannon, and Colcannon Bites With Collard Greens (Vegan) for similar recipes.",
+      "after": "Creamy potatoes, leeks and cabbage make a hearty vegan soup with a bright lemon finish. Savoy cabbage and kale add a green, savoury twist.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b9",
+      "title": "Thai Cucumber Salad (By Roz)",
+      "before": "You can never have too many side dish recipes, so give Thai Cucumber Salad (By Roz) a try. This recipe serves 6 and costs $1.93 per serving. One serving contains 179 calories, 4g of protein, and 11g of fat. A mixture of soy sauce, pepper, thai garlic chili pepper sauce, and a handful of other ingredients are all it takes to make this recipe so yummy. It is a reasonably priced recipe for fans of Asian food. 2 people have tried and liked this recipe. It is brought to you by Foodista. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. From preparation to the plate, this recipe takes about 45 minutes. Overall, this recipe earns a pretty good spoonacular score of 45%. Thai Cucumber Salad, Thai Cucumber Salad, and Thai Cucumber Salad are very similar to this recipe.",
+      "after": "Crisp cucumber salad with zesty lime, soy and rice wine vinegar, plus a gentle chilli kick. Finished with peanuts, herbs and sesame for a fresh, punchy bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89ba",
+      "title": "Green Thai Curry with Beef",
+      "before": "Green Thai Curry with Beef might be a good recipe to expand your main course recipe box. For $5.87 per serving, this recipe covers 42% of your daily requirements of vitamins and minerals. This recipe serves 4. Watching your figure? This gluten free and dairy free recipe has 659 calories, 39g of protein, and 46g of fat per serving. If you have soy sauce, oil, flank steak, and a few other ingredients on hand, you can make it. It is an expensive recipe for fans of Asian food. 2 people have tried and liked this recipe. It is brought to you by Foodista. From preparation to the plate, this recipe takes around 3 hours. With a spoonacular score of 78%, this dish is good. Similar recipes are Thai Red Beef Curry with Green Beans, Thai Red Beef Curry with Green Beans, and Homemade Thai Green Curry Paste (And An Easy Thai Green Curry).",
+      "after": "Fragrant green Thai-style curry with tender beef, coconut milk and lemongrass, lifted by fish sauce and lemon. Packed with crisp veg and earthy mushrooms.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db92974afef25b93a44a",
+      "title": "Chicken and Mango Skewer",
+      "before": "Chicken and Mango Skewer takes roughly 45 minutes from beginning to end. This recipe serves 1 and costs $4.51 per serving. One portion of this dish contains about 31g of protein, 8g of fat, and a total of 479 calories. It is brought to you by Afrolems. A few people made this recipe, and 19 would say it hit the spot. A mixture of pepper, suya seasoning mix, mangos, and a handful of other ingredients are all it takes to make this recipe so scrumptious. It works well as a pretty expensive main course. It is a good option if you're following a gluten free, dairy free, and whole 30 diet. Overall, this recipe earns a spectacular spoonacular score of 95%. Users who liked this recipe also liked Grilled Chicken Caesar on a Skewer, Thai Chicken Skewer Appetizers with Sweet and Spicy Chili Sauce, and S’more Skewer Bites.",
+      "after": "Juicy chicken with sweet mango and peppery suya spice on skewers, with a savoury stock cube note.",
+      "attempts": 1
+    },
+    {
+      "id": "69b09f21118169bbfaa697b3",
+      "title": "Avocado Sweet Lassi - How to make Avocado Lassi - Indian Avocado",
+      "before": "Avocado Sweet Lassi - How to make Avocado Lassi - Indian Avocado is a gluten free and lacto ovo vegetarian beverage. One portion of this dish contains around 2g of protein, 5g of fat, and a total of 81 calories. This recipe serves 6. For 48 cents per serving, this recipe covers 3% of your daily requirements of vitamins and minerals. From preparation to the plate, this recipe takes around 5 minutes. It is a cheap recipe for fans of Indian food. 1 person has tried and liked this recipe. It is brought to you by thecuisine.blogspot.com. Head to the store and pick up avocado, yogurt, to .5 cups water, and a few other things to make it today. All things considered, we decided this recipe deserves a spoonacular score of 0%. This score is very bad (but still fixable). Similar recipes include lassi , sweet punjabi lassi | how to make lassi, masala lassi , how to make masala lassi | sweet lassi, and Mango Lassi or Aam ki Lassi, How to make Mango Lassi.",
+      "after": "Creamy avocado lassi with yogurt, sweet sugar and fragrant cardamom. A cool, smooth drink with a fresh, rich twist.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a461",
+      "title": "Pasta With Tuna",
+      "before": "Pasta With Tunan is a pescatarian main course. This recipe serves 4. For $1.68 per serving, this recipe covers 28% of your daily requirements of vitamins and minerals. One serving contains 423 calories, 24g of protein, and 10g of fat. 2 people have made this recipe and would make it again. This recipe from Foodista requires flour, parsley, non-fat milk, and parmesan cheese. From preparation to the plate, this recipe takes around 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 92%. This score is amazing. Pastan and Tuna Salad (Ensalada de Pasta y Atún), Tuna Pasta, and Tuna Pasta are very similar to this recipe.",
+      "after": "Creamy tuna pasta with peas, parmesan and green onions for a savoury, comforting bite. Pepper sauce and parsley add a fresh, punchy finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a465",
+      "title": "Pasta with Butternut Squash, Sausage and Sage Pesto",
+      "before": "Pasta with Butternut Squash, Sausage and Sage Pesto is a main course that serves 8. For $1.8 per serving, this recipe covers 26% of your daily requirements of vitamins and minerals. One portion of this dish contains around 19g of protein, 31g of fat, and a total of 556 calories. If you have butternut squash, olive oil, parmesan, and a few other ingredients on hand, you can make it. 1 person has made this recipe and would make it again. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. With a spoonacular score of 77%, this dish is solid. Users who liked this recipe also liked Roasted Butternut Squash, Sausage and Orecchiette Pastan in a Brown Butter Sage Sauce, Butternut Squash, Sage Pesto and Prosciutto Pizza, and Butternut Squash Gratin with Sage Pesto & Gorgonzola for.",
+      "after": "Sweet butternut squash, savoury sausage and fragrant sage pesto coat the pasta for a rich, autumny dish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a466",
+      "title": "Pasta With Cream Sauce and Mushrooms",
+      "before": "If you have around 45 minutes to spend in the kitchen, Pasta With Cream Sauce and Mushrooms might be an outstanding dairy free recipe to try. This recipe makes 4 servings with 558 calories, 14g of protein, and 29g of fat each. For $1.37 per serving, this recipe covers 22% of your daily requirements of vitamins and minerals. 1 person has tried and liked this recipe. A mixture of bay leaf, white wine, margarine, and a handful of other ingredients are all it takes to make this recipe so scrumptious. It works well as a reasonably priced main course. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 76%, which is solid. Users who liked this recipe also liked Pasta with Sausage, Mushrooms and White Wine Cream Sauce, Crispy Baked Pasta with Mushrooms, Sausage, and Parmesan Cream Sauce, and Crispy Baked Pasta with Mushrooms, Sausage, and Parmesan Cream Sauce.",
+      "after": "Creamy dairy free pasta with mushrooms, garlic and herbs, finished in a smooth sauce with gentle savoury flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51332",
+      "title": "Coffee-braised Short Ribs",
+      "before": "Need a gluten free and dairy free main course? Coffee-braised Short Ribs could be a great recipe to try. One portion of this dish contains approximately 74g of protein, 42g of fat, and a total of 877 calories. For $7.05 per serving, this recipe covers 64% of your daily requirements of vitamins and minerals. This recipe serves 5. 6 people have made this recipe and would make it again. A mixture of strong freshly coffee, short, brown sugar, and a handful of other ingredients are all it takes to make this recipe so delicious. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 90%, which is spectacular. If you like this recipe, take a look at these similar recipes: Coffee-Braised Short Ribs, Coffee-braised Short Ribs, and Coffee-Braised Short Ribs.",
+      "after": "Rich short ribs braised with coffee, tomato and warm spices, with a gentle chilli kick and deep savoury sweetness.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4aeaee736bc836fd51336",
+      "title": "Ground Turkey Stuffed Peppers",
+      "before": "Ground Turkey Stuffed Peppers might be just the main course you are searching for. Watching your figure? This gluten free recipe has 463 calories, 34g of protein, and 17g of fat per serving. This recipe serves 4 and costs $3.0 per serving. 112 people were glad they tried this recipe. A mixture of bell peppers, garlic, onion, and a handful of other ingredients are all it takes to make this recipe so yummy. It is brought to you by Foodista. From preparation to the plate, this recipe takes roughly 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 94%, which is spectacular. Try Ground Turkey Stuffed Peppers, Ground Turkey Stuffed Peppers, and Ground Turkey Stuffed Peppers for similar recipes.",
+      "after": "Sweet peppers packed with savoury turkey, beef, rice and tomato, finished with garlicky parmesan and parsley.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecf",
+      "title": "Azteca Soup",
+      "before": "You can never have too many hor d'oeuvre recipes, so give Azteca Soup a try. This recipe serves 6 and costs $1.77 per serving. Watching your figure? This gluten free and lacto ovo vegetarian recipe has 331 calories, 6g of protein, and 18g of fat per serving. 2 people have made this recipe and would make it again. It can be enjoyed any time, but it is especially good for Autumn. It is brought to you by Foodista. If you have avocado, chili powder, basil shreds, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes approximately 45 minutes. Overall, this recipe earns a solid spoonacular score of 48%. If you like this recipe, take a look at these similar recipes: Azteca Soup, Azteca Soup Adopted, and Sopan Azteca (Tortilla Soup).",
+      "after": "Fresh, zesty vegetable soup with avocado, basil and lime, lifted by jalapeno, cumin and chili. Sweet corn and tomatoes give it a bright, hearty finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec3",
+      "title": "Spicy lentil and black rice soup with kale, spinach and leek",
+      "before": "Spicy lentil and black rice soup with kale, spinach and leek is a gluten free, dairy free, lacto ovo vegetarian, and vegan recipe with 12 servings. One portion of this dish contains about 11g of protein, 1g of fat, and a total of 202 calories. For 84 cents per serving, this recipe covers 25% of your daily requirements of vitamins and minerals. Head to the store and pick up onion, carrot, leek, and a few other things to make it today. Not a lot of people made this recipe, and 1 would say it hit the spot. Autumn will be even more special with this recipe. It works well as a very affordable hor d'oeuvre. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. Overall, this recipe earns an awesome spoonacular score of 94%. If you like this recipe, you might also like recipes such as Spicy Sausage Lentil & Kale Soup, Spicy Sausage Lentil & Kale Soup, and Spicy Chorizo Red Lentil Soup with Kale.",
+      "after": "Hearty lentil and black rice soup with kale, spinach and leek, warmed with cumin, thyme, garlic and a chilli kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31df4b17f27d65b4f4ed3",
+      "title": "The Best Quinoa Minestrone",
+      "before": "Forget going out to eat or ordering takeout every time you crave Mediterranean food. Try making The Best Quinoa Minestrone at home. This recipe serves 8 and costs $3.67 per serving. Watching your figure? This gluten free recipe has 544 calories, 26g of protein, and 26g of fat per serving. 1 person has tried and liked this recipe. It works well as a pretty expensive main course. Head to the store and pick up celery, canned tomatoes, pesto, and a few other things to make it today. It is brought to you by Foodista. From preparation to the plate, this recipe takes about 45 minutes. With a spoonacular score of 73%, this dish is solid. Similar recipes are Kale and Quinoa Minestrone, Kale and Quinoa Minestrone, and Kale and Quinoa Minestrone.",
+      "after": "Hearty minestrone with pancetta, vegetables, tomatoes and quinoa for a savoury, comforting bowl with plenty of texture.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89c9",
+      "title": "Butternut Squash Souffle Side Dish",
+      "before": "Need a gluten free, lacto ovo vegetarian, and primal hor d'oeuvre? Butternut Squash Souffle Side Dish could be an amazing recipe to try. One serving contains 234 calories, 6g of protein, and 18g of fat. This recipe serves 4 and costs 81 cents per serving. Only a few people really liked this Mediterranean dish. From preparation to the plate, this recipe takes roughly 45 minutes. 2 people found this recipe to be tasty and satisfying. Head to the store and pick up butter to grease the ramekins, milk, heavy cream, and a few other things to make it today. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 39%, which is not so awesome. If you like this recipe, take a look at these similar recipes: Butternut Squash Souffle Side Dish, Side Dish Saturdays: Twice Baked Butternut Squash, and Easy Butternut Squash Skillet – My New Favorite Side Dish.",
+      "after": "Light, fluffy butternut squash with warm cinnamon, ginger and nutmeg, enriched with cream and egg for a cosy, sweet-spiced side.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89ca",
+      "title": "Banana Creme Brulee",
+      "before": "Banana Creme Brulee might be a good recipe to expand your dessert recipe box. For $1.09 per serving, this recipe covers 5% of your daily requirements of vitamins and minerals. Watching your figure? This gluten free and lacto ovo vegetarian recipe has 290 calories, 3g of protein, and 22g of fat per serving. This recipe serves 8. This recipe is liked by 10 foodies and cooks. From preparation to the plate, this recipe takes approximately 45 minutes. A mixture of vanilla pod, heavy cream, egg yolks, and a handful of other ingredients are all it takes to make this recipe so delicious. A couple people really liked this Mediterranean dish. It is brought to you by Foodista. Overall, this recipe earns a not so amazing spoonacular score of 19%. If you like this recipe, you might also like recipes such as White Chocolate Creme Brulee with Strawberry {Creme Brulee Kit Giveaway}, Banana Crème Brûlée, and Banana Creme Brulee.",
+      "after": "Creamy bananas and vanilla pod meet a crisp demerara sugar top for a simple, glossy brûlée with soft caramel notes.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "69b1db92974afef25b93a44b",
+      "title": "Cheesy Chicken Enchilada Quinoa Casserole",
+      "before": "Cheesy Chicken Enchilada Quinoa Casserole might be just the Mexican recipe you are searching for. One serving contains 594 calories, 34g of protein, and 24g of fat. This gluten free recipe serves 4 and costs $2.62 per serving. A mixture of corn, pepper, canned tomatoes, and a handful of other ingredients are all it takes to make this recipe so delicious. From preparation to the plate, this recipe takes approximately 30 minutes. It will be a hit at your Autumn event. Plenty of people made this recipe, and 9912 would say it hit the spot. It works well as an affordable main course. It is brought to you by Pink When. With a spoonacular score of 97%, this dish is amazing. If you like this recipe, you might also like recipes such as Cheesy Chicken Enchilada Quinoa Casserole, Cheesy Chicken Enchilada Quinoa Casserole, and Cheesy Chicken Enchilada Quinoa Casserole.",
+      "after": "Cheesy chicken, quinoa and black beans bake with zesty verde enchilada sauce, cumin and chili for a bold, hearty casserole.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a455",
+      "title": "Quick and Easy Southwestern Corn Chowder",
+      "before": "Need a gluten free main course? Quick and Easy Southwestern Corn Chowder could be an awesome recipe to try. This recipe serves 6. For $2.68 per serving, this recipe covers 17% of your daily requirements of vitamins and minerals. One portion of this dish contains roughly 19g of protein, 12g of fat, and a total of 324 calories. A mixture of butter, chicken, half and half, and a handful of other ingredients are all it takes to make this recipe so tasty. 11 person were glad they tried this recipe. It is brought to you by Foodista. From preparation to the plate, this recipe takes approximately 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 48%. This score is pretty good. Users who liked this recipe also liked Quick And Easy Cauliflower-corn Chowder, Southwestern Corn Chowder, and Southwestern Corn Chowder.",
+      "after": "Creamy corn chowder with sweet corn, tender chicken, and cheesy peppery warmth. A quick, comforting bowl with a Southwestern kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a451",
+      "title": "Grilled Ham and Cheese French Toast For A Quick Weeknight Dinner",
+      "before": "The recipe Grilled Ham and Cheese French Toast For A Quick Weeknight Dinner can be made in about 45 minutes. One portion of this dish contains approximately 31g of protein, 22g of fat, and a total of 432 calories. This recipe serves 4. For $1.34 per serving, this recipe covers 21% of your daily requirements of vitamins and minerals. Only a few people really liked this American dish. 3 people were glad they tried this recipe. The Fourth Of July will be even more special with this recipe. If you have turkey ham, jarlsberg cheese, smart balance heart right, and a few other ingredients on hand, you can make it. It works well as a main course. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 59%. This score is solid. Try Ham and Asparagus Frittata – A Quick & Easy Weeknight Dinner, Ham ’n Cheese French Toast, and Ham and Cheese Biscuit Panini PLUS More Quick Dinner Ideas for similar recipes.",
+      "after": "Savory French toast with turkey ham, Jarlsberg and Dijon, brightened by dill pickles. A quick, cheesy twist on a classic.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a456",
+      "title": "Clear & Quick Chicken Soup",
+      "before": "Clear & Quick Chicken Soup might be a good recipe to expand your main course recipe box. One serving contains 408 calories, 33g of protein, and 26g of fat. This gluten free, dairy free, paleolithic, and primal recipe serves 2 and costs $1.46 per serving. 1 person were glad they tried this recipe. If you have parsley, onion, celery stalks, and a few other ingredients on hand, you can make it. It will be a hit at your Autumn event. It is brought to you by Foodista. From preparation to the plate, this recipe takes approximately 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 66%, which is solid. If you like this recipe, you might also like recipes such as Clear & Quick Chicken Soup, Clear Chicken Soup, and Soto Ayam (Indonesian Clear Chicken Soup).",
+      "after": "Light chicken soup with carrot, celery, onion and herbs, gently seasoned with bay, dill and parsley for a clean, comforting flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a459",
+      "title": "Healthy Hazelnut Cookies",
+      "before": "Healthy Hazelnut Cookies requires around 45 minutes from start to finish. One portion of this dish contains about 2g of protein, 10g of fat, and a total of 114 calories. This gluten free, dairy free, paleolithic, and lacto ovo vegetarian recipe serves 10 and costs 17 cents per serving. 1 person found this recipe to be flavorful and satisfying. Head to the store and pick up hazlenut meal, vanilla powder/extract, cacao butter, and a few other things to make it today. It is brought to you by Foodista. It works well as a dessert. With a spoonacular score of 23%, this dish is not so amazing. If you like this recipe, take a look at these similar recipes: Dairy-Free Hazelnut Ice Cream Sandwiches with Grain-Free Hazelnut Cookies, Healthy Mocha-Hazelnut Shake, and Chocolate Hazelnut Cookies (NOTella cookies!) – Low Carb and Gluten Free.",
+      "after": "Nutty hazelnut cookies with vanilla sweetness and a gentle cacao butter finish. Gluten free and dairy free, they’re simple, rich and lightly sweet.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a45a",
+      "title": "Scotch Eggs",
+      "before": "The recipe Scotch Eggs can be made in approximately 45 minutes. This recipe serves 8. One serving contains 296 calories, 17g of protein, and 20g of fat. For 83 cents per serving, this recipe covers 11% of your daily requirements of vitamins and minerals. It works well as a very reasonably priced hor d'oeuvre. It is brought to you by Foodista. Head to the store and pick up bulk sausage, corn meal, eggs, and a few other things to make it today. 2 people were impressed by this recipe. It is a good option if you're following a dairy free diet. Overall, this recipe earns a not so awesome spoonacular score of 37%. If you like this recipe, you might also like recipes such as Scotch Eggs, Scotch Eggs, and Scotch Eggs.",
+      "after": "Golden sausage-coated eggs with a crisp corn meal crust, hearty and savoury with a satisfying snack-time bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a45b",
+      "title": "Macha Macarons",
+      "before": "Macha Macarons might be just the Mediterranean recipe you are searching for. This gluten free, dairy free, lacto ovo vegetarian, and fodmap friendly recipe serves 4 and costs 44 cents per serving. One serving contains 126 calories, 3g of protein, and 4g of fat. This recipe from Foodista has 1 fans. It works well as a cheap dessert. Head to the store and pick up egg white, macha powder, almond meal, and a few other things to make it today. From preparation to the plate, this recipe takes approximately 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 11%, which is not so excellent. If you like this recipe, you might also like recipes such as Salsa Macha, Salsa Macha With Crudités, and Macarons.",
+      "after": "Delicate almond macarons with a bright matcha flavour and a hint of lemon, finished with sweet icing sugar.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a45c",
+      "title": "Chess Pie Two Ways",
+      "before": "Forget going out to eat or ordering takeout every time you crave Southern food. Try making Chess Pie Two Ways at home. This dessert has 680 calories, 7g of protein, and 38g of fat per serving. This recipe serves 8. For $1.3 per serving, this recipe covers 8% of your daily requirements of vitamins and minerals. 1 person has tried and liked this recipe. If you have eggs, maple syrup, salt, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 18%. This score is not so outstanding. Similar recipes are Blackberry Lemon Chess Pie with Honey Jumbleberry Sauce. How I won the SF Food Wars – Pie or Die Competition, Chess Pie, and Chess Pie.",
+      "after": "Two sweet, old-fashioned pies: one creamy and vanilla-kissed, the other bright with lemon and a buttery caramel finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a472",
+      "title": "Garlicky Kale",
+      "before": "Garlicky Kale requires approximately 45 minutes from start to finish. This side dish has 170 calories, 2g of protein, and 15g of fat per serving. This recipe serves 2. For 69 cents per serving, this recipe covers 17% of your daily requirements of vitamins and minerals. 19 people have made this recipe and would make it again. This recipe from Foodista requires balsamic vinegar, garlic, curly kale, and olive oil. It is a good option if you're following a gluten free, dairy free, paleolithic, and lacto ovo vegetarian diet. With a spoonacular score of 99%, this dish is outstanding. Try Garlicky Kale, Garlicky Kale, and Garlicky Kale for similar recipes.",
+      "after": "Bold garlicky curly kale with a tangy balsamic finish and a simple olive oil gloss.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ebe",
+      "title": "Moroccan chickpea and lentil stew",
+      "before": "The recipe Moroccan chickpean and lentil stew can be made in roughly 30 minutes. This dairy free, lacto ovo vegetarian, and vegan recipe serves 3 and costs $1.26 per serving. This main course has 466 calories, 20g of protein, and 7g of fat per serving. This recipe is liked by 11 foodies and cooks. It can be enjoyed any time, but it is especially good for Autumn. It is brought to you by Foodista. If you have olive oil, salt and pepper, tomato paste, and a few other ingredients on hand, you can make it. All things considered, we decided this recipe deserves a spoonacular score of 97%. This score is outstanding. If you like this recipe, you might also like recipes such as Moroccan chickpean and lentil stew, Butternut Squash, Chickpea & Lentil Moroccan Stew, and Butternut Squash, Chickpea & Lentil Moroccan Stew.",
+      "after": "Warm spiced chickpea and lentil stew with broccoli, carrots and couscous, lifted by cumin, cinnamon, turmeric and lemon.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4b0505ee86d48cd96c66a",
+      "title": "Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise",
+      "before": "Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise could be just the pescatarian recipe you've been looking for. One serving contains 540 calories, 41g of protein, and 33g of fat. This recipe serves 2 and costs $6.33 per serving. 74 people were impressed by this recipe. Head to the store and pick up eggs, lemon, butter, and a few other things to make it today. It is brought to you by Foodista. A couple people really liked this breakfast. From preparation to the plate, this recipe takes around 45 minutes. Overall, this recipe earns a tremendous spoonacular score of 92%. If you like this recipe, take a look at these similar recipes: Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise, Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise, and Smoked Salmon Dill Eggs Benedict.",
+      "after": "Smoked salmon on multigrain bread with eggs and lemon dill hollandaise, rich and fresh with a silky finish.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "69b4aeaee736bc836fd51337",
+      "title": "Chimichurri Skirt Steak with Grilled Asparagus",
+      "before": "If you want to add more gluten free, dairy free, paleolithic, and primal recipes to your collection, Chimichurri Skirt Steak with Grilled Asparagus might be a recipe you should try. For $4.9 per serving, you get a main course that serves 4. One portion of this dish contains around 27g of protein, 30g of fat, and a total of 409 calories. This recipe is liked by 11 foodies and cooks. Head to the store and pick up pepper, chili pepper flakes, to 5 garlic cloves, and a few other things to make it today. From preparation to the plate, this recipe takes around 45 minutes. A couple people really liked this Latin American dish. The Fourth Of July will be even more special with this recipe. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 94%. This score is great. Chimichurri Skirt Steak with Grilled Asparagus, Chimichurri Skirt Steak with Grilled Asparagus, and Chimichurri Skirt Steak with Grilled Asparagus are very similar to this recipe.",
+      "after": "Juicy skirt steak with bright chimichurri and grilled asparagus. Herby, garlicky and sharp with lemon and red wine vinegar.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4b0505ee86d48cd96c66b",
+      "title": "Lemon Pasta With Salmon",
+      "before": "Lemon Pasta With Salmon requires approximately 45 minutes from start to finish. Watching your figure? This pescatarian recipe has 560 calories, 29g of protein, and 35g of fat per serving. For $3.54 per serving, you get a main course that serves 6. This recipe from Foodista requires dill, peas, olive oil, and thickenthin not/starch thickener. This recipe is liked by 1 foodies and cooks. All things considered, we decided this recipe deserves a spoonacular score of 74%. This score is pretty good. Try Lemon-Garlic Pasta with Salmon, Lemon-Garlic Pasta with Salmon, and Salmon pasta salad with lemon & capers for similar recipes.",
+      "after": "Creamy lemon pasta with salmon, dill and peas, brightened by lemon juice and rind with a savoury seafood note.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ece",
+      "title": "Aspic Jelly",
+      "before": "Aspic Jelly takes approximately 45 minutes from beginning to end. This condiment has 345 calories, 20g of protein, and 5g of fat per serving. For $4.37 per serving, this recipe covers 28% of your daily requirements of vitamins and minerals. This recipe serves 4. This recipe from Foodista has 1 fans. It is a good option if you're following a gluten free and dairy free diet. If you have bay leaf, thyme, juice of lemon, and a few other ingredients on hand, you can make it. Overall, this recipe earns a solid spoonacular score of 42%. If you like this recipe, you might also like recipes such as Meat Jelly or Aspic, Tomato Aspic, and Apricot Aspic.",
+      "after": "Savory jelly with bay, thyme, parsley and lemon, set with gelatine and lifted by madeira for a clear, herb-scented finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ed0",
+      "title": "Classic Ragu",
+      "before": "Classic Ragu is a main course that serves 6. One portion of this dish contains approximately 15g of protein, 24g of fat, and a total of 385 calories. For $1.74 per serving, this recipe covers 15% of your daily requirements of vitamins and minerals. Not a lot of people made this recipe, and 1 would say it hit the spot. This recipe from Foodista requires onion, olive oil, celery, and tagliatelle. It is a good option if you're following a dairy free diet. From preparation to the plate, this recipe takes about 3 hours. Taking all factors into account, this recipe earns a spoonacular score of 50%, which is good. Similar recipes are Classic Ragu Bolognese, Classic Holiday Recipes made with Classic Ingredients!, and Classic Browned Butter Yellow Cake For A Classic Friend.",
+      "after": "Rich tomato ragu with sausage and veal, mellowed by carrot, celery, onion and garlic for a hearty, savoury sauce.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecc",
+      "title": "Minestrone",
+      "before": "You can never have too many Mediterranean recipes, so give Minestrone a try. Watching your figure? This gluten free recipe has 403 calories, 15g of protein, and 12g of fat per serving. This recipe serves 9 and costs $1.35 per serving. From preparation to the plate, this recipe takes around 45 minutes. This recipe from Foodista requires salt, pepper, potatoes, and canned tomatoes. 2 people have tried and liked this recipe. It works well as an affordable main course. All things considered, we decided this recipe deserves a spoonacular score of 78%. This score is good. If you like this recipe, you might also like recipes such as The Vegetable Broth and the Minestrone — Le bouillon de légumes et la minestrone, Minestrone, and Minestrone.",
+      "after": "Hearty vegetable soup with tomatoes, cabbage and potatoes, lifted by garlic and Worcestershire sauce for a savoury, comforting bowl.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db92974afef25b93a44c",
+      "title": "Chicken Suya",
+      "before": "The recipe Chicken Suya can be made in roughly 45 minutes. This recipe serves 1 and costs $1.67 per serving. One serving contains 564 calories, 44g of protein, and 35g of fat. This recipe from Afrolems requires suya spice, chicken, chilli powder, and seasoning cubes. It works well as a main course. 56 people have made this recipe and would make it again. It is a good option if you're following a gluten free, dairy free, whole 30, and ketogenic diet. Overall, this recipe earns a solid spoonacular score of 79%. If you like this recipe, you might also like recipes such as Suya (Nigerian Chicken Skewers), Suya Swordfish, and I Ain't Chicken Chicken: Crispy Roasted Chicken Breasts with Orange and Cardamom.",
+      "after": "Chicken with bold suya spice, chilli and onions, finished in groundnut oil for a smoky, savoury kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69b277e5f9069a06b5536b5c",
+      "title": "SLOW COOKER CHICKEN GUMBO SOUP",
+      "before": "SLOW COOKER CHICKEN GUMBO SOUP might be a good recipe to expand your hor d'oeuvre recipe box. This recipe serves 6 and costs $1.37 per serving. One serving contains 239 calories, 11g of protein, and 5g of fat. Only a few people really liked this Cajun dish. If you have okra, pepper, cajun seasoning, and a few other ingredients on hand, you can make it. 2 people were impressed by this recipe. It will be a hit at your Autumn event. It is brought to you by Foodista. It is a good option if you're following a gluten free and dairy free diet. From preparation to the plate, this recipe takes around 45 minutes. Overall, this recipe earns a solid spoonacular score of 56%. Similar recipes are SLOW COOKER CHICKEN GUMBO SOUP, Slow Cooker Chicken Gumbo Soup, and Slow-Cooker Chicken 'n Rice Gumbo Soup.",
+      "after": "Hearty chicken gumbo soup with cajun spice, tomatoes and okra, finished with rice for a warming, savoury bowl.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4eca",
+      "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
+      "before": "Savoy Cabbage and Celery Root Soup with Leek Confit might be just the hor d'oeuvre you are searching for. This recipe serves 7. Watching your figure? This gluten free recipe has 183 calories, 5g of protein, and 6g of fat per serving. For $1.51 per serving, this recipe covers 10% of your daily requirements of vitamins and minerals. A mixture of vegetable broth, garlic cloves, celery root, and a handful of other ingredients are all it takes to make this recipe so flavorful. It will be a hit at your Autumn event. 2 people found this recipe to be scrumptious and satisfying. It is brought to you by Foodista. From preparation to the plate, this recipe takes roughly 45 minutes. With a spoonacular score of 50%, this dish is good. Similar recipes include Savoy Cabbage and Celery Root Soup with Leek Confit, Leek and Celery Root Soup, and Silky Leek & Celery Root Soup.",
+      "after": "Silky celery root and savoy cabbage soup with sweet leek confit, sharp Dijon and a hint of apple. Earthy, savoury and gently herbal.",
+      "attempts": 2
+    },
+    {
+      "id": "69b1db93974afef25b93a475",
+      "title": "Quinoa and Chickpea Salad with Sun-Dried Tomatoes and Dried Cherries",
+      "before": "Need a gluten free, dairy free, and vegetarian side dish? Quinoan and Chickpea Salad with Sun-Dried Tomatoes and Dried Cherries could be an awesome recipe to try. This recipe serves 6 and costs $1.87 per serving. One serving contains 539 calories, 21g of protein, and 15g of fat. 34 people have made this recipe and would make it again. Head to the store and pick up honey, juice of orange, chickpeas, and a few other things to make it today. From preparation to the plate, this recipe takes about 45 minutes. It is brought to you by foodandspice.blogspot.com. Taking all factors into account, this recipe earns a spoonacular score of 99%, which is spectacular. Chickpean and Cucumber Salad with Dried Cherries and Cheese, Spinach Quiche with Sun-Dried Tomatoes, and Quinoa Salad With Dried Tart Cherries, Mint, and Fetan in Lemon-Sumac Vinaigrette are very similar to this recipe.",
+      "after": "Nutty quinoa and chickpeas with sweet dried cherries, tangy sun-dried tomatoes and orange dressing. Warm cumin and thyme add a bright, savoury lift.",
+      "attempts": 2
+    },
+    {
+      "id": "69b4aeaee736bc836fd51333",
+      "title": "Spinach and Gorgonzola Stuffed Flank Steak",
+      "before": "Spinach and Gorgonzola Stuffed Flank Steak might be just the main course you are searching for. For $4.27 per serving, this recipe covers 39% of your daily requirements of vitamins and minerals. One portion of this dish contains approximately 47g of protein, 28g of fat, and a total of 523 calories. This recipe serves 4. 9 people found this recipe to be tasty and satisfying. It is perfect for valentin day. If you have gorgonzola, olive oil, shallot, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 95%, which is super. If you like this recipe, you might also like recipes such as Bruce Aidells' Spinach and Gorgonzola-Stuffed Flank Steak, Spinach-stuffed Flank Steak, and Spinach and Carrot Stuffed Flank Steak.",
+      "after": "Juicy flank steak filled with earthy spinach, sweet shallot and tangy gorgonzola, with a crisp breadcrumb finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b5c9a95ee86d48cd96c676",
+      "title": "Chicken Spring Rolls",
+      "before": "Need a gluten free and dairy free hor d'oeuvre? Chicken Spring Rolls could be an outstanding recipe to try. One serving contains 337 calories, 28g of protein, and 11g of fat. This recipe serves 4. For $2.08 per serving, this recipe covers 23% of your daily requirements of vitamins and minerals. If you have rice paper wrappers, garlic clove, rice wine vinegar, and a few other ingredients on hand, you can make it. 1 person were impressed by this recipe. From preparation to the plate, this recipe takes about 45 minutes. Not a lot of people really liked this Vietnamese dish. It will be a hit at your Spring event. It is brought to you by Pick Fresh Foods. All things considered, we decided this recipe deserves a spoonacular score of 56%. This score is solid. If you like this recipe, take a look at these similar recipes: Chicken Spring Rolls, Baked Chicken Spring Rolls, and Chinese Chicken Spring Rolls.",
+      "after": "Crisp rice paper wraps filled with savoury chicken and broccoli slaw, with garlicky soy and chilli heat plus a tangy ketchup kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df81",
+      "title": "Crab Cakes Eggs Benedict",
+      "before": "Crab Cakes Eggs Benedict requires around 30 minutes from start to finish. One portion of this dish contains roughly 42g of protein, 59g of fat, and a total of 899 calories. This recipe serves 3 and costs $7.45 per serving. It is brought to you by Foodista. 700 people found this recipe to be yummy and satisfying. If you have butter, bread crumbs, seafood seasoning, and a few other ingredients on hand, you can make it. It works well as a pricey breakfast. It is a good option if you're following a pescatarian diet. Overall, this recipe earns a great spoonacular score of 92%. If you like this recipe, you might also like recipes such as Benedict Crab Cakes, Caribbean Crab Cakes Benedict, and Caribbean Crab Cakes Benedict.",
+      "after": "Brunchy crab cakes with rich hollandaise, served on muffins with eggs for a savoury seafood twist.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec7",
+      "title": "Celery Apple Risotto With Crispy Pancetta",
+      "before": "Celery Apple Risotto With Crispy Pancetta takes roughly 45 minutes from beginning to end. This gluten free recipe serves 6 and costs $1.82 per serving. One serving contains 420 calories, 9g of protein, and 12g of fat. Head to the store and pick up salt and pepper, olive oil, butter, and a few other things to make it today. This recipe from Foodista has 1 fans. This recipe is typical of Mediterranean cuisine. Only a few people really liked this hor d'oeuvre. Taking all factors into account, this recipe earns a spoonacular score of 39%, which is rather bad. If you like this recipe, take a look at these similar recipes: Pumpkin And Crispy Pancetta Risotto, Creamy Leek Risotto with Crispy Pancetta, and Butternut Squash Risotto with Crispy Pancetta.",
+      "after": "Creamy arborio rice with sweet apple, celery and savoury pancetta, finished with parmesan and a bright squeeze of lemon.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecd",
+      "title": "Corn Salsa",
+      "before": "The recipe Corn Salsa can be made in roughly 20 minutes. This gluten free, dairy free, lacto ovo vegetarian, and vegan recipe serves 4 and costs $1.51 per serving. One serving contains 169 calories, 4g of protein, and 2g of fat. A mixture of sugar, celery, salt, and a handful of other ingredients are all it takes to make this recipe so tasty. 5 people found this recipe to be scrumptious and satisfying. It works well as an affordable hor d'oeuvre. This recipe is typical of Mexican cuisine. It is brought to you by Foodista. Overall, this recipe earns a pretty good spoonacular score of 43%. Corn-Husk-Wrapped Grilled Halibut with Charred Corn Salsa, Grilled Corn and Bean Salsa with Baked Corn Chips, and Corn Salsa are very similar to this recipe.",
+      "after": "Fresh, crunchy corn salsa with sweet corn, tangy vinegar and pickle, plus a gentle jalapeño kick. Great as a zesty dip, spread or starter.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b7",
+      "title": "Xocai Oatmeal Dark Chocolate No-Bake Cookies",
+      "before": "Xocai Oatmeal Dark Chocolate No-Bake Cookies takes around 45 minutes from beginning to end. This gluten free recipe serves 24 and costs 64 cents per serving. One serving contains 265 calories, 6g of protein, and 16g of fat. 2 people have made this recipe and would make it again. It works well as an Asian dessert. This recipe from Foodista requires vanilla, sugar substitute, oats, and peanut butter. With a spoonacular score of 44%, this dish is solid. Try Xocai Irish Cream with Xocai Healthy Dark Chocolate Nuggets, Xocai Healthy Dark Chocolate Brownies, and VIDEO: How to Make a Dark Chocolate Berry Oatmeal Bake for similar recipes.",
+      "after": "Chewy oat cookies with peanut butter, vanilla and dark chocolate notes, made without baking for a quick sweet treat.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b8",
+      "title": "Thai Sweet Coconut Sticky Rice With Fresh Mango",
+      "before": "The recipe Thai Sweet Coconut Sticky Rice With Fresh Mango could satisfy your Asian craving in about 45 minutes. One serving contains 852 calories, 6g of protein, and 25g of fat. For $2.16 per serving, this recipe covers 15% of your daily requirements of vitamins and minerals. This recipe serves 4. Head to the store and pick up coconut milk, sugar, mangoes, and a few other things to make it today. It works well as a rather cheap side dish. 4 people have made this recipe and would make it again. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. It is brought to you by Foodista. Overall, this recipe earns a pretty good spoonacular score of 40%. Thai Coconut Sticky Rice with Mango, How To Make Thai Mango With Coconut Sticky Rice, and Coconut Sticky Sweet Rice with Mango are very similar to this recipe.",
+      "after": "Sweet coconut sticky rice with fresh mango, a creamy, fruity Thai-style treat with a soft, sticky bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89c8",
+      "title": "Egg Souffle With Bacon and Asparagus",
+      "before": "Egg Souffle With Bacon and Asparagus might be just the Mediterranean recipe you are searching for. This gluten free, primal, and ketogenic recipe serves 2 and costs $2.85 per serving. This main course has 796 calories, 32g of protein, and 70g of fat per serving. 2 people have made this recipe and would make it again. From preparation to the plate, this recipe takes about 1 hour. If you have pepper, bacon, parmesan cheese, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. Overall, this recipe earns a solid spoonacular score of 54%. Egg Souffle With Bacon and Asparagus, Bacon Pepper Asparagus Souffle Cups, and Pizza With Bacon, Asparagus And Egg are very similar to this recipe.",
+      "after": "Fluffy eggs with salty bacon, tender asparagus and Parmesan for a savoury, creamy bake.",
+      "attempts": 1
+    },
+    {
+      "id": "69b09f21118169bbfaa697b4",
+      "title": "Avocado Tomato & Mozzarella Panini/sandwiches",
+      "before": "Avocado Tomato & Mozzarella Panini/sandwiches is a main course that serves 4. One portion of this dish contains about 18g of protein, 18g of fat, and a total of 506 calories. For $1.73 per serving, this recipe covers 21% of your daily requirements of vitamins and minerals. 3 people were glad they tried this recipe. It is a good option if you're following a lacto ovo vegetarian diet. It is brought to you by Foodista. From preparation to the plate, this recipe takes roughly 45 minutes. A mixture of avocado, bread, tomatoe, and a handful of other ingredients are all it takes to make this recipe so tasty. Overall, this recipe earns a solid spoonacular score of 61%. If you like this recipe, take a look at these similar recipes: Avocado Tomato & Mozzarella Panini, Mozzarella-Turkey Panini Sandwiches, and Tomato, Mozzarella, and Basil Panini.",
+      "after": "Creamy avocado, juicy tomato and melty mozzarella in a warm panini for an easy, fresh vegetarian bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db92974afef25b93a449",
+      "title": "Red Lentil Soup with Chicken and Turnips",
+      "before": "Red Lentil Soup with Chicken and Turnips might be a good recipe to expand your main course repertoire. This recipe serves 8 and costs $3.0 per serving. One serving contains 477 calories, 27g of protein, and 20g of fat. It is brought to you by Pink When. 1866 people have tried and liked this recipe. It can be enjoyed any time, but it is especially good for Autumn. From preparation to the plate, this recipe takes approximately 55 minutes. It is a good option if you're following a gluten free and dairy free diet. Head to the store and pick up salt and pepper, canned tomatoes, flat leaf parsley, and a few other things to make it today. Overall, this recipe earns a spectacular spoonacular score of 99%. If you like this recipe, you might also like recipes such as Red Lentil and Chicken Soup, Red Lentil and Chicken Soup, and Red-Lentil Soup.",
+      "after": "Hearty red lentil soup with chicken, turnips and tomatoes, rich with garlic and onion. Fresh parsley and avocado add a bright finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89cc",
+      "title": "Julia Child's Ratatouille",
+      "before": "Julia Child's Ratatouille is a Mediterranean recipe that serves 6. This hor d'oeuvre has 199 calories, 2g of protein, and 17g of fat per serving. For 92 cents per serving, this recipe covers 11% of your daily requirements of vitamins and minerals. This recipe from Foodista has 3 fans. Head to the store and pick up zucchini, garlic, bell peppers, and a few other things to make it today. It is a good option if you're following a gluten free, dairy free, paleolithic, and lacto ovo vegetarian diet. From preparation to the plate, this recipe takes roughly 45 minutes. With a spoonacular score of 68%, this dish is solid. Julia Child's Ratatouille, Julia Child's Vichyssoise, and Julia Child's Eggplant Pizzas are very similar to this recipe.",
+      "after": "A colourful vegetable medley with soft aubergine, courgette and peppers, lifted by garlic, onion and parsley in olive oil.",
+      "attempts": 1,
+      "ukSpellingFixes": 2,
+      "afterBeforeUk": "A colourful vegetable medley with soft eggplant, zucchini and peppers, lifted by garlic, onion and parsley in olive oil."
+    },
+    {
+      "id": "69b1db92974afef25b93a44e",
+      "title": "Chicken Piccata With Angel Hair Pasta",
+      "before": "Chicken Piccata With Angel Hair Pasta takes roughly 45 minutes from beginning to end. One portion of this dish contains approximately 40g of protein, 32g of fat, and a total of 816 calories. For $3.17 per serving, this recipe covers 34% of your daily requirements of vitamins and minerals. This recipe serves 2. 60 people found this recipe to be yummy and satisfying. A few people really liked this main course. It is brought to you by Foodista. Head to the store and pick up all purpose flour, butter, lemon zest, and a few other things to make it today. Overall, this recipe earns an excellent spoonacular score of 91%. Similar recipes are chicken piccata with angel hair pastan and asparagus, Scallop Piccatan on Angel Hair, and Angel Hair Pasta with Chicken.",
+      "after": "Bright lemony chicken with briny capers, basil and garlic over delicate angel hair pasta, with a buttery tomato finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a476",
+      "title": "Easy Homemade Rice and Beans",
+      "before": "Easy Homemade Rice and Beans is a main course that serves 2. One serving contains 446 calories, 19g of protein, and 4g of fat. For $1.06 per serving, this recipe covers 26% of your daily requirements of vitamins and minerals. A mixture of optional: of hot sauce, canned tomatoes, water, and a handful of other ingredients are all it takes to make this recipe so yummy. This recipe from cooking2perfection.blogspot.com has 471 fans. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. From preparation to the plate, this recipe takes around 35 minutes. Overall, this recipe earns a tremendous spoonacular score of 98%. Easy Homemade Rice and Beans, Easy Homemade Rice and Beans, and Easy Homemade Rice and Beans are very similar to this recipe.",
+      "after": "Hearty rice and black beans in a tomato-chilli sauce, warmly spiced with cumin and pepper. Simple, filling and budget-friendly.",
+      "attempts": 1
+    },
+    {
+      "id": "69b1db93974afef25b93a452",
+      "title": "Quick and Easy Caprese Salad",
+      "before": "Need a gluten free, lacto ovo vegetarian, and primal main course? Quick and Easy Caprese Salad could be an awesome recipe to try. One serving contains 350 calories, 15g of protein, and 27g of fat. For $1.97 per serving, this recipe covers 20% of your daily requirements of vitamins and minerals. This recipe serves 4. It is brought to you by Foodista. A mixture of balsamic vinegar, basil leaves, bell pepper, and a handful of other ingredients are all it takes to make this recipe so delicious. 3 people found this recipe to be yummy and satisfying. It is an affordable recipe for fans of Mediterranean food. From preparation to the plate, this recipe takes approximately 45 minutes. Overall, this recipe earns a good spoonacular score of 74%. Try Quick Caprese Salad, Quick Roasted Tomato Caprese Pasta Salad, and Easy Caprese Salad for similar recipes.",
+      "after": "Fresh tomatoes, mozzarella and basil with a balsamic kick, plus sweet bell pepper and olive oil for a simple, bright salad.",
+      "attempts": 1
+    },
+    {
+      "id": "69b277e5f9069a06b5536b59",
+      "title": "Easy Chicken Pot Pie",
+      "before": "Easy Chicken Pot Pie is a dairy free hor d'oeuvre. For 58 cents per serving, this recipe covers 10% of your daily requirements of vitamins and minerals. This recipe serves 6. One serving contains 177 calories, 5g of protein, and 6g of fat. This recipe is liked by 1 foodies and cooks. From preparation to the plate, this recipe takes roughly 45 minutes. This recipe from Foodista requires boned chicken, vegetables, cream of chicken, and bisquick. Taking all factors into account, this recipe earns a spoonacular score of 56%, which is solid. If you like this recipe, you might also like recipes such as Easy Chicken Pot Pie, Easy Chicken Pot Pie, and Easy Chicken Pot Pie.",
+      "after": "Creamy chicken and vegetables under a soft Bisquick topping for a simple, comforting pot pie.",
+      "attempts": 1
+    },
+    {
+      "id": "69b277e5f9069a06b5536b5b",
+      "title": "Light and Chunky Chicken Soup",
+      "before": "If you want to add more gluten free and dairy free recipes to your collection, Light and Chunky Chicken Soup might be a recipe you should try. This main course has 420 calories, 27g of protein, and 20g of fat per serving. This recipe serves 6. For $1.7 per serving, this recipe covers 26% of your daily requirements of vitamins and minerals. Autumn will be even more special with this recipe. It is brought to you by Foodista. This recipe is liked by 1 foodies and cooks. If you have basmati rice, salt, rosemary, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes roughly 45 minutes. With a spoonacular score of 72%, this dish is solid. If you like this recipe, you might also like recipes such as Chunky Chicken Soup, Chunky Chicken Soup, and Chunky Chicken Soup.",
+      "after": "Light chicken soup with basmati rice, carrot and celery, lifted by basil and rosemary. Simple, chunky and comforting.",
+      "attempts": 1
+    },
+    {
+      "id": "69b4af41734a319b1f59a1c4",
+      "title": "Garlic Lemon Chicken",
+      "before": "Garlic Lemon Chicken is a gluten free and primal recipe with 2 servings. For $2.69 per serving, this recipe covers 27% of your daily requirements of vitamins and minerals. This main course has 395 calories, 38g of protein, and 25g of fat per serving. It is brought to you by spoonacular user maplewoodroad. From preparation to the plate, this recipe takes around 30 minutes. If you have anchovy, garlic - 2, olive oil, and a few other ingredients on hand, you can make it. If you like this recipe, you might also like recipes such as Lemon Chicken Scallopini with Lemon Garlic Cream Sauce, Lemon Garlic Chicken, and Lemon - Garlic Chicken.",
+      "after": "Bright lemony chicken with garlicky, buttery savoury notes, lifted by capers, anchovy and peppery heat.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df7a",
+      "title": "Finger Foods: Frittata Muffins",
+      "before": "Finger Foods: Frittata Muffins might be a good recipe to expand your breakfast repertoire. This recipe makes 1 servings with 655 calories, 50g of protein, and 45g of fat each. For $2.96 per serving, this recipe covers 47% of your daily requirements of vitamins and minerals. From preparation to the plate, this recipe takes approximately 45 minutes. Plenty of people made this recipe, and 601 would say it hit the spot. If you have salt and pepper, orange pepper, t cream, and a few other ingredients on hand, you can make it. It is a good option if you're following a gluten free, lacto ovo vegetarian, primal, and ketogenic diet. It is brought to you by fullbellysisters.blogspot.com. Overall, this recipe earns an amazing spoonacular score of 97%. Users who liked this recipe also liked Finger Foods: Frittata Muffins, {38 Power Foods} Skinny Kiwifruit Muffins, and {38 Power Foods} Skinny Broccoli Cheese Muffins.",
+      "after": "Savoury egg muffins with broccoli, cheddar and pepper, brightened with chives and tomato. A handy bite-sized brunch option.",
+      "attempts": 1
+    },
+    {
+      "id": "69b5c9a95ee86d48cd96c677",
+      "title": "Vegetable Fried Wontons",
+      "before": "Forget going out to eat or ordering takeout every time you crave Chinese food. Try making Vegetable Fried Wontons at home. This recipe serves 16 and costs 17 cents per serving. Watching your figure? This dairy free recipe has 54 calories, 1g of protein, and 3g of fat per serving. 1 person has tried and liked this recipe. A mixture of scallion, soy sauce, honey, and a handful of other ingredients are all it takes to make this recipe so flavorful. It works well as a very reasonably priced hor d'oeuvre. It is brought to you by Foodista. From preparation to the plate, this recipe takes roughly 45 minutes. Overall, this recipe earns a not so excellent spoonacular score of 20%. If you like this recipe, take a look at these similar recipes: Vegetable Wontons, Baked Vegetable Wontons, and Shrimp and Vegetable Wontons.",
+      "after": "Crisp wontons with a savoury vegetable filling, lifted by ginger, garlic and soy. Jicama and carrot add fresh crunch, with a hint of cinnamon.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df80",
+      "title": "Egg Salad Sandwiches With Tarragon",
+      "before": "Egg Salad Sandwiches With Tarragon is a dairy free and lacto ovo vegetarian recipe with 6 servings. For $2.38 per serving, this recipe covers 34% of your daily requirements of vitamins and minerals. This main course has 609 calories, 24g of protein, and 25g of fat per serving. A mixture of tarragon, hardboiled eggs, bell pepper, and a handful of other ingredients are all it takes to make this recipe so flavorful. 1 person were impressed by this recipe. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. With a spoonacular score of 51%, this dish is solid. Similar recipes are Tarragon-caper Egg Salad Sandwiches With Smoked Salmon, Tarragon Chicken Salad Sandwiches, and Tarragon Chicken Salad Sandwiches.",
+      "after": "Creamy egg salad with bright tarragon and a little shallot tang, piled into sourdough. A simple sandwich with a fresh, herby edge.",
+      "attempts": 1
+    },
+    {
+      "id": "69b9587c7d3db8c999c7df83",
+      "title": "Open-Face Egg Sandwich with Bacon, Asparagus, and Pesto",
+      "before": "Open-Face Egg Sandwich with Bacon, Asparagus, and Pesto is a main course that serves 4. One portion of this dish contains approximately 27g of protein, 42g of fat, and a total of 654 calories. For $4.2 per serving, this recipe covers 43% of your daily requirements of vitamins and minerals. 1 person were impressed by this recipe. If you have parmesan cheese, pine nuts, basil, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. From preparation to the plate, this recipe takes about 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 80%, which is excellent. Similar recipes include Open-Face Egg Sandwich, Open-Face Ham-and-Egg Sandwich, and Open Face Chicken Sandwich with Artichoke Pesto.",
+      "after": "Eggs, bacon and asparagus on an open sandwich with bright pesto, for a savoury, fresh and satisfying bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecb",
+      "title": "Chilled Green Pea & Onion Soup",
+      "before": "Chilled Green Pea & Onion Soup might be a good recipe to expand your hor d'oeuvre recipe box. This recipe serves 4 and costs 76 cents per serving. Watching your figure? This gluten free, dairy free, paleolithic, and lacto ovo vegetarian recipe has 168 calories, 4g of protein, and 11g of fat per serving. 1 person has made this recipe and would make it again. Head to the store and pick up onion, thyme, leek, and a few other things to make it today. It is perfect for Autumn. From preparation to the plate, this recipe takes roughly 25 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 51%. This score is pretty good. Similar recipes are Feeding Friends: Sweet Pean and Green Onion Soup, Chilled Pea Soup, and Chilled Spring Pea Soup.",
+      "after": "Cool, fresh pea and onion soup with celery, leek and thyme, made creamy with coconut milk and gently savoury with garlic and vegetable stock.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b5",
+      "title": "Kyuri Tsukemono",
+      "before": "The recipe Kyuri Tsukemono is ready in approximately 45 minutes and is definitely an awesome gluten free, dairy free, lacto ovo vegetarian, and fodmap friendly option for lovers of Asian food. This recipe makes 4 servings with 45 calories, 2g of protein, and 1g of fat each. For 65 cents per serving, this recipe covers 5% of your daily requirements of vitamins and minerals. 5 people have made this recipe and would make it again. Head to the store and pick up to 4 japanese cucumbers, chili peppers, rice vinegar, and a few other things to make it today. It works well as a side dish. It is brought to you by Foodista. Overall, this recipe earns a good spoonacular score of 46%. If you like this recipe, take a look at these similar recipes: .",
+      "after": "Crisp Japanese cucumbers in a sharp soy, rice vinegar and sesame oil dressing. Light, tangy and savoury with a fresh crunchy bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69b5c9a95ee86d48cd96c674",
+      "title": "Stir Fried Quinoa, Brown Rice and Chicken Breast",
+      "before": "You can never have too many main course recipes, so give Stir Fried Quinoa, Brown Rice and Chicken Breast a try. This recipe serves 1 and costs $3.58 per serving. One serving contains 750 calories, 58g of protein, and 20g of fat. 39 people were impressed by this recipe. If you have cherry tomatoes, spring onion, butter, and a few other ingredients on hand, you can make it. It is brought to you by Afrolems. From preparation to the plate, this recipe takes roughly 45 minutes. It is a good option if you're following a gluten free diet. All things considered, we decided this recipe deserves a spoonacular score of 95%. This score is tremendous. Try Stir-fried chicken with broccoli & brown rice, Stir-Fried Broccoli with Brown Rice {Meat Optional}, and Stir-fried Chickpeas And Asparagus With Brown Rice And Lemon Ta for similar recipes.",
+      "after": "Warm, savoury stir fry with chicken, quinoa and brown rice, lifted by suya spice, garlic and scotch bonnet, with sweet tomatoes and peppers.",
+      "attempts": 2
+    },
+    {
+      "id": "69c7275f754babcc25875c8c",
+      "title": "Quinoa Vegetable Salad",
+      "before": "Need a gluten free and dairy free main course? Quinoa Vegetable Salad could be an outstanding recipe to try. For $3.42 per serving, this recipe covers 37% of your daily requirements of vitamins and minerals. One portion of this dish contains roughly 15g of protein, 19g of fat, and a total of 494 calories. This recipe serves 2. 1 person has tried and liked this recipe. It is brought to you by Foodista. From preparation to the plate, this recipe takes roughly 30 minutes. Head to the store and pick up peppers, carrot, olive tapenade, and a few other things to make it today. All things considered, we decided this recipe deserves a spoonacular score of 92%. This score is awesome. Similar recipes are Quinoa Vegetable Salad, Quinoa Vegetable Salad, and Quinoa Vegetable Salad.",
+      "after": "Fresh quinoa salad with crisp lettuce, tomatoes, cucumber, peppers and carrot, lifted by salty olive tapenade and a tangy olive oil-vinegar dressing.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89cb",
+      "title": "Vegetable Cheddar Quiche",
+      "before": "If you want to add more Mediterranean recipes to your collection, Vegetable Cheddar Quiche might be a recipe you should try. For 72 cents per serving, you get a hor d'oeuvre that serves 8. One portion of this dish contains about 7g of protein, 22g of fat, and a total of 280 calories. 2 people have tried and liked this recipe. From preparation to the plate, this recipe takes roughly 1 hour and 15 minutes. If you have pepper, mushrooms, milk, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 31%. This score is rather bad. Similar recipes include Roasted Vegetable Cheddar Quiche, Mixed Vegetable Quiche with Cheddar and Parmesan, and Roasted Vegetable Quiche with Spinach and Sharp Cheddar.",
+      "after": "A savoury quiche with sharp cheddar, parmesan and creamy veg, lifted by garlic, pepper and a gentle cayenne kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd3",
+      "title": "Red Curry Stew & Vegetable Noodles",
+      "before": "Red Curry Stew & Vegetable Noodles is a hor d'oeuvre that serves 6. One portion of this dish contains around 10g of protein, 11g of fat, and a total of 254 calories. For $2.25 per serving, this recipe covers 19% of your daily requirements of vitamins and minerals. It is perfect for Autumn. This recipe is typical of Indian cuisine. It is brought to you by Foodista. 1 person found this recipe to be yummy and satisfying. If you have zucchini, vegetable stock, tofu, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes approximately 45 minutes. It is a good option if you're following a gluten free, dairy free, and pescatarian diet. All things considered, we decided this recipe deserves a spoonacular score of 69%. This score is solid. Vegetable and Tofu Coconut Red Curry Daikon Noodles, Red Coconut Curry Noodles, and Vegetarian Red Curry Noodles are very similar to this recipe.",
+      "after": "Fragrant red curry stew with coconut milk, lime and basil, packed with tofu, cabbage, carrots and potato over vegetable noodles.",
+      "attempts": 1
+    },
+    {
+      "id": "69c473017393a7f0235b89b6",
+      "title": "Thai Green Mango Salad",
+      "before": "Thai Green Mango Salad could be just the gluten free, dairy free, paleolithic, and primal recipe you've been looking for. This recipe makes 6 servings with 133 calories, 4g of protein, and 4g of fat each. For $1.19 per serving, this recipe covers 14% of your daily requirements of vitamins and minerals. From preparation to the plate, this recipe takes about 45 minutes. It works well as an affordable hor d'oeuvre. It is brought to you by Foodista. A mixture of fish sauce, tomato, limes, and a handful of other ingredients are all it takes to make this recipe so delicious. 2 people have tried and liked this recipe. This recipe is typical of Asian cuisine. All things considered, we decided this recipe deserves a spoonacular score of 79%. This score is good. If you like this recipe, take a look at these similar recipes: Thai Green Mango Salad, Thai Green Mango Salad, and Thai Green Mango Salad.",
+      "after": "Tart mango, lime and chilli give this salad a bright kick, with shrimp, peanuts and crisp veg for a fresh, crunchy bite.",
+      "attempts": 2
+    },
+    {
+      "id": "69d5710287d5d72710ae8eb0",
+      "title": "Crock Pot Chicken Pho",
+      "before": "The recipe Crock Pot Chicken Pho can be made in about 8 hours and 30 minutes. This recipe serves 4 and costs $4.36 per serving. One portion of this dish contains about 43g of protein, 10g of fat, and a total of 538 calories. It works well as a Vietnamese main course. 1 person found this recipe to be delicious and satisfying. If you have chicken stock, cloves, cinnamon stick, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. It is a good option if you're following a dairy free diet. All things considered, we decided this recipe deserves a spoonacular score of 77%. This score is good. Similar recipes include Crock Pot Pho, Instant Pot Chicken Pho Noodle Soup (Pho Ga), and Instant Pot Chicken Pho.",
+      "after": "Fragrant chicken pho with warming cinnamon, star anise and ginger in a savoury broth, finished with rice noodles, bok choy, herbs and lime.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcf5",
+      "title": "Curried Chicken Roll-Ups",
+      "before": "Curried Chicken Roll-Ups requires around 45 minutes from start to finish. One portion of this dish contains about 13g of protein, 6g of fat, and a total of 180 calories. For $1.37 per serving, you get a hor d'oeuvre that serves 4. This recipe is liked by 3 foodies and cooks. If you have chicken breast, curry paste, paprika, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. It is a good option if you're following a gluten free and dairy free diet. Taking all factors into account, this recipe earns a spoonacular score of 48%, which is pretty good. If you like this recipe, take a look at these similar recipes: Chicken Roll-ups, Chicken Roll-em Ups for Two, and Chicken Roll-ups.",
+      "after": "Curried chicken with lime, mayo and warming spice, wrapped with crisp cucumber, pepper and lettuce in a tortilla.",
+      "attempts": 1
+    },
+    {
+      "id": "69d570ab87d5d72710ae8ea8",
+      "title": "Slow Cooker Chicken Taco Soup",
+      "before": "Forget going out to eat or ordering takeout every time you crave Mexican food. Try making Slow Cooker Chicken Taco Soup at home. One portion of this dish contains about 24g of protein, 4g of fat, and a total of 312 calories. This gluten free and dairy free recipe serves 6 and costs $1.41 per serving. 2182 people have tried and liked this recipe. It works well as a main course. If you have black beans, chili beans, canned tomatoes, and a few other ingredients on hand, you can make it. It is perfect for Autumn. From preparation to the plate, this recipe takes around 8 hours and 5 minutes. It is brought to you by Pink When. Overall, this recipe earns an awesome spoonacular score of 95%. Users who liked this recipe also liked Slow Cooker Chicken Taco Soup, Slow Cooker Chicken Taco Soup, and Slow Cooker Chicken Taco Soup.",
+      "after": "Hearty chicken taco soup with black beans, tomatoes and corn, plus chilli beans for a smoky, savoury kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c86",
+      "title": "Strawberry-Mango Quinoa Salad",
+      "before": "Need a gluten free and lacto ovo vegetarian hor d'oeuvre? Strawberry-Mango Quinoa Salad could be an awesome recipe to try. This recipe serves 4. One serving contains 354 calories, 8g of protein, and 17g of fat. For $1.87 per serving, this recipe covers 21% of your daily requirements of vitamins and minerals. 41 person were impressed by this recipe. This recipe from Foodista requires cucumber, cream, mango, and strawberries. From preparation to the plate, this recipe takes about 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 97%. This score is tremendous. Similar recipes are Strawberry-Mango Quinoa Salad, Strawberry-Mango Quinoa Salad, and Strawberry & Mango Chopped Spinach Quinoa Salad with Sesame-Lime Vinaigrette.",
+      "after": "Fresh quinoa salad with sweet mango and strawberries, cool cucumber and mint, lifted by zesty lime and a touch of honey.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcca",
+      "title": "Sweet Potato, Red Onion & Cotija Stacks",
+      "before": "Sweet Potato, Red Onion & Cotija Stacks requires roughly 45 minutes from start to finish. This recipe makes 8 servings with 302 calories, 5g of protein, and 19g of fat each. For $1.05 per serving, this recipe covers 14% of your daily requirements of vitamins and minerals. 1 person has tried and liked this recipe. Only a few people really liked this side dish. A mixture of olive oil, cotija cheese, cumin, and a handful of other ingredients are all it takes to make this recipe so delicious. It is brought to you by Foodista. It is a good option if you're following a gluten free, lacto ovo vegetarian, and primal diet. All things considered, we decided this recipe deserves a spoonacular score of 64%. This score is good. If you like this recipe, take a look at these similar recipes: sweet potato, quinoa & cotija, Mashed Sweet Potato, Apple and Cotija Quesadillas, and Sweet Potato, Red Onion & Fontina Tart.",
+      "after": "Sweet potato and red onion stacks with salty cotija, garlic and a little heat, finished with fresh coriander.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Sweet potato and red onion stacks with salty cotija, garlic and a little heat, finished with fresh cilantro."
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcc8",
+      "title": "Butternut Squash, Red Onion and Chickpea Salad",
+      "before": "You can never have too many side dish recipes, so give Butternut Squash, Red Onion and Chickpea Salad a try. This gluten free and lacto ovo vegetarian recipe serves 4 and costs $2.46 per serving. One serving contains 514 calories, 19g of protein, and 22g of fat. This recipe from Foodista has 1 fans. If you have paprika powder, olive oil, onions, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes approximately 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 90%. This score is excellent. Similar recipes include Butternut Squash, Red Onion and Chickpea Salad, Farro Stuffing with Butternut Squash, Red Onion, and Almonds, and Farro Stuffing with Butternut Squash, Red Onion, and Almonds.",
+      "after": "Sweet butternut squash, chickpeas and red onion with lemony herbs and a gentle paprika-cayenne kick. A bright, hearty salad with plenty of colour.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c89",
+      "title": "Easy Tabouleh",
+      "before": "If you want to add more dairy free, lacto ovo vegetarian, and vegan recipes to your recipe box, Easy Tabouleh might be a recipe you should try. This main course has 717 calories, 14g of protein, and 44g of fat per serving. This recipe serves 1 and costs $4.64 per serving. From preparation to the plate, this recipe takes around 45 minutes. 2 people were impressed by this recipe. It is a pretty expensive recipe for fans of middl eastern food. This recipe from Foodista requires bulgur, olive oil, flat leaf parsley, and salt. Taking all factors into account, this recipe earns a spoonacular score of 93%, which is spectacular. Easy Tabouleh, Tabouleh, and Tabouleh are very similar to this recipe.",
+      "after": "Fresh, zesty tabouleh with bulgur, cucumber, parsley, lemon and tomato. Light, bright and full of herb-led crunch.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfccc",
+      "title": "Caramelized Red Onions and Pear Dip",
+      "before": "Caramelized Red Onions and Pear Dip might be a good recipe to expand your hor d'oeuvre collection. This recipe makes 10 servings with 163 calories, 1g of protein, and 15g of fat each. For 36 cents per serving, this recipe covers 2% of your daily requirements of vitamins and minerals. The Super Bowl will be even more special with this recipe. 1 person found this recipe to be tasty and satisfying. Head to the store and pick up apple cider vinegar, bay leaf, cream, and a few other things to make it today. It is brought to you by Foodista. From preparation to the plate, this recipe takes approximately 45 minutes. It is a good option if you're following a gluten free and lacto ovo vegetarian diet. With a spoonacular score of 11%, this dish is rather bad. Similar recipes are Pear and Caramelized Onions Pork Chops, Focaccia With Caramelized Onions, Pear and Blue Cheese, and Focaccia with Caramelized Onions, Pear and Blue Cheese.",
+      "after": "Sweet caramelised onion and pear dip with tangy cider vinegar, garlic and a creamy finish. Rich, savoury-sweet and ideal as a spread or starter.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dce",
+      "title": "Trinidadian Chicken Potato Curry",
+      "before": "You can never have too many Indian recipes, so give Trinidadian Chicken Potato Curry a try. This gluten free, dairy free, and whole 30 recipe serves 4 and costs $1.19 per serving. This main course has 574 calories, 35g of protein, and 37g of fat per serving. This recipe from Foodista requires salt, amchar masala, thyme, and vegetable oil. 11 person found this recipe to be scrumptious and satisfying. From preparation to the plate, this recipe takes around 2 hours and 30 minutes. Taking all factors into account, this recipe earns a spoonacular score of 71%, which is pretty good. Users who liked this recipe also liked Kofat Curry/meat Ball Curry, Meatball Curry (Kofta Curry), and Channa-Chickpea, Potato & Cauliflower Curry.",
+      "after": "Warm curry with tender chicken, potato, onion and garlic, lifted by ginger, thyme, hot sauce and fresh coriander.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Warm curry with tender chicken, potato, onion and garlic, lifted by ginger, thyme, hot sauce and fresh cilantro."
+    },
+    {
+      "id": "69c4766a7393a7f0235b89cd",
+      "title": "Havarti and Asparagus Quiche",
+      "before": "Havarti and Asparagus Quiche takes about 45 minutes from beginning to end. This recipe serves 8 and costs $1.05 per serving. One portion of this dish contains approximately 12g of protein, 37g of fat, and a total of 537 calories. A mixture of sugar, water, butter, and a handful of other ingredients are all it takes to make this recipe so tasty. 3 people were impressed by this recipe. This recipe is typical of Mediterranean cuisine. It works well as a reasonably priced hor d'oeuvre. It is brought to you by Foodista. With a spoonacular score of 29%, this dish is rather bad. If you like this recipe, you might also like recipes such as Shaved Asparagus Salad with Bacon & Havarti, Steamed Asparagus and Mushrooms With Danish Havarti Cheese, and Quiche Aux Asperges Et Saumon (Asparagus & Salmon Quiche).",
+      "after": "Creamy Havarti and tender asparagus baked in a buttery quiche with a savoury, lightly sweet finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69d570ab87d5d72710ae8ea7",
+      "title": "Chicken Fajita Stuffed Bell Pepper",
+      "before": "The recipe Chicken Fajita Stuffed Bell Pepper is ready in approximately approximately 45 minutes and is definitely an awesome gluten free option for lovers of Mexican food. For $2.65 per serving, this recipe covers 79% of your daily requirements of vitamins and minerals. One portion of this dish contains about 105g of protein, 72g of fat, and a total of 1640 calories. This recipe serves 3. Head to the store and pick up already quinoa, grilled chicken breasts, lettuce, and a few other things to make it today. To use up the quinoa you could follow this main course with the Quinoa Pudding as a dessert. 1 person has tried and liked this recipe. It works well as an affordable main course. It is brought to you by Pink When. With a spoonacular score of 96%, this dish is excellent. If you like this recipe, take a look at these similar recipes: Chicken Fajita Stuffed Bell Pepper, Stuffed Bell Peppers [or meatloaf in a bell pepper], and Stuffed Bell Pepper.",
+      "after": "Smoky chicken fajita flavours in sweet bell peppers, with quinoa, avocado and melted cheese for a fresh, filling finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c8d",
+      "title": "Lettuce, Apple, and Cucumber Salad with Fennel and Walnuts",
+      "before": "If you want to add more gluten free, dairy free, paleolithic, and lacto ovo vegetarian recipes to your recipe box, Lettuce, Apple, and Cucumber Salad with Fennel and Walnuts might be a recipe you should try. For $3.17 per serving, you get a side dish that serves 1. One serving contains 465 calories, 8g of protein, and 37g of fat. This recipe from Foodista requires iceberg lettuce, juice of lime, cucumber, and olives. 1 person found this recipe to be flavorful and satisfying. From preparation to the plate, this recipe takes around 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 82%, which is outstanding. Similar recipes include Apple-Fennel Salad with Walnuts, Fennel Salad with Walnuts & Avocado, and Butter Lettuce Salad with Walnuts and Grapes.",
+      "after": "Crisp lettuce, apple and cucumber meet fresh mint, lime and fennel leaves for a bright, crunchy salad. Walnuts and olives add a savoury finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89cf",
+      "title": "Julia Child's Coq au Vin",
+      "before": "The recipe Julia Child's Coq au Vin can be made in around 45 minutes. For $3.93 per serving, you get a main course that serves 6. One portion of this dish contains approximately 35g of protein, 41g of fat, and a total of 778 calories. 32 people have made this recipe and would make it again. Head to the store and pick up pearl onions, chicken thighs and legs, red wine, and a few other things to make it today. It is a pretty expensive recipe for fans of Mediterranean food. It is brought to you by Foodista. It is a good option if you're following a gluten free and primal diet. Taking all factors into account, this recipe earns a spoonacular score of 64%, which is pretty good. If you like this recipe, you might also like recipes such as Julia Child’s Coq au Vin, Coq au Vin and the Julia Child 100, and From Julia Child: &quot;My Husband's Favorite Coq Au Vin&quot;.",
+      "after": "Rich chicken braised in red wine with bacon, mushrooms, pearl onions and bay leaves, finished with buttery garlic depth.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcce",
+      "title": "Cannellini Bean Side Dish With Fennel, Red Onion, and Saffron",
+      "before": "If you want to add more gluten free, dairy free, lacto ovo vegetarian, and vegan recipes to your repertoire, Cannellini Bean Side Dish With Fennel, Red Onion, and Saffron might be a recipe you should try. This recipe makes 6 servings with 107 calories, 5g of protein, and 2g of fat each. For $1.08 per serving, this recipe covers 4% of your daily requirements of vitamins and minerals. A mixture of cannellini beans, extra virgin olive oil, salt and pepper, and a handful of other ingredients are all it takes to make this recipe so scrumptious. 9 people found this recipe to be tasty and satisfying. It is brought to you by Foodista. It works well as a reasonably priced side dish. From preparation to the plate, this recipe takes about 45 minutes. With a spoonacular score of 22%, this dish is not so super. If you like this recipe, take a look at these similar recipes: Creamy Cannellini Bean Side Dish, Cannellini Bean, Red Onion, and Arugula Salad, and Cannellini Bean, Parsley, Tomato, Red Onion Salad.",
+      "after": "Creamy cannellini beans with sweet fennel and red onion, lifted by fragrant saffron and fresh parsley.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd0",
+      "title": "Apple Curry Soup",
+      "before": "Forget going out to eat or ordering takeout every time you crave Indian food. Try making Apple Curry Soup at home. For $3.91 per serving, this recipe covers 37% of your daily requirements of vitamins and minerals. This recipe makes 1 servings with 1359 calories, 11g of protein, and 102g of fat each. 5 people were impressed by this recipe. If you have apple cider, mushrooms, granny smith apples, and a few other ingredients on hand, you can make it. It is a good option if you're following a gluten free and lacto ovo vegetarian diet. It works well as a hor d'oeuvre. It is perfect for Autumn. It is brought to you by Foodista. From preparation to the plate, this recipe takes around 45 minutes. Overall, this recipe earns a great spoonacular score of 86%. Users who liked this recipe also liked Chicken and Apple Curry, Green Apple Curry, and Fenugreek Raisin Apple Curry.",
+      "after": "Sweet apple cider and Granny Smith apples meet coconut, curry and turmeric in a creamy, gently spiced soup, finished with tangy goat cheese.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c87",
+      "title": "Turkish Chicken Salad with Home-made Cacik Yogurt Sauce",
+      "before": "You can never have too many main course recipes, so give Turkish Chicken Salad with Home-made Cacik Yogurt Sauce a try. This recipe serves 4 and costs $4.48 per serving. Watching your figure? This gluten free recipe has 643 calories, 67g of protein, and 30g of fat per serving. 9 people found this recipe to be tasty and satisfying. Head to the store and pick up lebanese cucumber, roast chicken, garlic, and a few other things to make it today. From preparation to the plate, this recipe takes around 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 95%. This score is outstanding. Similar recipes include Spicy Lamb Kabobs With Turkish Cacik, Jerk Rubbed Chicken Thighs with Home-Made Mango-Habanero Hot Sauce, and Yogurt and Cucumber Dip Cacik.",
+      "after": "Fresh roast chicken salad with crunchy veg, tangy pickles and lemony herbs, served with cool cacik-style yogurt sauce.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c8b",
+      "title": "Quinoa Tabouli Salad",
+      "before": "Quinoa Tabouli Salad is a hor d'oeuvre that serves 4. One serving contains 244 calories, 8g of protein, and 8g of fat. For $3.18 per serving, this recipe covers 22% of your daily requirements of vitamins and minerals. Not a lot of people made this recipe, and 1 would say it hit the spot. If you have garlic, kosher salt, flat-leaf parsley, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. From preparation to the plate, this recipe takes around 1 hour and 15 minutes. Overall, this recipe earns a tremendous spoonacular score of 88%. If you like this recipe, take a look at these similar recipes: Quinoan and Vegetable Tabouli Salad, Quinoa Tabouli, and Quinoa Tabouli.",
+      "after": "Fresh and zingy quinoa tabouli with crisp cucumber, juicy tomatoes and plenty of parsley. Light lemon and garlic make it bright and satisfying.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Fresh, lemony quinoa tabouli with juicy tomatoes, cucumber, parsley and scallions, lifted by garlic and olive oil. A bright, light salad with a grainy twist.",
+      "regenerated": true
+    },
+    {
+      "id": "69d5710287d5d72710ae8eb2",
+      "title": "Chinese Hot Pots Gluten-Free and Low-Carb",
+      "before": "Chinese Hot Pots Gluten-Free and Low-Carb requires around 45 minutes from start to finish. Watching your figure? This dairy free recipe has 311 calories, 19g of protein, and 14g of fat per serving. This recipe serves 8. For $2.23 per serving, this recipe covers 16% of your daily requirements of vitamins and minerals. A mixture of mushrooms, mung bean sprouts, baby bok choy, and a handful of other ingredients are all it takes to make this recipe so tasty. 1 person were glad they tried this recipe. It is a budget friendly recipe for fans of Chinese food. It works well as a main course. It is brought to you by Foodista. With a spoonacular score of 42%, this dish is solid. If you like this recipe, take a look at these similar recipes: Chinese Hot Pots--Gluten-Free and Low-Carb, Mexican Hot Chocolate – Low Carb and Gluten-Free, and Mexican Hot Chocolate – Low Carb and Gluten-Free.",
+      "after": "Savoury chicken hot pot with ginger, garlic and sesame, brightened by rice vinegar and soy. Packed with mushrooms, bok choy, sprouts and noodles.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcc9",
+      "title": "Kale With Red Onion",
+      "before": "Kale With Red Onion is a side dish that serves 8. One portion of this dish contains about 1g of protein, 2g of fat, and a total of 25 calories. For 13 cents per serving, this recipe covers 6% of your daily requirements of vitamins and minerals. 1 person found this recipe to be scrumptious and satisfying. Head to the store and pick up kale, onion, garlic, and a few other things to make it today. It is a good option if you're following a gluten free, dairy free, paleolithic, and lacto ovo vegetarian diet. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 90%, which is excellent. If you like this recipe, take a look at these similar recipes: Kale, Mushroom and Red Onion Pizza, Red Onion, Kale And Cheese Strata, and Parsnip, Red Onion, Kale And Gouda Frittata.",
+      "after": "Tender kale with sweet red onion, garlic and olive oil for a simple, savoury side.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c85",
+      "title": "Tomato, Cucumber & Onion Salad with Feta Cheese: Real Convenience Food",
+      "before": "You can never have too many hor d'oeuvre recipes, so give Tomato, Cucumber & Onion Salad with Feta Cheese: Real Convenience Food a try. For $5.26 per serving, this recipe covers 18% of your daily requirements of vitamins and minerals. Watching your figure? This gluten free, lacto ovo vegetarian, and primal recipe has 252 calories, 8g of protein, and 16g of fat per serving. This recipe serves 1. This recipe from fullbellysisters.blogspot.com has 265 fans. If you have balsamic vinegar, onion, feta cheese, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes around 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 91%, which is tremendous. If you like this recipe, take a look at these similar recipes: Asparagus and Pea Soup: Real Convenience Food, Asparagus and Pea Soup: Real Convenience Food, and Asparagus and Pea Soup: Real Convenience Food.",
+      "after": "Fresh grape tomatoes, crisp cucumber and onion with salty feta, lifted by balsamic and olive oil.",
+      "attempts": 1
+    },
+    {
+      "id": "6a42e05cd33617bebef22d84",
+      "title": "Flank Steak With Garlicky Mediterranean Salad",
+      "before": "Flank Steak With Garlicky Mediterranean Salad requires roughly 15 minutes from start to finish. This main course has 394 calories, 37g of protein, and 18g of fat per serving. This gluten free and primal recipe serves 2 and costs $5.84 per serving. This recipe from Foodista requires roma tomato, onion, olives, and olive oil. This recipe is liked by 2 foodies and cooks. valentin day will be even more special with this recipe. All things considered, we decided this recipe deserves a spoonacular score of 88%. This score is amazing. If you like this recipe, you might also like recipes such as Flank Steak With Garlicky Mediterranean Salad, Flank Steak Salad, and Flank Steak Spinach Salad.",
+      "after": "Juicy flank steak with a bright, garlicky Mediterranean salad of feta, olives, tomato and oregano, lifted by lemon and balsamic.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c88",
+      "title": "Chilled Avocado and Cucumber Soup With Prawn and Scallop Salsa",
+      "before": "Chilled Avocado and Cucumber Soup With Prawn and Scallop Salsan is a gluten free, dairy free, and pescatarian recipe with 4 servings. For $8.32 per serving, this recipe covers 47% of your daily requirements of vitamins and minerals. This main course has 547 calories, 33g of protein, and 33g of fat per serving. 1 person has tried and liked this recipe. Head to the store and pick up prawns, coriander leaves, lime zest, and a few other things to make it today. It is perfect for Autumn. Only a few people really liked this Mexican dish. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. With a spoonacular score of 72%, this dish is solid. Try Chilled Avocado Cucumber Soup, Chilled Avocado-cucumber Soup, and Chilled Avocado & Cucumber Soup for similar recipes.",
+      "after": "Cool avocado and cucumber soup with bright lime and miso, topped with a zesty prawn and scallop salsa for a fresh, savoury finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c8a",
+      "title": "Winter Fattoush Salad",
+      "before": "If you want to add more middl eastern recipes to your repertoire, Winter Fattoush Salad might be a recipe you should try. This main course has 345 calories, 17g of protein, and 9g of fat per serving. This lacto ovo vegetarian recipe serves 6 and costs $1.23 per serving. 1 person found this recipe to be scrumptious and satisfying. This recipe from Foodista requires ground sumac, feta cheese, lacinato kale leaves, and garlic. It will be a hit at your Winter event. From preparation to the plate, this recipe takes approximately 45 minutes. With a spoonacular score of 93%, this dish is super. If you like this recipe, take a look at these similar recipes: Winter Fattoush Salad, Fattoush Salad, and Fattoush Salad.",
+      "after": "Bright lemony lentil salad with kale, cucumber and herbs, finished with salty feta, sumac and crisp pita.",
+      "attempts": 1
+    },
+    {
+      "id": "69d570ab87d5d72710ae8eaa",
+      "title": "4 Ingredient Chicken Pot Pie",
+      "before": "4 Ingredient Chicken Pot Pie might be a good recipe to expand your main course recipe box. This recipe serves 6 and costs $4.41 per serving. One serving contains 802 calories, 79g of protein, and 30g of fat. Head to the store and pick up pie crust, campbell's chicken gravy, cans swanson premium chicken breast in water, and a few other things to make it today. It is a good option if you're following a dairy free diet. 24 people have tried and liked this recipe. From preparation to the plate, this recipe takes approximately 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 90%. This score is excellent. Try Instant Pot 5-Ingredient Chicken Tacos, 5-Ingredient Crock Pot Mexican Shredded Chicken, and 4-Ingredient Mini Chicken Pot Pies | Simple Meals for similar recipes.",
+      "after": "Creamy chicken gravy, tender chicken and vegetables tucked under a flaky pie crust for a comforting, easy pie.",
+      "attempts": 1
+    },
+    {
+      "id": "69d5710287d5d72710ae8eb3",
+      "title": "Dan Dan Noodles",
+      "before": "Dan Dan Noodles is a dairy free main course. One portion of this dish contains roughly 28g of protein, 17g of fat, and a total of 418 calories. For $1.78 per serving, this recipe covers 21% of your daily requirements of vitamins and minerals. This recipe serves 4. A mixture of bok choy, chicken broth, tahini, and a handful of other ingredients are all it takes to make this recipe so tasty. From preparation to the plate, this recipe takes around 45 minutes. 1 person has made this recipe and would make it again. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 60%, which is solid. Try Dan Dan Mian (Noodles in Spicy Chinese Peanut Pork Sauce), Dan Dan Mian (Noodles in Spicy Chinese Peanut Pork Sauce), and Dan Dan Noodles & Pickled Cucumber Salad for similar recipes.",
+      "after": "Fiery dan dan noodles with savoury ground chicken, garlic and oyster sauce, brightened by bok choy and carrot.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcec",
+      "title": "fennel, Peppers, Lettuce Salad",
+      "before": "If you want to add more gluten free, dairy free, paleolithic, and lacto ovo vegetarian recipes to your repertoire, fennel, Peppers, Lettuce Salad might be a recipe you should try. This recipe makes 1 servings with 566 calories, 24g of protein, and 24g of fat each. For $9.0 per serving, this recipe covers 60% of your daily requirements of vitamins and minerals. Head to the store and pick up olive oil, rosemary, pickled cucumber, and a few other things to make it today. This recipe from Foodista has 1 fans. It works well as an expensive main course. From preparation to the plate, this recipe takes around 45 minutes. With a spoonacular score of 92%, this dish is spectacular. If you like this recipe, take a look at these similar recipes: Lettuce and Fennel Salad with Citrus Vinaigrette, Lettuce, Apple, and Cucumber Salad with Fennel and Walnuts, and Beet Salad With Peppers and Lettuce.",
+      "after": "Crunchy fennel and crisp lettuces with sweet peppers, briny olives and tangy pickled cucumber, finished with rosemary and olive oil.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcf6",
+      "title": "Tuscan Style Bread Salad",
+      "before": "You can never have too many side dish recipes, so give Tuscan Style Bread Salad a try. Watching your figure? This dairy free, lacto ovo vegetarian, and vegan recipe has 352 calories, 6g of protein, and 10g of fat per serving. For $2.97 per serving, this recipe covers 20% of your daily requirements of vitamins and minerals. This recipe serves 4. A mixture of basil leaves, salt and pepper, balsamic vinegar, and a handful of other ingredients are all it takes to make this recipe so flavorful. It is brought to you by Foodista. This recipe is liked by 1 foodies and cooks. From preparation to the plate, this recipe takes around 45 minutes. With a spoonacular score of 72%, this dish is pretty good. Grilled Bread with Tuscan-Style Lamb, Tuscan-Style Tuna Salad, and Tuscan-Style Tuna Salad are very similar to this recipe.",
+      "after": "Rustic ciabatta with tomatoes, olives, peppers and basil in a tangy balsamic dressing. Fresh, hearty and full of Mediterranean-style flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd3",
+      "title": "Easy Fish Molee (South Indian-Style Fish Stew With Coconut)",
+      "before": "You can never have too many main course recipes, so give Easy Fish Molee (South Indian-Style Fish Stew With Coconut) a try. This recipe serves 2. Watching your figure? This gluten free, dairy free, paleolithic, and primal recipe has 1339 calories, 168g of protein, and 62g of fat per serving. For $16.42 per serving, this recipe covers 61% of your daily requirements of vitamins and minerals. It can be enjoyed any time, but it is especially good for Autumn. 5 people have tried and liked this recipe. This recipe from Foodista requires tomato, vinegar, ginger piece, and lemon juice. It is an expensive recipe for fans of Indian food. From preparation to the plate, this recipe takes about 45 minutes. Overall, this recipe earns a spectacular spoonacular score of 88%. Users who liked this recipe also liked Easy Fish Molee (South Indian-Style Fish Stew With Coconut), Lighter South Indian fish curry, and South Indian fish curry with chickpeas.",
+      "after": "Mild basa in a fragrant coconut stew with turmeric, curry leaves and mustard seeds, lifted by lemon and a chilli kick.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcf7",
+      "title": "Easy To Make Spring Rolls",
+      "before": "If you want to add more gluten free, dairy free, and pescatarian recipes to your collection, Easy To Make Spring Rolls might be a recipe you should try. For $3.78 per serving, you get a hor d'oeuvre that serves 4. One serving contains 162 calories, 13g of protein, and 2g of fat. 22 people found this recipe to be flavorful and satisfying. From preparation to the plate, this recipe takes about 45 minutes. It can be enjoyed any time, but it is especially good for Spring. This recipe from Foodista requires mint leaves, garlic, chili pepper, and rice vinegar. This recipe is typical of Vietnamese cuisine. Overall, this recipe earns a tremendous spoonacular score of 88%. Easy To Make Spring Rolls, Easy To Make Spring Rolls, and Easy To Make Spring Rolls are very similar to this recipe.",
+      "after": "Fresh shrimp spring rolls with basil, mint and coriander, lifted by lime, chilli and fish sauce for a bright, zesty bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd2",
+      "title": "Curry and Sage Roast Chicken",
+      "before": "Curry and Sage Roast Chicken could be just the gluten free, dairy free, paleolithic, and primal recipe you've been looking for. This recipe serves 4. This main course has 565 calories, 36g of protein, and 39g of fat per serving. For $1.98 per serving, this recipe covers 21% of your daily requirements of vitamins and minerals. Not a lot of people made this recipe, and 2 would say it hit the spot. This recipe from Foodista requires turmeric, juice of lemon, pepper, and olive oil. This recipe is typical of Indian cuisine. From preparation to the plate, this recipe takes about 1 hour. Taking all factors into account, this recipe earns a spoonacular score of 55%, which is pretty good. Users who liked this recipe also liked Curry and Sage Roast Chicken, Parmesan-Sage Roast Turkey with Sage Gravy, and Sage Pesto-Rubbed Roast Chicken.",
+      "after": "Roast chicken with warm curry, sage and garlic, lifted by honey, lemon and orange for a fragrant, tangy finish.",
+      "attempts": 1
+    },
+    {
+      "id": "69c7275f754babcc25875c84",
+      "title": "Chilled Cucumber Avocado Soup with Yogurt and Kefir",
+      "before": "Chilled Cucumber Avocado Soup with Yogurt and Kefir is a gluten free, lacto ovo vegetarian, and primal hor d'oeuvre. This recipe serves 3 and costs $2.1 per serving. One portion of this dish contains approximately 9g of protein, 7g of fat, and a total of 189 calories. 171 person were impressed by this recipe. A mixture of avocado, kefir, onion, and a handful of other ingredients are all it takes to make this recipe so yummy. Autumn will be even more special with this recipe. From preparation to the plate, this recipe takes around 45 minutes. It is brought to you by fullbellysisters.blogspot.com. Overall, this recipe earns an outstanding spoonacular score of 97%. Chilled Cucumber, Avocado, and Yogurt Soup, Chilled Cucumber-Yogurt Soup, and Chilled Cucumber Mint Yogurt Soup are very similar to this recipe.",
+      "after": "Cool, creamy avocado and cucumber soup with tangy kefir, yogurt and lemon, lifted by sweet grapes and a gentle onion-spring onion bite.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Cool, creamy avocado and cucumber soup with tangy kefir, yogurt and lemon, lifted by sweet grapes and a gentle onion-scallion bite."
+    },
+    {
+      "id": "69d570ab87d5d72710ae8ea5",
+      "title": "Herb chicken with sweet potato mash and sautéed broccoli",
+      "before": "Herb chicken with sweet potato mash and sautéed broccoli might be a good recipe to expand your main course recipe box. One portion of this dish contains roughly 47g of protein, 25g of fat, and a total of 710 calories. For $3.13 per serving, this recipe covers 50% of your daily requirements of vitamins and minerals. This recipe serves 4. 9 people have made this recipe and would make it again. Head to the store and pick up broccoli, butter, pepper and salt, and a few other things to make it today. It is a good option if you're following a gluten free diet. It is brought to you by Foodista. From preparation to the plate, this recipe takes around 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 95%, which is awesome. Try Herb chicken with sweet potato mash and sautéed broccoli, Herb chicken with sweet potato mash and sautéed broccoli, and Herb chicken with sweet potato mash and sautéed broccoli for similar recipes.",
+      "after": "Herb chicken with creamy sweet potato mash and buttery sautéed broccoli for a comforting, savoury meal.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfccf",
+      "title": "Red Wine Stewed Oxtail",
+      "before": "Red Wine Stewed Oxtail is a main course that serves 6. One serving contains 656 calories, 48g of protein, and 34g of fat. For $4.17 per serving, this recipe covers 12% of your daily requirements of vitamins and minerals. This recipe from Foodista requires red wine, canned tomatoes, garlic, and olive oil. This recipe is liked by 2 foodies and cooks. It is a good option if you're following a gluten free and dairy free diet. From preparation to the plate, this recipe takes about 45 minutes. Overall, this recipe earns a rather bad spoonacular score of 34%. If you like this recipe, take a look at these similar recipes: Red Wine Stewed Oxtail, Oxtail and Red Wine Stew, and Oxtail and Red Wine Stew.",
+      "after": "Rich oxtail stew with garlic, onion and bay leaf in a tomato-red wine sauce, deeply savoury and hearty.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd1",
+      "title": "Red Wine Braised Beef Brisket",
+      "before": "Need a dairy free main course? Red Wine Braised Beef Brisket could be a spectacular recipe to try. This recipe makes 10 servings with 487 calories, 39g of protein, and 28g of fat each. For $3.35 per serving, this recipe covers 25% of your daily requirements of vitamins and minerals. valentin day will be even more special with this recipe. Not a lot of people made this recipe, and 1 would say it hit the spot. This recipe is typical of Jewish cuisine. From preparation to the plate, this recipe takes around 45 minutes. If you have carrots, beef brisket, pepper, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 86%, which is excellent. If you like this recipe, take a look at these similar recipes: Red-Wine-Braised Beef Brisket, Red-Wine Braised Beef Brisket W. Horseradish Sauce (Sara Moulton, and Red-Wine Braised Beef Brisket with Horseradish Sauce and Aunt Rifka's Flying Disks.",
+      "after": "Rich beef brisket braised with red wine, tomatoes, garlic and rosemary, with sweet carrots, celery and onion for deep savoury flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcf0",
+      "title": "Spicy Black Bean Lettuce Wraps",
+      "before": "Spicy Black Bean Lettuce Wraps is a gluten free, dairy free, lacto ovo vegetarian, and vegan hor d'oeuvre. This recipe serves 4. One portion of this dish contains about 8g of protein, 16g of fat, and a total of 264 calories. For 99 cents per serving, this recipe covers 13% of your daily requirements of vitamins and minerals. A mixture of cilantro, green onion, walnuts, and a handful of other ingredients are all it takes to make this recipe so tasty. This recipe from Foodista has 1 fans. From preparation to the plate, this recipe takes around 45 minutes. With a spoonacular score of 59%, this dish is solid. Try Spicy Black Bean Lettuce Wraps, Black Bean & Cilantro Lettuce Wraps with Yellow Squash, and Easy Turkey & Broccoli Lettuce Wraps with Chinese Black Bean Sauce for similar recipes.",
+      "after": "Bold black beans with ginger, garlic and pepper flakes in crisp butter lettuce, finished with walnuts, coriander and sesame notes.",
+      "attempts": 1
+    },
+    {
+      "id": "6a42e050d33617bebef22d7f",
+      "title": "Crab and Shrimp Burgers With Garlic Grits Fries",
+      "before": "The recipe Crab and Shrimp Burgers With Garlic Grits Fries can be made in about 45 minutes. This recipe makes 8 servings with 368 calories, 24g of protein, and 11g of fat each. For $2.72 per serving, this recipe covers 20% of your daily requirements of vitamins and minerals. 50 people have made this recipe and would make it again. Head to the store and pick up tabasco sauce, grits, garlic, and a few other things to make it today. It is a reasonably priced recipe for fans of American food. It works well as a main course. It is brought to you by Foodista. It is a good option if you're following a pescatarian diet. Taking all factors into account, this recipe earns a spoonacular score of 63%, which is solid. Shrimp-and-Crab Gumbo Over Grits, Charleston Shrimp and Grits with Tasso Blue Crab Gravy, and Garlic Cheese Grits with Shrimp are very similar to this recipe.",
+      "after": "Briny crab and shrimp burgers with zesty lemon, jalapeño and Dijon, served with garlic grits fries. Crisp, punchy and full of seafood flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "6a5ff781a91e3f027a2961e9",
+      "title": "Korean Beef Rice Bowl",
+      "before": "The recipe Korean Beef Rice Bowl can be made in around 45 minutes. For $3.46 per serving, this recipe covers 30% of your daily requirements of vitamins and minerals. One serving contains 669 calories, 32g of protein, and 25g of fat. This recipe serves 4. It works well as a rather pricey main course. 2 people have made this recipe and would make it again. This recipe is typical of Korean cuisine. If you have fat-skimmed beef broth, sugar, sesame seed, and a few other ingredients on hand, you can make it. It is a good option if you're following a dairy free diet. It is brought to you by Foodista. Overall, this recipe earns a pretty good spoonacular score of 72%. Similar recipes include Korean Beef Rice Bowl, Korean Beef Rice Bowl, and Bibimbap – Korean Beef Rice Bowl with Tanimura & Antle Artisan® Lettuce.",
+      "after": "Savoury beef and rice with a tangy sesame finish, brightened by crisp green beans, carrot and green onions. Simple and hearty with a Korean-inspired flavour.",
+      "attempts": 1
+    },
+    {
+      "id": "6a42e05cd33617bebef22d83",
+      "title": "Almond Rainbow Cake",
+      "before": "You can never have too many dessert recipes, so give Almond Rainbow Cake a try. This recipe makes 8 servings with 489 calories, 7g of protein, and 12g of fat each. For 72 cents per serving, this recipe covers 9% of your daily requirements of vitamins and minerals. Not a lot of people made this recipe, and 3 would say it hit the spot. If you have cream, almond extract, granulated sugar, and a few other ingredients on hand, you can make it. It is brought to you by Foodista. From preparation to the plate, this recipe takes about 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 24%. This score is not so awesome. Users who liked this recipe also liked No Almond Rainbow Cookies, Rainbow Bowls with Almond-Ginger Dressing, and Rainbow Bowls with Almond-Ginger Dressing.",
+      "after": "Light vanilla almond cake with creamy frosting and a colourful rainbow look, sweet, soft and fun for dessert.",
+      "attempts": 1
+    },
+    {
+      "id": "69c4766a7393a7f0235b89ce",
+      "title": "Poached Prawns with Fettuccine and French String Beans",
+      "before": "If you have around 45 minutes to spend in the kitchen, Poached Prawns with Fettuccine and French String Beans might be an amazing pescatarian recipe to try. This recipe serves 4 and costs $2.78 per serving. One portion of this dish contains roughly 25g of protein, 18g of fat, and a total of 442 calories. 7 people were impressed by this recipe. Only a few people really liked this main course. It is a rather inexpensive recipe for fans of Mediterranean food. A mixture of butter, salt and pepper, prawns, and a handful of other ingredients are all it takes to make this recipe so tasty. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 56%. This score is good. If you like this recipe, you might also like recipes such as French String Beans/ Green Beans, Tomato & Basil Salad, French String Beans and Celery Root Salad, and French String Bean Salad.",
+      "after": "Lemony poached prawns with buttery fettuccine and crisp string beans for a light, fresh dinner.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd1",
+      "title": "Indian-Style Dill and Turmeric Potato Salad",
+      "before": "Indian-Style Dill and Turmeric Potato Salad might be just the Indian recipe you are searching for. This gluten free, dairy free, lacto ovo vegetarian, and whole 30 recipe serves 4 and costs $1.17 per serving. One serving contains 416 calories, 8g of protein, and 14g of fat. Not a lot of people made this recipe, and 4 would say it hit the spot. It works well as an affordable side dish. It can be enjoyed any time, but it is especially good for The Fourth Of July. It is brought to you by Foodista. From preparation to the plate, this recipe takes approximately 30 minutes. Head to the store and pick up olive oil, turmeric powder, potatoes, and a few other things to make it today. Taking all factors into account, this recipe earns a spoonacular score of 96%, which is awesome. Similar recipes include Indian-Style Dill and Turmeric Potato Salad, Turmeric Potato Salad, and potato podimas , how to make potato podimas | south indian style.",
+      "after": "Golden potatoes with dill, garlic and turmeric, lifted by a chilli kick for a fresh, fragrant salad.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd4",
+      "title": "Baked Indian Samosas",
+      "before": "Baked Indian Samosas is an Indian recipe that serves 8. One serving contains 784 calories, 14g of protein, and 48g of fat. For $2.39 per serving, this recipe covers 17% of your daily requirements of vitamins and minerals. 2 people were glad they tried this recipe. It works well as a budget friendly hor d'oeuvre. It is brought to you by Foodista. If you have puff pastry, cilantro leaves, bay leaves, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes roughly 45 minutes. It is a good option if you're following a dairy free diet. Taking all factors into account, this recipe earns a spoonacular score of 51%, which is solid. Similar recipes include Traditional Indian Samosas, Spinach samosas with Indian salad, and Spinach samosas with Indian salad.",
+      "after": "Golden puff pastry filled with spiced chicken, potato and peas, brightened with mango, lime and chipotle. Crisp, savoury and warmly aromatic.",
+      "attempts": 1
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfccb",
+      "title": "Charred Onion Dip w. Steamed Red Potatoes for Dipping",
+      "before": "Charred Onion Dip w. Steamed Red Potatoes for Dipping requires roughly 45 minutes from start to finish. For 49 cents per serving, this recipe covers 3% of your daily requirements of vitamins and minerals. Watching your figure? This gluten free and lacto ovo vegetarian recipe has 118 calories, 3g of protein, and 10g of fat per serving. This recipe serves 6. It works well as a very reasonably priced condiment for The Super Bowl. 334 people found this recipe to be scrumptious and satisfying. A mixture of onion, lemon juice, sea salt, and a handful of other ingredients are all it takes to make this recipe so scrumptious. It is brought to you by fullbellysisters.blogspot.com. Taking all factors into account, this recipe earns a spoonacular score of 27%, which is rather bad. Try Charred Red Onion Dip, Cucumber-and-Charred Red Onion Relish, and Baked Pita Chips with Charred Three Onion Dip for similar recipes.",
+      "after": "Creamy onion dip with chives, spring onions and a lemony tang, made for dipping with tender steamed red potatoes.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Creamy onion dip with chives, scallions and a lemony tang, made for dipping with tender steamed red potatoes."
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd2",
+      "title": "Red quinoa cranberry arugula soup",
+      "before": "Red quinoa cranberry arugula soup is a gluten free, dairy free, lacto ovo vegetarian, and vegan hor d'oeuvre. One serving contains 354 calories, 7g of protein, and 20g of fat. This recipe serves 4 and costs $1.96 per serving. This recipe is liked by 1 foodies and cooks. It will be a hit at your Autumn event. It is brought to you by Foodista. From preparation to the plate, this recipe takes around 45 minutes. Head to the store and pick up green onions, chilli powder, cranberries, and a few other things to make it today. All things considered, we decided this recipe deserves a spoonacular score of 58%. This score is solid. If you like this recipe, you might also like recipes such as Red Quinoan Arugula Salad, Salmon, Red Quinoa, and Arugula Salad, and Salmon, Red Quinoa, and Arugula Salad.",
+      "after": "Tart cranberries and nutty quinoa make a bright soup, with baby rocket and coconut milk adding a fresh, creamy finish.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Tangy cranberries and peppery arugula brighten this coconut quinoa soup, with lemongrass and chilli adding a fresh, spicy lift.",
+      "regenerated": true
+    },
+    {
+      "id": "69fa56304476f68485ccfcef",
+      "title": "Mexican Chicken Lettuce Wraps",
+      "before": "Mexican Chicken Lettuce Wraps might be just the hor d'oeuvre you are searching for. This recipe makes 6 servings with 279 calories, 22g of protein, and 14g of fat each. For $1.55 per serving, this recipe covers 20% of your daily requirements of vitamins and minerals. It is a good option if you're following a gluten free and dairy free diet. 3 people were glad they tried this recipe. Only a few people really liked this Mexican dish. If you have boston lettuce leaves, seasoned salt, black beans, and a few other ingredients on hand, you can make it. From preparation to the plate, this recipe takes about 45 minutes. It is brought to you by Foodista. All things considered, we decided this recipe deserves a spoonacular score of 61%. This score is good. Similar recipes include Mexican Chicken Lettuce Wraps, Mexican Chicken Lettuce Wraps, and Mexican Lettuce Wraps.",
+      "after": "Zesty spiced chicken with black beans, tomato and avocado, tucked into crisp lettuce leaves for a fresh, light wrap.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcf3",
+      "title": "Lemon Cucumber Salad",
+      "before": "Lemon Cucumber Salad is a gluten free, dairy free, paleolithic, and lacto ovo vegetarian side dish. This recipe serves 4 and costs 97 cents per serving. One portion of this dish contains about 2g of protein, 7g of fat, and a total of 114 calories. Head to the store and pick up chile pepper, lavender, lettuce leaves, and a few other things to make it today. This recipe is liked by 1 foodies and cooks. From preparation to the plate, this recipe takes about 45 minutes. It is brought to you by Foodista. Overall, this recipe earns a good spoonacular score of 65%. Try Lemon Garlic Cucumber Salad, Fresh Lemon Cucumber Salad, and Fresh Lemon Cucumber Salad for similar recipes.",
+      "after": "Bright lemon cucumber salad with crisp lettuce, sweet bell pepper and sharp onion, lifted by chile heat and tangy rice wine vinegar.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfcf2",
+      "title": "Ginger Beef Stir Fry",
+      "before": "Ginger Beef Stir Fry might be just the main course you are searching for. One portion of this dish contains roughly 32g of protein, 12g of fat, and a total of 416 calories. This recipe serves 4. For $3.77 per serving, this recipe covers 34% of your daily requirements of vitamins and minerals. It is a good option if you're following a gluten free and dairy free diet. 3 people have tried and liked this recipe. It is brought to you by Foodista. From preparation to the plate, this recipe takes about 45 minutes. If you have water chestnuts, bell pepper, top sirloin steak, and a few other ingredients on hand, you can make it. All things considered, we decided this recipe deserves a spoonacular score of 87%. This score is awesome. Try Ginger Beef Stir-Fry, Ginger Beef Stir Fry, and Ginger Beef Stir Fry for similar recipes.",
+      "after": "Savory beef stir fry with ginger, garlic and soy, lifted by sweet orange marmalade and crisp vegetables. Water chestnuts and lettuce add a fresh crunch.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dcd",
+      "title": "Saffron Chicken Tikka",
+      "before": "Saffron Chicken Tikka could be just the gluten free recipe you've been looking for. This recipe serves 3. One portion of this dish contains about 25g of protein, 4g of fat, and a total of 160 calories. For $1.65 per serving, this recipe covers 14% of your daily requirements of vitamins and minerals. A few people made this recipe, and 34 would say it hit the spot. It works well as a main course. It is brought to you by Foodista. This recipe is typical of Indian cuisine. A mixture of chicken breasts, salt, chillies, and a handful of other ingredients are all it takes to make this recipe so flavorful. From preparation to the plate, this recipe takes around 45 minutes. All things considered, we decided this recipe deserves a spoonacular score of 61%. This score is solid. Users who liked this recipe also liked Saffron-Marinated Chicken Skewers (Kesari Malai Tikka), chicken tikka , how to make chicken tikkan in oven, and chicken tikka , how to make chicken tikkan in oven.",
+      "after": "Fragrant saffron chicken tikka with warming spices, garlic and ginger, plus a gentle creamy note from milk.",
+      "attempts": 1
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dcf",
+      "title": "Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant",
+      "before": "The recipe Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant could satisfy your Indian craving in around 45 minutes. This recipe serves 6 and costs 94 cents per serving. This hor d'oeuvre has 129 calories, 7g of protein, and 2g of fat per serving. It is brought to you by foodandspice.blogspot.com. If you have black-eyed peas, olive oil, globe, and a few other ingredients on hand, you can make it. This recipe is liked by 32 foodies and cooks. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. All things considered, we decided this recipe deserves a spoonacular score of 98%. This score is outstanding. Try Roasted Eggplant and Swiss Chard Lasagna, Pumpkin, Black-Eyed Pea, and Coconut Curry, and Spicy Black-eyed Pea Relish for similar recipes.",
+      "after": "Warm, fragrant curry with black-eyed peas, tomato and Swiss chard, lifted by lemon and chilies. Roasted aubergine adds a soft, smoky twist.",
+      "attempts": 1,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Warm, fragrant curry with black-eyed peas, tomato and Swiss chard, lifted by lemon and chilies. Roasted eggplant adds a soft, smoky twist."
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfccd",
+      "title": "Roasted Brussels Sprouts With Red Onions and Pancetta",
+      "before": "Roasted Brussels Sprouts With Red Onions and Pancetta could be just the dairy free recipe you've been looking for. This recipe serves 5 and costs $1.88 per serving. One portion of this dish contains about 8g of protein, 10g of fat, and a total of 178 calories. 31 person have tried and liked this recipe. From preparation to the plate, this recipe takes approximately 45 minutes. If you have brussels sprouts, bread, garlic, and a few other ingredients on hand, you can make it. It works well as a side dish. It will be a hit at your Christmas event. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 78%, which is good. Similar recipes are Roasted Brussels Sprouts and Red Onions, Brussels Sprouts, Pancettan and Caramelized Red Onion Crostini, and Roasted Brussels Sprouts with Pancetta.",
+      "after": "Crispy roasted Brussels sprouts with salty pancetta, sweet red onion and garlic, finished with a savoury, toasty bite.",
+      "attempts": 1
+    },
+    {
+      "id": "69d5710287d5d72710ae8eaf",
+      "title": "Chicken Lo Mein",
+      "before": "Chicken Lo Mein is a dairy free recipe with 2 servings. One portion of this dish contains approximately 29g of protein, 8g of fat, and a total of 401 calories. For $1.77 per serving, this recipe covers 30% of your daily requirements of vitamins and minerals. From preparation to the plate, this recipe takes around 45 minutes. 2 people have made this recipe and would make it again. It is brought to you by Foodista. If you have chicken breast, ginger, chicken broth, and a few other ingredients on hand, you can make it. Not a lot of people really liked this main course. Overall, this recipe earns a spectacular spoonacular score of 84%. Pancit canton (a.k.a. lo mein or chow mein), Pancit canton (a.k.a. lo mein or chow mein), and Chicken Lo Mein are very similar to this recipe.",
+      "after": "Savoury chicken lo mein with soy, garlic and ginger, tossed with spaghetti, crisp veg and mushrooms for a quick, satisfying bowl.",
+      "attempts": 1
+    },
+    {
+      "id": "69d5710287d5d72710ae8eb1",
+      "title": "Chili-Garlic Stir Fry",
+      "before": "Chili-Garlic Stir Fry is a gluten free and dairy free recipe with 6 servings. One serving contains 147 calories, 15g of protein, and 4g of fat. For $2.13 per serving, this recipe covers 20% of your daily requirements of vitamins and minerals. This recipe is typical of American cuisine. 3 people were glad they tried this recipe. Head to the store and pick up sesame oil, chicken broth, cooking sherry, and a few other things to make it today. It works well as a rather inexpensive main course. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 73%, which is pretty good. Similar recipes are Chili-Garlic Shrimp and Noodle Stir-Fry, Chili-Garlic Shrimp and Noodle Stir-Fry, and Chili and Garlic Spiced Beef and Broccoli Stir Fry.",
+      "after": "A punchy chilli-garlic stir fry with tender chicken and crisp veg in a savoury sesame glaze, bright with sherry and sriracha.",
+      "attempts": 1
+    },
+    {
+      "id": "69fa56304476f68485ccfced",
+      "title": "Beet Salad With Peppers and Lettuce",
+      "before": "If you have around 45 minutes to spend in the kitchen, Beet Salad With Peppers and Lettuce might be a spectacular gluten free, dairy free, paleolithic, and lacto ovo vegetarian recipe to try. One serving contains 210 calories, 5g of protein, and 6g of fat. This recipe serves 1. For $3.17 per serving, this recipe covers 26% of your daily requirements of vitamins and minerals. Head to the store and pick up beet, bell pepper, orange pepper, and a few other things to make it today. This recipe is liked by 1 foodies and cooks. Only a few people really liked this side dish. It is brought to you by Foodista. Taking all factors into account, this recipe earns a spoonacular score of 92%, which is great. Similar recipes include Butter Lettuce and Beet Salad, Red Lettuce and Roasted Beet Salad with Walnuts and Blue Cheese, and fennel, Peppers, Lettuce Salad.",
+      "after": "Sweet beet salad with crisp peppers, lettuce and basil, finished with maple and sunflower seeds.",
+      "attempts": 1
+    },
+    {
+      "id": "6a42e050d33617bebef22d80",
+      "title": "Tart Raspberry Sorbet with a Hint of Heat",
+      "before": "Tart Raspberry Sorbet with a Hint of Heat could be just the gluten free, dairy free, lacto ovo vegetarian, and vegan recipe you've been looking for. This recipe serves 6. One serving contains 40 calories, 0g of protein, and 0g of fat. For 62 cents per serving, this recipe covers 2% of your daily requirements of vitamins and minerals. It is brought to you by foodandspice.blogspot.com. A mixture of raspberry jam, chili, raspberries, and a handful of other ingredients are all it takes to make this recipe so scrumptious. 39 people were glad they tried this recipe. From preparation to the plate, this recipe takes approximately 45 minutes. Overall, this recipe earns a good spoonacular score of 41%. If you like this recipe, you might also like recipes such as Blush Slush – Frozen Black Raspberry Cocktail to Beat the Heat, Tart Cherry & Mint Sorbet, and Rich, Tart Lemon Sorbet.",
+      "after": "Sharp raspberry sorbet with lime and a gentle chilli kick for a bright, tangy finish.",
+      "attempts": 1,
+      "regenerated": true
+    },
+    {
+      "id": "6a5ff992a91e3f027a2961eb",
+      "title": "Carrot and Coriander Soup",
+      "before": "Carrot and Coriander Soup might be a good recipe to expand your hor d'oeuvre repertoire. One serving contains 354 calories, 5g of protein, and 15g of fat. This recipe serves 1 and costs $1.32 per serving. This recipe from Foodista requires carrots-peeled, onion-chopped, water, and pepper. 3 people were impressed by this recipe. It is perfect for Autumn. It is a good option if you're following a gluten free, dairy free, paleolithic, and lacto ovo vegetarian diet. From preparation to the plate, this recipe takes about 45 minutes. With a spoonacular score of 92%, this dish is outstanding. Carrot and coriander soup, Carrot and coriander soup, and Carrot and coriander soup are very similar to this recipe.",
+      "after": "Sweet carrots and fragrant coriander make a bright, peppery soup with a fresh orange lift.",
+      "attempts": 1
+    },
+    {
+      "id": "6a5ffd1ca91e3f027a2961f9",
+      "title": "Pad Se Ew Tofu With Vegetable Noodles",
+      "before": "Need a dairy free and pescatarian main course? Pad Se Ew Tofu With Vegetable Noodles could be an excellent recipe to try. This recipe makes 6 servings with 583 calories, 24g of protein, and 20g of fat each. For $1.51 per serving, this recipe covers 36% of your daily requirements of vitamins and minerals. 3 people found this recipe to be delicious and satisfying. From preparation to the plate, this recipe takes roughly 45 minutes. It is brought to you by Foodista. Head to the store and pick up vegetable oil, bell pepper, sugar, and a few other things to make it today. Overall, this recipe earns an outstanding spoonacular score of 82%. Similar recipes are Pad Se Ew Tofu With Vegetable Noodles, Pad Se Ew Tofu With Vegetable Noodles, and Shrimp Pad Thai with Spiralized Vegetable Noodles.",
+      "after": "Savoury tofu with vegetable noodles, broccoli and peppers in a rich soy and oyster sauce, with a sweet-sour kick and roasted onion flavour.",
+      "attempts": 2
+    },
+    {
+      "id": "69fa56304476f68485ccfcf1",
+      "title": "Vegetarian Falafels",
+      "before": "Vegetarian Falafels requires roughly 45 minutes from start to finish. Watching your figure? This lacto ovo vegetarian recipe has 552 calories, 22g of protein, and 10g of fat per serving. This recipe serves 6 and costs $1.9 per serving. 1 person has made this recipe and would make it again. A mixture of lrgs garlic clove, tomatoes, pepper flakes, and a handful of other ingredients are all it takes to make this recipe so delicious. Only a few people really liked this main course. It is brought to you by Foodista. With a spoonacular score of 67%, this dish is solid. If you like this recipe, take a look at these similar recipes: Vegetarian Falafels, Vegetarian Falafels, and Yam Falafels.",
+      "after": "Zesty falafels with garbanzo beans, bulgur and garlic, lifted by cumin, lemon and coriander. Fresh with tomatoes, cucumber and pita.",
+      "attempts": 2,
+      "ukSpellingFixes": 1,
+      "afterBeforeUk": "Zesty falafels with garbanzo beans, bulgur and garlic, lifted by cumin, lemon and cilantro. Fresh with tomatoes, cucumber and pita."
+    }
+  ],
+  "failures": []
+}
