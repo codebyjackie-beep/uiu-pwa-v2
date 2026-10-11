@@ -1,0 +1,1172 @@
+{
+  "generatedAt": "2026-10-11T21:01:40.457Z",
+  "baseCommit": "dd13782",
+  "publicBefore": 330,
+  "expected": {
+    "publicAfter": 328,
+    "nutritionUnavailableTotalBefore": 71,
+    "nutritionUnavailableTotalAfter": 88,
+    "junkMealTypeAfter": 0
+  },
+  "problems": [],
+  "actions": {
+    "flags": [
+      {
+        "id": "69c473017393a7f0235b89b9",
+        "title": "Thai Cucumber Salad (By Roz)",
+        "storedCalories": 34,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69c4766a7393a7f0235b89c9",
+        "title": "Butternut Squash Souffle Side Dish",
+        "storedCalories": 7,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69c4766a7393a7f0235b89ca",
+        "title": "Banana Creme Brulee",
+        "storedCalories": 48,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69c4766a7393a7f0235b89cc",
+        "title": "Julia Child's Ratatouille",
+        "storedCalories": 32,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69d191951648bcfb8b552615",
+        "title": "Zesty Avocado Toast with Ginger-Shallot Relish",
+        "storedCalories": 5,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69d5776887d5d72710ae8ec3",
+        "title": "Creamy Tomato Soup with Pan-Seared Dumplings & Balsamic-Cola Dressed Salad",
+        "storedCalories": 13,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69d191951648bcfb8b55261d",
+        "title": "Black Bean Burgers with Caramelized Onions & Avocado Mash",
+        "storedCalories": 29,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69d04b0f26a6c4c3877dfcc9",
+        "title": "Kale With Red Onion",
+        "storedCalories": 25,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69d5776887d5d72710ae8ecc",
+        "title": "Hearty Beef Broth with Dumplings, Zesty Red Onion & Tomato Gremolata, & Side Salad",
+        "storedCalories": 10,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69d5776887d5d72710ae8ec9",
+        "title": "Creamy Chicken & Dumpling Soup with Cola-Caramelized Red Onions & Crisp Greens",
+        "storedCalories": 37,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "69c5c81c64ee1f17b0563dcf",
+        "title": "Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant",
+        "storedCalories": 20,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "6a42e050d33617bebef22d80",
+        "title": "Tart Raspberry Sorbet with a Hint of Heat",
+        "storedCalories": 8,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "6a5ff992a91e3f027a2961eb",
+        "title": "Carrot and Coriander Soup",
+        "storedCalories": 8,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "6a5ffd1ca91e3f027a2961f9",
+        "title": "Pad Se Ew Tofu With Vegetable Noodles",
+        "storedCalories": 49,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "6a7b9cdf8427001f36231d76",
+        "title": "Goan-Style Curry Mussels with Coconut, Lime, and Cilantro",
+        "storedCalories": 15,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "6a863c85753b0060c3baeaf1",
+        "title": "Warm Chickpea, Mushroom, and Rice Noodle Bowl with Rosemary Tomato Broth",
+        "storedCalories": 0,
+        "nutritionUnavailableBefore": false
+      },
+      {
+        "id": "6a88c731b58cdb4d516136af",
+        "title": "Warm Chickpea, Mushroom, and Rice Noodle Salad",
+        "storedCalories": 5,
+        "nutritionUnavailableBefore": false
+      }
+    ],
+    "apple": {
+      "id": "69c5c81c64ee1f17b0563dd0",
+      "title": "Apple Curry Soup",
+      "servingsBefore": 1,
+      "servingsAfter": 4,
+      "nutritionBefore": {
+        "calories": 1691,
+        "protein": 62.6,
+        "carbs": 105.1,
+        "fat": 115,
+        "nutritionApproximate": true
+      },
+      "nutritionAfter": {
+        "calories": 423,
+        "protein": 15.7,
+        "carbs": 26.3,
+        "fat": 28.8,
+        "nutritionApproximate": true
+      },
+      "recomputedWholeRecipeKcalFromLines": {
+        "k": 1691,
+        "matched": 8,
+        "gramLines": 8
+      },
+      "costBefore": {
+        "perServing": 10.697871666666666,
+        "basket": 10.697871666666666,
+        "adjustedCoveragePct": 88.88888888888889
+      },
+      "costAfter": {
+        "perServing": 2.6744679166666665,
+        "basket": 10.697871666666666,
+        "adjustedCoveragePct": 88.88888888888889
+      },
+      "recipeCostDocBefore": {
+        "_id": "6a64a445e10090ff55bd9f6b",
+        "recipeId": "69c5c81c64ee1f17b0563dd0",
+        "adjustedCoveragePct": 88.88888888888889,
+        "adjustedPriceable": 8,
+        "adjustedTotal": 9,
+        "basket": 10.697871666666666,
+        "computedAt": "2026-10-11T03:00:15.001Z",
+        "coveragePct": 88.88888888888889,
+        "currency": "GBP",
+        "junkLineCount": 0,
+        "lines": [
+          {
+            "priceable": true,
+            "rawName": "apple cider",
+            "quantity": 24,
+            "rawUnit": "ounces",
+            "canonical_name": "apple cider",
+            "normValue": 680.4000000000001,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.00585,
+            "lineCost": 3.9803400000000004,
+            "displayNote": null,
+            "isPantry": false,
+            "store": "sainsburys.co.uk",
+            "productTitle": null
+          },
+          {
+            "priceable": true,
+            "rawName": "coconut milk",
+            "quantity": 7,
+            "rawUnit": "ounces",
+            "canonical_name": "coconut milk",
+            "normValue": 198.45000000000002,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.00245,
+            "lineCost": 0.48620250000000004,
+            "displayNote": null,
+            "isPantry": false,
+            "store": "Tesco",
+            "productTitle": "Tesco Coconut Milk 400Ml"
+          },
+          {
+            "priceable": true,
+            "rawName": "curry powder",
+            "quantity": 2,
+            "rawUnit": "teaspoons",
+            "canonical_name": "curry powder",
+            "normValue": 4.166666666666666,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0169,
+            "lineCost": 0.07041666666666666,
+            "displayNote": null,
+            "isPantry": false,
+            "store": "sainsburys.co.uk",
+            "productTitle": null
+          },
+          {
+            "priceable": true,
+            "rawName": "chavrie goat cheese",
+            "quantity": 2,
+            "rawUnit": "packages",
+            "canonical_name": "chavrie goat cheese",
+            "normValue": 226,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.022949999999999998,
+            "lineCost": 5.186699999999999,
+            "displayNote": "2 packages chavrie goat cheese (≈226g, Table C estimate)",
+            "isPantry": false,
+            "store": "Waitrose & Partners",
+            "productTitle": null
+          },
+          {
+            "priceable": false,
+            "rawName": "granny smith apples",
+            "quantity": 2,
+            "rawUnit": "inches",
+            "canonical_name": "granny smith apples",
+            "reason": "unmapped_unit",
+            "isPantry": false
+          },
+          {
+            "priceable": true,
+            "rawName": "leeks",
+            "quantity": 2,
+            "rawUnit": "",
+            "canonical_name": "leek",
+            "normValue": 178,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0027,
+            "lineCost": 0.4806,
+            "displayNote": "2 leek (≈178g)",
+            "isPantry": false,
+            "store": "Waitrose & Partners",
+            "productTitle": "Fresh Leeks Essential Waitrose"
+          },
+          {
+            "priceable": true,
+            "rawName": "turmeric",
+            "quantity": 0.5,
+            "rawUnit": "teaspoon",
+            "canonical_name": "turmeric",
+            "normValue": 1.0416666666666665,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.015899999999999997,
+            "lineCost": 0.016562499999999994,
+            "displayNote": null,
+            "isPantry": false,
+            "store": "Morrisons.com",
+            "productTitle": "Indus Turmeric Powder"
+          },
+          {
+            "priceable": true,
+            "rawName": "vegetable oil",
+            "quantity": 2,
+            "rawUnit": "ounces",
+            "canonical_name": "vegetable oil",
+            "normValue": 56.7,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0015,
+            "lineCost": 0.08505,
+            "displayNote": null,
+            "isPantry": false,
+            "store": "sainsburys.co.uk",
+            "productTitle": "Sainsbury's Vegetable Oil 3L"
+          },
+          {
+            "priceable": true,
+            "rawName": "mushrooms",
+            "quantity": 1,
+            "rawUnit": "cup",
+            "canonical_name": "mushroom",
+            "normValue": 70,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0056,
+            "lineCost": 0.392,
+            "displayNote": null,
+            "isPantry": false,
+            "store": "Asda Groceries",
+            "productTitle": "JUST ESSENTIALS Mushrooms"
+          }
+        ],
+        "pantryLineCount": 0,
+        "perServing": 10.697871666666666,
+        "priceCacheStamp": 1784587647589,
+        "priceableCount": 8,
+        "totalLines": 9,
+        "unpriceableReasons": {
+          "unmapped_unit": 1
+        }
+      },
+      "recipeCostDocAfter": {
+        "basket": 10.697871666666666,
+        "currency": "GBP",
+        "coveragePct": 88.88888888888889,
+        "adjustedCoveragePct": 88.88888888888889,
+        "totalLines": 9,
+        "priceableCount": 8,
+        "adjustedTotal": 9,
+        "adjustedPriceable": 8,
+        "pantryLineCount": 0,
+        "junkLineCount": 0,
+        "perServing": 2.6744679166666665,
+        "lines": [
+          {
+            "priceable": true,
+            "rawName": "apple cider",
+            "quantity": 24,
+            "rawUnit": "ounces",
+            "canonical_name": "apple cider",
+            "normValue": 680.4000000000001,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.00585,
+            "lineCost": 3.9803400000000004,
+            "isPantry": false,
+            "store": "sainsburys.co.uk",
+            "productTitle": null
+          },
+          {
+            "priceable": true,
+            "rawName": "coconut milk",
+            "quantity": 7,
+            "rawUnit": "ounces",
+            "canonical_name": "coconut milk",
+            "normValue": 198.45000000000002,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.00245,
+            "lineCost": 0.48620250000000004,
+            "isPantry": false,
+            "store": "Tesco",
+            "productTitle": "Tesco Coconut Milk 400Ml"
+          },
+          {
+            "priceable": true,
+            "rawName": "curry powder",
+            "quantity": 2,
+            "rawUnit": "teaspoons",
+            "canonical_name": "curry powder",
+            "normValue": 4.166666666666666,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0169,
+            "lineCost": 0.07041666666666666,
+            "isPantry": false,
+            "store": "sainsburys.co.uk",
+            "productTitle": null
+          },
+          {
+            "priceable": true,
+            "rawName": "chavrie goat cheese",
+            "quantity": 2,
+            "rawUnit": "packages",
+            "canonical_name": "chavrie goat cheese",
+            "normValue": 226,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.022949999999999998,
+            "lineCost": 5.186699999999999,
+            "displayNote": "2 packages chavrie goat cheese (≈226g, Table C estimate)",
+            "isPantry": false,
+            "store": "Waitrose & Partners",
+            "productTitle": null
+          },
+          {
+            "priceable": false,
+            "rawName": "granny smith apples",
+            "quantity": 2,
+            "rawUnit": "inches",
+            "canonical_name": "granny smith apples",
+            "reason": "unmapped_unit",
+            "isPantry": false
+          },
+          {
+            "priceable": true,
+            "rawName": "leeks",
+            "quantity": 2,
+            "rawUnit": "",
+            "canonical_name": "leek",
+            "normValue": 178,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0027,
+            "lineCost": 0.4806,
+            "displayNote": "2 leek (≈178g)",
+            "isPantry": false,
+            "store": "Waitrose & Partners",
+            "productTitle": "Fresh Leeks Essential Waitrose"
+          },
+          {
+            "priceable": true,
+            "rawName": "turmeric",
+            "quantity": 0.5,
+            "rawUnit": "teaspoon",
+            "canonical_name": "turmeric",
+            "normValue": 1.0416666666666665,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.015899999999999997,
+            "lineCost": 0.016562499999999994,
+            "isPantry": false,
+            "store": "Morrisons.com",
+            "productTitle": "Indus Turmeric Powder"
+          },
+          {
+            "priceable": true,
+            "rawName": "vegetable oil",
+            "quantity": 2,
+            "rawUnit": "ounces",
+            "canonical_name": "vegetable oil",
+            "normValue": 56.7,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0015,
+            "lineCost": 0.08505,
+            "isPantry": false,
+            "store": "sainsburys.co.uk",
+            "productTitle": "Sainsbury's Vegetable Oil 3L"
+          },
+          {
+            "priceable": true,
+            "rawName": "mushrooms",
+            "quantity": 1,
+            "rawUnit": "cup",
+            "canonical_name": "mushroom",
+            "normValue": 70,
+            "normUnit": "g",
+            "bucket": "metric",
+            "perUnit": 0.0056,
+            "lineCost": 0.392,
+            "isPantry": false,
+            "store": "Asda Groceries",
+            "productTitle": "JUST ESSENTIALS Mushrooms"
+          }
+        ],
+        "unpriceableReasons": {
+          "unmapped_unit": 1
+        }
+      }
+    },
+    "withdrawals": [
+      {
+        "id": "6a863c85753b0060c3baeaf1",
+        "title": "Warm Chickpea, Mushroom, and Rice Noodle Bowl with Rosemary Tomato Broth",
+        "ingredientSample": [
+          "JS RICE NOODLES 300G",
+          "JS CHICKPEAS",
+          "CLASSIC TOMATOES X6",
+          "JS RED ONIONS X3"
+        ],
+        "protectedBy": []
+      },
+      {
+        "id": "6a88c731b58cdb4d516136af",
+        "title": "Warm Chickpea, Mushroom, and Rice Noodle Salad",
+        "ingredientSample": [
+          "JS RICE NOODLES",
+          "JS CHICKPEAS",
+          "CLASSIC TOMATOES",
+          "JS CLOSED CUP MUSHRM"
+        ],
+        "protectedBy": []
+      }
+    ],
+    "title": {
+      "id": "69fa56304476f68485ccfcec",
+      "before": "fennel, Peppers, Lettuce Salad",
+      "after": "Fennel, Pepper & Lettuce Salad"
+    },
+    "mealType": [
+      {
+        "id": "69b1db93974afef25b93a463",
+        "title": "Pesto & Yogurt Pasta",
+        "mealTypeBefore": "pasta",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a454",
+        "title": "Quick Chicken Enchilada Soup",
+        "mealTypeBefore": "quick",
+        "classBefore": [
+          "lunch"
+        ],
+        "classAfter": [
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a45d",
+        "title": "Berry Fruit Crumble",
+        "mealTypeBefore": "healthy",
+        "classBefore": [
+          "dessert",
+          "snack"
+        ],
+        "classAfter": [
+          "dessert",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a45e",
+        "title": "Blackberry Clafoutis",
+        "mealTypeBefore": "healthy",
+        "classBefore": [
+          "dessert",
+          "snack"
+        ],
+        "classAfter": [
+          "dessert",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db92974afef25b93a44d",
+        "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+        "mealTypeBefore": "trending",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a462",
+        "title": "Italian Tuna Pasta",
+        "mealTypeBefore": "pasta",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a464",
+        "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+        "mealTypeBefore": "pasta",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a471",
+        "title": "Asparagus and Pea Soup: Real Convenience Food",
+        "mealTypeBefore": "vegetarian",
+        "classBefore": [
+          "appetizer",
+          "snack"
+        ],
+        "classAfter": [
+          "appetizer",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a473",
+        "title": "Red Kidney Bean Jambalaya",
+        "mealTypeBefore": "vegetarian",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a474",
+        "title": "Cauliflower, Brown Rice, and Vegetable Fried Rice",
+        "mealTypeBefore": "vegetarian",
+        "classBefore": [
+          "appetizer",
+          "snack"
+        ],
+        "classAfter": [
+          "appetizer",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a453",
+        "title": "Quick and Easy Scallop Pasta",
+        "mealTypeBefore": "quick",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db92974afef25b93a44a",
+        "title": "Chicken and Mango Skewer",
+        "mealTypeBefore": "trending",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a461",
+        "title": "Pasta With Tuna",
+        "mealTypeBefore": "pasta",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a465",
+        "title": "Pasta with Butternut Squash, Sausage and Sage Pesto",
+        "mealTypeBefore": "pasta",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a466",
+        "title": "Pasta With Cream Sauce and Mushrooms",
+        "mealTypeBefore": "pasta",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db92974afef25b93a44b",
+        "title": "Cheesy Chicken Enchilada Quinoa Casserole",
+        "mealTypeBefore": "trending",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a451",
+        "title": "Grilled Ham and Cheese French Toast For A Quick Weeknight Dinner",
+        "mealTypeBefore": "quick",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a455",
+        "title": "Quick and Easy Southwestern Corn Chowder",
+        "mealTypeBefore": "quick",
+        "classBefore": [
+          "lunch"
+        ],
+        "classAfter": [
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a456",
+        "title": "Clear & Quick Chicken Soup",
+        "mealTypeBefore": "quick",
+        "classBefore": [
+          "lunch"
+        ],
+        "classAfter": [
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a459",
+        "title": "Healthy Hazelnut Cookies",
+        "mealTypeBefore": "healthy",
+        "classBefore": [
+          "dessert",
+          "snack"
+        ],
+        "classAfter": [
+          "dessert",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a45a",
+        "title": "Scotch Eggs",
+        "mealTypeBefore": "healthy",
+        "classBefore": [
+          "appetizer",
+          "snack"
+        ],
+        "classAfter": [
+          "appetizer",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a45b",
+        "title": "Macha Macarons",
+        "mealTypeBefore": "healthy",
+        "classBefore": [
+          "dessert",
+          "snack"
+        ],
+        "classAfter": [
+          "dessert",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a45c",
+        "title": "Chess Pie Two Ways",
+        "mealTypeBefore": "healthy",
+        "classBefore": [
+          "dessert",
+          "snack"
+        ],
+        "classAfter": [
+          "dessert",
+          "snack"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a472",
+        "title": "Garlicky Kale",
+        "mealTypeBefore": "vegetarian",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db92974afef25b93a44c",
+        "title": "Chicken Suya",
+        "mealTypeBefore": "trending",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a475",
+        "title": "Quinoa and Chickpea Salad with Sun-Dried Tomatoes and Dried Cherries",
+        "mealTypeBefore": "vegetarian",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db92974afef25b93a449",
+        "title": "Red Lentil Soup with Chicken and Turnips",
+        "mealTypeBefore": "trending",
+        "classBefore": [
+          "lunch"
+        ],
+        "classAfter": [
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db92974afef25b93a44e",
+        "title": "Chicken Piccata With Angel Hair Pasta",
+        "mealTypeBefore": "trending",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a452",
+        "title": "Quick and Easy Caprese Salad",
+        "mealTypeBefore": "quick",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "69b1db93974afef25b93a476",
+        "title": "Easy Homemade Rice and Beans",
+        "mealTypeBefore": "vegetarian",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      },
+      {
+        "id": "6a6cfa88901ee72fdac2149f",
+        "title": "Tuscan Broccolini Quinoa Pilaf with Lemon, Herbs, and Goat Cheese",
+        "mealTypeBefore": "side dish",
+        "classBefore": [
+          "dinner",
+          "lunch"
+        ],
+        "classAfter": [
+          "dinner",
+          "lunch"
+        ]
+      }
+    ]
+  },
+  "classification": {
+    "before": {
+      "recipes": 330,
+      "perChip": {
+        "lunch": 174,
+        "dinner": 180,
+        "breakfast": 40,
+        "snack": 71,
+        "dessert": 8,
+        "appetizer": 46
+      },
+      "unreachableByAnyChip": 0
+    },
+    "after": {
+      "recipes": 328,
+      "perChip": {
+        "lunch": 173,
+        "dinner": 179,
+        "breakfast": 40,
+        "snack": 71,
+        "dessert": 8,
+        "appetizer": 46
+      },
+      "unreachableByAnyChip": 0
+    },
+    "changedRecipes": 0
+  },
+  "coconutMilk": {
+    "currentEntry": {
+      "kcal": 22,
+      "protein": 0.3,
+      "carbs": 4.9,
+      "fat": 0.3
+    },
+    "publicRecipesUsing": [
+      {
+        "id": "69b9587c7d3db8c999c7df7d",
+        "title": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+        "gramLines": 0,
+        "mlLines": 420,
+        "nutritionUnavailable": false,
+        "storedCalories": 389.7,
+        "servings": 6,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "69c473017393a7f0235b89ba",
+        "title": "Green Thai Curry with Beef",
+        "gramLines": 400,
+        "mlLines": 0,
+        "nutritionUnavailable": false,
+        "storedCalories": 316,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 588
+      },
+      {
+        "id": "69c473017393a7f0235b89b8",
+        "title": "Thai Sweet Coconut Sticky Rice With Fresh Mango",
+        "gramLines": 400,
+        "mlLines": 0,
+        "nutritionUnavailable": false,
+        "storedCalories": 651,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 588
+      },
+      {
+        "id": "69c31de2b17f27d65b4f4ecb",
+        "title": "Chilled Green Pea & Onion Soup",
+        "gramLines": 0,
+        "mlLines": 80.00000159999999,
+        "nutritionUnavailable": false,
+        "storedCalories": 168,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "69d04b0f26a6c4c3877dfcd3",
+        "title": "Red Curry Stew & Vegetable Noodles",
+        "gramLines": 396.90000000000003,
+        "mlLines": 0,
+        "nutritionUnavailable": false,
+        "storedCalories": 253.9,
+        "servings": 6,
+        "approxKcalUnderstatedWholeRecipe": 583
+      },
+      {
+        "id": "69c5c81c64ee1f17b0563dd0",
+        "title": "Apple Curry Soup",
+        "gramLines": 198.45000000000002,
+        "mlLines": 0,
+        "nutritionUnavailable": false,
+        "storedCalories": 1691,
+        "servings": 1,
+        "approxKcalUnderstatedWholeRecipe": 292
+      },
+      {
+        "id": "69c5c81c64ee1f17b0563dd3",
+        "title": "Easy Fish Molee (South Indian-Style Fish Stew With Coconut)",
+        "gramLines": 400,
+        "mlLines": 0,
+        "nutritionUnavailable": false,
+        "storedCalories": 55,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 588
+      },
+      {
+        "id": "69d1933f0ce7d5269f69526c",
+        "title": "Thai Green Curry with King Prawns",
+        "gramLines": 0,
+        "mlLines": 400,
+        "nutritionUnavailable": false,
+        "storedCalories": 536,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "69d04b0f26a6c4c3877dfcd2",
+        "title": "Red quinoa cranberry arugula soup",
+        "gramLines": 0,
+        "mlLines": 60,
+        "nutritionUnavailable": false,
+        "storedCalories": 354,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "69d1933f0ce7d5269f695275",
+        "title": "Coconut Lime King Prawns with Coriander Rice",
+        "gramLines": 0,
+        "mlLines": 200,
+        "nutritionUnavailable": false,
+        "storedCalories": 391,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6a6cfaa5901ee72fdac214a7",
+        "title": "Goldilocks Coconut Chia Breakfast Porridge",
+        "gramLines": 0,
+        "mlLines": 480,
+        "nutritionUnavailable": false,
+        "storedCalories": 151,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6a7b9cdf8427001f36231d76",
+        "title": "Goan-Style Curry Mussels with Coconut, Lime, and Cilantro",
+        "gramLines": 0,
+        "mlLines": 480,
+        "nutritionUnavailable": false,
+        "storedCalories": 15,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80d57b0ca951a2fbf73e8",
+        "title": "Goldilocks Coconut Chia Porridge with Warm Cinnamon Pear and Walnut Crunch",
+        "gramLines": 0,
+        "mlLines": 480,
+        "nutritionUnavailable": false,
+        "storedCalories": 981,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80d59b0ca951a2fbf73ee",
+        "title": "Thai Coconut Beetroot Soup with Lime, Ginger, and Tofu",
+        "gramLines": 0,
+        "mlLines": 480,
+        "nutritionUnavailable": false,
+        "storedCalories": 301,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80d67b0ca951a2fbf7420",
+        "title": "Tangy Coastal Fish Curry with Mustard, Tamarind, and Basil",
+        "gramLines": 0,
+        "mlLines": 240,
+        "nutritionUnavailable": false,
+        "storedCalories": 1031,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80d70b0ca951a2fbf7440",
+        "title": "Coconut Tamarind-Style Assam Fish Curry",
+        "gramLines": 400,
+        "mlLines": 0,
+        "nutritionUnavailable": false,
+        "storedCalories": 1053,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 588
+      },
+      {
+        "id": "6ac80d81b0ca951a2fbf747a",
+        "title": "Sunrise Mango-Berry Swirl Breakfast Smoothie Bowl",
+        "gramLines": 0,
+        "mlLines": 240,
+        "nutritionUnavailable": false,
+        "storedCalories": 677,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80d9cb0ca951a2fbf74da",
+        "title": "Coconut Bliss Sunrise Smoothie Bowl",
+        "gramLines": 0,
+        "mlLines": 240,
+        "nutritionUnavailable": false,
+        "storedCalories": 155,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80dacb0ca951a2fbf7512",
+        "title": "Smoky Indian Pumpkin with Chickpeas and Coconut",
+        "gramLines": 0,
+        "mlLines": 200,
+        "nutritionUnavailable": false,
+        "storedCalories": 240,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80ddeb0ca951a2fbf75c2",
+        "title": "Saffron Prawn Basmati with Garam Masala Onions",
+        "gramLines": 0,
+        "mlLines": 240,
+        "nutritionUnavailable": false,
+        "storedCalories": 446,
+        "servings": 4,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80de9b0ca951a2fbf75e8",
+        "title": "Sunrise Mango-Banana Coconut Breakfast Quinoa",
+        "gramLines": 0,
+        "mlLines": 240,
+        "nutritionUnavailable": false,
+        "storedCalories": 332,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      },
+      {
+        "id": "6ac80dedb0ca951a2fbf75f6",
+        "title": "Sunrise Mango-Banana Coconut Breakfast Cream",
+        "gramLines": 0,
+        "mlLines": 240,
+        "nutritionUnavailable": false,
+        "storedCalories": 223,
+        "servings": 2,
+        "approxKcalUnderstatedWholeRecipe": 0
+      }
+    ],
+    "note": "Canonical 'coconut milk' maps to CoFID 14-820 'Coconut milk' (22 kcal/100g, the thin drink-style entry). CoFID also has 'Coconut milk, retail' (169 kcal/100g) which is what canned coconut milk is. nutrition recompute only counts lines normalised to grams, so ml/cup coconut milk lines contribute 0 kcal today.",
+    "cofidEntries": [
+      {
+        "code": "14-820",
+        "name": "Coconut milk",
+        "kcal": 22,
+        "protein": 0.3,
+        "carbs": 4.9,
+        "fat": 0.3
+      },
+      {
+        "code": "14-890",
+        "name": "Coconut milk, reduced fat, retail",
+        "kcal": 79,
+        "protein": 0.7,
+        "carbs": 2,
+        "fat": 7.7
+      },
+      {
+        "code": "14-889",
+        "name": "Coconut milk, retail",
+        "kcal": 169,
+        "protein": 1.1,
+        "carbs": 3.3,
+        "fat": 16.9
+      }
+    ],
+    "recipeCount": 22
+  }
+}
