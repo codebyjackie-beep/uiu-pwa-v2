@@ -1,0 +1,2223 @@
+{
+  "generatedAt": "2026-10-11T20:45:18.318Z",
+  "publicRecipes": 330,
+  "flagged": [
+    {
+      "lineCoverage": 0.43,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69c473017393a7f0235b89b9",
+      "title": "Thai Cucumber Salad (By Roz)",
+      "servings": 6,
+      "storedCalories": 34,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 14,
+      "gramLinesWithNutrition": 6,
+      "gramLinesTotal": 6,
+      "unmatchedLines": [
+        "lime zest",
+        "chop roasted peanuts"
+      ],
+      "lines": [
+        {
+          "raw": "cilantro",
+          "canonical": "cilantro",
+          "normValue": 1,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "cucumbers",
+          "canonical": "cucumber",
+          "normValue": 2,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "jalapeno pepper",
+          "canonical": "jalapeno pepper",
+          "normValue": 7,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 2
+        },
+        {
+          "raw": "lime juice",
+          "canonical": "lime juice",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "lime zest",
+          "canonical": "lime zest",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "onions",
+          "canonical": "onion",
+          "normValue": 40,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 14
+        },
+        {
+          "raw": "rice wine vinegar",
+          "canonical": "rice wine vinegar",
+          "normValue": 120,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "chop roasted peanuts",
+          "canonical": "chop roasted peanuts",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "salt",
+          "canonical": "salt",
+          "normValue": 6.083333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "coconut & sesame oil",
+          "canonical": "coconut & sesame oil",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "soy sauce",
+          "canonical": "soy sauce",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "sugar",
+          "canonical": "sugar",
+          "normValue": 50,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 190
+        },
+        {
+          "raw": "thai garlic chili pepper sauce",
+          "canonical": "thai garlic chili pepper sauce",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "pepper",
+          "canonical": "pepper",
+          "normValue": 0.625,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.38,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69c4766a7393a7f0235b89c9",
+      "title": "Butternut Squash Souffle Side Dish",
+      "servings": 4,
+      "storedCalories": 7,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 8,
+      "gramLinesWithNutrition": 3,
+      "gramLinesTotal": 3,
+      "unmatchedLines": [],
+      "lines": [
+        {
+          "raw": "butternut squash",
+          "canonical": "butternut squash",
+          "normValue": 75,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 27
+        },
+        {
+          "raw": "cinnamon",
+          "canonical": "cinnamon",
+          "normValue": 1.25,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "egg whites",
+          "canonical": "egg white",
+          "normValue": 3,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "egg yolks",
+          "canonical": "egg yolks",
+          "normValue": 2,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "ground ginger",
+          "canonical": "ground ginger",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "heavy cream",
+          "canonical": "heavy cream",
+          "normValue": 120,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "nutmeg",
+          "canonical": "nutmeg",
+          "normValue": 0.703125,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "milk",
+          "canonical": "milk",
+          "normValue": 60,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.17,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69c4766a7393a7f0235b89ca",
+      "title": "Banana Creme Brulee",
+      "servings": 8,
+      "storedCalories": 48,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 6,
+      "gramLinesWithNutrition": 1,
+      "gramLinesTotal": 1,
+      "unmatchedLines": [
+        "little demerara sugar"
+      ],
+      "lines": [
+        {
+          "raw": "bananas",
+          "canonical": "bananas",
+          "normValue": 2,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "little demerara sugar",
+          "canonical": "little demerara sugar",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "egg yolks",
+          "canonical": "egg yolks",
+          "normValue": 3,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "heavy cream",
+          "canonical": "heavy cream",
+          "normValue": 450,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "sugar",
+          "canonical": "sugar",
+          "normValue": 100,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 380
+        },
+        {
+          "raw": "vanilla pod",
+          "canonical": "vanilla pod",
+          "normValue": 1,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.57,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69c4766a7393a7f0235b89cc",
+      "title": "Julia Child's Ratatouille",
+      "servings": 6,
+      "storedCalories": 32,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 7,
+      "gramLinesWithNutrition": 4,
+      "gramLinesTotal": 4,
+      "unmatchedLines": [
+        "eggplant"
+      ],
+      "lines": [
+        {
+          "raw": "eggplant",
+          "canonical": "eggplant",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "garlic",
+          "canonical": "garlic",
+          "normValue": 2,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "bell peppers",
+          "canonical": "bell pepper",
+          "normValue": 150,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 30
+        },
+        {
+          "raw": "olive oil",
+          "canonical": "olive oil",
+          "normValue": 35,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "parsley",
+          "canonical": "parsley",
+          "normValue": 3.75,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 1
+        },
+        {
+          "raw": "onion",
+          "canonical": "onion",
+          "normValue": 240,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 84
+        },
+        {
+          "raw": "zucchini",
+          "canonical": "zucchini",
+          "normValue": 453.6,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 77
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0,
+      "proposal": "already-flagged",
+      "id": "69c473017393a7f0235b89b5",
+      "title": "Kyuri Tsukemono",
+      "servings": 4,
+      "storedCalories": 49,
+      "nutritionUnavailable": true,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 4,
+      "gramLinesWithNutrition": 0,
+      "gramLinesTotal": 0,
+      "unmatchedLines": [
+        "japanese cucumbers"
+      ],
+      "lines": [
+        {
+          "raw": "japanese cucumbers",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "soy sauce",
+          "canonical": "soy sauce",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "rice vinegar",
+          "canonical": "rice vinegar",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "sesame oil",
+          "canonical": "sesame oil",
+          "normValue": 5,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.4,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69d191951648bcfb8b552615",
+      "title": "Zesty Avocado Toast with Ginger-Shallot Relish",
+      "servings": 2,
+      "storedCalories": 5,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 10,
+      "gramLinesWithNutrition": 4,
+      "gramLinesTotal": 4,
+      "unmatchedLines": [
+        "Bread slices"
+      ],
+      "lines": [
+        {
+          "raw": "Ripe Avocados",
+          "canonical": "ripe avocado",
+          "normValue": 2,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Bread slices",
+          "canonical": "bread slices",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Shallot",
+          "canonical": "shallot",
+          "normValue": 40,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 8
+        },
+        {
+          "raw": "Red Onion",
+          "canonical": "red onion",
+          "normValue": 0.25,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Fresh Ginger",
+          "canonical": "fresh ginger",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Lime",
+          "canonical": "lime",
+          "normValue": 0.5,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Fresh Cilantro",
+          "canonical": "fresh cilantro",
+          "normValue": 3.125,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 1
+        },
+        {
+          "raw": "Olive Oil",
+          "canonical": "olive oil",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salt",
+          "canonical": "salt",
+          "normValue": 3.0416666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "Black Pepper",
+          "canonical": "black pepper",
+          "normValue": 0.78125,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.3,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69d5776887d5d72710ae8ec3",
+      "title": "Creamy Tomato Soup with Pan-Seared Dumplings & Balsamic-Cola Dressed Salad",
+      "servings": 2,
+      "storedCalories": 13,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 10,
+      "gramLinesWithNutrition": 3,
+      "gramLinesTotal": 3,
+      "unmatchedLines": [
+        "Creamy tomato soup (canned or carton)",
+        "Salt and black pepper"
+      ],
+      "lines": [
+        {
+          "raw": "Creamy tomato soup (canned or carton)",
+          "canonical": "creamy tomato soup (canned or carton)",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Frozen dumplings (veggie or pork)",
+          "canonical": "frozen dumplings (chicken or veggie)",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Olive oil",
+          "canonical": "olive oil",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salad greens",
+          "canonical": "salad greens",
+          "normValue": 140,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 18
+        },
+        {
+          "raw": "Tomatoes",
+          "canonical": "tomato",
+          "normValue": 1,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Red onion",
+          "canonical": "red onion",
+          "normValue": 0.25,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Balsamic vinegar",
+          "canonical": "balsamic vinegar",
+          "normValue": 22.5,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Cola (regular)",
+          "canonical": "cola (regular)",
+          "normValue": 15.375,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 6
+        },
+        {
+          "raw": "Dijon mustard",
+          "canonical": "dijon mustard",
+          "normValue": 2.6041666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 2
+        },
+        {
+          "raw": "Salt and black pepper",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.38,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69d191951648bcfb8b55261d",
+      "title": "Black Bean Burgers with Caramelized Onions & Avocado Mash",
+      "servings": 2,
+      "storedCalories": 29,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 13,
+      "gramLinesWithNutrition": 5,
+      "gramLinesTotal": 5,
+      "unmatchedLines": [
+        "Black Bean Burgers (store-bought or homemade)",
+        "Tomato Slices"
+      ],
+      "lines": [
+        {
+          "raw": "Black Bean Burgers (store-bought or homemade)",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Burger Buns",
+          "canonical": "burger buns",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Yellow Onion",
+          "canonical": "yellow onion",
+          "normValue": 110,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 44
+        },
+        {
+          "raw": "Shallot",
+          "canonical": "shallot",
+          "normValue": 40,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 8
+        },
+        {
+          "raw": "Ripe Avocados",
+          "canonical": "ripe avocado",
+          "normValue": 1.5,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Fresh Ginger",
+          "canonical": "fresh ginger",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Lime or Lemon",
+          "canonical": "lime or lemon",
+          "normValue": 0.5,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Balsamic Vinegar",
+          "canonical": "balsamic vinegar",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Olive Oil",
+          "canonical": "olive oil",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salt",
+          "canonical": "salt",
+          "normValue": 3.0416666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "Black Pepper",
+          "canonical": "black pepper",
+          "normValue": 0.78125,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "Lettuce Leaves",
+          "canonical": "lettuce leaves",
+          "normValue": 30,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 5
+        },
+        {
+          "raw": "Tomato Slices",
+          "canonical": "tomato slices",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.89,
+      "proposal": "review-servings-or-flag",
+      "id": "69c5c81c64ee1f17b0563dd0",
+      "title": "Apple Curry Soup",
+      "servings": 1,
+      "storedCalories": 1691,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 9,
+      "gramLinesWithNutrition": 8,
+      "gramLinesTotal": 8,
+      "unmatchedLines": [
+        "granny smith apples"
+      ],
+      "lines": [
+        {
+          "raw": "apple cider",
+          "canonical": "apple cider",
+          "normValue": 680.4000000000001,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 320
+        },
+        {
+          "raw": "coconut milk",
+          "canonical": "coconut milk",
+          "normValue": 198.45000000000002,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 44
+        },
+        {
+          "raw": "curry powder",
+          "canonical": "curry powder",
+          "normValue": 4.166666666666666,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 10
+        },
+        {
+          "raw": "chavrie goat cheese",
+          "canonical": "chavrie goat cheese",
+          "normValue": 226,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 655
+        },
+        {
+          "raw": "granny smith apples",
+          "canonical": "granny smith apples",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "leeks",
+          "canonical": "leek",
+          "normValue": 178,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 41
+        },
+        {
+          "raw": "turmeric",
+          "canonical": "turmeric",
+          "normValue": 1.0416666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "vegetable oil",
+          "canonical": "vegetable oil",
+          "normValue": 56.7,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 510
+        },
+        {
+          "raw": "mushrooms",
+          "canonical": "mushroom",
+          "normValue": 70,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 111
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.25,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69d04b0f26a6c4c3877dfcc9",
+      "title": "Kale With Red Onion",
+      "servings": 8,
+      "storedCalories": 25,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 4,
+      "gramLinesWithNutrition": 1,
+      "gramLinesTotal": 1,
+      "unmatchedLines": [],
+      "lines": [
+        {
+          "raw": "kale",
+          "canonical": "kale",
+          "normValue": 250,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 83
+        },
+        {
+          "raw": "onion",
+          "canonical": "onion",
+          "normValue": 0.5,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "olive oil",
+          "canonical": "olive oil",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "garlic",
+          "canonical": "garlic",
+          "normValue": 2,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.18,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69d5776887d5d72710ae8ecc",
+      "title": "Hearty Beef Broth with Dumplings, Zesty Red Onion & Tomato Gremolata, & Side Salad",
+      "servings": 2,
+      "storedCalories": 10,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 11,
+      "gramLinesWithNutrition": 2,
+      "gramLinesTotal": 2,
+      "unmatchedLines": [
+        "Condensed beef broth or consommé",
+        "Lemon-lime soda (or club soda)",
+        "Salt and black pepper"
+      ],
+      "lines": [
+        {
+          "raw": "Condensed beef broth or consommé",
+          "canonical": "condensed beef broth or consommé",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Water",
+          "canonical": "water",
+          "normValue": 360,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Frozen dumplings (beef or veggie)",
+          "canonical": "frozen dumplings (chicken or veggie)",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Tomatoes",
+          "canonical": "tomato",
+          "normValue": 1,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Red onion",
+          "canonical": "red onion",
+          "normValue": 0.25,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Fresh parsley",
+          "canonical": "fresh parsley, chopped",
+          "normValue": 3.125,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 1
+        },
+        {
+          "raw": "Lemon-lime soda (or club soda)",
+          "canonical": "lemon-lime soda (or club soda)",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Lemon juice",
+          "canonical": "lemon juice",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salad greens",
+          "canonical": "salad greens",
+          "normValue": 140,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 18
+        },
+        {
+          "raw": "Olive oil",
+          "canonical": "olive oil",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salt and black pepper",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.33,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69d5776887d5d72710ae8ec9",
+      "title": "Creamy Chicken & Dumpling Soup with Cola-Caramelized Red Onions & Crisp Greens",
+      "servings": 2,
+      "storedCalories": 37,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 12,
+      "gramLinesWithNutrition": 4,
+      "gramLinesTotal": 4,
+      "unmatchedLines": [
+        "Cream of chicken or mushroom soup (condensed)",
+        "Milk or chicken broth",
+        "White wine vinegar or lemon juice",
+        "Salt and pepper"
+      ],
+      "lines": [
+        {
+          "raw": "Cream of chicken or mushroom soup (condensed)",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Milk or chicken broth",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Cooked chicken (shredded, optional)",
+          "canonical": "cooked chicken (shredded, optional)",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Frozen dumplings (chicken or veggie)",
+          "canonical": "frozen dumplings (chicken or veggie)",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Red onion",
+          "canonical": "red onion",
+          "normValue": 0.5,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Cola (regular)",
+          "canonical": "cola (regular)",
+          "normValue": 61.5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 25
+        },
+        {
+          "raw": "Brown sugar",
+          "canonical": "brown sugar",
+          "normValue": 4.583333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 17
+        },
+        {
+          "raw": "Olive oil",
+          "canonical": "olive oil",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salad greens",
+          "canonical": "salad greens",
+          "normValue": 140,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 18
+        },
+        {
+          "raw": "Cherry tomatoes",
+          "canonical": "cherry tomato",
+          "normValue": 74.5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 13
+        },
+        {
+          "raw": "White wine vinegar or lemon juice",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "Salt and pepper",
+          "canonical": "salt and pepper",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.6,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "69c5c81c64ee1f17b0563dcf",
+      "title": "Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant",
+      "servings": 6,
+      "storedCalories": 20,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 15,
+      "gramLinesWithNutrition": 9,
+      "gramLinesTotal": 9,
+      "unmatchedLines": [
+        "black-eyed peas",
+        "globe"
+      ],
+      "lines": [
+        {
+          "raw": "black-eyed peas",
+          "canonical": "black-eyed peas",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "curry powder",
+          "canonical": "curry powder",
+          "normValue": 4.166666666666666,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 10
+        },
+        {
+          "raw": "garam masala",
+          "canonical": "garam masala",
+          "normValue": 1.25,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 5
+        },
+        {
+          "raw": "globe",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "ground coriander",
+          "canonical": "ground coriander",
+          "normValue": 1.3020833333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 4
+        },
+        {
+          "raw": "ground cumin",
+          "canonical": "ground cumin",
+          "normValue": 1.0416666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 4
+        },
+        {
+          "raw": "ground mustard powder",
+          "canonical": "ground mustard powder",
+          "normValue": 1.0416666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 5
+        },
+        {
+          "raw": "juice of lemon",
+          "canonical": "juice of lemon",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "olive oil",
+          "canonical": "olive oil",
+          "normValue": 10,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "chilies",
+          "canonical": "chilli",
+          "normValue": 10,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 8
+        },
+        {
+          "raw": "sea salt",
+          "canonical": "sea salt",
+          "normValue": 5.833333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "shallots",
+          "canonical": "shallot",
+          "normValue": 80,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 16
+        },
+        {
+          "raw": "swiss chard",
+          "canonical": "swiss chard",
+          "normValue": 350,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 67
+        },
+        {
+          "raw": "tomato",
+          "canonical": "tomato",
+          "normValue": 1,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "water",
+          "canonical": "water",
+          "normValue": 75,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.5,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "6a42e050d33617bebef22d80",
+      "title": "Tart Raspberry Sorbet with a Hint of Heat",
+      "servings": 6,
+      "storedCalories": 8,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 6,
+      "gramLinesWithNutrition": 3,
+      "gramLinesTotal": 3,
+      "unmatchedLines": [
+        "raspberry jam"
+      ],
+      "lines": [
+        {
+          "raw": "cardamon powder",
+          "canonical": "cardamom powder",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "chili",
+          "canonical": "chili",
+          "normValue": 5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 1
+        },
+        {
+          "raw": "juice of lime",
+          "canonical": "juice of lime",
+          "normValue": 15,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 1
+        },
+        {
+          "raw": "raspberries",
+          "canonical": "raspberries",
+          "normValue": 184.5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 46
+        },
+        {
+          "raw": "raspberry jam",
+          "canonical": "raspberry jam",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "grape juice",
+          "canonical": "grape juice",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.29,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "6a5ff992a91e3f027a2961eb",
+      "title": "Carrot and Coriander Soup",
+      "servings": 1,
+      "storedCalories": 8,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 7,
+      "gramLinesWithNutrition": 2,
+      "gramLinesTotal": 2,
+      "unmatchedLines": [
+        "carrots-peeled",
+        "onion-chopped"
+      ],
+      "lines": [
+        {
+          "raw": "carrots-peeled",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "onion-chopped",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "olive oil",
+          "canonical": "olive oil",
+          "normValue": 15,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "ground coriander",
+          "canonical": "ground coriander",
+          "normValue": 2.6041666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 8
+        },
+        {
+          "raw": "orange juice",
+          "canonical": "orange juice",
+          "normValue": 60,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "water",
+          "canonical": "water",
+          "normValue": 240,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "pepper",
+          "canonical": "pepper",
+          "normValue": 1.25,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.44,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "6a5ffd1ca91e3f027a2961f9",
+      "title": "Pad Se Ew Tofu With Vegetable Noodles",
+      "servings": 6,
+      "storedCalories": 49,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 16,
+      "gramLinesWithNutrition": 7,
+      "gramLinesTotal": 7,
+      "unmatchedLines": [
+        "precooked vegetable noodles",
+        "soy bean paste",
+        "roasted onions"
+      ],
+      "lines": [
+        {
+          "raw": "tofu",
+          "canonical": "tofu",
+          "normValue": 226.8,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 166
+        },
+        {
+          "raw": "precooked vegetable noodles",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "oyster sauce",
+          "canonical": "oyster sauce",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "soy bean paste",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "soy sauce",
+          "canonical": "soy sauce",
+          "normValue": 22.5,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "sugar",
+          "canonical": "sugar",
+          "normValue": 4.166666666666666,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 16
+        },
+        {
+          "raw": "vinegar",
+          "canonical": "vinegar",
+          "normValue": 5,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "pepper",
+          "canonical": "pepper",
+          "normValue": 0.625,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "broccoli",
+          "canonical": "broccoli",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "bell pepper",
+          "canonical": "bell pepper",
+          "normValue": 120,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 24
+        },
+        {
+          "raw": "bell pepper",
+          "canonical": "bell pepper",
+          "normValue": 120,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 24
+        },
+        {
+          "raw": "carrot",
+          "canonical": "carrot",
+          "normValue": 128,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 44
+        },
+        {
+          "raw": "roasted onions",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "garlic cloves",
+          "canonical": "garlic clove",
+          "normValue": 4,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "eggs",
+          "canonical": "egg",
+          "normValue": 3,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "siracha",
+          "canonical": "sriracha",
+          "normValue": 19.5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 18
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.5,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "6a7b9cdf8427001f36231d76",
+      "title": "Goan-Style Curry Mussels with Coconut, Lime, and Cilantro",
+      "servings": 4,
+      "storedCalories": 15,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 16,
+      "gramLinesWithNutrition": 8,
+      "gramLinesTotal": 8,
+      "unmatchedLines": [
+        "mussels"
+      ],
+      "lines": [
+        {
+          "raw": "mussels",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "coconut milk",
+          "canonical": "coconut milk",
+          "normValue": 480,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "white onion",
+          "canonical": "white onion",
+          "normValue": 1,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "garlic",
+          "canonical": "garlic",
+          "normValue": 4,
+          "normUnit": "pc",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "ginger root",
+          "canonical": "ginger root",
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "curry powder",
+          "canonical": "curry powder",
+          "normValue": 4.166666666666666,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 10
+        },
+        {
+          "raw": "garam masala",
+          "canonical": "garam masala",
+          "normValue": 2.5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 9
+        },
+        {
+          "raw": "ground turmeric",
+          "canonical": "ground turmeric",
+          "normValue": 2.083333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "cumin",
+          "canonical": "cumin",
+          "normValue": 2.5,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "chilli flakes",
+          "canonical": "chilli flakes",
+          "normValue": 1.4583333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 4
+        },
+        {
+          "raw": "canned tomatoes",
+          "canonical": "canned tomatoes",
+          "normValue": 175,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 33
+        },
+        {
+          "raw": "evoo",
+          "canonical": "olive oil",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "lime juice",
+          "canonical": "lime juice",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "coriander leaves",
+          "canonical": "coriander leaves",
+          "normValue": 8,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 1
+        },
+        {
+          "raw": "kosher salt",
+          "canonical": "kosher salt",
+          "normValue": 2.6666666666666665,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "water",
+          "canonical": "water",
+          "normValue": 120,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.13,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "6a863c85753b0060c3baeaf1",
+      "title": "Warm Chickpea, Mushroom, and Rice Noodle Bowl with Rosemary Tomato Broth",
+      "servings": 2,
+      "storedCalories": 0,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 15,
+      "gramLinesWithNutrition": 2,
+      "gramLinesTotal": 2,
+      "unmatchedLines": [
+        "JS RICE NOODLES 300G",
+        "JS CHICKPEAS",
+        "CLASSIC TOMATOES X6",
+        "JS RED ONIONS X3",
+        "CARROTS LOOSE",
+        "JS CUCUMBER WHOLE",
+        "JS LETTUCE ROUND",
+        "JS CLOSED CUP MUSHRM",
+        "JS LARGE F WH MSHRM",
+        "JS ROSEMARY",
+        "WIKINGER HOT DOGS 8S"
+      ],
+      "lines": [
+        {
+          "raw": "JS RICE NOODLES 300G",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS CHICKPEAS",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "CLASSIC TOMATOES X6",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS RED ONIONS X3",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "CARROTS LOOSE",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS CUCUMBER WHOLE",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS LETTUCE ROUND",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS CLOSED CUP MUSHRM",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS LARGE F WH MSHRM",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS ROSEMARY",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "WIKINGER HOT DOGS 8S",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "oil",
+          "canonical": "oil",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "salt",
+          "canonical": "salt",
+          "normValue": 6.083333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "black pepper",
+          "canonical": "black pepper",
+          "normValue": 1.5625,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "water",
+          "canonical": "water",
+          "normValue": 750,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        }
+      ]
+    },
+    {
+      "lineCoverage": 0.2,
+      "proposal": "flag-nutritionUnavailable",
+      "id": "6a88c731b58cdb4d516136af",
+      "title": "Warm Chickpea, Mushroom, and Rice Noodle Salad",
+      "servings": 3,
+      "storedCalories": 5,
+      "nutritionUnavailable": false,
+      "autoApprovedBatchId": null,
+      "ingredientLines": 15,
+      "gramLinesWithNutrition": 3,
+      "gramLinesTotal": 3,
+      "unmatchedLines": [
+        "JS RICE NOODLES",
+        "JS CHICKPEAS",
+        "CLASSIC TOMATOES",
+        "JS CLOSED CUP MUSHRM",
+        "JS LARGE F WH MSHRM",
+        "JS RED ONIONS",
+        "CARROTS LOOSE",
+        "JS CUCUMBER WHOLE",
+        "JS LETTUCE ROUND",
+        "JS ROSEMARY"
+      ],
+      "lines": [
+        {
+          "raw": "JS RICE NOODLES",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS CHICKPEAS",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "CLASSIC TOMATOES",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS CLOSED CUP MUSHRM",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS LARGE F WH MSHRM",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS RED ONIONS",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "CARROTS LOOSE",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS CUCUMBER WHOLE",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS LETTUCE ROUND",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "JS ROSEMARY",
+          "canonical": null,
+          "normValue": null,
+          "normUnit": null,
+          "hasNutrition": false,
+          "kcalContribution": null
+        },
+        {
+          "raw": "oil",
+          "canonical": "oil",
+          "normValue": 30,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "salt",
+          "canonical": "salt",
+          "normValue": 6.083333333333333,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "black pepper",
+          "canonical": "black pepper",
+          "normValue": 1.5625,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 0
+        },
+        {
+          "raw": "water",
+          "canonical": "water",
+          "normValue": 480,
+          "normUnit": "ml",
+          "hasNutrition": true,
+          "kcalContribution": null
+        },
+        {
+          "raw": "sugar",
+          "canonical": "sugar",
+          "normValue": 4.166666666666666,
+          "normUnit": "g",
+          "hasNutrition": true,
+          "kcalContribution": 16
+        }
+      ]
+    }
+  ],
+  "lowercaseTitles": [
+    {
+      "id": "69fa56304476f68485ccfcec",
+      "title": "fennel, Peppers, Lettuce Salad"
+    }
+  ],
+  "junkMealType": [
+    {
+      "id": "69b1db93974afef25b93a463",
+      "title": "Pesto & Yogurt Pasta",
+      "mealType": "pasta",
+      "bad": [
+        "pasta"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a454",
+      "title": "Quick Chicken Enchilada Soup",
+      "mealType": "quick",
+      "bad": [
+        "quick"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a45d",
+      "title": "Berry Fruit Crumble",
+      "mealType": "healthy",
+      "bad": [
+        "healthy"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a45e",
+      "title": "Blackberry Clafoutis",
+      "mealType": "healthy",
+      "bad": [
+        "healthy"
+      ]
+    },
+    {
+      "id": "69b1db92974afef25b93a44d",
+      "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+      "mealType": "trending",
+      "bad": [
+        "trending"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a462",
+      "title": "Italian Tuna Pasta",
+      "mealType": "pasta",
+      "bad": [
+        "pasta"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a464",
+      "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+      "mealType": "pasta",
+      "bad": [
+        "pasta"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a471",
+      "title": "Asparagus and Pea Soup: Real Convenience Food",
+      "mealType": "vegetarian",
+      "bad": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a473",
+      "title": "Red Kidney Bean Jambalaya",
+      "mealType": "vegetarian",
+      "bad": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a474",
+      "title": "Cauliflower, Brown Rice, and Vegetable Fried Rice",
+      "mealType": "vegetarian",
+      "bad": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a453",
+      "title": "Quick and Easy Scallop Pasta",
+      "mealType": "quick",
+      "bad": [
+        "quick"
+      ]
+    },
+    {
+      "id": "69b1db92974afef25b93a44a",
+      "title": "Chicken and Mango Skewer",
+      "mealType": "trending",
+      "bad": [
+        "trending"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a461",
+      "title": "Pasta With Tuna",
+      "mealType": "pasta",
+      "bad": [
+        "pasta"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a465",
+      "title": "Pasta with Butternut Squash, Sausage and Sage Pesto",
+      "mealType": "pasta",
+      "bad": [
+        "pasta"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a466",
+      "title": "Pasta With Cream Sauce and Mushrooms",
+      "mealType": "pasta",
+      "bad": [
+        "pasta"
+      ]
+    },
+    {
+      "id": "69b1db92974afef25b93a44b",
+      "title": "Cheesy Chicken Enchilada Quinoa Casserole",
+      "mealType": "trending",
+      "bad": [
+        "trending"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a451",
+      "title": "Grilled Ham and Cheese French Toast For A Quick Weeknight Dinner",
+      "mealType": "quick",
+      "bad": [
+        "quick"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a455",
+      "title": "Quick and Easy Southwestern Corn Chowder",
+      "mealType": "quick",
+      "bad": [
+        "quick"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a456",
+      "title": "Clear & Quick Chicken Soup",
+      "mealType": "quick",
+      "bad": [
+        "quick"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a459",
+      "title": "Healthy Hazelnut Cookies",
+      "mealType": "healthy",
+      "bad": [
+        "healthy"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a45a",
+      "title": "Scotch Eggs",
+      "mealType": "healthy",
+      "bad": [
+        "healthy"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a45b",
+      "title": "Macha Macarons",
+      "mealType": "healthy",
+      "bad": [
+        "healthy"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a45c",
+      "title": "Chess Pie Two Ways",
+      "mealType": "healthy",
+      "bad": [
+        "healthy"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a472",
+      "title": "Garlicky Kale",
+      "mealType": "vegetarian",
+      "bad": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "69b1db92974afef25b93a44c",
+      "title": "Chicken Suya",
+      "mealType": "trending",
+      "bad": [
+        "trending"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a475",
+      "title": "Quinoa and Chickpea Salad with Sun-Dried Tomatoes and Dried Cherries",
+      "mealType": "vegetarian",
+      "bad": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "69b1db92974afef25b93a449",
+      "title": "Red Lentil Soup with Chicken and Turnips",
+      "mealType": "trending",
+      "bad": [
+        "trending"
+      ]
+    },
+    {
+      "id": "69b1db92974afef25b93a44e",
+      "title": "Chicken Piccata With Angel Hair Pasta",
+      "mealType": "trending",
+      "bad": [
+        "trending"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a452",
+      "title": "Quick and Easy Caprese Salad",
+      "mealType": "quick",
+      "bad": [
+        "quick"
+      ]
+    },
+    {
+      "id": "69b1db93974afef25b93a476",
+      "title": "Easy Homemade Rice and Beans",
+      "mealType": "vegetarian",
+      "bad": [
+        "vegetarian"
+      ]
+    },
+    {
+      "id": "6a6cfa88901ee72fdac2149f",
+      "title": "Tuscan Broccolini Quinoa Pilaf with Lemon, Herbs, and Goat Cheese",
+      "mealType": "side dish",
+      "bad": [
+        "side dish"
+      ]
+    }
+  ],
+  "junkValueCounts": {
+    "pasta": 6,
+    "quick": 6,
+    "healthy": 6,
+    "trending": 6,
+    "vegetarian": 6,
+    "side dish": 1
+  }
+}
