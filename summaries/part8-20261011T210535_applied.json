@@ -1,0 +1,340 @@
+{
+  "batch": "part8-20261011T210535",
+  "appliedAt": "2026-10-11T21:05:35.930Z",
+  "plan": "part8_apply_dryrun_2026-10-11.json",
+  "flags": [
+    "69c473017393a7f0235b89b9",
+    "69c4766a7393a7f0235b89c9",
+    "69c4766a7393a7f0235b89ca",
+    "69c4766a7393a7f0235b89cc",
+    "69d191951648bcfb8b552615",
+    "69d5776887d5d72710ae8ec3",
+    "69d191951648bcfb8b55261d",
+    "69d04b0f26a6c4c3877dfcc9",
+    "69d5776887d5d72710ae8ecc",
+    "69d5776887d5d72710ae8ec9",
+    "69c5c81c64ee1f17b0563dcf",
+    "6a42e050d33617bebef22d80",
+    "6a5ff992a91e3f027a2961eb",
+    "6a5ffd1ca91e3f027a2961f9",
+    "6a7b9cdf8427001f36231d76",
+    "6a863c85753b0060c3baeaf1",
+    "6a88c731b58cdb4d516136af"
+  ],
+  "apple": {
+    "id": "69c5c81c64ee1f17b0563dd0",
+    "modified": 1,
+    "servingsBefore": 1,
+    "servingsAfter": 4,
+    "nutritionBefore": {
+      "calories": 1691,
+      "protein": 62.6,
+      "carbs": 105.1,
+      "fat": 115,
+      "nutritionApproximate": true
+    },
+    "nutritionAfter": {
+      "calories": 423,
+      "protein": 15.7,
+      "carbs": 26.3,
+      "fat": 28.8,
+      "nutritionApproximate": true
+    },
+    "recipeCostDocBefore": {
+      "_id": "6a64a445e10090ff55bd9f6b",
+      "recipeId": "69c5c81c64ee1f17b0563dd0",
+      "adjustedCoveragePct": 88.88888888888889,
+      "adjustedPriceable": 8,
+      "adjustedTotal": 9,
+      "basket": 10.697871666666666,
+      "computedAt": "2026-10-11T03:00:15.001Z",
+      "coveragePct": 88.88888888888889,
+      "currency": "GBP",
+      "junkLineCount": 0,
+      "lines": [
+        {
+          "priceable": true,
+          "rawName": "apple cider",
+          "quantity": 24,
+          "rawUnit": "ounces",
+          "canonical_name": "apple cider",
+          "normValue": 680.4000000000001,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.00585,
+          "lineCost": 3.9803400000000004,
+          "displayNote": null,
+          "isPantry": false,
+          "store": "sainsburys.co.uk",
+          "productTitle": null
+        },
+        {
+          "priceable": true,
+          "rawName": "coconut milk",
+          "quantity": 7,
+          "rawUnit": "ounces",
+          "canonical_name": "coconut milk",
+          "normValue": 198.45000000000002,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.00245,
+          "lineCost": 0.48620250000000004,
+          "displayNote": null,
+          "isPantry": false,
+          "store": "Tesco",
+          "productTitle": "Tesco Coconut Milk 400Ml"
+        },
+        {
+          "priceable": true,
+          "rawName": "curry powder",
+          "quantity": 2,
+          "rawUnit": "teaspoons",
+          "canonical_name": "curry powder",
+          "normValue": 4.166666666666666,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.0169,
+          "lineCost": 0.07041666666666666,
+          "displayNote": null,
+          "isPantry": false,
+          "store": "sainsburys.co.uk",
+          "productTitle": null
+        },
+        {
+          "priceable": true,
+          "rawName": "chavrie goat cheese",
+          "quantity": 2,
+          "rawUnit": "packages",
+          "canonical_name": "chavrie goat cheese",
+          "normValue": 226,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.022949999999999998,
+          "lineCost": 5.186699999999999,
+          "displayNote": "2 packages chavrie goat cheese (≈226g, Table C estimate)",
+          "isPantry": false,
+          "store": "Waitrose & Partners",
+          "productTitle": null
+        },
+        {
+          "priceable": false,
+          "rawName": "granny smith apples",
+          "quantity": 2,
+          "rawUnit": "inches",
+          "canonical_name": "granny smith apples",
+          "reason": "unmapped_unit",
+          "isPantry": false
+        },
+        {
+          "priceable": true,
+          "rawName": "leeks",
+          "quantity": 2,
+          "rawUnit": "",
+          "canonical_name": "leek",
+          "normValue": 178,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.0027,
+          "lineCost": 0.4806,
+          "displayNote": "2 leek (≈178g)",
+          "isPantry": false,
+          "store": "Waitrose & Partners",
+          "productTitle": "Fresh Leeks Essential Waitrose"
+        },
+        {
+          "priceable": true,
+          "rawName": "turmeric",
+          "quantity": 0.5,
+          "rawUnit": "teaspoon",
+          "canonical_name": "turmeric",
+          "normValue": 1.0416666666666665,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.015899999999999997,
+          "lineCost": 0.016562499999999994,
+          "displayNote": null,
+          "isPantry": false,
+          "store": "Morrisons.com",
+          "productTitle": "Indus Turmeric Powder"
+        },
+        {
+          "priceable": true,
+          "rawName": "vegetable oil",
+          "quantity": 2,
+          "rawUnit": "ounces",
+          "canonical_name": "vegetable oil",
+          "normValue": 56.7,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.0015,
+          "lineCost": 0.08505,
+          "displayNote": null,
+          "isPantry": false,
+          "store": "sainsburys.co.uk",
+          "productTitle": "Sainsbury's Vegetable Oil 3L"
+        },
+        {
+          "priceable": true,
+          "rawName": "mushrooms",
+          "quantity": 1,
+          "rawUnit": "cup",
+          "canonical_name": "mushroom",
+          "normValue": 70,
+          "normUnit": "g",
+          "bucket": "metric",
+          "perUnit": 0.0056,
+          "lineCost": 0.392,
+          "displayNote": null,
+          "isPantry": false,
+          "store": "Asda Groceries",
+          "productTitle": "JUST ESSENTIALS Mushrooms"
+        }
+      ],
+      "pantryLineCount": 0,
+      "perServing": 10.697871666666666,
+      "priceCacheStamp": 1784587647589,
+      "priceableCount": 8,
+      "totalLines": 9,
+      "unpriceableReasons": {
+        "unmapped_unit": 1
+      }
+    }
+  },
+  "withdrawals": [
+    "6a863c85753b0060c3baeaf1",
+    "6a88c731b58cdb4d516136af"
+  ],
+  "title": {
+    "id": "69fa56304476f68485ccfcec",
+    "modified": 1,
+    "before": "fennel, Peppers, Lettuce Salad",
+    "after": "Fennel, Pepper & Lettuce Salad"
+  },
+  "mealType": [
+    {
+      "id": "69b1db93974afef25b93a463",
+      "mealTypeBefore": "pasta"
+    },
+    {
+      "id": "69b1db93974afef25b93a454",
+      "mealTypeBefore": "quick"
+    },
+    {
+      "id": "69b1db93974afef25b93a45d",
+      "mealTypeBefore": "healthy"
+    },
+    {
+      "id": "69b1db93974afef25b93a45e",
+      "mealTypeBefore": "healthy"
+    },
+    {
+      "id": "69b1db92974afef25b93a44d",
+      "mealTypeBefore": "trending"
+    },
+    {
+      "id": "69b1db93974afef25b93a462",
+      "mealTypeBefore": "pasta"
+    },
+    {
+      "id": "69b1db93974afef25b93a464",
+      "mealTypeBefore": "pasta"
+    },
+    {
+      "id": "69b1db93974afef25b93a471",
+      "mealTypeBefore": "vegetarian"
+    },
+    {
+      "id": "69b1db93974afef25b93a473",
+      "mealTypeBefore": "vegetarian"
+    },
+    {
+      "id": "69b1db93974afef25b93a474",
+      "mealTypeBefore": "vegetarian"
+    },
+    {
+      "id": "69b1db93974afef25b93a453",
+      "mealTypeBefore": "quick"
+    },
+    {
+      "id": "69b1db92974afef25b93a44a",
+      "mealTypeBefore": "trending"
+    },
+    {
+      "id": "69b1db93974afef25b93a461",
+      "mealTypeBefore": "pasta"
+    },
+    {
+      "id": "69b1db93974afef25b93a465",
+      "mealTypeBefore": "pasta"
+    },
+    {
+      "id": "69b1db93974afef25b93a466",
+      "mealTypeBefore": "pasta"
+    },
+    {
+      "id": "69b1db92974afef25b93a44b",
+      "mealTypeBefore": "trending"
+    },
+    {
+      "id": "69b1db93974afef25b93a451",
+      "mealTypeBefore": "quick"
+    },
+    {
+      "id": "69b1db93974afef25b93a455",
+      "mealTypeBefore": "quick"
+    },
+    {
+      "id": "69b1db93974afef25b93a456",
+      "mealTypeBefore": "quick"
+    },
+    {
+      "id": "69b1db93974afef25b93a459",
+      "mealTypeBefore": "healthy"
+    },
+    {
+      "id": "69b1db93974afef25b93a45a",
+      "mealTypeBefore": "healthy"
+    },
+    {
+      "id": "69b1db93974afef25b93a45b",
+      "mealTypeBefore": "healthy"
+    },
+    {
+      "id": "69b1db93974afef25b93a45c",
+      "mealTypeBefore": "healthy"
+    },
+    {
+      "id": "69b1db93974afef25b93a472",
+      "mealTypeBefore": "vegetarian"
+    },
+    {
+      "id": "69b1db92974afef25b93a44c",
+      "mealTypeBefore": "trending"
+    },
+    {
+      "id": "69b1db93974afef25b93a475",
+      "mealTypeBefore": "vegetarian"
+    },
+    {
+      "id": "69b1db92974afef25b93a449",
+      "mealTypeBefore": "trending"
+    },
+    {
+      "id": "69b1db92974afef25b93a44e",
+      "mealTypeBefore": "trending"
+    },
+    {
+      "id": "69b1db93974afef25b93a452",
+      "mealTypeBefore": "quick"
+    },
+    {
+      "id": "69b1db93974afef25b93a476",
+      "mealTypeBefore": "vegetarian"
+    },
+    {
+      "id": "6a6cfa88901ee72fdac2149f",
+      "mealTypeBefore": "side dish"
+    }
+  ],
+  "skipped": []
+}
