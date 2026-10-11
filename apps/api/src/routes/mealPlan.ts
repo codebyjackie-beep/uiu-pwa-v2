@@ -62,6 +62,7 @@ export function toEntryView(doc: Document, recipeById: Map<string, Document>, co
       imageUrl: (recipe?.imageUrl as string) ?? "",
       calories: recipe ? Math.round((nutrition?.calories as number) ?? 0) : null,
       costPerServing: cost ? (cost.perServing as number) : null,
+      adjustedCoveragePct: cost ? (cost.adjustedCoveragePct as number) : null,
       protein: (nutrition?.protein as number | undefined) ?? null,
       carbs: (nutrition?.carbs as number | undefined) ?? null,
       fat: (nutrition?.fat as number | undefined) ?? null,

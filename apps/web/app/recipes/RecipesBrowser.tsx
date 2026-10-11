@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import type { ApiResponse, FavouriteRecipe, RecipeListItem } from "@uiu/shared";
+import { costDisplayTier, type ApiResponse, type FavouriteRecipe, type RecipeListItem } from "@uiu/shared";
 import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
@@ -11,6 +11,7 @@ import {
   type FilterDietary,
   type FilterMealType,
 } from "../lib/recipeFilters";
+import { CoveragePrice } from "../components/CoveragePrice";
 import { SaveFromLinkModal } from "./SaveFromLinkModal";
 
 const RANDOM_BROWSE_SIZE = 10;
@@ -45,10 +46,6 @@ const DIETARY_OPTIONS: { key: FilterDietary; label: string }[] = [
   { key: "paleo", label: "Paleo" },
 ];
 
-function formatPrice(cost: RecipeListItem["cost"]) {
-  if (!cost || cost.basket <= 0) return null;
-  return `£${cost.basket.toFixed(2)}`;
-}
 
 /** prep + cook, cc_prompt_recipe-list-redesign-and-cook-mode.md Part A §1 — 0 means
  * "no time data", not "instant", so the meta row omits it entirely rather than showing "0 min". */
@@ -195,6 +192,8 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
 
       if (priceBuckets.length > 0) {
         if (!recipe.cost || recipe.cost.basket <= 0) return false;
+        // Coverage < 50% → the number isn't trustworthy, so it must not land in any price bucket.
+        if (costDisplayTier(recipe.cost.adjustedCoveragePct) === "unavailable") return false;
         const buckets = PRICE_BUCKETS.filter((b) => priceBuckets.includes(b.key));
         if (!buckets.some((b) => b.test(recipe.cost!.basket))) return false;
       }
@@ -375,8 +374,13 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
               <div className="recipe-card__body">
                 <div className="recipe-card__header">
                   <p className="recipe-card__title">{recipe.title}</p>
-                  {formatPrice(recipe.cost) ? (
-                    <span className="recipe-card__price">{formatPrice(recipe.cost)}</span>
+                  {recipe.cost && recipe.cost.basket > 0 ? (
+                    <CoveragePrice
+                      value={recipe.cost.basket}
+                      coveragePct={recipe.cost.adjustedCoveragePct}
+                      className="recipe-card__price"
+                      pendingClassName="recipe-card__price--pending"
+                    />
                   ) : (
                     <span className="recipe-card__price recipe-card__price--pending">{costPendingLabel(recipe)}</span>
                   )}

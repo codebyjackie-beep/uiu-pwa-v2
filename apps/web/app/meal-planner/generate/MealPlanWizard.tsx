@@ -11,7 +11,8 @@ import type {
   MealSlot,
   UkAllergen,
 } from "@uiu/shared";
-import { UK_ALLERGENS } from "@uiu/shared";
+import { costIsIncomplete, formatTotalWithIncomplete, UK_ALLERGENS } from "@uiu/shared";
+import { CoveragePrice } from "../../components/CoveragePrice";
 
 /**
  * All wizard copy is original — see HANDOFF_ai-meal-plan-generator.md: the
@@ -96,9 +97,6 @@ function estimateCalories(gender: Gender, age: number, weightKg: number, heightC
   return Math.max(1000, Math.round((tdee + goalAdjustment) / 10) * 10);
 }
 
-function formatCost(value: number): string {
-  return `£${value.toFixed(2)}`;
-}
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 const TOTAL_STEPS = 9;
@@ -648,7 +646,7 @@ function PlanReview({
           <span className="meal-planner-summary__label">Meals</span>
         </div>
         <div className="meal-planner-summary__stat">
-          <span className="meal-planner-summary__value">{formatCost(plan.summary.totalCost)}</span>
+          <span className="meal-planner-summary__value">{formatTotalWithIncomplete(plan.summary.totalCost, plan.days.some((d) => d.entries.some((e) => costIsIncomplete(e.adjustedCoveragePct))))}</span>
           <span className="meal-planner-summary__label">Total cost</span>
         </div>
         <div className="meal-planner-summary__stat">
@@ -672,7 +670,7 @@ function PlanReview({
                 <span className="meal-planner-day__label">{day.date}</span>
                 <span className="meal-planner-day__header-right">
                   <span className="meal-planner-day__totals">
-                    {formatCost(day.totalCost)} · {Math.round(day.totalCalories)} cal
+                    {formatTotalWithIncomplete(day.totalCost, day.entries.some((e) => costIsIncomplete(e.adjustedCoveragePct)))} · {Math.round(day.totalCalories)} cal
                   </span>
                   <span className={`meal-planner-day__chevron${expanded ? " meal-planner-day__chevron--open" : ""}`}>▾</span>
                 </span>
@@ -692,7 +690,14 @@ function PlanReview({
                         <div className="recipe-card__body">
                           <p className="recipe-card__title">{entry.title}</p>
                           <div className="recipe-card__macros">
-                            {entry.costPerServing != null ? <span className="recipe-card__price">{formatCost(entry.costPerServing)}</span> : null}
+                            {entry.costPerServing != null ? (
+                              <CoveragePrice
+                                value={entry.costPerServing}
+                                coveragePct={entry.adjustedCoveragePct}
+                                className="recipe-card__price"
+                                pendingClassName="recipe-card__price--pending"
+                              />
+                            ) : null}
                             {entry.calories != null ? <span>{entry.calories} cal</span> : null}
                           </div>
                         </div>

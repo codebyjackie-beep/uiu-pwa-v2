@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { RecipeDetail, RecipeDetailCostLine } from "@uiu/shared";
+import { formatCostWithCoverage, type RecipeDetail, type RecipeDetailCostLine } from "@uiu/shared";
 import { apiGet } from "../../lib/api";
 import {
   costPendingLabel,
@@ -34,6 +34,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   const mealBadge = mealTypeBadge(recipe);
   const dietBadgeList = dietaryBadges(recipe);
   const hasCost = recipe.cost && recipe.cost.basket > 0;
+  const costDisplay = hasCost ? formatCostWithCoverage(recipe.cost!.perServing, recipe.cost!.adjustedCoveragePct) : null;
 
   return (
     <div className="recipe-detail">
@@ -66,7 +67,15 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           </span>
         </div>
         {hasCost ? (
-          <p className="cost-hero__price">£{recipe.cost!.perServing.toFixed(2)}</p>
+          <>
+            <p
+              className={`cost-hero__price${costDisplay!.tier === "unavailable" ? " cost-hero__price--pending" : ""}`}
+              title={costDisplay!.note}
+            >
+              {costDisplay!.text}
+            </p>
+            {costDisplay!.note ? <p className="cost-hero__note">{costDisplay!.note}</p> : null}
+          </>
         ) : (
           <p className="cost-hero__price cost-hero__price--pending">
             {costPendingLabel({ enrichmentAttempted: recipe.enrichmentAttempted, ingredientCount: recipe.ingredients.length })}

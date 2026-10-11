@@ -122,6 +122,55 @@ export interface RecipeListItemCost {
   adjustedCoveragePct: number;
 }
 
+/**
+ * Coverage-aware price display (cc_prompt_recipe_data_cleanup.md Part 1). A recipe's cost is only
+ * as trustworthy as the share of its ingredient lines that actually have a price:
+ * >= 80 → show the number, 50..80 → "£X.XX+" (a floor, not the real cost), < 50 → no number.
+ * `adjustedCoveragePct` is a 0..100 percent (post pantry/junk exclusion), NOT a 0..1 fraction.
+ */
+export const COST_COVERAGE_FULL_PCT = 80;
+export const COST_COVERAGE_MIN_PCT = 50;
+
+export type CostDisplayTier = "full" | "partial" | "unavailable";
+
+export const COST_PARTIAL_NOTE = "Some ingredients aren't priced yet";
+export const COST_UNAVAILABLE_LABEL = "Price unavailable";
+
+/** Unknown coverage (null/undefined/NaN) is treated as "unavailable" — an unverifiable number isn't shown. */
+export function costDisplayTier(coveragePct: number | null | undefined): CostDisplayTier {
+  if (coveragePct == null || !Number.isFinite(coveragePct)) return "unavailable";
+  if (coveragePct >= COST_COVERAGE_FULL_PCT) return "full";
+  if (coveragePct >= COST_COVERAGE_MIN_PCT) return "partial";
+  return "unavailable";
+}
+
+/** True when a total built from this recipe understates the real cost (partial or unavailable price). */
+export function costIsIncomplete(coveragePct: number | null | undefined): boolean {
+  return costDisplayTier(coveragePct) !== "full";
+}
+
+export interface CostDisplay {
+  tier: CostDisplayTier;
+  /** "£1.23", "£1.23+" or "Price unavailable". */
+  text: string;
+  /** Tooltip / note — only set for the "partial" tier. */
+  note?: string;
+}
+
+export function formatCostWithCoverage(value: number, coveragePct: number | null | undefined): CostDisplay {
+  const tier = costDisplayTier(coveragePct);
+  if (tier === "unavailable") return { tier, text: COST_UNAVAILABLE_LABEL };
+  const amount = `£${value.toFixed(2)}`;
+  if (tier === "partial") return { tier, text: `${amount}+`, note: COST_PARTIAL_NOTE };
+  return { tier, text: amount };
+}
+
+/** A money total with a trailing "+" when any contributing recipe's price was partial/unavailable. */
+export function formatTotalWithIncomplete(value: number, incomplete: boolean): string {
+  const amount = value > 0 ? `£${value.toFixed(2)}` : "£0.00";
+  return incomplete && value > 0 ? `${amount}+` : amount;
+}
+
 export interface RecipeListItem {
   _id: ObjectIdHex;
   title: string;
@@ -418,6 +467,9 @@ export interface MealPlanEntryView {
     imageUrl: string;
     calories: number | null;
     costPerServing: number | null;
+    /** recipe_cost.adjustedCoveragePct (0..100); null when no cost doc. Drives the "£X.XX+" /
+     * "Price unavailable" display (cc_prompt_recipe_data_cleanup.md Part 1). */
+    adjustedCoveragePct: number | null;
     /** Added for Meal Planner V2 Overview macro totals (HANDOFF_meal-planner-plan-v2.md §2.1). */
     protein: number | null;
     carbs: number | null;
@@ -436,6 +488,8 @@ export interface MealPlanEntryView {
 export interface MealPlanDaySummary {
   dayIndex: number;
   totalCost: number;
+  /** True when any entry's recipe price is partial/unavailable, so totalCost understates (show "+"). */
+  costIncomplete: boolean;
   totalCalories: number;
   entries: MealPlanEntryView[];
 }
@@ -455,6 +509,8 @@ export interface MealPlanSetSummary {
   isActive: boolean;
   createdAt: ISODate;
   weekTotalCost: number;
+  /** See MealPlanDaySummary.costIncomplete. */
+  weekCostIncomplete: boolean;
   weekTotalMeals: number;
   weekTotalCalories: number;
   weekTotalProtein: number;
@@ -470,6 +526,8 @@ export interface MealPlanSetDetail {
   isActive: boolean;
   days: MealPlanDaySummary[];
   weekTotalCost: number;
+  /** See MealPlanDaySummary.costIncomplete. */
+  weekCostIncomplete: boolean;
   weekTotalCalories: number;
 }
 
@@ -541,6 +599,8 @@ export interface GeneratedMealSlotEntry {
   servings: number;
   calories: number | null;
   costPerServing: number | null;
+  /** recipe_cost.adjustedCoveragePct (0..100); null when no cost doc. See formatCostWithCoverage(). */
+  adjustedCoveragePct: number | null;
 }
 
 export interface GeneratedMealPlanDay {

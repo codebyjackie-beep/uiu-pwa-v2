@@ -3,13 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, MealPlanSetSummary } from "@uiu/shared";
-import { MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
+import { formatTotalWithIncomplete, MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { TonightSuggestion } from "./TonightSuggestion";
 import { PlanDetail } from "./PlanDetail";
-
-function formatCost(value: number): string {
-  return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
-}
 
 interface Props {
   initialSets: MealPlanSetSummary[];
@@ -92,7 +88,7 @@ export function MealPlannerView({ initialSets }: Props) {
 
             <div className="meal-planner-stat-row">
               <div className="meal-planner-stat-row__stat">
-                <span className="meal-planner-stat-row__value">{formatCost(set.weekTotalCost)}</span>
+                <span className="meal-planner-stat-row__value">{formatTotalWithIncomplete(set.weekTotalCost, set.weekCostIncomplete)}</span>
                 <span className="meal-planner-stat-row__label">Cost</span>
               </div>
               <div className="meal-planner-stat-row__stat">
@@ -100,7 +96,7 @@ export function MealPlannerView({ initialSets }: Props) {
                 <span className="meal-planner-stat-row__label">Meals</span>
               </div>
               <div className="meal-planner-stat-row__stat">
-                <span className="meal-planner-stat-row__value">{formatCost(set.weekTotalCost / 7)}</span>
+                <span className="meal-planner-stat-row__value">{formatTotalWithIncomplete(set.weekTotalCost / 7, set.weekCostIncomplete)}</span>
                 <span className="meal-planner-stat-row__label">£/day</span>
               </div>
               <div className="meal-planner-stat-row__stat">

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { Db, Document, ObjectId as ObjectIdType } from "mongodb";
 import type { ApiResponse, MealPlanDaySummary, MealPlanGeneratorInput, MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
-import { MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
+import { costIsIncomplete, MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { loadEntryViewsForPlan } from "./mealPlan";
 import { generateMealPlan } from "../services/mealPlanGenerator";
@@ -64,6 +64,7 @@ type SummaryEntry = {
   recipe: {
     title: string;
     costPerServing: number | null;
+    adjustedCoveragePct: number | null;
     calories: number | null;
     protein: number | null;
     carbs: number | null;
@@ -83,6 +84,7 @@ function toSummary(setDoc: Document, entries: SummaryEntry[]): MealPlanSetSummar
     isActive: setDoc.isActive as boolean,
     createdAt: setDoc.createdAt as string,
     weekTotalCost: entries.reduce((sum, e) => sum + (e.recipe.costPerServing ?? 0), 0),
+    weekCostIncomplete: entries.some((e) => costIsIncomplete(e.recipe.adjustedCoveragePct)),
     weekTotalMeals: entries.length,
     weekTotalCalories: entries.reduce((sum, e) => sum + (e.recipe.calories ?? 0), 0),
     weekTotalProtein: entries.reduce((sum, e) => sum + (e.recipe.protein ?? 0), 0),
@@ -212,6 +214,7 @@ mealPlanSetsRouter.get("/:id", async (c) => {
           dayIndex,
           entries: dayEntries,
           totalCost: dayEntries.reduce((sum, e) => sum + (e.recipe.costPerServing ?? 0), 0),
+          costIncomplete: dayEntries.some((e) => costIsIncomplete(e.recipe.adjustedCoveragePct)),
           totalCalories: dayEntries.reduce((sum, e) => sum + (e.recipe.calories ?? 0), 0),
         };
       });
@@ -222,6 +225,7 @@ mealPlanSetsRouter.get("/:id", async (c) => {
         isActive: setDoc.isActive as boolean,
         days,
         weekTotalCost: days.reduce((sum, d) => sum + d.totalCost, 0),
+        weekCostIncomplete: days.some((d) => d.costIncomplete),
         weekTotalCalories: days.reduce((sum, d) => sum + d.totalCalories, 0),
       };
       return detail;

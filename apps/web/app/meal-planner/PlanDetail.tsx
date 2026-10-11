@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import type { ApiResponse, MealPlanSetDetail, ShoppingListFromIngredientResponse } from "@uiu/shared";
+import { formatTotalWithIncomplete, type ApiResponse, type MealPlanSetDetail, type ShoppingListFromIngredientResponse } from "@uiu/shared";
 import { MealPlannerBoard } from "./MealPlannerBoard";
 import { NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
@@ -189,7 +189,7 @@ export function PlanDetail({ planId, onBack }: Props) {
       {tab === "overview" ? (
         <div className="meal-planner-overview">
           <div className="meal-planner-overview__grid">
-            <OverviewStat label="Total cost" value={formatCost(weekTotalCost)} />
+            <OverviewStat label="Total cost" value={formatTotalWithIncomplete(weekTotalCost, detail.weekCostIncomplete)} />
             <OverviewStat label="Meals" value={String(mealsCount)} />
             <OverviewStat label="Calories" value={weekNutritionUnavailable ? NUTRITION_NOT_AVAILABLE : `${Math.round(weekTotalCalories)}`} />
             <OverviewStat label="Cook time" value={`${Math.round(totalCookMinutes)} min`} />

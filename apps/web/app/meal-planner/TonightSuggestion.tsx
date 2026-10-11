@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ApiResponse, MealPlanSetSummary, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
+import { CoveragePrice } from "../components/CoveragePrice";
 import { todayDayIndex } from "../lib/dates";
 import { isNutritionUnavailable, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
@@ -13,10 +14,6 @@ const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
   { value: "dinner", label: "Dinner" },
   { value: "snack", label: "Snack" },
 ];
-
-function formatCost(value: number): string {
-  return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
-}
 
 /** "What should I eat tonight?" — instant, single-meal, fridge-aware suggestion
  * widget (HANDOFF_tonight-suggestion.md). Purely additive to the existing week
@@ -134,7 +131,16 @@ export function TonightSuggestion() {
                 <div className="recipe-card__body">
                   <p className="recipe-card__title">{s.title}</p>
                   <div className="recipe-card__macros">
-                    <span className="recipe-card__price">{s.cost ? formatCost(s.cost.perServing) : "—"}</span>
+                    {s.cost ? (
+                      <CoveragePrice
+                        value={s.cost.perServing}
+                        coveragePct={s.cost.adjustedCoveragePct}
+                        className="recipe-card__price"
+                        pendingClassName="recipe-card__price--pending"
+                      />
+                    ) : (
+                      <span className="recipe-card__price">—</span>
+                    )}
                     {isNutritionUnavailable(s) ? (
                       <span>{NUTRITION_NOT_AVAILABLE}</span>
                     ) : s.calories != null ? (

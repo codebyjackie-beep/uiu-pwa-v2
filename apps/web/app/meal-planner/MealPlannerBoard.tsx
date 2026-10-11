@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { formatTotalWithIncomplete } from "@uiu/shared";
 import type {
   ApiResponse,
   FavouriteRecipe,
@@ -10,13 +11,9 @@ import type {
   RecipeListItem,
   RecipeListPage,
 } from "@uiu/shared";
+import { CoveragePrice } from "../components/CoveragePrice";
 import { dayIndexLabel, todayDayIndex } from "../lib/dates";
 import { costPendingLabel, isNutritionUnavailable, mealTypeBadge, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
-
-function formatRecipePrice(cost: RecipeListItem["cost"]) {
-  if (!cost || cost.basket <= 0) return null;
-  return `£${cost.basket.toFixed(2)}`;
-}
 
 const DAY_INDEXES = [1, 2, 3, 4, 5, 6, 7];
 const MEAL_SLOTS: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
@@ -26,10 +23,6 @@ const SLOT_LABEL: Record<MealSlot, string> = {
   dinner: "Dinner",
   snack: "Snack",
 };
-
-function formatCost(value: number): string {
-  return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
-}
 
 interface Props {
   planId: string;
@@ -187,7 +180,7 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                 {summary ? (
                   <span className={`meal-planner-day__totals${aboveAverage ? " meal-planner-day__totals--high" : ""}`}>
                     {aboveAverage ? <span className="meal-planner-day__flag">Above average</span> : null}
-                    {formatCost(summary.totalCost)} · {Math.round(summary.totalCalories)} cal
+                    {formatTotalWithIncomplete(summary.totalCost, summary.costIncomplete)} · {Math.round(summary.totalCalories)} cal
                   </span>
                 ) : null}
                 <span className={`meal-planner-day__chevron${expanded ? " meal-planner-day__chevron--open" : ""}`}>▾</span>
@@ -228,9 +221,16 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                                 </button>
                               </div>
                               <div className="recipe-card__macros">
-                                <span className="recipe-card__price">
-                                  {entry.recipe.costPerServing != null ? formatCost(entry.recipe.costPerServing) : "—"}
-                                </span>
+                                {entry.recipe.costPerServing != null ? (
+                                  <CoveragePrice
+                                    value={entry.recipe.costPerServing}
+                                    coveragePct={entry.recipe.adjustedCoveragePct}
+                                    className="recipe-card__price"
+                                    pendingClassName="recipe-card__price--pending"
+                                  />
+                                ) : (
+                                  <span className="recipe-card__price">—</span>
+                                )}
                                 {isNutritionUnavailable(entry.recipe) ? (
                                   <span>{NUTRITION_NOT_AVAILABLE}</span>
                                 ) : entry.recipe.calories != null ? (
@@ -308,7 +308,7 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
               {!searching && results.length === 0 ? <p className="meal-picker__status">No recipes found.</p> : null}
               {results.map((recipe) => {
                 const mealBadge = mealTypeBadge(recipe);
-                const price = formatRecipePrice(recipe.cost);
+                const cost = recipe.cost && recipe.cost.basket > 0 ? recipe.cost : null;
                 return (
                   <button
                     key={recipe._id}
@@ -326,8 +326,13 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                     <div className="recipe-card__body">
                       <div className="recipe-card__header">
                         {mealBadge ? <span className="badge">{mealBadge}</span> : <span />}
-                        {price ? (
-                          <span className="recipe-card__price">{price}</span>
+                        {cost ? (
+                          <CoveragePrice
+                            value={cost.basket}
+                            coveragePct={cost.adjustedCoveragePct}
+                            className="recipe-card__price"
+                            pendingClassName="recipe-card__price--pending"
+                          />
                         ) : (
                           <span className="recipe-card__price recipe-card__price--pending">{costPendingLabel(recipe)}</span>
                         )}

@@ -383,6 +383,7 @@ export function selectMealPlan(pool: PoolRecipe[], input: MealPlanGeneratorInput
           servings: chosen.servings,
           calories: chosen.calories,
           costPerServing: chosen.costPerServing,
+          adjustedCoveragePct: chosen.adjustedCoveragePct,
         });
       }
     }

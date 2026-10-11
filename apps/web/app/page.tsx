@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import type { MealPlanSetDetail, MealPlanSetSummary, RecipeListPage } from "@uiu/shared";
+import { formatTotalWithIncomplete, type MealPlanSetDetail, type MealPlanSetSummary, type RecipeListPage } from "@uiu/shared";
 import { apiGet, apiPost } from "./lib/api";
 import { InstallButton } from "./InstallButton";
 import { OnboardingOverlay } from "./OnboardingOverlay";
@@ -13,10 +13,6 @@ const QUICK_ACTIONS = [
   { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices", modifier: "shop" },
   { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI", modifier: "health" },
 ] as const;
-
-function formatCost(value: number): string {
-  return `£${value.toFixed(2)}`;
-}
 
 export const dynamic = "force-dynamic";
 
@@ -106,8 +102,8 @@ export default async function Home() {
         <div className="home-summary-card">
           {hasPlan && activeDetail ? (
             <>
-              <h2 className="home-summary-card__title">{formatCost(activeDetail.weekTotalCost)}</h2>
-              <p className="home-summary-card__body">{formatCost(avgCostPerDay)} average per day</p>
+              <h2 className="home-summary-card__title">{formatTotalWithIncomplete(activeDetail.weekTotalCost, activeDetail.weekCostIncomplete)}</h2>
+              <p className="home-summary-card__body">{formatTotalWithIncomplete(avgCostPerDay, activeDetail.weekCostIncomplete)} average per day</p>
               <Link href="/meal-planner" className="home-summary-card__cta">
                 View plan →
               </Link>
