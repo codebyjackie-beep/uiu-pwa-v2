@@ -51,7 +51,7 @@ export default async function HowItWorksPage() {
   const { userId } = await auth();
 
   return (
-    <div className="how-it-works-page">
+    <main className="how-it-works-page">
       <section className="hiw-hero" id={HERO_ID}>
         <div className="hiw-hero__inner">
           <p className="hiw-hero__wordmark">UseItUp</p>
@@ -145,6 +145,6 @@ export default async function HowItWorksPage() {
       </section>
 
       {!userId && <StickySignUpBar heroId={HERO_ID} />}
-    </div>
+    </main>
   );
 }
