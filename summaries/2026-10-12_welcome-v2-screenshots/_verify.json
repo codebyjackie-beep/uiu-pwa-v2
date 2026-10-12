@@ -1,0 +1,218 @@
+[
+  {
+    "name": "375px",
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "atTop": {
+      "bottomNav": false,
+      "siteFooter": false,
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "sticky": {
+        "visibleClass": false,
+        "visibility": "hidden",
+        "display": "block"
+      },
+      "heroBottom": 552.15625
+    },
+    "pastHero": {
+      "visibleClass": true,
+      "visibility": "visible",
+      "display": "block"
+    },
+    "backAtTop": {
+      "visibleClass": false,
+      "visibility": "hidden",
+      "display": "block"
+    },
+    "bottomNavAfter": false,
+    "siteFooterAfter": false,
+    "images": [
+      {
+        "url": "/images/how-it-works/fridge.webp",
+        "status": 200,
+        "bytes": 26840,
+        "type": "image/webp"
+      },
+      {
+        "url": "/images/how-it-works/meal-plan.webp",
+        "status": 200,
+        "bytes": -673,
+        "type": "image/webp"
+      },
+      {
+        "url": "/images/how-it-works/recipes.webp",
+        "status": 200,
+        "bytes": 66109,
+        "type": "image/webp"
+      },
+      {
+        "url": "/images/how-it-works/shopping.webp",
+        "status": 200,
+        "bytes": -669,
+        "type": "image/webp"
+      }
+    ],
+    "textDigits": [],
+    "altDigits": [],
+    "alts": [
+      "Recipes list filtered to breakfast, each smoothie recipe showing its price per serving",
+      "Fridge list of ingredients, each with a quantity and an expiry countdown",
+      "Weekly meal plan showing breakfast, lunch and dinner, each with a price and calories",
+      "Shopping list of ingredients from the plan, each with a price and the shop it comes from"
+    ],
+    "scroll": {
+      "bottomNav": false,
+      "siteFooter": false,
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "sticky": {
+        "visibleClass": false,
+        "visibility": "hidden",
+        "display": "block"
+      },
+      "heroBottom": 552.15625
+    },
+    "imgNatural": [
+      {
+        "src": "/images/how-it-works/recipes.webp",
+        "nw": 750,
+        "nh": 1226,
+        "cw": 278,
+        "ch": 464
+      },
+      {
+        "src": "/images/how-it-works/fridge.webp",
+        "nw": 750,
+        "nh": 1201,
+        "cw": 278,
+        "ch": 464
+      },
+      {
+        "src": "/images/how-it-works/meal-plan.webp",
+        "nw": 750,
+        "nh": 1247,
+        "cw": 278,
+        "ch": 464
+      },
+      {
+        "src": "/images/how-it-works/shopping.webp",
+        "nw": 750,
+        "nh": 1197,
+        "cw": 278,
+        "ch": 464
+      }
+    ],
+    "text": "UseItUp\n\nEverything you need to eat well, in one app\n\nReal UK prices, a fridge that knows what you've got, and a shopping list that fits your budget.\n\nSign up free\nLog in\nRecipes with real UK prices\n\nSee what every dish costs per serving before you shop\n\nKnow what's in your fridge\n\nScan a receipt or snap your fridge\n\nPlan your week\n\nBreakfast to dinner, built around your budget\n\nOne list for the week\n\nEvery ingredient from your plan, priced and ready to shop\n\nHow UseItUp works\nTrack what's in your fridge\nGet recipes & a shopping list that fits your budget\nCook, log, and cut food waste\nReady to use it up?\nSign up free\nLog in"
+  },
+  {
+    "name": "1280px",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "atTop": {
+      "bottomNav": false,
+      "siteFooter": false,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "sticky": {
+        "visibleClass": false,
+        "visibility": "hidden",
+        "display": "none"
+      },
+      "heroBottom": 560
+    },
+    "pastHero": {
+      "visibleClass": true,
+      "visibility": "visible",
+      "display": "none"
+    },
+    "backAtTop": {
+      "visibleClass": false,
+      "visibility": "hidden",
+      "display": "none"
+    },
+    "bottomNavAfter": false,
+    "siteFooterAfter": false,
+    "images": [
+      {
+        "url": "/images/how-it-works/fridge.webp",
+        "status": 200,
+        "bytes": 26838,
+        "type": "image/webp"
+      },
+      {
+        "url": "/images/how-it-works/meal-plan.webp",
+        "status": 200,
+        "bytes": 52294,
+        "type": "image/webp"
+      },
+      {
+        "url": "/images/how-it-works/recipes.webp",
+        "status": 200,
+        "bytes": 66111,
+        "type": "image/webp"
+      },
+      {
+        "url": "/images/how-it-works/shopping.webp",
+        "status": 200,
+        "bytes": -671,
+        "type": "image/webp"
+      }
+    ],
+    "textDigits": [],
+    "altDigits": [],
+    "alts": [
+      "Recipes list filtered to breakfast, each smoothie recipe showing its price per serving",
+      "Fridge list of ingredients, each with a quantity and an expiry countdown",
+      "Weekly meal plan showing breakfast, lunch and dinner, each with a price and calories",
+      "Shopping list of ingredients from the plan, each with a price and the shop it comes from"
+    ],
+    "scroll": {
+      "bottomNav": false,
+      "siteFooter": false,
+      "scrollWidth": 1280,
+      "clientWidth": 1280,
+      "sticky": {
+        "visibleClass": false,
+        "visibility": "hidden",
+        "display": "none"
+      },
+      "heroBottom": 560
+    },
+    "imgNatural": [
+      {
+        "src": "/images/how-it-works/recipes.webp",
+        "nw": 750,
+        "nh": 1226,
+        "cw": 288,
+        "ch": 480
+      },
+      {
+        "src": "/images/how-it-works/fridge.webp",
+        "nw": 750,
+        "nh": 1201,
+        "cw": 288,
+        "ch": 480
+      },
+      {
+        "src": "/images/how-it-works/meal-plan.webp",
+        "nw": 750,
+        "nh": 1247,
+        "cw": 288,
+        "ch": 480
+      },
+      {
+        "src": "/images/how-it-works/shopping.webp",
+        "nw": 750,
+        "nh": 1197,
+        "cw": 288,
+        "ch": 480
+      }
+    ],
+    "text": "UseItUp\n\nEverything you need to eat well, in one app\n\nReal UK prices, a fridge that knows what you've got, and a shopping list that fits your budget.\n\nSign up free\nLog in\nRecipes with real UK prices\n\nSee what every dish costs per serving before you shop\n\nKnow what's in your fridge\n\nScan a receipt or snap your fridge\n\nPlan your week\n\nBreakfast to dinner, built around your budget\n\nOne list for the week\n\nEvery ingredient from your plan, priced and ready to shop\n\nHow UseItUp works\nTrack what's in your fridge\nGet recipes & a shopping list that fits your budget\nCook, log, and cut food waste\nReady to use it up?\nSign up free\nLog in"
+  }
+]
