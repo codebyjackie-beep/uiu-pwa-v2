@@ -33,12 +33,16 @@ export const DIETARY_PREDICATES: Record<FilterDietary, (tagsLower: string[]) => 
 export interface PriceBucket {
   key: string;
   label: string;
-  test: (basket: number) => boolean;
+  /** Tested against the price of ONE serving (recipe_cost.perServing), not the whole-recipe basket. */
+  test: (perServing: number) => boolean;
 }
 
-/** Buckets chosen from the live basket-price distribution (2026-08-04): p25≈£1.5, median≈£4.4, p75≈£9.5. */
+/**
+ * Per-serving buckets chosen from the live distribution of the 328 public recipes (2026-10-12,
+ * priced recipes only): under £1.50 = 34%, £1.50–£3 = 43%, £3+ = 23% (p25 £1.17, median £1.94, p75 £2.90).
+ */
 export const PRICE_BUCKETS: PriceBucket[] = [
-  { key: "under3", label: "Under £3", test: (b) => b < 3 },
-  { key: "3to7", label: "£3–£7", test: (b) => b >= 3 && b < 7 },
-  { key: "7plus", label: "£7+", test: (b) => b >= 7 },
+  { key: "under1_5", label: "Under £1.50", test: (p) => p < 1.5 },
+  { key: "1_5to3", label: "£1.50–£3", test: (p) => p >= 1.5 && p < 3 },
+  { key: "3plus", label: "£3+", test: (p) => p >= 3 },
 ];

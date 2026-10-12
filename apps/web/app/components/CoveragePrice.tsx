@@ -11,18 +11,22 @@ export function CoveragePrice({
   coveragePct,
   className,
   pendingClassName,
+  suffix,
 }: {
   value: number;
   coveragePct: number | null | undefined;
   className: string;
   /** Extra class for the muted "Price unavailable" state, e.g. "recipe-card__price--pending". */
   pendingClassName: string;
+  /** Small muted unit after the number, e.g. "/ serving". Not shown for "Price unavailable". */
+  suffix?: string;
 }) {
   const display = formatCostWithCoverage(value, coveragePct);
   const cls = display.tier === "unavailable" ? `${className} ${pendingClassName}` : className;
   return (
     <span className={cls} title={display.note}>
       {display.text}
+      {suffix && display.tier !== "unavailable" ? <span className="price-suffix"> {suffix}</span> : null}
     </span>
   );
 }

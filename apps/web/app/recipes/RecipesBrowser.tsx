@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { costDisplayTier, type ApiResponse, type FavouriteRecipe, type RecipeListItem } from "@uiu/shared";
+import { costDisplayTier, recipePerServingPrice, type ApiResponse, type FavouriteRecipe, type RecipeListItem } from "@uiu/shared";
 import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
@@ -191,11 +191,12 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       }
 
       if (priceBuckets.length > 0) {
-        if (!recipe.cost || recipe.cost.basket <= 0) return false;
+        const perServing = recipePerServingPrice(recipe.cost);
+        if (perServing == null) return false;
         // Coverage < 50% → the number isn't trustworthy, so it must not land in any price bucket.
-        if (costDisplayTier(recipe.cost.adjustedCoveragePct) === "unavailable") return false;
+        if (costDisplayTier(recipe.cost!.adjustedCoveragePct) === "unavailable") return false;
         const buckets = PRICE_BUCKETS.filter((b) => priceBuckets.includes(b.key));
-        if (!buckets.some((b) => b.test(recipe.cost!.basket))) return false;
+        if (!buckets.some((b) => b.test(perServing))) return false;
       }
 
       return true;
@@ -374,10 +375,11 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
               <div className="recipe-card__body">
                 <div className="recipe-card__header">
                   <p className="recipe-card__title">{recipe.title}</p>
-                  {recipe.cost && recipe.cost.basket > 0 ? (
+                  {recipePerServingPrice(recipe.cost) != null ? (
                     <CoveragePrice
-                      value={recipe.cost.basket}
-                      coveragePct={recipe.cost.adjustedCoveragePct}
+                      value={recipePerServingPrice(recipe.cost)!}
+                      coveragePct={recipe.cost!.adjustedCoveragePct}
+                      suffix="/ serving"
                       className="recipe-card__price"
                       pendingClassName="recipe-card__price--pending"
                     />

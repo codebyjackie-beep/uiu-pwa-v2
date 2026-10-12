@@ -165,6 +165,16 @@ export function formatCostWithCoverage(value: number, coveragePct: number | null
   return { tier, text: amount };
 }
 
+/**
+ * Price of ONE serving from a recipe_cost summary, or null when it can't be trusted
+ * (missing cost, non-finite / non-positive perServing). Lists and price filters use this so a
+ * recipe card, the price buckets and the detail page ("Cost per serving") always show the same number.
+ */
+export function recipePerServingPrice(cost: { perServing?: number | null } | null | undefined): number | null {
+  const v = cost?.perServing;
+  return typeof v === "number" && Number.isFinite(v) && v > 0 ? v : null;
+}
+
 /** A money total with a trailing "+" when any contributing recipe's price was partial/unavailable. */
 export function formatTotalWithIncomplete(value: number, incomplete: boolean): string {
   const amount = value > 0 ? `£${value.toFixed(2)}` : "£0.00";

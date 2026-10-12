@@ -2,12 +2,12 @@
 // (cc_prompt_recipe_data_cleanup.md Part 1). Pure functions, no DB / network.
 // Run (after `npm run build` in packages/shared): node scripts/test_cost_coverage_display.mjs
 import assert from "node:assert/strict";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const shared = await import(path.resolve(here, "../../../packages/shared/dist/index.js").replace(/\\/g, "/").replace(/^([A-Za-z]):/, "file:///$1:"));
-const { costDisplayTier, costIsIncomplete, formatCostWithCoverage, formatTotalWithIncomplete } = shared;
+const { costDisplayTier, costIsIncomplete, formatCostWithCoverage, formatTotalWithIncomplete, recipePerServingPrice } = shared;
 
 let n = 0;
 function check(name, fn) {
@@ -72,6 +72,33 @@ check("formatTotalWithIncomplete", () => {
   assert.equal(formatTotalWithIncomplete(12.5, true), "£12.50+");
   assert.equal(formatTotalWithIncomplete(0, false), "£0.00");
   assert.equal(formatTotalWithIncomplete(0, true), "£0.00"); // nothing priced → no "+" on a zero
+});
+
+// --- per-serving price (cards + price filter use perServing, never the whole-recipe basket) ------
+check("recipePerServingPrice: finite positive perServing only", () => {
+  assert.equal(recipePerServingPrice({ perServing: 1.05 }), 1.05);
+  for (const bad of [null, undefined, {}, { perServing: 0 }, { perServing: -1 }, { perServing: Number.NaN }, { perServing: null }]) {
+    assert.equal(recipePerServingPrice(bad), null);
+  }
+});
+check("card price == detail price: Almond-Matcha Smoothie basket 2.10 / 2 servings -> 1.05", () => {
+  const cost = { basket: 2.1, perServing: 1.05, adjustedCoveragePct: 100 };
+  assert.equal(formatCostWithCoverage(recipePerServingPrice(cost), cost.adjustedCoveragePct).text, "£1.05");
+});
+check("partial coverage keeps the + on a per-serving number", () => {
+  const cost = { basket: 21, perServing: 2.625, adjustedCoveragePct: 70 };
+  assert.equal(formatCostWithCoverage(recipePerServingPrice(cost), cost.adjustedCoveragePct).text, "£2.63+");
+});
+const filters = await import(pathToFileURL(path.resolve(here, "../../web/app/lib/recipeFilters.ts")).href);
+check("per-serving buckets: <1.50 / 1.50 to <3 / >=3, lower edge inclusive", () => {
+  const key = (p) => filters.PRICE_BUCKETS.filter((b) => b.test(p)).map((b) => b.key);
+  assert.deepEqual(key(0.5), ["under1_5"]);
+  assert.deepEqual(key(1.49), ["under1_5"]);
+  assert.deepEqual(key(1.5), ["1_5to3"]);
+  assert.deepEqual(key(2.99), ["1_5to3"]);
+  assert.deepEqual(key(3), ["3plus"]);
+  assert.deepEqual(key(23.35), ["3plus"]);
+  assert.deepEqual(filters.PRICE_BUCKETS.map((b) => b.label), ["Under £1.50", "£1.50–£3", "£3+"]);
 });
 
 console.log(`\n${n} checks passed`);
