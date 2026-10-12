@@ -112,146 +112,302 @@ a {
   background: var(--uiu-surface);
 }
 
-/* --- /how-it-works (HANDOFF_auth-subscription-front-page.md Milestone 1) --- */
+/* --- /how-it-works (cc_prompt_welcome_page_v2.md): hero + feature sections with real app
+   screenshots in a CSS phone frame. Layout takes cues from Mise's intro page only —
+   colours are UIU tokens. Page text carries no numeric stats (09-13 / 09-14 decision). --- */
 
 .how-it-works-page {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--space) * 2);
-  padding: calc(var(--space) * 1.5) var(--space);
-  max-width: 640px;
-  margin: 0 auto;
 }
 
-.how-it-works-hero {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  text-align: center;
-  padding-top: var(--space);
-}
-
-.how-it-works-hero__eyebrow {
-  margin: 0;
-  font-size: 13px;
+.hiw-btn {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-size: 15px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-}
-
-.how-it-works-hero__title {
-  margin: 0;
-  font-size: 26px;
-  font-weight: 800;
-  color: var(--uiu-green-ink);
+  text-align: center;
   line-height: 1.2;
 }
 
-.how-it-works-hero__subtitle {
-  margin: 0;
-  font-size: 14px;
-  color: var(--uiu-muted);
+.hiw-btn--primary {
+  background: var(--accent);
+  color: var(--uiu-black);
 }
 
-.how-it-works-hero__actions {
+.hiw-btn--secondary {
+  border-color: rgba(255, 255, 255, 0.85);
+  color: var(--uiu-white);
+}
+
+.hiw-btn--large {
+  padding: 16px 40px;
+  font-size: 16px;
+}
+
+/* Hero — Shop.jpg under the same dark-green gradient the Home quick actions use. */
+.hiw-hero {
+  min-height: 68vh;
+  min-height: 68svh;
   display: flex;
-  gap: 10px;
+  align-items: center;
   justify-content: center;
-  margin-top: 8px;
+  padding: calc(var(--space) * 2) var(--space);
+  background-image:
+    linear-gradient(180deg, rgba(5, 46, 22, 0.55) 0%, rgba(5, 46, 22, 0.82) 60%, rgba(5, 46, 22, 0.94) 100%),
+    url("/images/home/Shop.jpg");
+  background-size: cover;
+  background-position: center;
+  color: var(--uiu-white);
+}
+
+.hiw-hero__inner {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.hiw-hero__wordmark {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.hiw-hero__title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.hiw-hero__subtitle {
+  margin: 0;
+  max-width: 460px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.hiw-hero__actions {
+  display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 14px;
 }
 
-.how-it-works-section__title {
-  margin: 0 0 12px;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--fg);
+/* Feature sections — heading + one-line subtitle + phone frame, alternating backgrounds. */
+.hiw-feature {
+  padding: 56px var(--space);
+  background: var(--bg);
 }
 
-.how-it-works-feature-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.hiw-feature--tinted {
+  background: var(--uiu-surface);
+}
+
+.hiw-feature__inner {
+  max-width: 960px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.how-it-works-feature-list__item {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: var(--card);
-  border: 1px solid var(--uiu-border);
-  border-radius: var(--radius);
+  gap: 32px;
+  text-align: center;
 }
 
-.how-it-works-feature-list__icon {
-  flex: none;
-  font-size: 22px;
-}
-
-.how-it-works-feature-list__label {
+.hiw-feature__title {
   margin: 0;
-  font-size: 14px;
+  font-size: 27px;
   font-weight: 700;
+  line-height: 1.2;
   color: var(--fg);
 }
 
-.how-it-works-feature-list__hint {
-  margin: 2px 0 0;
-  font-size: 12px;
+.hiw-feature__subtitle {
+  margin: 10px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
   color: var(--uiu-muted);
 }
 
-.how-it-works-steps {
-  list-style: none;
+/* Fixed ratio matches the cropped screenshots (status / nav bars removed), so
+   object-fit: cover trims at most a few px instead of cutting the sides off. */
+.hiw-phone {
+  flex: none;
+  width: min(100%, 290px);
+  aspect-ratio: 750 / 1230;
   margin: 0;
+  border: 6px solid var(--uiu-black);
+  border-radius: 36px;
+  background: var(--uiu-white);
+  box-shadow: 0 24px 48px rgba(5, 46, 22, 0.22);
+  overflow: hidden;
+}
+
+.hiw-phone__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* How it works — vertical timeline. Step numbers come from a CSS counter, not DOM text. */
+.hiw-steps {
+  list-style: none;
+  margin: 0 auto;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  max-width: 420px;
+  counter-reset: hiw-step;
 }
 
-.how-it-works-steps__card {
+.hiw-steps__item {
   position: relative;
-  padding: 16px 16px 16px 44px;
-  background: var(--card);
-  border: 1px solid var(--uiu-border);
-  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 44px;
+  padding-bottom: 28px;
+  counter-increment: hiw-step;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fg);
 }
 
-.how-it-works-steps__badge {
-  position: absolute;
-  left: 12px;
-  top: 12px;
+.hiw-steps__item:last-child {
+  padding-bottom: 0;
+}
+
+.hiw-steps__item::before {
+  content: counter(hiw-step);
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--accent);
-  color: var(--uiu-white);
-  font-size: 12px;
-  font-weight: 700;
+  color: var(--uiu-black);
+  font-size: 20px;
+  font-weight: 800;
 }
 
-.how-it-works-steps__text {
-  margin: 0;
+.hiw-steps__item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 21px;
+  top: 44px;
+  bottom: 0;
+  width: 2px;
+  background: var(--uiu-border);
+}
+
+.hiw-final__inner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+.hiw-final__login {
   font-size: 14px;
-  color: var(--fg);
+  font-weight: 600;
+  color: var(--uiu-muted);
+  text-decoration: underline;
 }
 
-@media (min-width: 720px) {
-  .how-it-works-steps {
-    flex-direction: row;
+/* Mobile-only sticky CTA; revealed once the hero has scrolled out of view. */
+.hiw-sticky-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  padding: 10px var(--space) calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+  border-top: 1px solid var(--uiu-border);
+  box-shadow: 0 -6px 20px rgba(5, 46, 22, 0.1);
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.hiw-sticky-cta--visible {
+  transform: translateY(0);
+  visibility: visible;
+  transition: transform 0.2s ease, visibility 0s;
+}
+
+.hiw-sticky-cta .hiw-btn {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .hiw-hero {
+    min-height: 70vh;
   }
 
-  .how-it-works-steps__card {
+  .hiw-hero__title {
+    font-size: 44px;
+  }
+
+  .hiw-hero__subtitle {
+    font-size: 18px;
+  }
+
+  .hiw-feature {
+    padding: 88px 32px;
+  }
+
+  .hiw-feature__inner {
+    flex-direction: row;
+    justify-content: center;
+    gap: 80px;
+    text-align: left;
+  }
+
+  .hiw-feature__text {
     flex: 1;
+    max-width: 400px;
+  }
+
+  .hiw-feature--reverse .hiw-feature__inner {
+    flex-direction: row-reverse;
+  }
+
+  .hiw-feature__inner--stack {
+    flex-direction: column;
+    gap: 32px;
+    text-align: center;
+  }
+
+  .hiw-feature__title {
+    font-size: 30px;
+  }
+
+  .hiw-feature__subtitle {
+    font-size: 18px;
+  }
+
+  .hiw-phone {
+    width: 300px;
+  }
+
+  .hiw-sticky-cta {
+    display: none;
   }
 }
 
