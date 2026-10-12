@@ -10,6 +10,11 @@ function formatCost(value: number): string {
   return value > 0 ? `£${value.toFixed(2)}` : "£0.00";
 }
 
+/** Display-only: "heavy cream" -> "Heavy cream". Never written back to data. */
+function capitalizeFirst(text: string): string {
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+}
+
 type Tab = "overview" | "meals" | "shopping";
 
 interface AggregatedIngredient {
@@ -212,44 +217,34 @@ export function PlanDetail({ planId, onBack }: Props) {
           {aggregated.length === 0 ? (
             <p>No ingredients yet — add meals to this plan first.</p>
           ) : (
-            <div className="meal-planner-shopping-table-wrap">
-              <table className="meal-planner-shopping-table">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Used in</th>
-                    <th>Store</th>
-                    <th>Price</th>
-                    <th aria-hidden="true" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {aggregated.map((item) => {
-                    const status = itemStatus.get(item.key);
-                    const done = status === "merged" || status === "added";
-                    return (
-                      <tr key={item.key} className={done ? "meal-planner-shopping-table__row--done" : undefined}>
-                        <td className="meal-planner-shopping-table__name">{item.displayName}</td>
-                        <td>{item.occurrences}</td>
-                        <td>{item.store ?? "—"}</td>
-                        <td>{item.priceable ? formatCost(item.totalCost) : "—"}</td>
-                        <td>
-                          <button
-                            type="button"
-                            className="meal-planner-shopping-table__add"
-                            disabled={status === "pending" || done}
-                            onClick={() => addToShop(item)}
-                            aria-label={`Add ${item.displayName} to Shop list`}
-                          >
-                            {status === "merged" ? "✓ In Fridge" : status === "added" ? "✓ Added" : "+"}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <ul className="shopping-list">
+              {aggregated.map((item) => {
+                const status = itemStatus.get(item.key);
+                const done = status === "merged" || status === "added";
+                const name = capitalizeFirst(item.displayName);
+                return (
+                  <li key={item.key} className={done ? "shopping-list__row shopping-list__row--done" : "shopping-list__row"}>
+                    <div className="shopping-list__text">
+                      <span className="shopping-list__name">{name}</span>
+                      <span className="shopping-list__meta">
+                        Used in {item.occurrences}
+                        {item.store ? ` · ${item.store}` : ""}
+                      </span>
+                    </div>
+                    <span className="shopping-list__price">{item.priceable ? formatCost(item.totalCost) : "—"}</span>
+                    <button
+                      type="button"
+                      className="shopping-list__add"
+                      disabled={status === "pending" || done}
+                      onClick={() => addToShop(item)}
+                      aria-label={`Add ${item.displayName} to Shop list`}
+                    >
+                      {status === "merged" ? "✓ In Fridge" : status === "added" ? "✓ Added" : "+"}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           )}
           <Link href="/shop" className="wizard-primary-button">
             Go to Shop

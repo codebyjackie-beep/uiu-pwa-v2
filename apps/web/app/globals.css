@@ -2343,76 +2343,74 @@ a {
   border-color: var(--uiu-red);
 }
 
-.meal-planner-shopping-table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* Meal Planner → Shopping tab: vertical list (no table), readable on a 375px phone. */
+.shopping-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   background: var(--uiu-surface);
   border-radius: 8px;
 }
 
-.meal-planner-shopping-table {
-  width: 100%;
-  min-width: 420px;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-.meal-planner-shopping-table th:last-child,
-.meal-planner-shopping-table td:last-child {
-  min-width: 46px;
-  padding-right: 12px;
-}
-
-.meal-planner-shopping-table th {
-  text-align: left;
-  padding: 8px 10px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--uiu-muted);
+.shopping-list__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
   border-bottom: 1px solid var(--uiu-border);
-  white-space: nowrap;
 }
 
-.meal-planner-shopping-table td {
-  padding: 8px 10px;
-  color: var(--uiu-muted);
-  border-bottom: 1px solid var(--uiu-border);
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.meal-planner-shopping-table tr:last-child td {
+.shopping-list__row:last-child {
   border-bottom: none;
 }
 
-.meal-planner-shopping-table tr.meal-planner-shopping-table__row--done {
+.shopping-list__row--done {
   opacity: 0.45;
 }
 
-.meal-planner-shopping-table__name {
-  min-width: 140px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--uiu-green-ink);
-  white-space: normal;
+.shopping-list__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.meal-planner-shopping-table__add {
-  min-width: 26px;
-  height: 26px;
-  padding: 0 6px;
-  border-radius: 13px;
+.shopping-list__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.shopping-list__meta {
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.shopping-list__price {
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: right;
+}
+
+.shopping-list__add {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 22px;
   border: 1px solid var(--uiu-border);
   background: transparent;
   color: var(--accent);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
 }
 
-.meal-planner-shopping-table__add:disabled {
+.shopping-list__add:disabled {
   cursor: default;
   color: var(--uiu-muted);
 }
