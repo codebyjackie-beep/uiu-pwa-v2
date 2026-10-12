@@ -1,3 +1,6 @@
+// ⚠️ SUPERSEDED 2026-10-12: this backfill hand-copies the OLD formula (priceable && normUnit==="g" only),
+// which is exactly the ml/pc 0-kcal bug. Use scripts/nutrition_recompute.cjs (dry-run default, reviewed-file
+// --write, rollback) — it calls src/services/nutritionGrams.ts. Do not run this one.
 // HANDOFF_recompute-existing-recipes-nutrition.md — recompute every recipe's
 // stored `nutrition` snapshot using canonical_ingredients.nutrition_per_100g
 // as it stands after round1+round2 (449/746 covered). Recipe `nutrition` is

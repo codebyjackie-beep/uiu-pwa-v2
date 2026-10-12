@@ -50,6 +50,11 @@ export interface RecipeNutrition {
   sugar?: number;
   /** Present on 3/197 recipes. */
   sodium?: number;
+  /**
+   * Share (0..1) of non-pantry / non-water / non-salt ingredient lines that contributed kcal
+   * (nutritionGrams.ts, 2026-10-12). Absent on recipes whose nutrition predates that function.
+   */
+  nutritionLineCoverage?: number;
 }
 
 export interface Recipe {

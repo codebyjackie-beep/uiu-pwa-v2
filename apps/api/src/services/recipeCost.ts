@@ -80,7 +80,7 @@ const PER_ITEM_UNIT_G: Record<string, Record<string, number>> = {
   buns: { "burger buns": 60 },
 };
 
-function lookupPerItemUnitG(words: string[], canonicalName: string): number | null {
+export function lookupPerItemUnitG(words: string[], canonicalName: string): number | null {
   for (const word of words) {
     const table = PER_ITEM_UNIT_G[word];
     if (table && table[canonicalName] != null) return table[canonicalName];

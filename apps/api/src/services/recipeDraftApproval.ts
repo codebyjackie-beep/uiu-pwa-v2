@@ -14,6 +14,7 @@ import { ingredientTextGuard, type CanonicalIngredient, type CanonicalPriceCache
 import { getMongoModule } from "../db";
 import { buildAliasIndex, resolve } from "./ingredientResolver";
 import { costRecipe } from "./recipeCost";
+import { computeRecipeNutrition } from "./nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "./pexels";
 
 export type ApproveDraftResult =
@@ -43,6 +44,26 @@ export async function approveRecipeDraft(
   const now = new Date().toISOString();
   const draftImageUrl = draft.imageUrl as string | null | undefined;
   const imageUrl = draftImageUrl ? draftImageUrl : await findRecipePhoto(env, draft.title as string).catch(() => null);
+
+  const ingredientsCol = db.collection<Document>("canonical_ingredients");
+  const priceCol = db.collection<Document>("canonical_price_cache");
+  const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
+  const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
+  const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
+  const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
+  const quarantinedNames = new Set(
+    allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
+  );
+  const index = await buildAliasIndex(ingredientsCol);
+  const resolveFn = (rawName: string) => resolve(rawName, index);
+  // Nutrition is recomputed here with the shared gram conversion (nutritionGrams.ts) instead of
+  // trusting draft.nutrition, which older drafts computed with the ml/pc-blind formula.
+  const nutrition = computeRecipeNutrition(
+    draft.ingredients as Recipe["ingredients"],
+    draft.servings as number,
+    resolveFn,
+    ingredientsMap,
+  ).nutrition;
   const guardResult = ingredientTextGuard(draft.ingredients as { quantity: number; unit: string; name: string }[]);
   const recipeDoc: Omit<Recipe, "_id"> = {
     title: draft.title as string,
@@ -57,7 +78,7 @@ export async function approveRecipeDraft(
     prepTimeMinutes: draft.prepTimeMinutes as number,
     cookTimeMinutes: draft.cookTimeMinutes as number,
     imageUrl: imageUrl ?? "",
-    nutrition: draft.nutrition as Recipe["nutrition"],
+    nutrition,
     source: draft.importMethod === "photo-ocr" ? "photo_import"
       : draft.importMethod === "fridge_generated" ? "fridge_generated"
       : draft.sourceUrl ? "social_import"
@@ -76,17 +97,6 @@ export async function approveRecipeDraft(
   };
   const insertResult = await db.collection("recipes").insertOne(recipeDoc as unknown as Document);
 
-  const ingredientsCol = db.collection<Document>("canonical_ingredients");
-  const priceCol = db.collection<Document>("canonical_price_cache");
-  const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
-  const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
-  const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
-  const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
-  const quarantinedNames = new Set(
-    allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
-  );
-  const index = await buildAliasIndex(ingredientsCol);
-  const resolveFn = (rawName: string) => resolve(rawName, index);
   const cost = costRecipe({ ...recipeDoc, _id: insertResult.insertedId } as unknown as Recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
 
   const recipeCostDoc: Omit<RecipeCost, "_id"> = {

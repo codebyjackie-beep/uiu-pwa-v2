@@ -25,6 +25,7 @@ import { fetchSpoonacularIdeas, type SpoonacularEnv } from "../services/spoonacu
 import { draftRecipe, type OpenRouterEnv } from "../services/openrouter";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
+import { computeRecipeNutrition } from "../services/nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
 export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv, PexelsEnv {
@@ -214,20 +215,9 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
     const costInput = { ingredients, servings: drafted.servings } as unknown as Recipe;
     const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-    const servingsDivisor = drafted.servings > 0 ? drafted.servings : 1;
 
-    let calories = 0, protein = 0, carbs = 0, fat = 0;
-    for (const line of cost.lines) {
-      if (!line.priceable || line.normUnit !== "g" || !line.canonical_name || !line.normValue) continue;
-      const doc = ingredientsMap.get(line.canonical_name);
-      const n = doc?.nutrition_per_100g;
-      if (!n) continue;
-      const factor = line.normValue / 100;
-      calories += n.kcal * factor;
-      protein += n.protein * factor;
-      carbs += n.carbs * factor;
-      fat += n.fat * factor;
-    }
+    // Nutrition has its own gram conversion (nutritionGrams.ts) — independent of price, counts ml / pc lines.
+    const { nutrition } = computeRecipeNutrition(ingredients, drafted.servings, resolveFn, ingredientsMap);
 
     // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
     // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
@@ -244,12 +234,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       servings: drafted.servings,
       prepTimeMinutes: drafted.prepTimeMinutes,
       cookTimeMinutes: drafted.cookTimeMinutes,
-      nutrition: {
-        calories: Math.round(calories / servingsDivisor),
-        protein: Math.round((protein / servingsDivisor) * 10) / 10,
-        carbs: Math.round((carbs / servingsDivisor) * 10) / 10,
-        fat: Math.round((fat / servingsDivisor) * 10) / 10,
-      },
+      nutrition,
       status: "pending",
       createdAt: new Date().toISOString(),
       sourceInspiration: idea.title,

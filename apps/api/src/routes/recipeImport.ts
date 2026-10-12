@@ -12,6 +12,7 @@ import { extractRecipeFromPhotos, type OpenRouterVisionEnv } from "../services/o
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
+import { computeRecipeNutrition } from "../services/nutritionGrams";
 
 type RecipeImportEnv = DbEnv & OpenRouterEnv & OembedEnv & OpenRouterVisionEnv & PexelsEnv;
 
@@ -51,20 +52,9 @@ async function insertDraft(
 
     const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
     const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-    const servingsDivisor = recipe.servings > 0 ? recipe.servings : 1;
 
-    let calories = 0, protein = 0, carbs = 0, fat = 0;
-    for (const line of cost.lines as unknown as RecipeCostLine[]) {
-      if (!line.priceable || line.normUnit !== "g" || !line.canonical_name || !line.normValue) continue;
-      const doc = ingredientsMap.get(line.canonical_name);
-      const n = doc?.nutrition_per_100g;
-      if (!n) continue;
-      const factor = line.normValue / 100;
-      calories += n.kcal * factor;
-      protein += n.protein * factor;
-      carbs += n.carbs * factor;
-      fat += n.fat * factor;
-    }
+    // Nutrition has its own gram conversion (nutritionGrams.ts) — independent of price, counts ml / pc lines.
+    const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
 
     const costPreview: RecipeListItemCost | null =
       cost.basket > 0 ? { basket: cost.basket, currency: "GBP", perServing: cost.perServing, adjustedCoveragePct: cost.adjustedCoveragePct } : null;
@@ -83,12 +73,7 @@ async function insertDraft(
       servings: recipe.servings,
       prepTimeMinutes: recipe.prepTimeMinutes,
       cookTimeMinutes: recipe.cookTimeMinutes,
-      nutrition: {
-        calories: Math.round(calories / servingsDivisor),
-        protein: Math.round((protein / servingsDivisor) * 10) / 10,
-        carbs: Math.round((carbs / servingsDivisor) * 10) / 10,
-        fat: Math.round((fat / servingsDivisor) * 10) / 10,
-      },
+      nutrition,
       status: "pending",
       createdAt: new Date().toISOString(),
       sourceInspiration: sourceUrl ?? "",
@@ -269,18 +254,7 @@ recipeImportRouter.post("/manual", async (c) => {
       const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
       const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
 
-      let calories = 0, protein = 0, carbs = 0, fat = 0;
-      for (const line of cost.lines as unknown as RecipeCostLine[]) {
-        if (!line.priceable || line.normUnit !== "g" || !line.canonical_name || !line.normValue) continue;
-        const doc = ingredientsMap.get(line.canonical_name);
-        const n = doc?.nutrition_per_100g;
-        if (!n) continue;
-        const factor = line.normValue / 100;
-        calories += n.kcal * factor;
-        protein += n.protein * factor;
-        carbs += n.carbs * factor;
-        fat += n.fat * factor;
-      }
+      const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
 
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: recipe.title,
@@ -294,12 +268,7 @@ recipeImportRouter.post("/manual", async (c) => {
         prepTimeMinutes: recipe.prepTimeMinutes,
         cookTimeMinutes: recipe.cookTimeMinutes,
         imageUrl: imageUrl ?? "",
-        nutrition: {
-          calories: Math.round(calories / recipe.servings),
-          protein: Math.round((protein / recipe.servings) * 10) / 10,
-          carbs: Math.round((carbs / recipe.servings) * 10) / 10,
-          fat: Math.round((fat / recipe.servings) * 10) / 10,
-        },
+        nutrition,
         source: "manual_entry",
         sourcePlatform: null,
         sourceUrl: undefined,

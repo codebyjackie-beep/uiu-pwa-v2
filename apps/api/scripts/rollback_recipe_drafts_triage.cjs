@@ -101,6 +101,12 @@ function loadDevVars() {
       { $set: { status: "pending" }, $unset: { triage: "", rejectedReason: "" } },
     );
 
+    const nrResult = await db.collection("recipe_drafts").updateMany(
+      { needsReviewBatch: BATCH_ID },
+      { $unset: { needs_review: "", needsReviewReason: "", needsReviewBatch: "" } },
+    );
+    console.log(`Cleared needs_review on ${nrResult.modifiedCount} drafts.`);
+
     console.log(
       `Done. Deleted ${deleteRecipesResult.deletedCount} recipes, ${deleteCostsResult.deletedCount} recipe_cost docs. ` +
         `Reverted ${revertResult.modifiedCount} drafts to pending.`,

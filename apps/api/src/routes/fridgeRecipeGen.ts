@@ -18,6 +18,7 @@ import type { OpenRouterEnv } from "../services/openrouter";
 import { generateRecipeFromFridge } from "../services/fridgeRecipeGen";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
+import { computeRecipeNutrition } from "../services/nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 
 type FridgeRecipeGenEnv = DbEnv & OpenRouterEnv & PexelsEnv;
@@ -121,25 +122,8 @@ fridgeRecipeGenRouter.post("/save-fridge-recipe", async (c) => {
       const index = await buildAliasIndex(ingredientsCol);
       const resolveFn = (rawName: string) => resolve(rawName, index);
 
-      let calories = 0, protein = 0, carbs = 0, fat = 0;
-      const previewCost = costRecipe(
-        { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe,
-        resolveFn,
-        ingredientsMap,
-        priceMap,
-        quarantinedNames,
-      );
-      for (const line of previewCost.lines as unknown as RecipeCostLine[]) {
-        if (!line.priceable || line.normUnit !== "g" || !line.canonical_name || !line.normValue) continue;
-        const doc = ingredientsMap.get(line.canonical_name);
-        const n = doc?.nutrition_per_100g;
-        if (!n) continue;
-        const factor = line.normValue / 100;
-        calories += n.kcal * factor;
-        protein += n.protein * factor;
-        carbs += n.carbs * factor;
-        fat += n.fat * factor;
-      }
+      // Nutrition has its own gram conversion (nutritionGrams.ts) — independent of price, counts ml / pc lines.
+      const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
 
       // Save straight into `recipes` as a live, public recipe — Jackie's 2026-08-20 request
       // to skip the recipe_drafts/admin-approve review step for fridge-generated recipes.
@@ -157,12 +141,7 @@ fridgeRecipeGenRouter.post("/save-fridge-recipe", async (c) => {
         prepTimeMinutes: recipe.prepTimeMinutes,
         cookTimeMinutes: recipe.cookTimeMinutes,
         imageUrl: imageUrl ?? "",
-        nutrition: {
-          calories: Math.round(calories / recipe.servings),
-          protein: Math.round((protein / recipe.servings) * 10) / 10,
-          carbs: Math.round((carbs / recipe.servings) * 10) / 10,
-          fat: Math.round((fat / recipe.servings) * 10) / 10,
-        },
+        nutrition,
         source: "fridge_generated",
         sourcePlatform: null,
         sourceUrl: undefined,

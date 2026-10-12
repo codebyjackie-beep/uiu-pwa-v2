@@ -38,6 +38,7 @@ const SUMMARIES_DIR = path.join(REPO_ROOT, "summaries");
 
 const SANITY_MAX_AUTO_APPROVE = 600;
 const SANITY_MAX_AUTO_REJECT = 500;
+const NUTRITION_COVERAGE_MIN = 0.7;
 const SPOONACULAR_DEAD_HOST = "img.spoonacular.com";
 const FETCH_TIMEOUT_MS = 8000;
 
@@ -72,6 +73,7 @@ async function loadServices() {
       `export { costRecipe } from "../src/services/recipeCost.ts";`,
       `export { buildAliasIndex, resolve } from "../src/services/ingredientResolver.ts";`,
       `export { approveRecipeDraft, rejectRecipeDraft } from "../src/services/recipeDraftApproval.ts";`,
+      `export { computeRecipeNutrition } from "../src/services/nutritionGrams.ts";`,
       `export { findRecipePhoto } from "../src/services/pexels.ts";`,
       `export { ingredientTextGuard, ingredientNameLooksLikeFragment } from "@uiu/shared";`,
     ].join("\n"),
@@ -171,7 +173,7 @@ function sample(arr, n) {
   }
 
   const services = await loadServices();
-  const { costRecipe, buildAliasIndex, resolve, approveRecipeDraft, rejectRecipeDraft, findRecipePhoto, ingredientNameLooksLikeFragment } = services;
+  const { costRecipe, buildAliasIndex, resolve, approveRecipeDraft, rejectRecipeDraft, findRecipePhoto, ingredientNameLooksLikeFragment, computeRecipeNutrition } = services;
 
   const client = new MongoClient(devVars.MONGODB_URI);
   await client.connect();
@@ -201,7 +203,11 @@ function sample(arr, n) {
     // --- Pass 1: objective reject rules + live-cost computation ---
     const evaluated = pendingDrafts.map((draft) => {
       const cost = costRecipe(draft, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-      const nutrition = draft.nutrition || {};
+      // Live nutrition from the shared gram conversion (nutritionGrams.ts, 2026-10-12) — the same
+      // numbers approveRecipeDraft() will store — instead of the stored draft.nutrition, which older
+      // drafts computed with the ml/pc-blind formula.
+      const liveNutrition = computeRecipeNutrition(Array.isArray(draft.ingredients) ? draft.ingredients : [], draft.servings, resolveFn, ingredientsMap).nutrition;
+      const nutrition = liveNutrition;
       const calories = nutrition.calories ?? 0;
       const protein = nutrition.protein ?? 0;
       const carbs = nutrition.carbs ?? 0;
@@ -223,7 +229,7 @@ function sample(arr, n) {
       const normTitle = normalizeTitle(draft.title);
       if (liveTitleSet.has(normTitle)) rejectReasons.push("duplicate_title_live_recipe");
 
-      return { draft, cost, calories, servings, ingredients, steps, rejectReasons, normTitle };
+      return { draft, cost, calories, servings, ingredients, steps, rejectReasons, normTitle, nutritionLineCoverage: liveNutrition.nutritionLineCoverage };
     });
 
     // --- Pass 2: intra-pending title dedup — keep highest adjustedCoveragePct, reject the rest ---
@@ -246,6 +252,15 @@ function sample(arr, n) {
     for (const e of evaluated) {
       if (e.rejectReasons.length > 0) {
         e.action = "auto_reject";
+        continue;
+      }
+      // Nutrition guard (cc prompt 2026-10-12 Part 3): fewer than 70% of the countable ingredient
+      // lines contributed kcal -> the calorie number is not trustworthy, so a human must look.
+      if (e.nutritionLineCoverage < NUTRITION_COVERAGE_MIN) {
+        e.action = "pending";
+        e.pendingDueToImage = false;
+        e.needsReview = true;
+        e.needsReviewReason = `nutritionLineCoverage:${e.nutritionLineCoverage}`;
         continue;
       }
       const approveChecksExceptImage =
@@ -287,6 +302,7 @@ function sample(arr, n) {
     const pending = evaluated.filter((e) => e.action === "pending");
     const pendingDueToImage = pending.filter((e) => e.pendingDueToImage);
     const pendingOther = pending.filter((e) => !e.pendingDueToImage);
+    const needsReview = pending.filter((e) => e.needsReview);
 
     const rejectReasonCounts = {};
     for (const e of rejected) {
@@ -305,6 +321,7 @@ function sample(arr, n) {
         pending: pending.length,
         pendingDueToImage: pendingDueToImage.length,
         pendingOtherReasons: pendingOther.length,
+        needsReviewNutritionCoverage: needsReview.length,
       },
       rejectReasonCounts,
       samples: {
@@ -369,6 +386,15 @@ function sample(arr, n) {
       }
     }
 
+    let needsReviewMarked = 0;
+    for (const e of needsReview) {
+      await db.collection("recipe_drafts").updateOne(
+        { _id: e.draft._id, status: "pending" },
+        { $set: { needs_review: true, needsReviewReason: e.needsReviewReason, needsReviewBatch: batchId } },
+      );
+      needsReviewMarked++;
+    }
+
     let rejectedCount = 0;
     let rejectFailed = 0;
     for (const e of toReject) {
@@ -386,7 +412,7 @@ function sample(arr, n) {
       }
     }
 
-    console.log(`\nDone. batchId=${batchId} approved=${approvedCount} (failed ${approveFailed}) rejected=${rejectedCount} (failed ${rejectFailed})`);
+    console.log(`\nDone. batchId=${batchId} approved=${approvedCount} (failed ${approveFailed}) rejected=${rejectedCount} (failed ${rejectFailed}) needs_review=${needsReviewMarked}`);
     console.log(`Rollback with: node scripts/rollback_recipe_drafts_triage.cjs --batch ${batchId} --write`);
   } finally {
     await client.close();
