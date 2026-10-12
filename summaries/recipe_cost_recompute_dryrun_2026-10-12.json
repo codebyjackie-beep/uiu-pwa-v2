@@ -1,0 +1,893 @@
+{
+ "generatedAt": "2026-10-12T16:31:55.328Z",
+ "priceCacheStamp": 1784587647589,
+ "counts": {
+  "recipesTotal": 1410,
+  "publicRecipes": 328,
+  "publicChanged": 3,
+  "publicUnchanged": 325,
+  "nonPublicChangedNotWritten": 11,
+  "perServingChangeOver30pct": 0,
+  "publicWithoutStoredDoc": 0
+ },
+ "gate": {
+  "perServingMax": 8,
+  "dropMax": 0.5,
+  "anomalyCount": 0,
+  "anomalies": [],
+  "publicAbove8Now": [
+   {
+    "id": "69b4aeaee736bc836fd51334",
+    "title": "Easy Instant Pot Beef Tips and Rice",
+    "perServing": 8.4683
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df81",
+    "title": "Crab Cakes Eggs Benedict",
+    "perServing": 9.2336
+   },
+   {
+    "id": "69d1933f0ce7d5269f695270",
+    "title": "Cajun King Prawns with Dirty Rice",
+    "perServing": 8.4167
+   },
+   {
+    "id": "69d1933f0ce7d5269f695274",
+    "title": "Creamy Prawn Risotto",
+    "perServing": 23.3484
+   },
+   {
+    "id": "69d1933f0ce7d5269f695272",
+    "title": "Quick Prawn and Chorizo Paella",
+    "perServing": 11.9405
+   }
+  ]
+ },
+ "tierTransitions": {
+  "full -> full": 3
+ },
+ "tiersBefore": {
+  "full": 251,
+  "partial": 65,
+  "unavailable": 12
+ },
+ "tiersAfter": {
+  "full": 251,
+  "partial": 65,
+  "unavailable": 12
+ },
+ "priceBucketsBefore": {
+  "under1_5": 108,
+  "1_5to3": 137,
+  "3plus": 71,
+  "excluded_no_price_or_unavailable": 12
+ },
+ "priceBucketsAfter": {
+  "under1_5": 108,
+  "1_5to3": 137,
+  "3plus": 71,
+  "excluded_no_price_or_unavailable": 12
+ },
+ "plansBefore": [
+  {
+   "name": "Weekly Plan 6",
+   "id": "6ab52b2f9b0819afa3920923",
+   "isActive": true,
+   "entries": 21,
+   "entriesWithoutPrice": 0,
+   "total": 37.48,
+   "byDay": {
+    "1": 4.84,
+    "2": 5.87,
+    "3": 4.89,
+    "4": 5.86,
+    "5": 4.77,
+    "6": 5.83,
+    "7": 5.42
+   }
+  },
+  {
+   "name": "Weekly Plan 7",
+   "id": "6ac9766dd98dac1125ad017a",
+   "isActive": false,
+   "entries": 21,
+   "entriesWithoutPrice": 0,
+   "total": 39.96,
+   "byDay": {
+    "1": 5.79,
+    "2": 5.75,
+    "3": 5.66,
+    "4": 5.69,
+    "5": 5.66,
+    "6": 5.82,
+    "7": 5.58
+   }
+  }
+ ],
+ "plansAfter": [
+  {
+   "name": "Weekly Plan 6",
+   "id": "6ab52b2f9b0819afa3920923",
+   "isActive": true,
+   "entries": 21,
+   "entriesWithoutPrice": 0,
+   "total": 37.48,
+   "byDay": {
+    "1": 4.84,
+    "2": 5.87,
+    "3": 4.89,
+    "4": 5.86,
+    "5": 4.77,
+    "6": 5.83,
+    "7": 5.42
+   }
+  },
+  {
+   "name": "Weekly Plan 7",
+   "id": "6ac9766dd98dac1125ad017a",
+   "isActive": false,
+   "entries": 21,
+   "entriesWithoutPrice": 0,
+   "total": 39.93,
+   "byDay": {
+    "1": 5.79,
+    "2": 5.75,
+    "3": 5.62,
+    "4": 5.69,
+    "5": 5.66,
+    "6": 5.82,
+    "7": 5.58
+   }
+  }
+ ],
+ "perServingChangeOver30pct": [],
+ "changed": [
+  {
+   "id": "6ac80d6cb0ca951a2fbf7430",
+   "title": "Golden Spinach-Asparagus Skillet Frittata",
+   "servings": 4,
+   "hadStored": true,
+   "before": {
+    "basket": 7.5256,
+    "perServing": 1.8814,
+    "adjustedCoveragePct": 90.9091,
+    "tier": "full"
+   },
+   "after": {
+    "basket": 7.4456,
+    "perServing": 1.8614,
+    "adjustedCoveragePct": 90.9091,
+    "tier": "full"
+   },
+   "perServingChangePct": -1.063,
+   "lineChanges": [
+    {
+     "raw": "_egg_",
+     "qty": 8,
+     "unit": "large",
+     "canonicalBefore": "_egg_",
+     "canonicalAfter": "egg",
+     "pricedBefore": true,
+     "pricedAfter": true,
+     "reasonBefore": null,
+     "reasonAfter": null,
+     "normAfter": "8 pc",
+     "perUnitAfter": 0.265,
+     "costBefore": 2.2,
+     "costAfter": 2.12,
+     "kind": "cost_changed"
+    }
+   ]
+  },
+  {
+   "id": "6ac80da1b0ca951a2fbf74ea",
+   "title": "Lemon-Herb Sweet Potato Gnocchi with Tomato and Olive Ragout",
+   "servings": 4,
+   "hadStored": true,
+   "before": {
+    "basket": 8.7938,
+    "perServing": 2.1985,
+    "adjustedCoveragePct": 100,
+    "tier": "full"
+   },
+   "after": {
+    "basket": 8.7838,
+    "perServing": 2.196,
+    "adjustedCoveragePct": 100,
+    "tier": "full"
+   },
+   "perServingChangePct": -0.1137,
+   "lineChanges": [
+    {
+     "raw": "_egg_",
+     "qty": 1,
+     "unit": "large",
+     "canonicalBefore": "_egg_",
+     "canonicalAfter": "egg",
+     "pricedBefore": true,
+     "pricedAfter": true,
+     "reasonBefore": null,
+     "reasonAfter": null,
+     "normAfter": "1 pc",
+     "perUnitAfter": 0.265,
+     "costBefore": 0.275,
+     "costAfter": 0.265,
+     "kind": "cost_changed"
+    }
+   ]
+  },
+  {
+   "id": "6ac80d6fb0ca951a2fbf743a",
+   "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
+   "servings": 4,
+   "hadStored": true,
+   "before": {
+    "basket": 7.5583,
+    "perServing": 1.8896,
+    "adjustedCoveragePct": 90,
+    "tier": "full"
+   },
+   "after": {
+    "basket": 7.4983,
+    "perServing": 1.8746,
+    "adjustedCoveragePct": 90,
+    "tier": "full"
+   },
+   "perServingChangePct": -0.7938,
+   "lineChanges": [
+    {
+     "raw": "_egg_",
+     "qty": 6,
+     "unit": "large",
+     "canonicalBefore": "_egg_",
+     "canonicalAfter": "egg",
+     "pricedBefore": true,
+     "pricedAfter": true,
+     "reasonBefore": null,
+     "reasonAfter": null,
+     "normAfter": "6 pc",
+     "perUnitAfter": 0.265,
+     "costBefore": 1.65,
+     "costAfter": 1.59,
+     "kind": "cost_changed"
+    }
+   ]
+  }
+ ],
+ "afterFull": [
+  {
+   "id": "6ac80d6cb0ca951a2fbf7430",
+   "cost": {
+    "basket": 7.445624999999999,
+    "currency": "GBP",
+    "coveragePct": 92.3076923076923,
+    "adjustedCoveragePct": 90.9090909090909,
+    "totalLines": 13,
+    "priceableCount": 12,
+    "adjustedTotal": 11,
+    "adjustedPriceable": 10,
+    "pantryLineCount": 2,
+    "junkLineCount": 0,
+    "perServing": 1.8614062499999997,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "_egg_",
+      "quantity": 8,
+      "rawUnit": "large",
+      "canonical_name": "egg",
+      "normValue": 8,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.265,
+      "lineCost": 2.12,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": "Essential Waitrose & Partners Free Range White Eggs (6 Pack)"
+     },
+     {
+      "priceable": true,
+      "rawName": "heavy cream",
+      "quantity": 0.25,
+      "rawUnit": "cup",
+      "canonical_name": "heavy cream",
+      "normValue": 60,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.007,
+      "lineCost": 0.42,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Morrisons British Whipping Cream"
+     },
+     {
+      "priceable": true,
+      "rawName": "butter",
+      "quantity": 2,
+      "rawUnit": "tablespoon",
+      "canonical_name": "butter",
+      "normValue": 28.375,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.008,
+      "lineCost": 0.227,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "Country Life Salted Butter"
+     },
+     {
+      "priceable": true,
+      "rawName": "mushroom",
+      "quantity": 1.5,
+      "rawUnit": "cup",
+      "canonical_name": "mushroom",
+      "normValue": 105,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0056,
+      "lineCost": 0.588,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "JUST ESSENTIALS Mushrooms"
+     },
+     {
+      "priceable": false,
+      "rawName": "asparagus",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "asparagus",
+      "reason": "missing_density_cup",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "spinach",
+      "quantity": 2,
+      "rawUnit": "cup",
+      "canonical_name": "spinach",
+      "normValue": 60,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.005,
+      "lineCost": 0.3,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Baby Leaf Spinach 200g"
+     },
+     {
+      "priceable": true,
+      "rawName": "garlic",
+      "quantity": 2,
+      "rawUnit": "clove",
+      "canonical_name": "garlic",
+      "normValue": 2,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.22,
+      "lineCost": 0.44,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Garlic"
+     },
+     {
+      "priceable": true,
+      "rawName": "white onion",
+      "quantity": 0.25,
+      "rawUnit": "cup",
+      "canonical_name": "white onion",
+      "normValue": 37.5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.008,
+      "lineCost": 0.3,
+      "isPantry": false,
+      "store": "Ocado",
+      "productTitle": "Marks & Spencer Sweet White Onions"
+     },
+     {
+      "priceable": true,
+      "rawName": "parmesan cheese",
+      "quantity": 0.5,
+      "rawUnit": "cup",
+      "canonical_name": "parmesan cheese",
+      "normValue": 50,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0225,
+      "lineCost": 1.125,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Creamfields Grated Grana Padano 100G"
+     },
+     {
+      "priceable": true,
+      "rawName": "goat cheese",
+      "quantity": 0.5,
+      "rawUnit": "cup",
+      "canonical_name": "goat cheese",
+      "normValue": 70,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0246,
+      "lineCost": 1.722,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": "Bettine Mild Goat's Cheese Plain Slices"
+     },
+     {
+      "priceable": true,
+      "rawName": "salt",
+      "quantity": 0.75,
+      "rawUnit": "teaspoon",
+      "canonical_name": "salt",
+      "normValue": 4.5625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0024000000000000002,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Morrisons.com",
+      "productTitle": "Morrisons Table Salt 750g"
+     },
+     {
+      "priceable": true,
+      "rawName": "black pepper",
+      "quantity": 0.5,
+      "rawUnit": "teaspoon",
+      "canonical_name": "black pepper",
+      "normValue": 1.5625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.049,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Tesco",
+      "productTitle": "Tesco Ground Black Pepper 25G"
+     },
+     {
+      "priceable": true,
+      "rawName": "parsley",
+      "quantity": 2,
+      "rawUnit": "tablespoon",
+      "canonical_name": "parsley",
+      "normValue": 7.5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.02715,
+      "lineCost": 0.203625,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Fresh Packed Flat Leaf Parsley"
+     }
+    ],
+    "unpriceableReasons": {
+     "missing_density_cup": 1
+    }
+   }
+  },
+  {
+   "id": "6ac80da1b0ca951a2fbf74ea",
+   "cost": {
+    "basket": 8.783825,
+    "currency": "GBP",
+    "coveragePct": 100,
+    "adjustedCoveragePct": 100,
+    "totalLines": 14,
+    "priceableCount": 14,
+    "adjustedTotal": 12,
+    "adjustedPriceable": 12,
+    "pantryLineCount": 2,
+    "junkLineCount": 0,
+    "perServing": 2.19595625,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "sweet potato",
+      "quantity": 600,
+      "rawUnit": "g",
+      "canonical_name": "sweet potato",
+      "normValue": 600,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.00135,
+      "lineCost": 0.81,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "cornflour",
+      "quantity": 120,
+      "rawUnit": "g",
+      "canonical_name": "cornflour",
+      "normValue": 120,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.005350000000000001,
+      "lineCost": 0.6420000000000001,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Cornflour 250g"
+     },
+     {
+      "priceable": true,
+      "rawName": "_egg_",
+      "quantity": 1,
+      "rawUnit": "large",
+      "canonical_name": "egg",
+      "normValue": 1,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.265,
+      "lineCost": 0.265,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": "Essential Waitrose & Partners Free Range White Eggs (6 Pack)"
+     },
+     {
+      "priceable": true,
+      "rawName": "salt",
+      "quantity": 1,
+      "rawUnit": "tsp",
+      "canonical_name": "salt",
+      "normValue": 6.083333333333333,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0024000000000000002,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Morrisons.com",
+      "productTitle": "Morrisons Table Salt 750g"
+     },
+     {
+      "priceable": true,
+      "rawName": "ground pepper",
+      "quantity": 0.5,
+      "rawUnit": "tsp",
+      "canonical_name": "ground pepper",
+      "normValue": 1.5625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.031,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Stamford Street Co. Ground Black Pepper"
+     },
+     {
+      "priceable": true,
+      "rawName": "olive oil",
+      "quantity": 3,
+      "rawUnit": "tbsp",
+      "canonical_name": "olive oil",
+      "normValue": 45,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0124,
+      "lineCost": 0.5579999999999999,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Olive Oil 250Ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "garlic",
+      "quantity": 3,
+      "rawUnit": "clove",
+      "canonical_name": "garlic",
+      "normValue": 3,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.22,
+      "lineCost": 0.66,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Garlic"
+     },
+     {
+      "priceable": true,
+      "rawName": "onion",
+      "quantity": 1,
+      "rawUnit": "medium",
+      "canonical_name": "onion",
+      "normValue": 1,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.3167,
+      "lineCost": 0.3167,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Sliced Red Onion"
+     },
+     {
+      "priceable": true,
+      "rawName": "tomatoe",
+      "quantity": 4,
+      "rawUnit": "large",
+      "canonical_name": "tomatoe",
+      "normValue": 4,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.87,
+      "lineCost": 3.48,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Fragrant & Juicy Sweet Vine Ripened Tomatoes"
+     },
+     {
+      "priceable": true,
+      "rawName": "vegetable broth",
+      "quantity": 180,
+      "rawUnit": "ml",
+      "canonical_name": "vegetable broth",
+      "normValue": 180,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.00675,
+      "lineCost": 1.215,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Kallo Vegetable Stock Cubes"
+     },
+     {
+      "priceable": true,
+      "rawName": "olives",
+      "quantity": 80,
+      "rawUnit": "g",
+      "canonical_name": "olives",
+      "normValue": 80,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.004,
+      "lineCost": 0.32,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "basil",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "basil",
+      "normValue": 3,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0175,
+      "lineCost": 0.052500000000000005,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Cut Basil 30G"
+     },
+     {
+      "priceable": true,
+      "rawName": "parsley",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "parsley",
+      "normValue": 7.5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.02715,
+      "lineCost": 0.203625,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Fresh Packed Flat Leaf Parsley"
+     },
+     {
+      "priceable": true,
+      "rawName": "juice of lemon",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "juice of lemon",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0087,
+      "lineCost": 0.261,
+      "isPantry": false,
+      "store": "Sainsbury's / Tesco",
+      "productTitle": "Jif Lemon 100% Lemon Juice 100ml"
+     }
+    ],
+    "unpriceableReasons": {}
+   }
+  },
+  {
+   "id": "6ac80d6fb0ca951a2fbf743a",
+   "cost": {
+    "basket": 7.498325,
+    "currency": "GBP",
+    "coveragePct": 91.66666666666666,
+    "adjustedCoveragePct": 90,
+    "totalLines": 12,
+    "priceableCount": 11,
+    "adjustedTotal": 10,
+    "adjustedPriceable": 9,
+    "pantryLineCount": 2,
+    "junkLineCount": 0,
+    "perServing": 1.87458125,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "salmon",
+      "quantity": 200,
+      "rawUnit": "g",
+      "canonical_name": "salmon",
+      "normValue": 200,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.022600000000000002,
+      "lineCost": 4.5200000000000005,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Boneless Salmon Fillet"
+     },
+     {
+      "priceable": true,
+      "rawName": "_egg_",
+      "quantity": 6,
+      "rawUnit": "large",
+      "canonical_name": "egg",
+      "normValue": 6,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.265,
+      "lineCost": 1.59,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": "Essential Waitrose & Partners Free Range White Eggs (6 Pack)"
+     },
+     {
+      "priceable": true,
+      "rawName": "milk",
+      "quantity": 60,
+      "rawUnit": "ml",
+      "canonical_name": "milk",
+      "normValue": 60,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0013,
+      "lineCost": 0.078,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": false,
+      "rawName": "asparagus",
+      "quantity": 8,
+      "rawUnit": "spears",
+      "canonical_name": "asparagus",
+      "reason": "unmapped_unit",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "red onion",
+      "quantity": 0.5,
+      "rawUnit": "medium",
+      "canonical_name": "red onion",
+      "normValue": 0.5,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.3167,
+      "lineCost": 0.15835,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "tomato",
+      "quantity": 1,
+      "rawUnit": "medium",
+      "canonical_name": "tomato",
+      "normValue": 1,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.51835,
+      "lineCost": 0.51835,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Fragrant & Juicy Sweet Vine Ripened Tomatoes"
+     },
+     {
+      "priceable": true,
+      "rawName": "olive oil",
+      "quantity": 1,
+      "rawUnit": "tbsp",
+      "canonical_name": "olive oil",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0124,
+      "lineCost": 0.186,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Olive Oil 250Ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "butter",
+      "quantity": 1,
+      "rawUnit": "tbsp",
+      "canonical_name": "butter",
+      "normValue": 14.1875,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.008,
+      "lineCost": 0.1135,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "Country Life Salted Butter"
+     },
+     {
+      "priceable": true,
+      "rawName": "parsley",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "parsley",
+      "normValue": 7.5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.02715,
+      "lineCost": 0.203625,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Fresh Packed Flat Leaf Parsley"
+     },
+     {
+      "priceable": true,
+      "rawName": "salt",
+      "quantity": 0.75,
+      "rawUnit": "tsp",
+      "canonical_name": "salt",
+      "normValue": 4.5625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0024000000000000002,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Morrisons.com",
+      "productTitle": "Morrisons Table Salt 750g"
+     },
+     {
+      "priceable": true,
+      "rawName": "black pepper",
+      "quantity": 0.5,
+      "rawUnit": "tsp",
+      "canonical_name": "black pepper",
+      "normValue": 1.5625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.049,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Tesco",
+      "productTitle": "Tesco Ground Black Pepper 25G"
+     },
+     {
+      "priceable": true,
+      "rawName": "juice of lemon",
+      "quantity": 1,
+      "rawUnit": "tbsp",
+      "canonical_name": "juice of lemon",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0087,
+      "lineCost": 0.1305,
+      "isPantry": false,
+      "store": "Sainsbury's / Tesco",
+      "productTitle": "Jif Lemon 100% Lemon Juice 100ml"
+     }
+    ],
+    "unpriceableReasons": {
+     "unmapped_unit": 1
+    }
+   }
+  }
+ ]
+}
