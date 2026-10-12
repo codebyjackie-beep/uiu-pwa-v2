@@ -1,0 +1,190 @@
+{
+  "generatedAt": "2026-10-12T14:35:43.539Z",
+  "totalPending": 359,
+  "counts": {
+    "auto_approve": 76,
+    "auto_reject": 0,
+    "pending": 283,
+    "pendingDueToImage": 1,
+    "pendingOtherReasons": 282,
+    "needsReviewNutritionCoverage": 168
+  },
+  "rejectReasonCounts": {},
+  "samples": {
+    "auto_approve": [
+      {
+        "id": "6a7180494431d1bb950aa55a",
+        "title": "Bruschetta-Style Roma Tomato Toasts with Basil and Goat Cheese",
+        "caloriesPerServing": 313,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a73b285c62042632a5be9b0",
+        "title": "Crêpes de Champignons with White Wine Herb Sauce",
+        "caloriesPerServing": 601,
+        "adjustedCoveragePct": 80,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a743125accb3a6c8c7c801b",
+        "title": "Sweet Potato, Turkey Sausage, and Chard Morning Skillet",
+        "caloriesPerServing": 332,
+        "adjustedCoveragePct": 91.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a748573e6f9859f87d8f048",
+        "title": "Korean-Style Quick Kimchi Rice with Tuna and Cucumber",
+        "caloriesPerServing": 485,
+        "adjustedCoveragePct": 82.4,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7582954ece489e0f9335ac",
+        "title": "Sweet Potato, Turkey Sausage & Chard Morning Skillet",
+        "caloriesPerServing": 365,
+        "adjustedCoveragePct": 90,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7582954ece489e0f9335ae",
+        "title": "Crêpes Farcies aux Champignons, Sauce Blanche au Vin et aux Herbes",
+        "caloriesPerServing": 583,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a76d403d98dc929c3f755fe",
+        "title": "Sweet Potato, Chard, and Turkey Skillet Breakfast Scramble",
+        "caloriesPerServing": 436,
+        "adjustedCoveragePct": 91.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a775292e2bb4a5767974013",
+        "title": "Rolled Lasagna Spirals with Pecorino-Tomato Basil Sauce",
+        "caloriesPerServing": 474,
+        "adjustedCoveragePct": 92.9,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a800e894a689ae6f40d5568",
+        "title": "Breakfast Salmon and Broccoli Crepes with Lemon-Dill Yogurt",
+        "caloriesPerServing": 994,
+        "adjustedCoveragePct": 100,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a89f1c987d1dd01e66c0651",
+        "title": "Tuscan Seafood Stew with Tomatoes, Fennel, and Herbs",
+        "caloriesPerServing": 469,
+        "adjustedCoveragePct": 80,
+        "reasons": [],
+        "pendingDueToImage": false
+      }
+    ],
+    "auto_reject": [],
+    "pending": [
+      {
+        "id": "6a6cf98462b4d1c6f7f9047c",
+        "title": "Winter Kimchi Radish Soup with Tofu and Cabbage",
+        "caloriesPerServing": 102,
+        "adjustedCoveragePct": 72.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa54c",
+        "title": "Goldilocks Coconut Chia Porridge with Mango-Lime Quinoa Crunch",
+        "caloriesPerServing": 510,
+        "adjustedCoveragePct": 63.6,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa54d",
+        "title": "Raspberry Goat Cheese Crunch Salad Cups",
+        "caloriesPerServing": 205,
+        "adjustedCoveragePct": 77.8,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa54e",
+        "title": "Spinach, Asparagus, and Mushroom Breakfast Frittata with Goat Cheese",
+        "caloriesPerServing": 251,
+        "adjustedCoveragePct": 55.6,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa555",
+        "title": "Greek-Style Lemon Baked Fish with Tomatoes, Olives, and Feta",
+        "caloriesPerServing": 174,
+        "adjustedCoveragePct": 72.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a7180494431d1bb950aa557",
+        "title": "Sparkling Kimchi-Style Cabbage with Gingered Shrimp",
+        "caloriesPerServing": 268,
+        "adjustedCoveragePct": 76.9,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a16",
+        "title": "Golden-Swirl Chia Morning Porridge",
+        "caloriesPerServing": 287,
+        "adjustedCoveragePct": 66.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a17",
+        "title": "Raspberry Goat Cheese Crunch Cups",
+        "caloriesPerServing": 178,
+        "adjustedCoveragePct": 75,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a18",
+        "title": "Spinach, Asparagus, and Mushroom Cheddar Frittata",
+        "caloriesPerServing": 259,
+        "adjustedCoveragePct": 55.6,
+        "reasons": [],
+        "pendingDueToImage": false
+      },
+      {
+        "id": "6a72d1f6031050ec792b5a19",
+        "title": "Goldilocks Coconut-Chia Breakfast Porridge with Warm Apple and Cinnamon",
+        "caloriesPerServing": 158,
+        "adjustedCoveragePct": 66.7,
+        "reasons": [],
+        "pendingDueToImage": false
+      }
+    ],
+    "pendingDueToImage": [
+      {
+        "id": "6a79771fa4507c6910c0efde",
+        "title": "Savory Turkey-Free Morning Skillet with Chard and Sweet Potato",
+        "caloriesPerServing": 265,
+        "adjustedCoveragePct": 90.9,
+        "reasons": [],
+        "pendingDueToImage": true
+      }
+    ]
+  }
+}
