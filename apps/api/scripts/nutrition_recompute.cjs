@@ -62,7 +62,29 @@ const CANON_FIXES = [
   },
   { name: "egg", addAliases: ["large egg", "large eggs", "_egg_"] },
   { name: "zucchini", addAliases: ["courgette", "courgettes"] },
+  // --- cloud 2nd review (2026-10-12): 4 more suspect canonicals ---
+  { round: 2, name: "chicken", cofid: "18-488", cofidName: "Chicken, meat, average, raw", why: "was 474 kcal/100 g (fat 48.3 — not a raw-meat value)" },
+  { round: 2, name: "milk", cofid: "12-313", cofidName: "Milk, semi-skimmed, pasteurised, average", why: "was 12-329 'Milk, sheeps, raw' (93 kcal); UK default = semi-skimmed" },
+  { round: 2, name: "cream", cofid: "12-334", cofidName: "Cream, fresh, double, including Jersey cream", why: "was 12-592 'Cream, fresh, clotted' (586 kcal); cloud: double cream" },
+  { round: 2, name: "heavy cream", cofid: "12-334", cofidName: "Cream, fresh, double, including Jersey cream", why: "was 340 kcal / 36 g fat (not in CoFID, US heavy cream); cloud: double cream" },
+  // density_cup is OWNED by price_density_fix.cjs (written there, it drives the price too); here it is only simulated so the
+  // nutrition numbers already use 104 g/cup. NOT written by nutrition_recompute --write.
+  {
+    round: 2, name: "mung bean sprouts", densityCup: 104, simulateOnly: true,
+    densityCupSource: "USDA FDC 'Mung beans, mature seeds, sprouted, raw': 1 cup = 104 g (was 180) — cloud-specified",
+  },
 ];
+// Proposals NOT applied (report only): no CoFID entry exists, nothing is invented.
+const CANON_PROPOSALS_NOT_APPLIED = [
+  {
+    name: "rice noodles",
+    reason: "cloud asked for 'rice noodles, dried' but the CoFID table has no raw/dried rice-noodle entry — the only rice-noodle row is 11-725 'Noodles, rice, fine, dried, boiled in unsalted water' (89 kcal), which is what the canonical already holds (cooked weight, while recipes give dry oz). Left unchanged; needs a non-CoFID source (e.g. USDA dry rice noodles ~360 kcal/100 g) approved by cloud.",
+  },
+];
+// Spoonacular recipes that stay skip_authoritative although stored kcal is outside 100..1200 (cloud decision).
+const FLAG_EXEMPT = new Map([
+  ["6a5ff781a91e3f027a2961e9", "Korean Beef Rice Bowl: stored 1215 kcal accepted (cloud 2nd review 2026-10-12; recompute 1040)"],
+]);
 
 // A missing-nutrition line is "minor" (does not block a kcal decrease) only if it is a spice / salt / pepper / water / herb.
 // Name-based on purpose - quantities are not used.
@@ -176,13 +198,14 @@ async function main() {
         set.nutrition_per_100g = { kcal: cofid.kcal, protein: cofid.protein, carbs: cofid.carbs, fat: cofid.fat };
       }
       if (f.perItemG != null) { rec("per_item_g"); set.per_item_g = f.perItemG; }
+      if (f.densityCup != null) { rec("density_cup"); set.density_cup = f.densityCup; }
       if (f.addAliases) {
         rec("aliases");
         const cur = Array.isArray(d.aliases) ? d.aliases : [];
         const have = new Set(cur.map((a) => String(a).toLowerCase()));
         set.aliases = [...cur, ...f.addAliases.filter((a) => !have.has(a.toLowerCase()))];
       }
-      canonFixes.push({ id: String(d._id), canonical_name: f.name, cofid, why: f.why || null, perItemGSource: f.perItemGSource || null, before, after: set, absent });
+      canonFixes.push({ id: String(d._id), canonical_name: f.name, round: f.round || 1, simulateOnly: f.simulateOnly === true, cofid, why: f.why || null, perItemGSource: f.perItemGSource || null, densityCupSource: f.densityCupSource || null, before, after: set, absent });
     }
     // Proposed only (not simulated, not written): other coconut-milk canonicals with no nutrition at all.
     const fixedNames = new Set(CANON_FIXES.map((f) => f.name));
@@ -194,6 +217,11 @@ async function main() {
     const simDocs = canonDocs.map((d) => (fixById.has(String(d._id)) ? { ...d, ...fixById.get(String(d._id)).after } : d));
     const ingredientsMapFixed = new Map(simDocs.map((d) => [d.canonical_name, d]));
     const ingredientsMapBefore = new Map(canonDocs.map((d) => [d.canonical_name, d]));
+    // state after the FIRST review round only (all fixes except round 2) — to show what the 2nd round changed
+    const ingredientsMapPrevRound = new Map(canonDocs.map((d) => {
+      const fx = fixById.get(String(d._id));
+      return [d.canonical_name, fx && fx.round !== 2 ? { ...d, ...fx.after } : d];
+    }));
     // buildAliasIndex() only does collection.find({quarantine:{$ne:true}}).project().toArray() - feed it the simulated docs
     const shimCol = (docs) => ({ find: () => ({ project: () => ({ toArray: async () => docs.filter((d) => d.quarantine !== true) }) }) });
     const aliasIndex = await buildAliasIndex(shimCol(simDocs));
@@ -209,6 +237,7 @@ async function main() {
       const ings = Array.isArray(r.ingredients) ? r.ingredients : [];
       const res = computeRecipeNutrition(ings, r.servings, resolveFn, ingredientsMapFixed);
       const resOld = computeRecipeNutrition(ings, r.servings, resolveFnBefore, ingredientsMapBefore); // new code, canonical data as it is today
+      const resPrev = computeRecipeNutrition(ings, r.servings, resolveFn, ingredientsMapPrevRound); // after round-1 fixes only
       const before = pickNutrition(r.nutrition);
       const after = pickNutrition(res.nutrition);
       const storedK = before?.calories ?? 0;
@@ -231,10 +260,13 @@ async function main() {
       let flagReason = null;
       if (flagged) action = "skip_flagged";
       else if (authoritative) {
-        if (storedK > 1200 || storedK < 100) {
+        if ((storedK > 1200 || storedK < 100) && !FLAG_EXEMPT.has(String(r._id))) {
           action = "flag_unavailable";
           flagReason = `spoonacular stored ${storedK} kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)`;
-        } else action = "skip_authoritative";
+        } else {
+          action = "skip_authoritative";
+          if (FLAG_EXEMPT.has(String(r._id))) reviewFlags.push(`flag_exempt:${FLAG_EXEMPT.get(String(r._id))}`);
+        }
       } else {
         action = "write";
         if (reviewFlags.length) { action = "hold_review"; for (const f of reviewFlags) holdReasons.push(f.split(":")[0]); }
@@ -257,6 +289,7 @@ async function main() {
         before,
         after,
         afterWithoutCanonFixes: pickNutrition(resOld.nutrition),
+        afterRound1: pickNutrition(resPrev.nutrition),
         nutritionLineCoverage: res.nutrition.nutritionLineCoverage,
         deltaCalories: before && after ? after.calories - before.calories : null,
         unchangedValues: same(before, after),
@@ -324,6 +357,16 @@ async function main() {
       .filter((d) => d.nutrition_per_100g && d.nutrition_per_100g.kcal > 60 && PRODUCE_RE.test(d.canonical_name.toLowerCase()) && !NOT_PLAIN_PRODUCE_RE.test(d.canonical_name.toLowerCase()) && d.quarantine !== true)
       .map((d) => ({ canonical_name: d.canonical_name, kcalPer100g: d.nutrition_per_100g.kcal, recipe_count: d.recipe_count ?? null }))
       .sort((a, b) => b.kcalPer100g - a.kcalPer100g);
+    // recipes with a line on a canonical touched by the 2nd review round (chicken / milk / cream / heavy cream; rice noodles unchanged)
+    const ROUND2_NAMES = new Set(CANON_FIXES.filter((f) => f.round === 2 && f.cofid).map((f) => f.name).concat(CANON_PROPOSALS_NOT_APPLIED.map((x) => x.name)));
+    const point1Affected = rows
+      .filter((x) => x.lines.some((l) => ROUND2_NAMES.has(l.c)))
+      .map((x) => ({
+        id: x.id, title: x.title, source: x.source, servings: x.servings, action: x.action, stored: x.before?.calories ?? null,
+        afterRound1: x.afterRound1?.calories ?? null, afterRound2: x.after?.calories ?? null,
+        canonLines: x.lines.filter((l) => ROUND2_NAMES.has(l.c)).map((l) => `${l.c}: ${l.q} ${l.u} = ${l.g}g${l.why ? " (" + l.why + ")" : ""}`),
+      }))
+      .sort((a, b) => Math.abs((b.afterRound2 ?? 0) - (b.afterRound1 ?? 0)) - Math.abs((a.afterRound2 ?? 0) - (a.afterRound1 ?? 0)));
     const flagUnavailable = rows.filter((x) => x.action === "flag_unavailable").map((x) => ({
       id: x.id, title: x.title, source: x.source, servings: x.servings, storedKcal: x.before?.calories ?? null, recomputeKcal: x.after?.calories ?? null,
       coverage: x.nutritionLineCoverage, reason: x.flagReason,
@@ -402,7 +445,7 @@ async function main() {
     const out = {
       generatedAt: new Date().toISOString(),
       baseCommit: "3349e50+",
-      stats, canonFixes, coconutProposals, suspectCanonicalScan, flagUnavailable,
+      stats, canonFixes, canonProposalsNotApplied: CANON_PROPOSALS_NOT_APPLIED, flagExempt: [...FLAG_EXEMPT].map(([id, why]) => ({ id, why })), point1Affected, coconutProposals, suspectCanonicalScan, flagUnavailable,
       top20Changes: top20, outOfRange, topNullLines: topNull, nullLineTotalsByReason: nullTotals,
       flaggedUnavailable: flaggedReport, samples, impact,
       decreases, suspectPer100g,
@@ -446,7 +489,7 @@ async function main() {
       if (rr.action === "write" && live.action !== "write" && live.action !== "hold_review" && live.action !== "skip_authoritative") problems.push(`${rr.id} ${rr.title}: live action ${live.action}`);
       plan.push({ id: rr.id, title: rr.title, before: live.before, after: live.after, coverage: live.nutritionLineCoverage });
     }
-    const sig = (fixes) => JSON.stringify((fixes || []).map((f) => [f.canonical_name, f.after]));
+    const sig = (fixes) => JSON.stringify((fixes || []).map((f) => [f.canonical_name, f.simulateOnly === true, f.after]));
     if (sig(reviewed.canonFixes) !== sig(canonFixes)) problems.push("canonical fix set / values differ from the reviewed file");
     if (problems.length) {
       console.error(["ABORT - guard failures (nothing written):", ...problems.slice(0, 40)].join("\n  "));
@@ -458,7 +501,8 @@ async function main() {
     // 1) canonical fixes first (so the stored recipe numbers match what a live recompute will give).
     //    Old values of every touched field -> canonFixPrev (+ canonFixPrevAbsent for fields that did not exist).
     let canonModified = 0;
-    for (const f of canonFixes) {
+    const writableFixes = canonFixes.filter((f) => !f.simulateOnly); // simulate-only (mung bean density) is written by price_density_fix.cjs
+    for (const f of writableFixes) {
       const res = await canonCol.updateOne(
         { _id: new ObjectId(f.id), nutritionFixBatch: { $exists: false } },
         { $set: { ...f.after, canonFixPrev: f.before, canonFixPrevAbsent: f.absent, nutritionFixBatch: batch, nutritionFixCofid: f.cofid ? f.cofid.code : null, nutritionFixAt: at } },
@@ -485,8 +529,8 @@ async function main() {
       );
       flagsModified += res.modifiedCount;
     }
-    console.log(`WRITE batch ${batch}: canonical modified ${canonModified}/${canonFixes.length}; recipes modified ${recipesModified}/${plan.length}; flagged unavailable ${flagsModified}/${flagPlan.length}`);
-    if (recipesModified !== plan.length || canonModified !== canonFixes.length || flagsModified !== flagPlan.length) process.exitCode = 1;
+    console.log(`WRITE batch ${batch}: canonical modified ${canonModified}/${writableFixes.length}; recipes modified ${recipesModified}/${plan.length}; flagged unavailable ${flagsModified}/${flagPlan.length}`);
+    if (recipesModified !== plan.length || canonModified !== writableFixes.length || flagsModified !== flagPlan.length) process.exitCode = 1;
 
     // re-query evidence
     const after = await recipesCol.find({ nutritionRecomputeBatch: batch }).project({ title: 1, nutrition: 1, nutritionPrev: 1 }).toArray();

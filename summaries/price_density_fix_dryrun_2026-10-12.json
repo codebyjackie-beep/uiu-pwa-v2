@@ -1,0 +1,4969 @@
+{
+ "generatedAt": "2026-10-12T15:48:49.836Z",
+ "change": {
+  "priceDoc": {
+   "canonical_name": "mung bean sprouts",
+   "removedListings": [
+    {
+     "store": "Tesco",
+     "title": "A.Vogel Mung Bean Seeds 40g",
+     "price": 2.13,
+     "per_unit": 0.0533
+    }
+   ],
+   "before": {
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco Beansprouts 300G",
+      "price": 0.85,
+      "pack": {
+       "qty": 300,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0028
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Fresh Mung Beansprouts",
+      "price": 0.9,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Tesco",
+      "title": "A.Vogel Mung Bean Seeds 40g",
+      "price": 2.13,
+      "pack": {
+       "qty": 40,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0533
+     },
+     {
+      "store": "Ocado",
+      "title": "Kingfisher Bean Sprouts in Water",
+      "price": 1.15,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     }
+    ],
+    "per_unit_metric": {
+     "value": 0.02805,
+     "unit": "g_or_ml",
+     "n": 2
+    },
+    "n_supermarkets": 4
+   },
+   "after": {
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco Beansprouts 300G",
+      "price": 0.85,
+      "pack": {
+       "qty": 300,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0028
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Fresh Mung Beansprouts",
+      "price": 0.9,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Ocado",
+      "title": "Kingfisher Bean Sprouts in Water",
+      "price": 1.15,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     }
+    ],
+    "per_unit_metric": {
+     "value": 0.0028,
+     "unit": "g_or_ml",
+     "n": 1
+    },
+    "n_supermarkets": 3
+   },
+   "formula": "median"
+  },
+  "density": {
+   "canonical_name": "mung bean sprouts",
+   "before": 180,
+   "after": 104,
+   "source": "USDA FDC 'Mung beans, mature seeds, sprouted, raw': 1 cup = 104 g (was 180) — cloud-specified"
+  },
+  "otherDocsWithBadListing": []
+ },
+ "sanity": {
+  "docsWithMetric": 522,
+  "meanMatches": 196,
+  "medianMatches": 514,
+  "nMatchesCount": 515,
+  "nSupermarketsEqListings": 635,
+  "nSupermarketsEqDistinctStores": 89,
+  "priceDocs": 636,
+  "freshVsStoredBasketDriftRecipes": 0,
+  "recipes": 1410
+ },
+ "problems": [],
+ "affectedCount": 5,
+ "affected": [
+  {
+   "id": "69b9587c7d3db8c999c7df7d",
+   "title": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+   "isPublic": true,
+   "servings": 6,
+   "stored": {
+    "basket": 10.7677,
+    "perServing": 1.7946,
+    "adjustedCoveragePct": 79.16666666666666
+   },
+   "before": {
+    "basket": 10.7677,
+    "perServing": 1.7946,
+    "adjustedCoveragePct": 79.1667
+   },
+   "after": {
+    "basket": 6.0099,
+    "perServing": 1.0017,
+    "adjustedCoveragePct": 79.1667
+   },
+   "lineDiffs": [
+    {
+     "raw": "mung bean sprouts",
+     "canonical": "mung bean sprouts",
+     "qty": 1,
+     "unit": null,
+     "normValue": 180,
+     "normUnit": "g",
+     "perUnit": 0.02805,
+     "normValueAfter": 104,
+     "perUnitAfter": 0.0028,
+     "costBefore": 5.049,
+     "costAfter": 0.2912
+    }
+   ]
+  },
+  {
+   "id": "69d5710287d5d72710ae8eb2",
+   "title": "Chinese Hot Pots Gluten-Free and Low-Carb",
+   "isPublic": true,
+   "servings": 8,
+   "stored": {
+    "basket": 24.405,
+    "perServing": 3.0506,
+    "adjustedCoveragePct": 75
+   },
+   "before": {
+    "basket": 24.405,
+    "perServing": 3.0506,
+    "adjustedCoveragePct": 75
+   },
+   "after": {
+    "basket": 19.6472,
+    "perServing": 2.4559,
+    "adjustedCoveragePct": 75
+   },
+   "lineDiffs": [
+    {
+     "raw": "mung bean sprouts",
+     "canonical": "mung bean sprouts",
+     "qty": 1,
+     "unit": null,
+     "normValue": 180,
+     "normUnit": "g",
+     "perUnit": 0.02805,
+     "normValueAfter": 104,
+     "perUnitAfter": 0.0028,
+     "costBefore": 5.049,
+     "costAfter": 0.2912
+    }
+   ]
+  },
+  {
+   "id": "6a68c1cee9ca2eb201736077",
+   "title": "Egg Foo Young",
+   "isPublic": false,
+   "servings": 4,
+   "stored": {
+    "basket": 14.9356,
+    "perServing": 3.7339,
+    "adjustedCoveragePct": 85.71428571428571
+   },
+   "before": {
+    "basket": 14.9356,
+    "perServing": 3.7339,
+    "adjustedCoveragePct": 85.7143
+   },
+   "after": {
+    "basket": 10.1778,
+    "perServing": 2.5445,
+    "adjustedCoveragePct": 85.7143
+   },
+   "lineDiffs": [
+    {
+     "raw": "mung bean sprouts",
+     "canonical": "mung bean sprouts",
+     "qty": 1,
+     "unit": null,
+     "normValue": 180,
+     "normUnit": "g",
+     "perUnit": 0.02805,
+     "normValueAfter": 104,
+     "perUnitAfter": 0.0028,
+     "costBefore": 5.049,
+     "costAfter": 0.2912
+    }
+   ]
+  },
+  {
+   "id": "6ac80dd0b0ca951a2fbf758e",
+   "title": "Crispy Ginger Chicken & Cabbage Ribbon Salad",
+   "isPublic": true,
+   "servings": 4,
+   "stored": {
+    "basket": 13.1566,
+    "perServing": 3.2891,
+    "adjustedCoveragePct": 84.21052631578947
+   },
+   "before": {
+    "basket": 13.1566,
+    "perServing": 3.2891,
+    "adjustedCoveragePct": 84.2105
+   },
+   "after": {
+    "basket": 8.3988,
+    "perServing": 2.0997,
+    "adjustedCoveragePct": 84.2105
+   },
+   "lineDiffs": [
+    {
+     "raw": "mung bean sprouts",
+     "canonical": "mung bean sprouts",
+     "qty": 1,
+     "unit": null,
+     "normValue": 180,
+     "normUnit": "g",
+     "perUnit": 0.02805,
+     "normValueAfter": 104,
+     "perUnitAfter": 0.0028,
+     "costBefore": 5.049,
+     "costAfter": 0.2912
+    }
+   ]
+  },
+  {
+   "id": "6ac80deab0ca951a2fbf75ec",
+   "title": "Crisp Ginger Chicken Salad with Sesame Rice Crunch",
+   "isPublic": false,
+   "servings": 4,
+   "stored": {
+    "basket": 13.1681,
+    "perServing": 3.292,
+    "adjustedCoveragePct": 87.5
+   },
+   "before": {
+    "basket": 13.1681,
+    "perServing": 3.292,
+    "adjustedCoveragePct": 87.5
+   },
+   "after": {
+    "basket": 8.4103,
+    "perServing": 2.1026,
+    "adjustedCoveragePct": 87.5
+   },
+   "lineDiffs": [
+    {
+     "raw": "mung bean sprouts",
+     "canonical": "mung bean sprouts",
+     "qty": 1,
+     "unit": null,
+     "normValue": 180,
+     "normUnit": "g",
+     "perUnit": 0.02805,
+     "normValueAfter": 104,
+     "perUnitAfter": 0.0028,
+     "costBefore": 5.049,
+     "costAfter": 0.2912
+    }
+   ]
+  }
+ ],
+ "affectedAfterFull": [
+  {
+   "id": "69b9587c7d3db8c999c7df7d",
+   "cost": {
+    "basket": 6.009925039249999,
+    "currency": "GBP",
+    "coveragePct": 80,
+    "adjustedCoveragePct": 79.16666666666666,
+    "totalLines": 25,
+    "priceableCount": 20,
+    "adjustedTotal": 24,
+    "adjustedPriceable": 19,
+    "pantryLineCount": 1,
+    "junkLineCount": 0,
+    "perServing": 1.001654173208333,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "brown rice flour",
+      "quantity": 1.3333334,
+      "rawUnit": "cups",
+      "canonical_name": "brown rice flour",
+      "normValue": 240.00001199999997,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.002,
+      "lineCost": 0.48000002399999997,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "DOVES FARM Rice Flour 1kg"
+     },
+     {
+      "priceable": true,
+      "rawName": "brown sugar",
+      "quantity": 0.5,
+      "rawUnit": "tablespoon",
+      "canonical_name": "brown sugar",
+      "normValue": 6.875,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0038,
+      "lineCost": 0.026125,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Light Brown Sugar"
+     },
+     {
+      "priceable": true,
+      "rawName": "carrot",
+      "quantity": 1,
+      "rawUnit": "large",
+      "canonical_name": "carrot",
+      "normValue": 60,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0021,
+      "lineCost": 0.126,
+      "displayNote": "1 carrot (≈60g)",
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Grated Carrot"
+     },
+     {
+      "priceable": false,
+      "rawName": "cayenne",
+      "quantity": 1,
+      "rawUnit": "pinch",
+      "canonical_name": "cayenne",
+      "reason": "unit_unconvertible",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "coconut milk",
+      "quantity": 1.75,
+      "rawUnit": "cups",
+      "canonical_name": "coconut milk",
+      "normValue": 420,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.00245,
+      "lineCost": 1.029,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Coconut Milk 400Ml"
+     },
+     {
+      "priceable": false,
+      "rawName": "daikon radish",
+      "quantity": 1,
+      "rawUnit": "medium",
+      "canonical_name": "daikon radish",
+      "reason": "missing_per_item_g_and_count_price",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "egg",
+      "quantity": 1,
+      "rawUnit": "",
+      "canonical_name": "egg",
+      "normValue": 1,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.265,
+      "lineCost": 0.265,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": "Essential Waitrose & Partners Free Range White Eggs (6 Pack)"
+     },
+     {
+      "priceable": false,
+      "rawName": "enoki mushrooms",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "enoki mushrooms",
+      "reason": "known_gap",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "basil leaves",
+      "quantity": 0.6666667,
+      "rawUnit": "cup",
+      "canonical_name": "basil leaves",
+      "normValue": 16.6666675,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0183,
+      "lineCost": 0.30500001525,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Cut Basil 30G"
+     },
+     {
+      "priceable": true,
+      "rawName": "ginger",
+      "quantity": 1,
+      "rawUnit": "inch",
+      "canonical_name": "ginger",
+      "normValue": 6,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0146,
+      "lineCost": 0.0876,
+      "displayNote": "1 inch ginger (≈6g, Table C estimate)",
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Ginger 100g"
+     },
+     {
+      "priceable": true,
+      "rawName": "mint leaves",
+      "quantity": 0.25,
+      "rawUnit": "cup",
+      "canonical_name": "mint leaves",
+      "normValue": 6.25,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0183,
+      "lineCost": 0.114375,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Fresh Packed Mint 30g"
+     },
+     {
+      "priceable": true,
+      "rawName": "parsley",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "parsley",
+      "normValue": 60,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.02715,
+      "lineCost": 1.629,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Fresh Packed Flat Leaf Parsley"
+     },
+     {
+      "priceable": true,
+      "rawName": "garlic",
+      "quantity": 1,
+      "rawUnit": "clove",
+      "canonical_name": "garlic",
+      "normValue": 1,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.22,
+      "lineCost": 0.22,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Garlic"
+     },
+     {
+      "priceable": true,
+      "rawName": "chili",
+      "quantity": 1,
+      "rawUnit": "",
+      "canonical_name": "chili",
+      "normValue": 5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.01005,
+      "lineCost": 0.05025,
+      "displayNote": "1 chili (≈5g)",
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Red Chillies 60G"
+     },
+     {
+      "priceable": true,
+      "rawName": "chilies",
+      "quantity": 2,
+      "rawUnit": "",
+      "canonical_name": "chilli",
+      "normValue": 10,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.01415,
+      "lineCost": 0.1415,
+      "displayNote": "2 chilli (≈10g)",
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "green onions",
+      "quantity": 4,
+      "rawUnit": "",
+      "canonical_name": "green onion",
+      "normValue": 60,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0077,
+      "lineCost": 0.462,
+      "displayNote": "4 green onion (≈60g)",
+      "isPantry": false,
+      "store": "Ocado",
+      "productTitle": "Marks & Spencer Spring Onions"
+     },
+     {
+      "priceable": true,
+      "rawName": "juice of lime",
+      "quantity": 2,
+      "rawUnit": "",
+      "canonical_name": "juice of lime",
+      "normValue": 30,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0049,
+      "lineCost": 0.147,
+      "displayNote": "2 juice of lime (≈30g)",
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "KTC Lime juice 200ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "mung bean sprouts",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "mung bean sprouts",
+      "normValue": 104,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0028,
+      "lineCost": 0.2912,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Beansprouts 300G"
+     },
+     {
+      "priceable": true,
+      "rawName": "chilies",
+      "quantity": 2,
+      "rawUnit": "",
+      "canonical_name": "chilli",
+      "normValue": 10,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.01415,
+      "lineCost": 0.1415,
+      "displayNote": "2 chilli (≈10g)",
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "rice vinegar",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "rice vinegar",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.014849999999999999,
+      "lineCost": 0.22274999999999998,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Lee Kum Kee Seasoned Rice Vinegar"
+     },
+     {
+      "priceable": true,
+      "rawName": "sea salt",
+      "quantity": 0.5,
+      "rawUnit": "teaspoon",
+      "canonical_name": "sea salt",
+      "normValue": 2.9166666666666665,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.00685,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Asda Groceries",
+      "productTitle": "COOK by ASDA Sea Salt"
+     },
+     {
+      "priceable": true,
+      "rawName": "sesame oil",
+      "quantity": 1.5,
+      "rawUnit": "tablespoons",
+      "canonical_name": "sesame oil",
+      "normValue": 22.5,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0106,
+      "lineCost": 0.2385,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "KTC Pure Sesame Oil Pressed Toasted 250ml"
+     },
+     {
+      "priceable": false,
+      "rawName": "snow peas",
+      "quantity": 1.5,
+      "rawUnit": "cups",
+      "canonical_name": "snow peas",
+      "reason": "missing_density_cup",
+      "isPantry": false
+     },
+     {
+      "priceable": false,
+      "rawName": "tamari sauce",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "tamari sauce",
+      "reason": "no_price_in_cache",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "turmeric",
+      "quantity": 1,
+      "rawUnit": "teaspoon",
+      "canonical_name": "turmeric",
+      "normValue": 2.083333333333333,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.015899999999999997,
+      "lineCost": 0.03312499999999999,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Indus Turmeric Powder"
+     }
+    ],
+    "unpriceableReasons": {
+     "unit_unconvertible": 1,
+     "missing_per_item_g_and_count_price": 1,
+     "known_gap": 1,
+     "missing_density_cup": 1,
+     "no_price_in_cache": 1
+    }
+   }
+  },
+  {
+   "id": "69d5710287d5d72710ae8eb2",
+   "cost": {
+    "basket": 19.647185,
+    "currency": "GBP",
+    "coveragePct": 76.92307692307693,
+    "adjustedCoveragePct": 75,
+    "totalLines": 13,
+    "priceableCount": 10,
+    "adjustedTotal": 12,
+    "adjustedPriceable": 9,
+    "pantryLineCount": 1,
+    "junkLineCount": 0,
+    "perServing": 2.455898125,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "chicken stock",
+      "quantity": 6,
+      "rawUnit": "cups",
+      "canonical_name": "chicken stock",
+      "normValue": 1440,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0064,
+      "lineCost": 9.216000000000001,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Chicken Stock Cubes 12 x 10g"
+     },
+     {
+      "priceable": true,
+      "rawName": "water",
+      "quantity": 6,
+      "rawUnit": "cups",
+      "canonical_name": "water",
+      "normValue": 1440,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0041,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's British Bottled Spring Water Still"
+     },
+     {
+      "priceable": true,
+      "rawName": "rice vinegar",
+      "quantity": 0.5,
+      "rawUnit": "cup",
+      "canonical_name": "rice vinegar",
+      "normValue": 120,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.014849999999999999,
+      "lineCost": 1.7819999999999998,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Lee Kum Kee Seasoned Rice Vinegar"
+     },
+     {
+      "priceable": true,
+      "rawName": "soy sauce",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "soy sauce",
+      "normValue": 240,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0037,
+      "lineCost": 0.888,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Light Soy Sauce 150Ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "sesame oil",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "sesame oil",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0106,
+      "lineCost": 0.159,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "KTC Pure Sesame Oil Pressed Toasted 250ml"
+     },
+     {
+      "priceable": false,
+      "rawName": "ginger",
+      "quantity": 5,
+      "rawUnit": "slices",
+      "canonical_name": "ginger",
+      "reason": "unit_unconvertible",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "garlic cloves",
+      "quantity": 5,
+      "rawUnit": "",
+      "canonical_name": "garlic clove",
+      "normValue": 5,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.3333,
+      "lineCost": 1.6664999999999999,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Garlic"
+     },
+     {
+      "priceable": true,
+      "rawName": "chicken thighs",
+      "quantity": 1,
+      "rawUnit": "pound",
+      "canonical_name": "chicken thighs",
+      "normValue": 453.6,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.007299999999999999,
+      "lineCost": 3.31128,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "rice stick noodles",
+      "quantity": 5,
+      "rawUnit": "ounces",
+      "canonical_name": "rice stick noodles",
+      "normValue": 141.75,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0075,
+      "lineCost": 1.0631249999999999,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": null
+     },
+     {
+      "priceable": false,
+      "rawName": "of green onions",
+      "quantity": 1,
+      "rawUnit": "bunch",
+      "canonical_name": "of green onions",
+      "reason": "unmapped_unit",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "mung bean sprouts",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "mung bean sprouts",
+      "normValue": 104,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0028,
+      "lineCost": 0.2912,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Beansprouts 300G"
+     },
+     {
+      "priceable": true,
+      "rawName": "mushrooms",
+      "quantity": 8,
+      "rawUnit": "ounces",
+      "canonical_name": "mushroom",
+      "normValue": 226.8,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0056,
+      "lineCost": 1.27008,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "JUST ESSENTIALS Mushrooms"
+     },
+     {
+      "priceable": false,
+      "rawName": "baby bok choy",
+      "quantity": 4,
+      "rawUnit": "",
+      "canonical_name": "baby bok choy",
+      "reason": "missing_per_item_g_and_count_price",
+      "isPantry": false
+     }
+    ],
+    "unpriceableReasons": {
+     "unit_unconvertible": 1,
+     "unmapped_unit": 1,
+     "missing_per_item_g_and_count_price": 1
+    }
+   }
+  },
+  {
+   "id": "6a68c1cee9ca2eb201736077",
+   "cost": {
+    "basket": 10.177810416666667,
+    "currency": "GBP",
+    "coveragePct": 88.23529411764706,
+    "adjustedCoveragePct": 85.71428571428571,
+    "totalLines": 17,
+    "priceableCount": 15,
+    "adjustedTotal": 14,
+    "adjustedPriceable": 12,
+    "pantryLineCount": 3,
+    "junkLineCount": 0,
+    "perServing": 2.5444526041666666,
+    "lines": [
+     {
+      "priceable": false,
+      "rawName": "unsalted beef stock",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "reason": "unresolved"
+     },
+     {
+      "priceable": true,
+      "rawName": "soy sauce",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "soy sauce",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0037,
+      "lineCost": 0.0555,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Light Soy Sauce 150Ml"
+     },
+     {
+      "priceable": false,
+      "rawName": "shaoxing wine",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "reason": "unresolved"
+     },
+     {
+      "priceable": true,
+      "rawName": "oyster sauce",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "oyster sauce",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.011349999999999999,
+      "lineCost": 0.17024999999999998,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Oyster Sauce 150ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "pepper",
+      "quantity": 0.5,
+      "rawUnit": "tsp",
+      "canonical_name": "pepper",
+      "normValue": 1.25,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.009,
+      "lineCost": 0.01125,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Red Pepper"
+     },
+     {
+      "priceable": true,
+      "rawName": "cornstarch",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "cornstarch",
+      "normValue": 8,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0056,
+      "lineCost": 0.0448,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "water",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "water",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0041,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's British Bottled Spring Water Still"
+     },
+     {
+      "priceable": true,
+      "rawName": "cornstarch",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "cornstarch",
+      "normValue": 8,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0056,
+      "lineCost": 0.0448,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "water",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "water",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0041,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's British Bottled Spring Water Still"
+     },
+     {
+      "priceable": true,
+      "rawName": "egg",
+      "quantity": 8,
+      "rawUnit": "large",
+      "canonical_name": "egg",
+      "normValue": 8,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.265,
+      "lineCost": 2.12,
+      "isPantry": false,
+      "store": "Waitrose & Partners",
+      "productTitle": "Essential Waitrose & Partners Free Range White Eggs (6 Pack)"
+     },
+     {
+      "priceable": true,
+      "rawName": "kosher salt",
+      "quantity": 0.5,
+      "rawUnit": "tsp",
+      "canonical_name": "kosher salt",
+      "normValue": 1.3333333333333333,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0094,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Tesco / Ocado",
+      "productTitle": "Maldon Sea Salt Flakes 250g"
+     },
+     {
+      "priceable": true,
+      "rawName": "sugar",
+      "quantity": 0.25,
+      "rawUnit": "tsp",
+      "canonical_name": "sugar",
+      "normValue": 1.0416666666666665,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.00145,
+      "lineCost": 0.0015104166666666664,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's White Granulated Sugar"
+     },
+     {
+      "priceable": true,
+      "rawName": "spring onions",
+      "quantity": 1,
+      "rawUnit": "",
+      "canonical_name": "spring onion",
+      "normValue": 15,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0079,
+      "lineCost": 0.11850000000000001,
+      "displayNote": "1 spring onion (≈15g)",
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Spring Onions Bunch"
+     },
+     {
+      "priceable": true,
+      "rawName": "mung bean sprouts",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "mung bean sprouts",
+      "normValue": 104,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0028,
+      "lineCost": 0.2912,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Beansprouts 300G"
+     },
+     {
+      "priceable": true,
+      "rawName": "shrimp",
+      "quantity": 20,
+      "rawUnit": "",
+      "canonical_name": "shrimp",
+      "normValue": 240,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.02,
+      "lineCost": 4.8,
+      "displayNote": "20 shrimp (≈240g)",
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "vegetable oil",
+      "quantity": 3,
+      "rawUnit": "Cups",
+      "canonical_name": "vegetable oil",
+      "normValue": 720,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0015,
+      "lineCost": 1.08,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Vegetable Oil 3L"
+     },
+     {
+      "priceable": true,
+      "rawName": "jasmine rice",
+      "quantity": 2,
+      "rawUnit": "cups",
+      "canonical_name": "jasmine rice",
+      "normValue": 360,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.004,
+      "lineCost": 1.44,
+      "isPantry": false,
+      "store": "Iceland",
+      "productTitle": null
+     }
+    ],
+    "unpriceableReasons": {
+     "unresolved": 2
+    }
+   }
+  },
+  {
+   "id": "6ac80dd0b0ca951a2fbf758e",
+   "cost": {
+    "basket": 8.3987725,
+    "currency": "GBP",
+    "coveragePct": 85,
+    "adjustedCoveragePct": 84.21052631578947,
+    "totalLines": 20,
+    "priceableCount": 17,
+    "adjustedTotal": 19,
+    "adjustedPriceable": 16,
+    "pantryLineCount": 1,
+    "junkLineCount": 0,
+    "perServing": 2.099693125,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "chicken",
+      "quantity": 1.5,
+      "rawUnit": "lb",
+      "canonical_name": "chicken",
+      "normValue": 680.4000000000001,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0044,
+      "lineCost": 2.9937600000000004,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Morrisons Chicken Drumsticks"
+     },
+     {
+      "priceable": true,
+      "rawName": "water",
+      "quantity": 4,
+      "rawUnit": "tbsp",
+      "canonical_name": "water",
+      "normValue": 60,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0041,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's British Bottled Spring Water Still"
+     },
+     {
+      "priceable": true,
+      "rawName": "soy sauce",
+      "quantity": 3,
+      "rawUnit": "tbsp",
+      "canonical_name": "soy sauce",
+      "normValue": 45,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0037,
+      "lineCost": 0.1665,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Light Soy Sauce 150Ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "rice wine vinegar",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "rice wine vinegar",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.014849999999999999,
+      "lineCost": 0.44549999999999995,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Lee Kum Kee Seasoned Rice Vinegar"
+     },
+     {
+      "priceable": true,
+      "rawName": "lime juice",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "lime juice",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0121,
+      "lineCost": 0.363,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Quadruple Strength Lime Squash"
+     },
+     {
+      "priceable": true,
+      "rawName": "ginger paste",
+      "quantity": 1,
+      "rawUnit": "tbsp",
+      "canonical_name": "ginger paste",
+      "normValue": 15.625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.019299999999999998,
+      "lineCost": 0.30156249999999996,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "garlic",
+      "quantity": 2,
+      "rawUnit": "clove",
+      "canonical_name": "garlic",
+      "normValue": 2,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.22,
+      "lineCost": 0.44,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Garlic"
+     },
+     {
+      "priceable": true,
+      "rawName": "sesame oil",
+      "quantity": 2,
+      "rawUnit": "tbsp",
+      "canonical_name": "sesame oil",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0106,
+      "lineCost": 0.318,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "KTC Pure Sesame Oil Pressed Toasted 250ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "olive oil",
+      "quantity": 1,
+      "rawUnit": "tbsp",
+      "canonical_name": "olive oil",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0124,
+      "lineCost": 0.186,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Olive Oil 250Ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "cabbage",
+      "quantity": 4,
+      "rawUnit": "cup",
+      "canonical_name": "cabbage",
+      "normValue": 360,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.00155,
+      "lineCost": 0.5579999999999999,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Delicately Sweet Tenderheart Cabbage"
+     },
+     {
+      "priceable": false,
+      "rawName": "broccoli slaw",
+      "quantity": 2,
+      "rawUnit": "cup",
+      "canonical_name": "broccoli slaw",
+      "reason": "missing_density_cup",
+      "isPantry": false
+     },
+     {
+      "priceable": false,
+      "rawName": "persian cucumber",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "persian cucumber",
+      "reason": "missing_density_cup",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "carrot",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "carrot",
+      "normValue": 128,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0021,
+      "lineCost": 0.2688,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Grated Carrot"
+     },
+     {
+      "priceable": true,
+      "rawName": "mung bean sprouts",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "mung bean sprouts",
+      "normValue": 104,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0028,
+      "lineCost": 0.2912,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Beansprouts 300G"
+     },
+     {
+      "priceable": true,
+      "rawName": "green onion",
+      "quantity": 4,
+      "rawUnit": "stalk",
+      "canonical_name": "green onion",
+      "normValue": 60,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0077,
+      "lineCost": 0.462,
+      "displayNote": "4 green onion (≈60g)",
+      "isPantry": false,
+      "store": "Ocado",
+      "productTitle": "Marks & Spencer Spring Onions"
+     },
+     {
+      "priceable": true,
+      "rawName": "cilantro",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "cilantro",
+      "normValue": 16,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0167,
+      "lineCost": 0.2672,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Fresh Cut Coriander 30G"
+     },
+     {
+      "priceable": true,
+      "rawName": "parsley",
+      "quantity": 0.5,
+      "rawUnit": "cup",
+      "canonical_name": "parsley",
+      "normValue": 30,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.02715,
+      "lineCost": 0.8145,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Fresh Packed Flat Leaf Parsley"
+     },
+     {
+      "priceable": true,
+      "rawName": "roasted coarse peanuts",
+      "quantity": 0.5,
+      "rawUnit": "cup",
+      "canonical_name": "roasted coarse peanuts",
+      "normValue": 67.5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.007,
+      "lineCost": 0.47250000000000003,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": false,
+      "rawName": "sesame seeds (for garnish)",
+      "quantity": 1,
+      "rawUnit": "tbsp",
+      "canonical_name": "sesame seeds (for garnish)",
+      "reason": "no_price_in_cache",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "chili",
+      "quantity": 1,
+      "rawUnit": "each",
+      "canonical_name": "chili",
+      "normValue": 5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.01005,
+      "lineCost": 0.05025,
+      "displayNote": "1 chili (≈5g)",
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Red Chillies 60G"
+     }
+    ],
+    "unpriceableReasons": {
+     "missing_density_cup": 2,
+     "no_price_in_cache": 1
+    }
+   }
+  },
+  {
+   "id": "6ac80deab0ca951a2fbf75ec",
+   "cost": {
+    "basket": 8.410291666666668,
+    "currency": "GBP",
+    "coveragePct": 89.47368421052632,
+    "adjustedCoveragePct": 87.5,
+    "totalLines": 19,
+    "priceableCount": 17,
+    "adjustedTotal": 16,
+    "adjustedPriceable": 14,
+    "pantryLineCount": 3,
+    "junkLineCount": 0,
+    "perServing": 2.102572916666667,
+    "lines": [
+     {
+      "priceable": true,
+      "rawName": "chicken breast",
+      "quantity": 1,
+      "rawUnit": "pound",
+      "canonical_name": "chicken breast",
+      "normValue": 453.6,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.01,
+      "lineCost": 4.5360000000000005,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Tender Chicken Breast Mini Fillets"
+     },
+     {
+      "priceable": true,
+      "rawName": "water",
+      "quantity": 4,
+      "rawUnit": "cup",
+      "canonical_name": "water",
+      "normValue": 960,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0041,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's British Bottled Spring Water Still"
+     },
+     {
+      "priceable": true,
+      "rawName": "salt",
+      "quantity": 1,
+      "rawUnit": "teaspoon",
+      "canonical_name": "salt",
+      "normValue": 6.083333333333333,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0024000000000000002,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "Morrisons.com",
+      "productTitle": "Morrisons Table Salt 750g"
+     },
+     {
+      "priceable": false,
+      "rawName": "thumb sized ginger",
+      "quantity": 1,
+      "rawUnit": "piece",
+      "canonical_name": "thumb sized ginger",
+      "reason": "missing_per_item_g_and_count_price",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "garlic",
+      "quantity": 2,
+      "rawUnit": "clove",
+      "canonical_name": "garlic",
+      "normValue": 2,
+      "normUnit": "pc",
+      "bucket": "count",
+      "perUnit": 0.22,
+      "lineCost": 0.44,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Garlic"
+     },
+     {
+      "priceable": true,
+      "rawName": "rice",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "rice",
+      "normValue": 185,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0025,
+      "lineCost": 0.4625,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Stamford Street Co. White Rice 1kg"
+     },
+     {
+      "priceable": true,
+      "rawName": "peanut oil",
+      "quantity": 2,
+      "rawUnit": "tablespoon",
+      "canonical_name": "peanut oil",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0057,
+      "lineCost": 0.171,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "cabbage",
+      "quantity": 3,
+      "rawUnit": "cup",
+      "canonical_name": "cabbage",
+      "normValue": 270,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.00155,
+      "lineCost": 0.4185,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Delicately Sweet Tenderheart Cabbage"
+     },
+     {
+      "priceable": true,
+      "rawName": "carrot",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "carrot",
+      "normValue": 128,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0021,
+      "lineCost": 0.2688,
+      "isPantry": false,
+      "store": "Asda Groceries",
+      "productTitle": "ASDA Grated Carrot"
+     },
+     {
+      "priceable": false,
+      "rawName": "cucumber",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "cucumber",
+      "reason": "missing_density_cup",
+      "isPantry": false
+     },
+     {
+      "priceable": true,
+      "rawName": "green onion",
+      "quantity": 4,
+      "rawUnit": "piece",
+      "canonical_name": "green onion",
+      "normValue": 60,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0077,
+      "lineCost": 0.462,
+      "displayNote": "4 green onion (≈60g)",
+      "isPantry": false,
+      "store": "Ocado",
+      "productTitle": "Marks & Spencer Spring Onions"
+     },
+     {
+      "priceable": true,
+      "rawName": "mung bean sprouts",
+      "quantity": 1,
+      "rawUnit": "cup",
+      "canonical_name": "mung bean sprouts",
+      "normValue": 104,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0028,
+      "lineCost": 0.2912,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Beansprouts 300G"
+     },
+     {
+      "priceable": true,
+      "rawName": "roasted coarse peanuts",
+      "quantity": 0.5,
+      "rawUnit": "cup",
+      "canonical_name": "roasted coarse peanuts",
+      "normValue": 67.5,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.007,
+      "lineCost": 0.47250000000000003,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": null
+     },
+     {
+      "priceable": true,
+      "rawName": "sesame oil",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "sesame oil",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0106,
+      "lineCost": 0.159,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "KTC Pure Sesame Oil Pressed Toasted 250ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "rice vinegar",
+      "quantity": 2,
+      "rawUnit": "tablespoon",
+      "canonical_name": "rice vinegar",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.014849999999999999,
+      "lineCost": 0.44549999999999995,
+      "isPantry": false,
+      "store": "Morrisons.com",
+      "productTitle": "Lee Kum Kee Seasoned Rice Vinegar"
+     },
+     {
+      "priceable": true,
+      "rawName": "soy sauce",
+      "quantity": 2,
+      "rawUnit": "tablespoon",
+      "canonical_name": "soy sauce",
+      "normValue": 30,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0037,
+      "lineCost": 0.111,
+      "isPantry": false,
+      "store": "Tesco",
+      "productTitle": "Tesco Light Soy Sauce 150Ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "juice of lemon",
+      "quantity": 1,
+      "rawUnit": "tablespoon",
+      "canonical_name": "juice of lemon",
+      "normValue": 15,
+      "normUnit": "ml",
+      "bucket": "metric",
+      "perUnit": 0.0087,
+      "lineCost": 0.1305,
+      "isPantry": false,
+      "store": "Sainsbury's / Tesco",
+      "productTitle": "Jif Lemon 100% Lemon Juice 100ml"
+     },
+     {
+      "priceable": true,
+      "rawName": "honey",
+      "quantity": 1,
+      "rawUnit": "teaspoon",
+      "canonical_name": "honey",
+      "normValue": 7.083333333333333,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.0059,
+      "lineCost": 0.041791666666666664,
+      "isPantry": false,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Sainsbury's Runny Honey 340g"
+     },
+     {
+      "priceable": true,
+      "rawName": "ground pepper",
+      "quantity": 0.5,
+      "rawUnit": "teaspoon",
+      "canonical_name": "ground pepper",
+      "normValue": 1.5625,
+      "normUnit": "g",
+      "bucket": "metric",
+      "perUnit": 0.031,
+      "lineCost": 0,
+      "isPantry": true,
+      "store": "sainsburys.co.uk",
+      "productTitle": "Stamford Street Co. Ground Black Pepper"
+     }
+    ],
+    "unpriceableReasons": {
+     "missing_per_item_g_and_count_price": 1,
+     "missing_density_cup": 1
+    }
+   }
+  }
+ ],
+ "plans": [
+  {
+   "name": "Weekly Plan 6",
+   "id": "6ab52b2f9b0819afa3920923",
+   "isActive": true,
+   "entriesAffected": 3,
+   "entries": [
+    {
+     "dayIndex": 5,
+     "mealSlot": "dinner",
+     "recipe": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+     "servings": 1,
+     "perServingBefore": 1.7946,
+     "perServingAfter": 1.0017
+    },
+    {
+     "dayIndex": 1,
+     "mealSlot": "dinner",
+     "recipe": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+     "servings": 1,
+     "perServingBefore": 1.7946,
+     "perServingAfter": 1.0017
+    },
+    {
+     "dayIndex": 3,
+     "mealSlot": "dinner",
+     "recipe": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+     "servings": 1,
+     "perServingBefore": 1.7946,
+     "perServingAfter": 1.0017
+    }
+   ],
+   "affectedEntriesCostBefore": 5.3838,
+   "affectedEntriesCostAfter": 3.0051
+  }
+ ],
+ "spreadScan": {
+  "threshold": 5,
+  "count": 159,
+  "items": [
+   {
+    "canonical_name": "cola (regular)",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 108,
+    "metricValue": 0.0036,
+    "recipe_count": 2,
+    "low": {
+     "store": "Iceland",
+     "title": "Kingsley Cola Soft Drink 2L",
+     "price": 0.8,
+     "per_unit": 0.0004
+    },
+    "high": {
+     "store": "Iceland",
+     "title": "Coca Cola 330ml Cans",
+     "price": 14.25,
+     "per_unit": 0.0432
+    }
+   },
+   {
+    "canonical_name": "chicken cube",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 100,
+    "metricValue": 0.0085,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Chicken Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Stock Cubes Chicken 10x10g",
+     "price": 1.1,
+     "per_unit": 0.11
+    }
+   },
+   {
+    "canonical_name": "chicken stock",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 100,
+    "metricValue": 0.0064,
+    "recipe_count": 10,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Chicken Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Stock Cubes Chicken 10x10g",
+     "price": 1.1,
+     "per_unit": 0.11
+    }
+   },
+   {
+    "canonical_name": "beef bouillon cubes",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 100,
+    "metricValue": 0.01075,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Beef Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Stock Cubes Beef 10x10g",
+     "price": 1.1,
+     "per_unit": 0.11
+    }
+   },
+   {
+    "canonical_name": "tomato concasse",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 65,
+    "metricValue": 0.0031,
+    "recipe_count": 1,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "KTC Chopped Tomatoes 2.5kg",
+     "price": 0.52,
+     "per_unit": 0.0002
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Mutti Triple Concentrate Tomato Puree 200g",
+     "price": 2.6,
+     "per_unit": 0.013
+    }
+   },
+   {
+    "canonical_name": "canned tomatoes",
+    "unit": "g_or_ml",
+    "listings": 16,
+    "ratio": 55.5,
+    "metricValue": 0.0012,
+    "recipe_count": 13,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "KTC Chopped Tomatoes 2.5kg",
+     "price": 0.52,
+     "per_unit": 0.0002
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Mutti Peeled Tomatoes 400g",
+     "price": 4.45,
+     "per_unit": 0.0111
+    }
+   },
+   {
+    "canonical_name": "cola (regular) or ginger ale",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 52.5,
+    "metricValue": 0.005,
+    "recipe_count": 1,
+    "low": {
+     "store": "Iceland",
+     "title": "Kingsley Cola Soft Drink 2L",
+     "price": 0.8,
+     "per_unit": 0.0004
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Coca-Cola Original Taste Glass Bottles 4x250ml",
+     "price": 5.25,
+     "per_unit": 0.021
+    }
+   },
+   {
+    "canonical_name": "canned chopped tomatoes",
+    "unit": "g_or_ml",
+    "listings": 16,
+    "ratio": 52,
+    "metricValue": 0.00155,
+    "recipe_count": 2,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "KTC Chopped Tomatoes 2.5kg",
+     "price": 0.52,
+     "per_unit": 0.0002
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Mr Organic Italian Organic Chopped Tomatoes 400g",
+     "price": 4.15,
+     "per_unit": 0.0104
+    }
+   },
+   {
+    "canonical_name": "ready-cut tomatoes",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 41.5,
+    "metricValue": 0.0012,
+    "recipe_count": 2,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "KTC Chopped Tomatoes 2.5kg",
+     "price": 0.52,
+     "per_unit": 0.0002
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Cirio Chopped Tomatoes 4x400g",
+     "price": 3.3,
+     "per_unit": 0.0083
+    }
+   },
+   {
+    "canonical_name": "splash of vanilla extract",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 35.7,
+    "metricValue": 0.045450000000000004,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Nielsen Massey Vanilla Extract 1L",
+     "price": 7,
+     "per_unit": 0.007
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Nielsen-Massey Vanilla Extract 5ml",
+     "price": 1.25,
+     "per_unit": 0.25
+    }
+   },
+   {
+    "canonical_name": "lemon-lime soda (or club soda)",
+    "unit": "g_or_ml",
+    "listings": 13,
+    "ratio": 34.4,
+    "metricValue": 0.0025,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Diet Lemon & Lime No Added Sugar 2L",
+     "price": 0.95,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Fever-Tree Sparkling Mexican Lime 4x250ml",
+     "price": 4.3,
+     "per_unit": 0.0172
+    }
+   },
+   {
+    "canonical_name": "rice",
+    "unit": "g",
+    "listings": 14,
+    "ratio": 33.3,
+    "metricValue": 0.0025,
+    "recipe_count": 8,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Easy Cook Long Grain Rice",
+     "price": 0.63,
+     "per_unit": 0.0006
+    },
+    "high": {
+     "store": "Asda Groceries",
+     "title": "Trophy Basmati Rice",
+     "price": 20,
+     "per_unit": 0.02
+    }
+   },
+   {
+    "canonical_name": "grill seasoning",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 33.3,
+    "metricValue": 0.0392,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Dunn's River Barbecue Seasoning 600g",
+     "price": 0.9,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Nando's Peri-Peri Rub 25g",
+     "price": 1.25,
+     "per_unit": 0.05
+    }
+   },
+   {
+    "canonical_name": "dried garlic",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 32.5,
+    "metricValue": 0.022,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Natco Garlic Powder 1kg",
+     "price": 2.2,
+     "per_unit": 0.0022
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "JUX Food Freeze-Dried Chopped Garlic 35g",
+     "price": 2.5,
+     "per_unit": 0.0714
+    }
+   },
+   {
+    "canonical_name": "mushroom",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 31.3,
+    "metricValue": 0.0056,
+    "recipe_count": 11,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Closed Cup Mushrooms 400G",
+     "price": 1.29,
+     "per_unit": 0.0032
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Merchant Gourmet Dried Mixed Mushrooms 30 g (6-Pack)",
+     "price": 3,
+     "per_unit": 0.1
+    }
+   },
+   {
+    "canonical_name": "bacon",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 28,
+    "metricValue": 0.0058,
+    "recipe_count": 4,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Morrisons 10 Pack Smoked Back Bacon Rashers 300g",
+     "price": 1.49,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Finnebrogue Naked 12 Smoked Streaky Bacon Rashers 200g",
+     "price": 2.8,
+     "per_unit": 0.014
+    }
+   },
+   {
+    "canonical_name": "seasoning",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 27.7,
+    "metricValue": 0.0247,
+    "recipe_count": 3,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Dunn's River All Purpose Seasoning 700g",
+     "price": 0.9,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S All Purpose Seasoning, 50g",
+     "price": 1.8,
+     "per_unit": 0.036
+    }
+   },
+   {
+    "canonical_name": "curry",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 27.2,
+    "metricValue": 0.005,
+    "recipe_count": 1,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Morrisons Savers Curry Sauce 440g",
+     "price": 0.49,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "S&B Golden Curry Medium Hot 92g",
+     "price": 2.75,
+     "per_unit": 0.0299
+    }
+   },
+   {
+    "canonical_name": "water",
+    "unit": "g_or_ml",
+    "listings": 2,
+    "ratio": 26.3,
+    "metricValue": 0.0041,
+    "recipe_count": 46,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's British Spring Water 6 x 2L",
+     "price": 3,
+     "per_unit": 0.0003
+    },
+    "high": {
+     "store": "Iceland",
+     "title": "White Rock Still Spring Water 500ml",
+     "price": 3.95,
+     "per_unit": 0.0079
+    }
+   },
+   {
+    "canonical_name": "salt & pepper",
+    "unit": "g",
+    "listings": 4,
+    "ratio": 25.7,
+    "metricValue": null,
+    "recipe_count": 2,
+    "low": {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose Cooks' Ingredients Punchy Salt & Pepper Seasoning",
+     "price": 1.75,
+     "per_unit": 0.0175
+    },
+    "high": {
+     "store": "Aldiss",
+     "title": "Joseph Joseph Editions Milltop Salt & Pepper Set",
+     "price": 44.99,
+     "per_unit": 0.4499
+    }
+   },
+   {
+    "canonical_name": "ground coriander",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 25.2,
+    "metricValue": 0.03125,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Fudco Coriander Powder 400g",
+     "price": 1.3,
+     "per_unit": 0.0033
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bart Ground Coriander 30 g",
+     "price": 2.5,
+     "per_unit": 0.0833
+    }
+   },
+   {
+    "canonical_name": "vinegar",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 24.5,
+    "metricValue": 0.0029000000000000002,
+    "recipe_count": 5,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Distilled Vinegar 1.14l",
+     "price": 0.65,
+     "per_unit": 0.0006
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Blue Dragon Rice Vinegar 150ml",
+     "price": 2.2,
+     "per_unit": 0.0147
+    }
+   },
+   {
+    "canonical_name": "fennel bulb and leaves",
+    "unit": "g",
+    "listings": 5,
+    "ratio": 22.9,
+    "metricValue": null,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Fennel",
+     "price": 0.97,
+     "per_unit": 0.0032
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Set of 3 Fennel Or Foeniculum Vulgare Herb Plant Foeniculum Vulgare 9cm Pot Green Green 9cm Pot 3",
+     "price": 21.98,
+     "per_unit": 0.0733
+    }
+   },
+   {
+    "canonical_name": "vegetable broth",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 19.5,
+    "metricValue": 0.00675,
+    "recipe_count": 7,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bay's Kitchen Concentrated Vegetable Stock 200g",
+     "price": 4.3,
+     "per_unit": 0.0215
+    }
+   },
+   {
+    "canonical_name": "vegetable stock",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 19.5,
+    "metricValue": 0.011,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bay's Kitchen Concentrated Vegetable Stock 200g",
+     "price": 4.3,
+     "per_unit": 0.0215
+    }
+   },
+   {
+    "canonical_name": "vegetables",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 19.4,
+    "metricValue": 0.0017,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Carrots 1Kg",
+     "price": 0.69,
+     "per_unit": 0.0007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Summer Vegetable Selection, 275g",
+     "price": 3.75,
+     "per_unit": 0.0136
+    }
+   },
+   {
+    "canonical_name": "rice",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 19,
+    "metricValue": 0.0025,
+    "recipe_count": 8,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Stamford Street Co. White Rice 1kg",
+     "price": 0.52,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Easy Cook Long Grain Rice 500G",
+     "price": 4.75,
+     "per_unit": 0.0095
+    }
+   },
+   {
+    "canonical_name": "mung bean sprouts",
+    "unit": "g_or_ml",
+    "listings": 2,
+    "ratio": 19,
+    "metricValue": 0.02805,
+    "recipe_count": 5,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Beansprouts 300G",
+     "price": 0.85,
+     "per_unit": 0.0028
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "A.Vogel Mung Bean Seeds 40g",
+     "price": 2.13,
+     "per_unit": 0.0533
+    }
+   },
+   {
+    "canonical_name": "long-grain rice",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 19,
+    "metricValue": 0.00115,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "JUST ESSENTIALS by ASDA Just Essentials Long Grain Rice 1kg",
+     "price": 0.52,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Easy Cook Long Grain Rice 500G",
+     "price": 4.75,
+     "per_unit": 0.0095
+    }
+   },
+   {
+    "canonical_name": "non-fat milk",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 18.8,
+    "metricValue": 0.002,
+    "recipe_count": 1,
+    "low": {
+     "store": "Iceland",
+     "title": "Iceland Skimmed British Milk 2L",
+     "price": 1.65,
+     "per_unit": 0.0008
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Nestle Nido Milk Powder 400g",
+     "price": 6,
+     "per_unit": 0.015
+    }
+   },
+   {
+    "canonical_name": "salt",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 18.4,
+    "metricValue": 0.0024000000000000002,
+    "recipe_count": 65,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Morrisons Table Salt 750g",
+     "price": 0.65,
+     "per_unit": 0.0009
+    },
+    "high": {
+     "store": "Asda Groceries",
+     "title": "Saxa Mini Table Salt Pot 70g",
+     "price": 1.16,
+     "per_unit": 0.0166
+    }
+   },
+   {
+    "canonical_name": "on carrots",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 17.9,
+    "metricValue": 0.0023,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Carrots 1Kg",
+     "price": 0.69,
+     "per_unit": 0.0007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Baby Carrots, 200g",
+     "price": 2.5,
+     "per_unit": 0.0125
+    }
+   },
+   {
+    "canonical_name": "baby carrots",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 17.9,
+    "metricValue": 0.0047,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Carrots 1Kg",
+     "price": 0.69,
+     "per_unit": 0.0007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Baby Carrots, 200g",
+     "price": 2.5,
+     "per_unit": 0.0125
+    }
+   },
+   {
+    "canonical_name": "beef broth",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 17.4,
+    "metricValue": 0.0072499999999999995,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Heinz Beef Broth Soup 400g",
+     "price": 1.7,
+     "per_unit": 0.0043
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Hunter & Gather Bone Broth Classic Beef 400g",
+     "price": 30,
+     "per_unit": 0.075
+    }
+   },
+   {
+    "canonical_name": "bite sized mushrooms",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 16.7,
+    "metricValue": 0.007,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Baby Button Mushrooms 200G",
+     "price": 1.2,
+     "per_unit": 0.006
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Merchant Gourmet Dried Mixed Mushrooms 30 g (6-Pack)",
+     "price": 3,
+     "per_unit": 0.1
+    }
+   },
+   {
+    "canonical_name": "shredded cabbage",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 16.7,
+    "metricValue": 0.0034,
+    "recipe_count": 1,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Morrisons British Red Cabbage 450-1350g",
+     "price": 0.89,
+     "per_unit": 0.0007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Cabbage Medley, 300g",
+     "price": 3.5,
+     "per_unit": 0.0117
+    }
+   },
+   {
+    "canonical_name": "potato",
+    "unit": "g_or_ml",
+    "listings": 10,
+    "ratio": 16.3,
+    "metricValue": 0.0009,
+    "recipe_count": 8,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco All Rounder Potatoes 5kg",
+     "price": 1.32,
+     "per_unit": 0.0003
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's 450g Jersey Royal Baby New Potatoes",
+     "price": 2.2,
+     "per_unit": 0.0049
+    }
+   },
+   {
+    "canonical_name": "pepper",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 16.1,
+    "metricValue": 0.009,
+    "recipe_count": 30,
+    "low": {
+     "store": "Iceland",
+     "title": "Iceland Mixed Peppers 650g",
+     "price": 2,
+     "per_unit": 0.0031
+    },
+    "high": {
+     "store": "Asda Groceries",
+     "title": "Saxa Ground Black Pepper 25g",
+     "price": 1.25,
+     "per_unit": 0.05
+    }
+   },
+   {
+    "canonical_name": "lasagna noodles",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 16,
+    "metricValue": 0.0015,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Lasagne Pasta 500G",
+     "price": 0.75,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Filotea Lasagne 250G",
+     "price": 6,
+     "per_unit": 0.024
+    }
+   },
+   {
+    "canonical_name": "vanilla",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 15.7,
+    "metricValue": 0.0646,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Nielsen Massey Vanilla Extract 1L",
+     "price": 7,
+     "per_unit": 0.007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Heilala Vanilla Extract 50ml",
+     "price": 5.5,
+     "per_unit": 0.11
+    }
+   },
+   {
+    "canonical_name": "balsamic vinegar",
+    "unit": "ml",
+    "listings": 16,
+    "ratio": 15.6,
+    "metricValue": 0.0174,
+    "recipe_count": 7,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Balsamic Vinegar of Modena",
+     "price": 1.6,
+     "per_unit": 0.0064
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Kimm and Miller Balsamic Vinegar Selection",
+     "price": 25,
+     "per_unit": 0.1
+    }
+   },
+   {
+    "canonical_name": "parsley leaves",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 15.3,
+    "metricValue": 0.01915,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Flat Leaf Parsley 100G",
+     "price": 1.25,
+     "per_unit": 0.0125
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Parsley 6g",
+     "price": 1.15,
+     "per_unit": 0.1917
+    }
+   },
+   {
+    "canonical_name": "parsley",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 15.3,
+    "metricValue": 0.02715,
+    "recipe_count": 16,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Flat Leaf Parsley 100G",
+     "price": 1.25,
+     "per_unit": 0.0125
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Parsley 6g",
+     "price": 1.15,
+     "per_unit": 0.1917
+    }
+   },
+   {
+    "canonical_name": "curry powder",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 14.3,
+    "metricValue": 0.0169,
+    "recipe_count": 4,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Medium Curry Powder 80G",
+     "price": 1.35,
+     "per_unit": 0.0169
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Seasoned Pioneers Sri Lankan Curry Powder Spice Blends 31g Resealable",
+     "price": 7.49,
+     "per_unit": 0.2416
+    }
+   },
+   {
+    "canonical_name": "flavouring",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 14,
+    "metricValue": 0.0283,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Nielsen Massey Vanilla Extract 1L",
+     "price": 7,
+     "per_unit": 0.007
+    },
+    "high": {
+     "store": "Asda Groceries",
+     "title": "Nielsen Massey Vanilla Extract 60ml",
+     "price": 5.86,
+     "per_unit": 0.0977
+    }
+   },
+   {
+    "canonical_name": "carrot",
+    "unit": "g_or_ml",
+    "listings": 12,
+    "ratio": 13.9,
+    "metricValue": 0.0021,
+    "recipe_count": 32,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Carrots 1Kg",
+     "price": 0.69,
+     "per_unit": 0.0007
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Tendersweet Carrots 150G",
+     "price": 1.45,
+     "per_unit": 0.0097
+    }
+   },
+   {
+    "canonical_name": "chili pepper flakes",
+    "unit": "g_or_ml",
+    "listings": 2,
+    "ratio": 13.4,
+    "metricValue": 0.16099999999999998,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Crushed Chillies 85g",
+     "price": 1.9,
+     "per_unit": 0.0224
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Seasoned Pioneers Piri- Piri Chillies Crushed 25g",
+     "price": 7.49,
+     "per_unit": 0.2996
+    }
+   },
+   {
+    "canonical_name": "tarragon",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 13.3,
+    "metricValue": 0.0958,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Tarragon 20G",
+     "price": 0.5,
+     "per_unit": 0.025
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bart Tarragon 7.5g",
+     "price": 2.5,
+     "per_unit": 0.3333
+    }
+   },
+   {
+    "canonical_name": "squash",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 13.3,
+    "metricValue": 0.0008,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "JUST ESSENTIALS Double Strength Orange Squash 750ml",
+     "price": 0.45,
+     "per_unit": 0.0006
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Butternut Squash, 440g",
+     "price": 3.5,
+     "per_unit": 0.008
+    }
+   },
+   {
+    "canonical_name": "mint",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 13.3,
+    "metricValue": 0.029150000000000002,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Mint 100g",
+     "price": 1.25,
+     "per_unit": 0.0125
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Bart Spices Mint 15g",
+     "price": 2.5,
+     "per_unit": 0.1667
+    }
+   },
+   {
+    "canonical_name": "broccoli",
+    "unit": "g_or_ml",
+    "listings": 12,
+    "ratio": 12.5,
+    "metricValue": 0.0022500000000000003,
+    "recipe_count": 6,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Broccoli Florets 900g",
+     "price": 1.16,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Trimmed Tenderstem Broccoli 80G",
+     "price": 1.3,
+     "per_unit": 0.0163
+    }
+   },
+   {
+    "canonical_name": "head broccoli",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 12.5,
+    "metricValue": 0.0022,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Broccoli Florets 900g",
+     "price": 1.16,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Trimmed Tenderstem Broccoli 80G",
+     "price": 1.3,
+     "per_unit": 0.0163
+    }
+   },
+   {
+    "canonical_name": "cotija cheese",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 12.5,
+    "metricValue": 0.0219,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "Lowicz Twarog Half Fat Curd Cheese 250g",
+     "price": 1.75,
+     "per_unit": 0.007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Paxton & Whitfield St. Jude 100g",
+     "price": 8.75,
+     "per_unit": 0.0875
+    }
+   },
+   {
+    "canonical_name": "russet potato",
+    "unit": "g_or_ml",
+    "listings": 13,
+    "ratio": 12,
+    "metricValue": 0.001,
+    "recipe_count": 4,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco All Rounder Potatoes 5kg",
+     "price": 1.32,
+     "per_unit": 0.0003
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Organic Potatoes 1kg",
+     "price": 3.55,
+     "per_unit": 0.0036
+    }
+   },
+   {
+    "canonical_name": "single cream (_milk_)",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 11.5,
+    "metricValue": 0.0036,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Long Life Whole Milk 1L",
+     "price": 1.34,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Fresh Single Cream 150Ml",
+     "price": 2.25,
+     "per_unit": 0.015
+    }
+   },
+   {
+    "canonical_name": "milk or chicken broth",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 11.5,
+    "metricValue": 0.0058,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Chicken & Vegetable Broth 600g",
+     "price": 1.49,
+     "per_unit": 0.0025
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Chicken Bone Broth Frozen, 200g",
+     "price": 5.75,
+     "per_unit": 0.0288
+    }
+   },
+   {
+    "canonical_name": "herbs",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 11.4,
+    "metricValue": 0.0288,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Thyme 20G",
+     "price": 0.5,
+     "per_unit": 0.025
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Schwartz Oregano 7g Jar",
+     "price": 2,
+     "per_unit": 0.2857
+    }
+   },
+   {
+    "canonical_name": "garlic powder",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 11.1,
+    "metricValue": 0.013,
+    "recipe_count": 7,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Natco Garlic Powder 1kg",
+     "price": 2.2,
+     "per_unit": 0.0022
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Garlic Powder 45G ..",
+     "price": 1.1,
+     "per_unit": 0.0244
+    }
+   },
+   {
+    "canonical_name": "soy milk",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 11.1,
+    "metricValue": 0.0021999999999999997,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Sweetened Soya Drink 1L",
+     "price": 1.35,
+     "per_unit": 0.0014
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Vita Soy Drink 250ml (Pack of 6)",
+     "price": 3.9,
+     "per_unit": 0.0156
+    }
+   },
+   {
+    "canonical_name": "p of pepper",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 11.1,
+    "metricValue": 0.0325,
+    "recipe_count": null,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Fudco Whole Black Pepper 250g",
+     "price": 2.25,
+     "per_unit": 0.009
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Santa Maria Tellicherry Black Pepper Grinder 70G",
+     "price": 7,
+     "per_unit": 0.1
+    }
+   },
+   {
+    "canonical_name": "chives",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 10.9,
+    "metricValue": 0.043,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Cut Chives 20G",
+     "price": 0.5,
+     "per_unit": 0.025
+    },
+    "high": {
+     "store": "Morrisons.com",
+     "title": "Morrisons Chives 4 g x 6",
+     "price": 1.09,
+     "per_unit": 0.2725
+    }
+   },
+   {
+    "canonical_name": "spaghetti",
+    "unit": "g_or_ml",
+    "listings": 15,
+    "ratio": 10.5,
+    "metricValue": 0.0023,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Hearty Food Co. Spaghetti Pasta 500G",
+     "price": 0.28,
+     "per_unit": 0.0006
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Rummo Gluten Free Spaghetti 400g",
+     "price": 2.5,
+     "per_unit": 0.0063
+    }
+   },
+   {
+    "canonical_name": "saffron",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 10.5,
+    "metricValue": 3.25,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "The Fresh Olive Company Saffron 10g",
+     "price": 7.65,
+     "per_unit": 0.765
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Saffron, 0.5g",
+     "price": 4,
+     "per_unit": 8
+    }
+   },
+   {
+    "canonical_name": "chilli powder",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 10.5,
+    "metricValue": 0.0261,
+    "recipe_count": 9,
+    "low": {
+     "store": "Ocado",
+     "title": "East End Chilli Powder 400g",
+     "price": 2.15,
+     "per_unit": 0.0054
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Schwartz Chilli Powder Mild 38g",
+     "price": 2.15,
+     "per_unit": 0.0566
+    }
+   },
+   {
+    "canonical_name": "ground pepper",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 10.4,
+    "metricValue": 0.031,
+    "recipe_count": 10,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Laila Black Pepper Ground 100g",
+     "price": 0.98,
+     "per_unit": 0.0098
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Ground Black Pepper 25G",
+     "price": 2.55,
+     "per_unit": 0.102
+    }
+   },
+   {
+    "canonical_name": "broccoli florets",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 10.4,
+    "metricValue": 0.0022,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Broccoli Florets 900G",
+     "price": 1.07,
+     "per_unit": 0.0012
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Tenderstem Broccoli Tips 120G",
+     "price": 1.5,
+     "per_unit": 0.0125
+    }
+   },
+   {
+    "canonical_name": "kefir",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 10,
+    "metricValue": 0.006,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Lowicz Kefir 1kg",
+     "price": 1.12,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Organic Milk Kefir 500ml",
+     "price": 5.5,
+     "per_unit": 0.011
+    }
+   },
+   {
+    "canonical_name": "water or vegetable broth",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 10,
+    "metricValue": 0.00375,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Vegetable Stock Cubes 10 x 10g",
+     "price": 1.1,
+     "per_unit": 0.011
+    }
+   },
+   {
+    "canonical_name": "grain tortillas",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 10,
+    "metricValue": 0.00365,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Wholemeal Tortilla Wraps 8 Pack 320g",
+     "price": 1.4,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Morrisons.com",
+     "title": "Mission Tortilla Wraps 270g",
+     "price": 1.35,
+     "per_unit": 0.005
+    }
+   },
+   {
+    "canonical_name": "mayonnaise",
+    "unit": "g_or_ml",
+    "listings": 12,
+    "ratio": 9.8,
+    "metricValue": 0.00355,
+    "recipe_count": 8,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Thick & Creamy Mayonnaise 500ml",
+     "price": 0.89,
+     "per_unit": 0.0018
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Dr. Will's Classic Mayonnaise 170g",
+     "price": 3,
+     "per_unit": 0.0176
+    }
+   },
+   {
+    "canonical_name": "ground chile powder",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 9.7,
+    "metricValue": 0.024050000000000002,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "East End Chilli Powder 400g",
+     "price": 2.15,
+     "per_unit": 0.0054
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Schwartz Chilli Powder Mild 38g",
+     "price": 2,
+     "per_unit": 0.0526
+    }
+   },
+   {
+    "canonical_name": "pasta sauce",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 9.1,
+    "metricValue": 0.0033,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Hearty Food Co. Tomato & Herb Pasta Sauce 440G",
+     "price": 0.49,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "Iceland",
+     "title": "Dolmio Stir In Carbonara Pasta Sauce 150g",
+     "price": 1.5,
+     "per_unit": 0.01
+    }
+   },
+   {
+    "canonical_name": "ground cumin",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 8.9,
+    "metricValue": 0.0256,
+    "recipe_count": 5,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Natco Cumin Ground 400g",
+     "price": 3.2,
+     "per_unit": 0.008
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bart Ground Cumin 35 g",
+     "price": 2.5,
+     "per_unit": 0.0714
+    }
+   },
+   {
+    "canonical_name": "oats",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 8.7,
+    "metricValue": 0.0029,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Grower's Harvest Porridge Oats 1Kg",
+     "price": 0.85,
+     "per_unit": 0.0009
+    },
+    "high": {
+     "store": "Iceland",
+     "title": "Ready Brek Smooth Porridge Oats 450g",
+     "price": 3.5,
+     "per_unit": 0.0078
+    }
+   },
+   {
+    "canonical_name": "mustard",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 8.6,
+    "metricValue": 0.0028,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Dijon Mustard 185g",
+     "price": 0.45,
+     "per_unit": 0.0024
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Colman's Original English Mustard 150g",
+     "price": 3.1,
+     "per_unit": 0.0207
+    }
+   },
+   {
+    "canonical_name": "chili pepper",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 8.6,
+    "metricValue": 0.0085,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Sweet Peppers 500G",
+     "price": 2.1,
+     "per_unit": 0.0042
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Bird Eye Chillies 25G",
+     "price": 0.9,
+     "per_unit": 0.036
+    }
+   },
+   {
+    "canonical_name": "corn",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 8.5,
+    "metricValue": 0.0028,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Stamford Street Co. Sweetcorn 950g",
+     "price": 1.42,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Baby Corn 200g",
+     "price": 2.55,
+     "per_unit": 0.0127
+    }
+   },
+   {
+    "canonical_name": "cranberries",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 8.5,
+    "metricValue": 0.01585,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "Forest Feast Pack of 6 x 170g Whole Canadian Cranberries",
+     "price": 3.5,
+     "per_unit": 0.0034
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Cranberries SO Organic 100g",
+     "price": 2.9,
+     "per_unit": 0.029
+    }
+   },
+   {
+    "canonical_name": "chicken quarters",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 8.4,
+    "metricValue": 0.0067,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "M&S Oakham Gold Chicken Leg Portions, 600g",
+     "price": 1.5,
+     "per_unit": 0.0025
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "The Black Farmer Free Range Chicken Diced Breast Fillet, 360g",
+     "price": 7.55,
+     "per_unit": 0.021
+    }
+   },
+   {
+    "canonical_name": "strawberries",
+    "unit": "g_or_ml",
+    "listings": 13,
+    "ratio": 8.4,
+    "metricValue": 0.0067,
+    "recipe_count": 1,
+    "low": {
+     "store": "Waitrose & Partners",
+     "title": "Essential Waitrose & Partners \\British Strawberries (250g)",
+     "price": 0.5,
+     "per_unit": 0.002
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Finest Strawberries 300G",
+     "price": 5,
+     "per_unit": 0.0167
+    }
+   },
+   {
+    "canonical_name": "white wine",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 8.3,
+    "metricValue": 0.0107,
+    "recipe_count": 5,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Wild Valley White Wine 75cl",
+     "price": 3.49,
+     "per_unit": 0.0047
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Yellow Tail Pinot Grigio 187ml",
+     "price": 7.25,
+     "per_unit": 0.0388
+    }
+   },
+   {
+    "canonical_name": "chicken thighs",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 8.3,
+    "metricValue": 0.007299999999999999,
+    "recipe_count": 5,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco British Chicken Legs 1kg",
+     "price": 2.25,
+     "per_unit": 0.0023
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Select Farms Free Range Chicken Thighs Skinless & Boneless, 400g",
+     "price": 7.6,
+     "per_unit": 0.019
+    }
+   },
+   {
+    "canonical_name": "flour and 3 tbsp",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 8.2,
+    "metricValue": 0.001,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "JUST ESSENTIALS by ASDA Plain Flour 1.5kg",
+     "price": 0.7,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Asda Groceries",
+     "title": "ASDA Cornflour 250g",
+     "price": 1.03,
+     "per_unit": 0.0041
+    }
+   },
+   {
+    "canonical_name": "chicken breast",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 8.1,
+    "metricValue": 0.01,
+    "recipe_count": 15,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Hank & Joes Chicken Breast Fillets 1kg",
+     "price": 5,
+     "per_unit": 0.005
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Organic Chicken Breasts, 350g",
+     "price": 14.18,
+     "per_unit": 0.0405
+    }
+   },
+   {
+    "canonical_name": "chickpeas",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 8.1,
+    "metricValue": 0.0034,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Chickpeas In Water 400G",
+     "price": 0.41,
+     "per_unit": 0.001
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Belazu Chickpeas 370g",
+     "price": 3,
+     "per_unit": 0.0081
+    }
+   },
+   {
+    "canonical_name": "salad greens",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 8.1,
+    "metricValue": 0.00585,
+    "recipe_count": 6,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Greens 500g",
+     "price": 0.9,
+     "per_unit": 0.0018
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "G's Organic Mixed Leaves Salad 200g",
+     "price": 2.9,
+     "per_unit": 0.0145
+    }
+   },
+   {
+    "canonical_name": "cut-up vegetables",
+    "unit": "g_or_ml",
+    "listings": 13,
+    "ratio": 8,
+    "metricValue": 0.005,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Classic Vegetable Mix 1kg",
+     "price": 1.65,
+     "per_unit": 0.0017
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Summer Vegetable Selection, 275g",
+     "price": 3.75,
+     "per_unit": 0.0136
+    }
+   },
+   {
+    "canonical_name": "garbanzo beans",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 8,
+    "metricValue": 0.0034,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Chickpeas in Water 400g",
+     "price": 0.41,
+     "per_unit": 0.001
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Belazu Chickpeas 370g",
+     "price": 2.95,
+     "per_unit": 0.008
+    }
+   },
+   {
+    "canonical_name": "balsamic vinegar",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 7.9,
+    "metricValue": 0.0174,
+    "recipe_count": 7,
+    "low": {
+     "store": "Waitrose & Partners",
+     "title": "Balsamic Vinegar Of Modena (250ml) - Essential Waitrose",
+     "price": 0.95,
+     "per_unit": 0.0038
+    },
+    "high": {
+     "store": "Morrisons.com",
+     "title": "De Nigris Balsamic Vinegar Platinum 250ml",
+     "price": 7.5,
+     "per_unit": 0.03
+    }
+   },
+   {
+    "canonical_name": "green beans, trimmed",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 7.9,
+    "metricValue": 0.0035,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Whole Green Beans 900g",
+     "price": 1.16,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Iceland",
+     "title": "Iceland Green Beans 160g",
+     "price": 1.65,
+     "per_unit": 0.0103
+    }
+   },
+   {
+    "canonical_name": "rigatoni",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 7.7,
+    "metricValue": 0.0048000000000000004,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Rigatoni Pasta 500G",
+     "price": 0.75,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose All Plants High Protein Rigatoni 215g",
+     "price": 2.5,
+     "per_unit": 0.0116
+    }
+   },
+   {
+    "canonical_name": "stir fry",
+    "unit": "g_or_ml",
+    "listings": 15,
+    "ratio": 7.7,
+    "metricValue": 0.0055,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Sweet & Crunchy Oriental-Style Stir-Fry 320g",
+     "price": 1.08,
+     "per_unit": 0.0034
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "PRESS Healthfoods GLP-1 Chilli Tofu Stir-fry, 200g",
+     "price": 5.25,
+     "per_unit": 0.0263
+    }
+   },
+   {
+    "canonical_name": "chicken broth",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 7.6,
+    "metricValue": 0.0054,
+    "recipe_count": 11,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Chicken Stock Pots 4 Pack 112g",
+     "price": 1.7,
+     "per_unit": 0.0038
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Chicken Bone Broth Frozen, 200g",
+     "price": 5.75,
+     "per_unit": 0.0288
+    }
+   },
+   {
+    "canonical_name": "mozzarella",
+    "unit": "g_or_ml",
+    "listings": 14,
+    "ratio": 7.5,
+    "metricValue": 0.0089,
+    "recipe_count": 2,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "JUST ESSENTIALS Mozzarella 210g",
+     "price": 0.64,
+     "per_unit": 0.003
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Garofalo Buffalo Mozzarella 200g",
+     "price": 4.5,
+     "per_unit": 0.0225
+    }
+   },
+   {
+    "canonical_name": "butter",
+    "unit": "g_or_ml",
+    "listings": 15,
+    "ratio": 7.5,
+    "metricValue": 0.008,
+    "recipe_count": 20,
+    "low": {
+     "store": "Iceland",
+     "title": "Just Like Butter 1kg",
+     "price": 1.9,
+     "per_unit": 0.0019
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "All Things Butter Salted Butter 200g",
+     "price": 2.85,
+     "per_unit": 0.0143
+    }
+   },
+   {
+    "canonical_name": "unsalted butter",
+    "unit": "g_or_ml",
+    "listings": 13,
+    "ratio": 7.5,
+    "metricValue": 0.008,
+    "recipe_count": 3,
+    "low": {
+     "store": "Iceland",
+     "title": "Just Like Butter 1kg",
+     "price": 1.9,
+     "per_unit": 0.0019
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "All Things Butter Unsalted Butter 200g",
+     "price": 2.85,
+     "per_unit": 0.0143
+    }
+   },
+   {
+    "canonical_name": "ciabatta bread",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 7.5,
+    "metricValue": 0.00645,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Finest Ciabatta Rolls 4 Pack 360g",
+     "price": 2.3,
+     "per_unit": 0.0016
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Dr. Slippers Ciabatta 200g",
+     "price": 2.4,
+     "per_unit": 0.012
+    }
+   },
+   {
+    "canonical_name": "brussels sprouts",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 7.4,
+    "metricValue": 0.00545,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Brussels Sprouts 1kg",
+     "price": 1.24,
+     "per_unit": 0.0012
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Peeled Baby Brussels Sprouts 180G",
+     "price": 1.6,
+     "per_unit": 0.0089
+    }
+   },
+   {
+    "canonical_name": "tomato sauce",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 7.3,
+    "metricValue": 0.0033,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Pasta Sauce Tomato & Chilli 500g",
+     "price": 0.69,
+     "per_unit": 0.0014
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tiptree Tomato Ketchup 310g",
+     "price": 3.15,
+     "per_unit": 0.0102
+    }
+   },
+   {
+    "canonical_name": "basil",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 7.2,
+    "metricValue": 0.0175,
+    "recipe_count": 9,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Basil 100g",
+     "price": 1.35,
+     "per_unit": 0.0135
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Organic Basil, 30g",
+     "price": 2.9,
+     "per_unit": 0.0967
+    }
+   },
+   {
+    "canonical_name": "cream of mushroom soup",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 7.2,
+    "metricValue": 0.0015,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Cream Of Mushroom Soup 400G",
+     "price": 0.59,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Creamy Mushroom Cup Soup, 4 x 22g",
+     "price": 0.95,
+     "per_unit": 0.0108
+    }
+   },
+   {
+    "canonical_name": "basil leaves",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 7.2,
+    "metricValue": 0.0183,
+    "recipe_count": 7,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Basil 100g",
+     "price": 1.35,
+     "per_unit": 0.0135
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Organic Basil, 30g",
+     "price": 2.9,
+     "per_unit": 0.0967
+    }
+   },
+   {
+    "canonical_name": "baby potatoes",
+    "unit": "g_or_ml",
+    "listings": 12,
+    "ratio": 7.2,
+    "metricValue": 0.0019,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Firm & Flavoursome Baby Potatoes 1kg",
+     "price": 0.86,
+     "per_unit": 0.0009
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Herby Minted Baby Potatoes, 385g",
+     "price": 2.5,
+     "per_unit": 0.0065
+    }
+   },
+   {
+    "canonical_name": "skewers",
+    "unit": "each",
+    "listings": 6,
+    "ratio": 7.2,
+    "metricValue": null,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Bamboo Skewers",
+     "price": 1.1,
+     "per_unit": 0.022
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "NJ Products BBQ Skewers",
+     "price": 7.9,
+     "per_unit": 0.158
+    }
+   },
+   {
+    "canonical_name": "new potatoes",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 7,
+    "metricValue": 0.0044,
+    "recipe_count": 1,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Morrisons British White Potatoes 2.5Kg",
+     "price": 1.65,
+     "per_unit": 0.0007
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's 450g Jersey Royal Baby New Potatoes",
+     "price": 2.2,
+     "per_unit": 0.0049
+    }
+   },
+   {
+    "canonical_name": "mixed frozen vegetables (carrots, peas, corn)",
+    "unit": "g_or_ml",
+    "listings": 14,
+    "ratio": 7,
+    "metricValue": 0.0017,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Growers Harvest Mixed Vegetables 1Kg",
+     "price": 0.99,
+     "per_unit": 0.001
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Layered Peas, Carrots, Sweetcorn & Broccoli, 355g",
+     "price": 2.5,
+     "per_unit": 0.007
+    }
+   },
+   {
+    "canonical_name": "cooked white or brown rice",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 6.9,
+    "metricValue": 0.004,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Easy Cook Brown Rice 1Kg",
+     "price": 1.39,
+     "per_unit": 0.0014
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Boil In The Bag Rice 4x125g",
+     "price": 1.2,
+     "per_unit": 0.0096
+    }
+   },
+   {
+    "canonical_name": "muffins",
+    "unit": "each",
+    "listings": 8,
+    "ratio": 6.9,
+    "metricValue": null,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco English Muffins 4 Pack",
+     "price": 0.65,
+     "per_unit": 0.1625
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Finest Blueberry Muffin 2 Pack",
+     "price": 2.25,
+     "per_unit": 1.125
+    }
+   },
+   {
+    "canonical_name": "brown rice",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 6.9,
+    "metricValue": 0.0022,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Easy Cook Brown Rice 1Kg",
+     "price": 1.39,
+     "per_unit": 0.0014
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Boil In The Bag Rice 4x125g",
+     "price": 1.2,
+     "per_unit": 0.0096
+    }
+   },
+   {
+    "canonical_name": "broccoli flowerets",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 6.7,
+    "metricValue": 0.0022,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Broccoli Florets 900G",
+     "price": 1.07,
+     "per_unit": 0.0012
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Tenderstem Broccoli 200G",
+     "price": 1.6,
+     "per_unit": 0.008
+    }
+   },
+   {
+    "canonical_name": "coriander",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 6.7,
+    "metricValue": 0.0175,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Coriander 100G",
+     "price": 1.25,
+     "per_unit": 0.0125
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bart Ground Coriander 30 g",
+     "price": 2.5,
+     "per_unit": 0.0833
+    }
+   },
+   {
+    "canonical_name": "tamari sauce",
+    "unit": "ml",
+    "listings": 3,
+    "ratio": 6.7,
+    "metricValue": null,
+    "recipe_count": 1,
+    "low": {
+     "store": "Waitrose & Partners",
+     "title": "Kikkoman Gluten Free Soy Sauce",
+     "price": 3,
+     "per_unit": 0.02
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Clearspring Organic Double Strength Tamari Soya Sauce",
+     "price": 20.23,
+     "per_unit": 0.1349
+    }
+   },
+   {
+    "canonical_name": "coriander chiffonade",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 6.7,
+    "metricValue": 0.0167,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Coriander 100G",
+     "price": 1.25,
+     "per_unit": 0.0125
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Bart Ground Coriander 30 g",
+     "price": 2.5,
+     "per_unit": 0.0833
+    }
+   },
+   {
+    "canonical_name": "peas",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 6.6,
+    "metricValue": 0.002,
+    "recipe_count": 4,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Stamford Street Co. Peas 850g",
+     "price": 1.09,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Sugarsnap Peas 180g",
+     "price": 1.55,
+     "per_unit": 0.0086
+    }
+   },
+   {
+    "canonical_name": "ketchup",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 6.6,
+    "metricValue": 0.0036,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Stockwell & Co Tomato Ketchup 540G",
+     "price": 0.86,
+     "per_unit": 0.0016
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Tiptree Tomato Ketchup 310g",
+     "price": 3.3,
+     "per_unit": 0.0106
+    }
+   },
+   {
+    "canonical_name": "butter substitute",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 6.6,
+    "metricValue": 0.0068,
+    "recipe_count": 1,
+    "low": {
+     "store": "Iceland",
+     "title": "Just Like Butter 1kg",
+     "price": 1.9,
+     "per_unit": 0.0019
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Lurpak Plant Based Spreadable or Butter 400g",
+     "price": 5,
+     "per_unit": 0.0125
+    }
+   },
+   {
+    "canonical_name": "pepper and salt",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 6.6,
+    "metricValue": 0.013,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Natco Black Pepper Coarse 100g",
+     "price": 1.08,
+     "per_unit": 0.0108
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Mixed Peppercorn Grinder 40G",
+     "price": 2.85,
+     "per_unit": 0.0713
+    }
+   },
+   {
+    "canonical_name": "dill",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 6.5,
+    "metricValue": 0.03949999999999999,
+    "recipe_count": 5,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Dill 20G",
+     "price": 0.48,
+     "per_unit": 0.024
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Dill 7G",
+     "price": 1.1,
+     "per_unit": 0.1571
+    }
+   },
+   {
+    "canonical_name": "grain bread",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 6.5,
+    "metricValue": 0.00225,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Warburtons Wholemeal Bread 800g",
+     "price": 1.35,
+     "per_unit": 0.0017
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Good Grain Bakery Brown Bread 500g",
+     "price": 5.5,
+     "per_unit": 0.011
+    }
+   },
+   {
+    "canonical_name": "vegetable oil",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 6.4,
+    "metricValue": 0.0015,
+    "recipe_count": 15,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Vegetable Oil 3L",
+     "price": 1.45,
+     "per_unit": 0.0005
+    },
+    "high": {
+     "store": "Morrisons.com",
+     "title": "KTC Pure Corn Oil 1L",
+     "price": 3.18,
+     "per_unit": 0.0032
+    }
+   },
+   {
+    "canonical_name": "bread",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 6.4,
+    "metricValue": 0.0025,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco White Bread 800G",
+     "price": 0.74,
+     "per_unit": 0.0009
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Genius White Loaf 430g",
+     "price": 2.5,
+     "per_unit": 0.0058
+    }
+   },
+   {
+    "canonical_name": "chili",
+    "unit": "g_or_ml",
+    "listings": 10,
+    "ratio": 6.4,
+    "metricValue": 0.01005,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Stagg Chili Classic Chili Con Carne 400g",
+     "price": 2.25,
+     "per_unit": 0.0056
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Bird Eye Chillies 25G",
+     "price": 0.9,
+     "per_unit": 0.036
+    }
+   },
+   {
+    "canonical_name": "seasoned breadcrumbs",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 6.3,
+    "metricValue": 0.0071,
+    "recipe_count": 1,
+    "low": {
+     "store": "Morrisons.com",
+     "title": "Prymat Breadcrumbs 400g",
+     "price": 1,
+     "per_unit": 0.0025
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Blue Dragon Panko Breadcrumb Mix 120g",
+     "price": 1.9,
+     "per_unit": 0.0158
+    }
+   },
+   {
+    "canonical_name": "red cabbage, shredded",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 6.2,
+    "metricValue": 0.0034,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Polish Specialities Red Cabbage 650g",
+     "price": 1,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Red Cabbage And Apple 300G",
+     "price": 2.8,
+     "per_unit": 0.0093
+    }
+   },
+   {
+    "canonical_name": "pinot grigio",
+    "unit": "g_or_ml",
+    "listings": 8,
+    "ratio": 6.2,
+    "metricValue": 0.012199999999999999,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Nice Drop Pinot Grigio 75cl",
+     "price": 4.75,
+     "per_unit": 0.0063
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Yellow Tail Pinot Grigio 187ml",
+     "price": 7.25,
+     "per_unit": 0.0388
+    }
+   },
+   {
+    "canonical_name": "vegetable oil",
+    "unit": "ml",
+    "listings": 14,
+    "ratio": 6.1,
+    "metricValue": 0.0015,
+    "recipe_count": 15,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Vegetable Oil 1 Litre",
+     "price": 1.45,
+     "per_unit": 0.0014
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Vegetable Oil 5 Litre",
+     "price": 8.5,
+     "per_unit": 0.0085
+    }
+   },
+   {
+    "canonical_name": "sugar",
+    "unit": "g",
+    "listings": 10,
+    "ratio": 6.1,
+    "metricValue": 0.00145,
+    "recipe_count": 15,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's White Granulated Sugar",
+     "price": 0.75,
+     "per_unit": 0.0008
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Biona Organic Rapadura Sugar",
+     "price": 4.9,
+     "per_unit": 0.0049
+    }
+   },
+   {
+    "canonical_name": "broccoli slaw",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 5.9,
+    "metricValue": 0.0063,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Stamford Street Co. 600g Crunchy Coleslaw",
+     "price": 1.29,
+     "per_unit": 0.0022
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Green Goddess Slaw, 270g",
+     "price": 3.5,
+     "per_unit": 0.013
+    }
+   },
+   {
+    "canonical_name": "king prawns, peeled and deveined",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 5.8,
+    "metricValue": 0.019950000000000002,
+    "recipe_count": 14,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Frozen Cooked & Peeled Large King Prawns ASC 400g",
+     "price": 2.64,
+     "per_unit": 0.0066
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Blue Earth Foods Cooked & Peeled King Prawns (150g)",
+     "price": 5.7,
+     "per_unit": 0.038
+    }
+   },
+   {
+    "canonical_name": "hot sauce",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 5.8,
+    "metricValue": 0.0167,
+    "recipe_count": 3,
+    "low": {
+     "store": "Waitrose & Partners",
+     "title": "Tabasco Red Pepper Sauce 350ml",
+     "price": 1.6,
+     "per_unit": 0.0046
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Tabasco Habanero Sauce 60ml",
+     "price": 1.6,
+     "per_unit": 0.0267
+    }
+   },
+   {
+    "canonical_name": "quinoa",
+    "unit": "g",
+    "listings": 8,
+    "ratio": 5.8,
+    "metricValue": 0.01005,
+    "recipe_count": 8,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Merchant Gourmet Red & White Quinoa",
+     "price": 2.15,
+     "per_unit": 0.0086
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Sussex Wholefoods Organic Tricolour Quinoa",
+     "price": 12.49,
+     "per_unit": 0.05
+    }
+   },
+   {
+    "canonical_name": "tabasco sauce",
+    "unit": "g_or_ml",
+    "listings": 2,
+    "ratio": 5.8,
+    "metricValue": 0.01465,
+    "recipe_count": 4,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Tabasco Red Pepper Sauce 350ml",
+     "price": 1.5,
+     "per_unit": 0.0043
+    },
+    "high": {
+     "store": "Asda Groceries",
+     "title": "Tabasco Habanero Sauce 60ml",
+     "price": 1.5,
+     "per_unit": 0.025
+    }
+   },
+   {
+    "canonical_name": "slow cook brown rice",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 5.7,
+    "metricValue": 0.0022,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Easy Cook Brown Rice 1Kg",
+     "price": 1.39,
+     "per_unit": 0.0014
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Merchant Gourmet Brown Red & Wild Microwaveable Rice 250g",
+     "price": 2,
+     "per_unit": 0.008
+    }
+   },
+   {
+    "canonical_name": "basil shreds",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 5.7,
+    "metricValue": 0.035,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Basil 100g",
+     "price": 1.35,
+     "per_unit": 0.0135
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Basil 15g",
+     "price": 1.15,
+     "per_unit": 0.0767
+    }
+   },
+   {
+    "canonical_name": "you can use regular basil",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 5.7,
+    "metricValue": 0.0183,
+    "recipe_count": null,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Basil 100g",
+     "price": 1.35,
+     "per_unit": 0.0135
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Basil 15g",
+     "price": 1.15,
+     "per_unit": 0.0767
+    }
+   },
+   {
+    "canonical_name": "frozen dumplings (chicken or veggie)",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 5.7,
+    "metricValue": 0.0118,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "Aunt Bessie's 8 Dumplings 390g",
+     "price": 2.65,
+     "per_unit": 0.0068
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "YO! Chicken Gyoza 45g",
+     "price": 1.75,
+     "per_unit": 0.0389
+    }
+   },
+   {
+    "canonical_name": "basmati rice",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 5.6,
+    "metricValue": 0.0023,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's 2x Basmati Rice 1kg each",
+     "price": 1.79,
+     "per_unit": 0.0009
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Tilda Pure Basmati Rice 1kg",
+     "price": 5,
+     "per_unit": 0.005
+    }
+   },
+   {
+    "canonical_name": "chorizo sausage, sliced",
+    "unit": "g",
+    "listings": 15,
+    "ratio": 5.6,
+    "metricValue": 0.0165,
+    "recipe_count": 1,
+    "low": {
+     "store": "Iceland",
+     "title": "Deli Speciale Chorizo Slices",
+     "price": 1,
+     "per_unit": 0.0044
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Alejandro Magno Chorizo Slices",
+     "price": 5.55,
+     "per_unit": 0.0247
+    }
+   },
+   {
+    "canonical_name": "mayonnaise",
+    "unit": "g",
+    "listings": 14,
+    "ratio": 5.6,
+    "metricValue": 0.00355,
+    "recipe_count": 8,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "JUST ESSENTIALS Mayonnaise",
+     "price": 0.92,
+     "per_unit": 0.0018
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Kewpie Mayonnaise",
+     "price": 5,
+     "per_unit": 0.01
+    }
+   },
+   {
+    "canonical_name": "basa fillets",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 5.6,
+    "metricValue": 0.01175,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "M&S Basa Fillets, 250g",
+     "price": 1.8,
+     "per_unit": 0.0072
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S 2 Sea Bass Fillets, 180g",
+     "price": 7.25,
+     "per_unit": 0.0403
+    }
+   },
+   {
+    "canonical_name": "spinach leaves",
+    "unit": "g_or_ml",
+    "listings": 9,
+    "ratio": 5.6,
+    "metricValue": 0.0052,
+    "recipe_count": 3,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Leaf Spinach 900G",
+     "price": 1.6,
+     "per_unit": 0.0018
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Organic Spinach 200G",
+     "price": 2,
+     "per_unit": 0.01
+    }
+   },
+   {
+    "canonical_name": "shredded cheese",
+    "unit": "g_or_ml",
+    "listings": 16,
+    "ratio": 5.5,
+    "metricValue": 0.0102,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Grated Mozzarella Cheese 500g",
+     "price": 2.55,
+     "per_unit": 0.0051
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Parmigiano Reggiano 100G",
+     "price": 2.8,
+     "per_unit": 0.028
+    }
+   },
+   {
+    "canonical_name": "grind of pepper",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 5.5,
+    "metricValue": 0.041999999999999996,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "East End Ground Black Pepper 100g",
+     "price": 1.5,
+     "per_unit": 0.015
+    },
+    "high": {
+     "store": "Waitrose & Partners",
+     "title": "Bart Ground Black Pepper 48 g",
+     "price": 3.95,
+     "per_unit": 0.0823
+    }
+   },
+   {
+    "canonical_name": "garlic paste",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 5.4,
+    "metricValue": 0.02055,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "KTC Garlic Paste 210g",
+     "price": 1.38,
+     "per_unit": 0.0066
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "The Garlic Farm Garlic Puree 110g",
+     "price": 3.95,
+     "per_unit": 0.0359
+    }
+   },
+   {
+    "canonical_name": "snow peas",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 5.4,
+    "metricValue": 0.0033,
+    "recipe_count": 2,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Garden Peas 1kg",
+     "price": 1.64,
+     "per_unit": 0.0016
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Sugarsnap Peas 180g",
+     "price": 1.55,
+     "per_unit": 0.0086
+    }
+   },
+   {
+    "canonical_name": "bread slices",
+    "unit": "g_or_ml",
+    "listings": 2,
+    "ratio": 5.4,
+    "metricValue": 0.0029,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco White Bread 800G",
+     "price": 0.74,
+     "per_unit": 0.0009
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Jason's Sourdough The Great White Straight Up Sourdough 450g",
+     "price": 2.2,
+     "per_unit": 0.0049
+    }
+   },
+   {
+    "canonical_name": "honey",
+    "unit": "g",
+    "listings": 6,
+    "ratio": 5.3,
+    "metricValue": 0.0059,
+    "recipe_count": 10,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Clear Honey",
+     "price": 1.8,
+     "per_unit": 0.0053
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Oxfordshire Honey",
+     "price": 9.5,
+     "per_unit": 0.0279
+    }
+   },
+   {
+    "canonical_name": "prawns",
+    "unit": "g_or_ml",
+    "listings": 16,
+    "ratio": 5.3,
+    "metricValue": 0.02,
+    "recipe_count": 3,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Frozen Cooked & Peeled Large King Prawns ASC 400g",
+     "price": 2.64,
+     "per_unit": 0.0066
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Blue Earth Foods Raw King Prawns 150g",
+     "price": 5.3,
+     "per_unit": 0.0353
+    }
+   },
+   {
+    "canonical_name": "tagliatelle",
+    "unit": "g_or_ml",
+    "listings": 6,
+    "ratio": 5.3,
+    "metricValue": 0.0040999999999999995,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Tagliatelle Pasta 500G",
+     "price": 0.75,
+     "per_unit": 0.0015
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Tagliatelle Nests 300G",
+     "price": 2.4,
+     "per_unit": 0.008
+    }
+   },
+   {
+    "canonical_name": "string beans",
+    "unit": "g_or_ml",
+    "listings": 10,
+    "ratio": 5.3,
+    "metricValue": 0.0076,
+    "recipe_count": 2,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Broad Beans 500G",
+     "price": 1.55,
+     "per_unit": 0.0031
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Stringless Runner Beans, 80g",
+     "price": 1.3,
+     "per_unit": 0.0163
+    }
+   },
+   {
+    "canonical_name": "tomato",
+    "unit": "each",
+    "listings": 2,
+    "ratio": 5.2,
+    "metricValue": 0.003,
+    "recipe_count": 20,
+    "low": {
+     "store": "Ocado",
+     "title": "Ocado Tomatoes (6 pack)",
+     "price": 1,
+     "per_unit": 0.1667
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Beef Tomatoes Each",
+     "price": 0.87,
+     "per_unit": 0.87
+    }
+   },
+   {
+    "canonical_name": "butter beans",
+    "unit": "g_or_ml",
+    "listings": 11,
+    "ratio": 5.2,
+    "metricValue": 0.0025,
+    "recipe_count": 2,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Butter Beans In Water 400g",
+     "price": 0.45,
+     "per_unit": 0.0011
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Bold Bean Co Queen Butter Beans 570g",
+     "price": 3.25,
+     "per_unit": 0.0057
+    }
+   },
+   {
+    "canonical_name": "couscous",
+    "unit": "g_or_ml",
+    "listings": 5,
+    "ratio": 5.2,
+    "metricValue": 0.0026,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Cous 1kg",
+     "price": 1.3,
+     "per_unit": 0.0013
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Tesco Mediterranean Couscous 110G",
+     "price": 0.75,
+     "per_unit": 0.0068
+    }
+   },
+   {
+    "canonical_name": "fennel leaves",
+    "unit": "g",
+    "listings": 5,
+    "ratio": 5.2,
+    "metricValue": null,
+    "recipe_count": 1,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "ASDA Fennel",
+     "price": 0.97,
+     "per_unit": 0.0121
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Fennel Loose",
+     "price": 5,
+     "per_unit": 0.0625
+    }
+   },
+   {
+    "canonical_name": "chicken 8%",
+    "unit": "g_or_ml",
+    "listings": 2,
+    "ratio": 5.1,
+    "metricValue": 0.01345,
+    "recipe_count": 1,
+    "low": {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose Small Whole Chicken 1.2kg",
+     "price": 5.25,
+     "per_unit": 0.0044
+    },
+    "high": {
+     "store": "Iceland",
+     "title": "Iceland Finely Sliced Roast Chicken 100g",
+     "price": 2.25,
+     "per_unit": 0.0225
+    }
+   },
+   {
+    "canonical_name": "british chicken (23%)",
+    "unit": "g_or_ml",
+    "listings": 7,
+    "ratio": 5.1,
+    "metricValue": 0.0077,
+    "recipe_count": 1,
+    "low": {
+     "store": "Ocado",
+     "title": "Ocado British Whole Chicken Large, 1.8kg",
+     "price": 5.49,
+     "per_unit": 0.0031
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "M&S Oakham Gold Chicken Breast Fillets, 300g",
+     "price": 4.75,
+     "per_unit": 0.0158
+    }
+   },
+   {
+    "canonical_name": "organic red peppers",
+    "unit": "g_or_ml",
+    "listings": 4,
+    "ratio": 5.1,
+    "metricValue": 0.01515,
+    "recipe_count": 1,
+    "low": {
+     "store": "Tesco",
+     "title": "Tesco Organic Pepper 250G",
+     "price": 1.75,
+     "per_unit": 0.007
+    },
+    "high": {
+     "store": "Ocado",
+     "title": "Daylesford Organic Chillies, 100g",
+     "price": 3.6,
+     "per_unit": 0.036
+    }
+   },
+   {
+    "canonical_name": "bread crumbs",
+    "unit": "g_or_ml",
+    "listings": 3,
+    "ratio": 5.1,
+    "metricValue": 0.0071,
+    "recipe_count": 3,
+    "low": {
+     "store": "Asda Groceries",
+     "title": "Prymat Breadcrumbs 400g",
+     "price": 1.24,
+     "per_unit": 0.0031
+    },
+    "high": {
+     "store": "Tesco",
+     "title": "Blue Dragon Panko Breadcrumb Mix 120g",
+     "price": 1.9,
+     "per_unit": 0.0158
+    }
+   },
+   {
+    "canonical_name": "oregano leaves",
+    "unit": "g",
+    "listings": 8,
+    "ratio": 5.1,
+    "metricValue": null,
+    "recipe_count": 1,
+    "low": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Fresh Oregano",
+     "price": 0.7,
+     "per_unit": 0.05
+    },
+    "high": {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Oregano",
+     "price": 3.6,
+     "per_unit": 0.2571
+    }
+   }
+  ]
+ }
+}

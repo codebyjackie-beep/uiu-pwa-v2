@@ -1,14 +1,14 @@
 {
- "generatedAt": "2026-10-12T15:15:10.235Z",
+ "generatedAt": "2026-10-12T15:45:53.934Z",
  "baseCommit": "3349e50+",
  "stats": {
   "recipes": 328,
   "byAction": {
-   "skip_authoritative": 132,
-   "flag_unavailable": 9,
+   "skip_authoritative": 133,
+   "flag_unavailable": 8,
    "skip_flagged": 18,
-   "write": 146,
-   "hold_review": 23
+   "write": 138,
+   "hold_review": 31
   },
   "distribution": {
    "beforeStored": {
@@ -20,19 +20,19 @@
     "n/a": 0
    },
    "afterAllRecomputed": {
-    "<150": 47,
-    "150-300": 79,
-    "300-600": 143,
-    "600-900": 49,
-    ">900": 10,
+    "<150": 48,
+    "150-300": 83,
+    "300-600": 147,
+    "600-900": 47,
+    ">900": 3,
     "n/a": 0
    },
    "afterProposedActions": {
     "<150": 36,
     "150-300": 62,
-    "300-600": 157,
+    "300-600": 159,
     "600-900": 64,
-    ">900": 9,
+    ">900": 7,
     "n/a": 0
    },
    "buckets": [
@@ -43,18 +43,18 @@
     ">900"
    ]
   },
-  "writeRows": 146,
-  "heldRows": 23,
+  "writeRows": 138,
+  "heldRows": 31,
   "writeRowsValuesUnchanged": 0,
   "holdReasonCounts": {
    "kcal_out_of_range": 1,
    "frying_medium_counted": 1,
-   "decrease_with_major_missing": 22
+   "decrease_with_major_missing": 30
   },
-  "writeRowsDecrease": 18,
+  "writeRowsDecrease": 19,
   "writeRowsDecreaseWithMajorMissing": 0,
-  "heldDecreaseWithMajorMissing": 22,
-  "writeRowsStillMissingMajorLines": 94,
+  "heldDecreaseWithMajorMissing": 30,
+  "writeRowsStillMissingMajorLines": 86,
   "canonFixEffect": [
    {
     "id": "69b4af41734a319b1f59a1c6",
@@ -75,7 +75,14 @@
     "title": "Quick Chicken Enchilada Soup",
     "action": "skip_authoritative",
     "without": 846,
-    "withFix": 369
+    "withFix": 326
+   },
+   {
+    "id": "69b1db93974afef25b93a45e",
+    "title": "Blackberry Clafoutis",
+    "action": "skip_authoritative",
+    "without": 178,
+    "withFix": 135
    },
    {
     "id": "69b4aeaee736bc836fd51335",
@@ -85,18 +92,32 @@
     "withFix": 287
    },
    {
+    "id": "69b277e5f9069a06b5536b58",
+    "title": "Chicken Arrozcaldo",
+    "action": "flag_unavailable",
+    "without": 516,
+    "withFix": 239
+   },
+   {
     "id": "69b277e5f9069a06b5536b5a",
     "title": "Steamy Creamy Mushroom Risotto",
     "action": "skip_authoritative",
     "without": 1540,
-    "withFix": 1426
+    "withFix": 877
    },
    {
     "id": "69b9587c7d3db8c999c7df7d",
     "title": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
     "action": "skip_authoritative",
     "without": 231,
-    "withFix": 328
+    "withFix": 324
+   },
+   {
+    "id": "69bf43f8742c2d2d3b4e88c0",
+    "title": "Boozy Bbq Chicken",
+    "action": "skip_authoritative",
+    "without": 1438,
+    "withFix": 608
    },
    {
     "id": "69c473017393a7f0235b89ba",
@@ -120,11 +141,18 @@
     "withFix": 138
    },
    {
+    "id": "69c4766a7393a7f0235b89c9",
+    "title": "Butternut Squash Souffle Side Dish",
+    "action": "skip_flagged",
+    "without": 123,
+    "withFix": 163
+   },
+   {
     "id": "69c4766a7393a7f0235b89ca",
     "title": "Banana Creme Brulee",
     "action": "skip_flagged",
     "without": 239,
-    "withFix": 261
+    "withFix": 349
    },
    {
     "id": "69b1db92974afef25b93a44b",
@@ -134,11 +162,32 @@
     "withFix": 548
    },
    {
+    "id": "69b1db93974afef25b93a45c",
+    "title": "Chess Pie Two Ways",
+    "action": "skip_authoritative",
+    "without": 443,
+    "withFix": 427
+   },
+   {
+    "id": "69b4b0505ee86d48cd96c66b",
+    "title": "Lemon Pasta With Salmon",
+    "action": "skip_authoritative",
+    "without": 458,
+    "withFix": 520
+   },
+   {
     "id": "69c31de2b17f27d65b4f4ecc",
     "title": "Minestrone",
     "action": "skip_authoritative",
     "without": 390,
     "withFix": 331
+   },
+   {
+    "id": "69b1db92974afef25b93a44c",
+    "title": "Chicken Suya",
+    "action": "skip_authoritative",
+    "without": 2150,
+    "withFix": 490
    },
    {
     "id": "69b4aeaee736bc836fd51333",
@@ -155,11 +204,32 @@
     "withFix": 798
    },
    {
+    "id": "69c4766a7393a7f0235b89c8",
+    "title": "Egg Souffle With Bacon and Asparagus",
+    "action": "skip_authoritative",
+    "without": 779,
+    "withFix": 919
+   },
+   {
     "id": "69b09f21118169bbfaa697b4",
     "title": "Avocado Tomato & Mozzarella Panini/sandwiches",
     "action": "skip_authoritative",
     "without": 107,
     "withFix": 102
+   },
+   {
+    "id": "69b277e5f9069a06b5536b5b",
+    "title": "Light and Chunky Chicken Soup",
+    "action": "skip_authoritative",
+    "without": 1303,
+    "withFix": 388
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df7a",
+    "title": "Finger Foods: Frittata Muffins",
+    "action": "skip_authoritative",
+    "without": 766,
+    "withFix": 753
    },
    {
     "id": "69c31de2b17f27d65b4f4ecb",
@@ -173,7 +243,7 @@
     "title": "Vegetable Cheddar Quiche",
     "action": "skip_authoritative",
     "without": 202,
-    "withFix": 182
+    "withFix": 177
    },
    {
     "id": "69d04b0f26a6c4c3877dfcd3",
@@ -190,11 +260,18 @@
     "withFix": 337
    },
    {
+    "id": "69c7275f754babcc25875c86",
+    "title": "Strawberry-Mango Quinoa Salad",
+    "action": "skip_authoritative",
+    "without": 310,
+    "withFix": 307
+   },
+   {
     "id": "69d04b0f26a6c4c3877dfccc",
     "title": "Caramelized Red Onions and Pear Dip",
     "action": "skip_authoritative",
     "without": 295,
-    "withFix": 277
+    "withFix": 256
    },
    {
     "id": "69d191951648bcfb8b55261a",
@@ -216,6 +293,13 @@
     "action": "skip_authoritative",
     "without": 467,
     "withFix": 461
+   },
+   {
+    "id": "69c4766a7393a7f0235b89cd",
+    "title": "Havarti and Asparagus Quiche",
+    "action": "skip_authoritative",
+    "without": 512,
+    "withFix": 485
    },
    {
     "id": "69d191951648bcfb8b55261d",
@@ -250,7 +334,7 @@
     "title": "Chinese Hot Pots Gluten-Free and Low-Carb",
     "action": "skip_authoritative",
     "without": 264,
-    "withFix": 221
+    "withFix": 218
    },
    {
     "id": "6a42e05cd33617bebef22d84",
@@ -272,6 +356,13 @@
     "action": "write",
     "without": 689,
     "withFix": 821
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dd2",
+    "title": "Curry and Sage Roast Chicken",
+    "action": "flag_unavailable",
+    "without": 1919,
+    "withFix": 547
    },
    {
     "id": "69c5c81c64ee1f17b0563dd3",
@@ -309,11 +400,32 @@
     "withFix": 805
    },
    {
+    "id": "6a42e050d33617bebef22d7f",
+    "title": "Crab and Shrimp Burgers With Garlic Grits Fries",
+    "action": "skip_authoritative",
+    "without": 195,
+    "withFix": 181
+   },
+   {
+    "id": "6a42e05cd33617bebef22d83",
+    "title": "Almond Rainbow Cake",
+    "action": "flag_unavailable",
+    "without": 260,
+    "withFix": 233
+   },
+   {
     "id": "6a5ff781a91e3f027a2961e9",
     "title": "Korean Beef Rice Bowl",
-    "action": "flag_unavailable",
+    "action": "skip_authoritative",
     "without": 1229,
     "withFix": 1040
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfccb",
+    "title": "Charred Onion Dip w. Steamed Red Potatoes for Dipping",
+    "action": "skip_authoritative",
+    "without": 225,
+    "withFix": 207
    },
    {
     "id": "69d04b0f26a6c4c3877dfcd2",
@@ -328,6 +440,13 @@
     "action": "skip_authoritative",
     "without": 238,
     "withFix": 235
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dcd",
+    "title": "Saffron Chicken Tikka",
+    "action": "skip_authoritative",
+    "without": 195,
+    "withFix": 194
    },
    {
     "id": "69d191951648bcfb8b552619",
@@ -355,7 +474,7 @@
     "title": "Spring Meadow Keto Frittata",
     "action": "write",
     "without": 393,
-    "withFix": 352
+    "withFix": 375
    },
    {
     "id": "6a6cfaa5901ee72fdac214a7",
@@ -418,7 +537,7 @@
     "title": "Garden Sunrise Keto Frittata",
     "action": "hold_review",
     "without": 424,
-    "withFix": 356
+    "withFix": 379
    },
    {
     "id": "6ac80d63b0ca951a2fbf7410",
@@ -439,7 +558,7 @@
     "title": "Golden Spinach-Asparagus Skillet Frittata",
     "action": "hold_review",
     "without": 291,
-    "withFix": 354
+    "withFix": 377
    },
    {
     "id": "6ac80d6eb0ca951a2fbf7438",
@@ -453,7 +572,7 @@
     "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
     "action": "hold_review",
     "without": 176,
-    "withFix": 274
+    "withFix": 267
    },
    {
     "id": "6ac80d70b0ca951a2fbf7440",
@@ -467,7 +586,7 @@
     "title": "Smoked Salmon, Broccoli, and Herb Crepes",
     "action": "write",
     "without": 912,
-    "withFix": 978
+    "withFix": 890
    },
    {
     "id": "6ac80d73b0ca951a2fbf744a",
@@ -481,7 +600,14 @@
     "title": "Lemony Salmon and Broccoli Breakfast Crepes",
     "action": "write",
     "without": 507,
-    "withFix": 540
+    "withFix": 503
+   },
+   {
+    "id": "6ac80d79b0ca951a2fbf745e",
+    "title": "Buffalo Chicken Pepper Cups",
+    "action": "write",
+    "without": 409,
+    "withFix": 382
    },
    {
     "id": "6ac80d7fb0ca951a2fbf7472",
@@ -502,7 +628,7 @@
     "title": "Keto Morning Garden Frittata",
     "action": "hold_review",
     "without": 481,
-    "withFix": 384
+    "withFix": 408
    },
    {
     "id": "6ac80d81b0ca951a2fbf747a",
@@ -516,7 +642,7 @@
     "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
     "action": "hold_review",
     "without": 407,
-    "withFix": 337
+    "withFix": 361
    },
    {
     "id": "6ac80d86b0ca951a2fbf748c",
@@ -537,7 +663,7 @@
     "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
     "action": "hold_review",
     "without": 396,
-    "withFix": 315
+    "withFix": 338
    },
    {
     "id": "6ac80d91b0ca951a2fbf74b2",
@@ -545,6 +671,13 @@
     "action": "write",
     "without": 760,
     "withFix": 750
+   },
+   {
+    "id": "6ac80d96b0ca951a2fbf74c2",
+    "title": "Spiced Sweet Potato Wedge Bowls with Chicken, Black Bean, and Lime Yogurt",
+    "action": "hold_review",
+    "without": 735,
+    "withFix": 320
    },
    {
     "id": "6ac80d98b0ca951a2fbf74cc",
@@ -607,7 +740,7 @@
     "title": "Buckwheat Crêpes with Mushroom-Shallot Cream and Herb Salad",
     "action": "write",
     "without": 708,
-    "withFix": 612
+    "withFix": 638
    },
    {
     "id": "6ac80db9b0ca951a2fbf753e",
@@ -624,6 +757,13 @@
     "withFix": 620
    },
    {
+    "id": "6ac80dbeb0ca951a2fbf754e",
+    "title": "Cheddar-Scallion Protein Scones with Buttered Herb Fold",
+    "action": "write",
+    "without": 400,
+    "withFix": 392
+   },
+   {
     "id": "6ac80dbeb0ca951a2fbf7550",
     "title": "Charred Corn Avocado Salsa",
     "action": "write",
@@ -631,18 +771,25 @@
     "withFix": 310
    },
    {
+    "id": "6ac80dc2b0ca951a2fbf755c",
+    "title": "Buckwheat Crepes with Wild Mushroom, White Wine, and Herb Sauce",
+    "action": "write",
+    "without": 523,
+    "withFix": 527
+   },
+   {
     "id": "6ac80dc3b0ca951a2fbf7562",
     "title": "Herbed Chicken Scones with White Cheddar and Peppery Scallion Butter",
     "action": "write",
     "without": 253,
-    "withFix": 269
+    "withFix": 262
    },
    {
     "id": "6ac80dc7b0ca951a2fbf7570",
     "title": "Mushroom and Lentil Shepherd's Pie with Cheddar Potato Topping",
     "action": "hold_review",
     "without": 675,
-    "withFix": 586
+    "withFix": 576
    },
    {
     "id": "6ac80dc8b0ca951a2fbf7572",
@@ -680,11 +827,18 @@
     "withFix": 421
    },
    {
+    "id": "6ac80dd0b0ca951a2fbf758e",
+    "title": "Crispy Ginger Chicken & Cabbage Ribbon Salad",
+    "action": "hold_review",
+    "without": 1081,
+    "withFix": 453
+   },
+   {
     "id": "6ac80dd0b0ca951a2fbf7590",
     "title": "Spinach, Asparagus, and Mushroom Breakfast Skillet Frittata",
     "action": "write",
     "without": 419,
-    "withFix": 366
+    "withFix": 389
    },
    {
     "id": "6ac80dd4b0ca951a2fbf759c",
@@ -701,11 +855,32 @@
     "withFix": 315
    },
    {
+    "id": "6ac80dd9b0ca951a2fbf75ae",
+    "title": "Fragrant Coastal Prawn Biryani",
+    "action": "write",
+    "without": 607,
+    "withFix": 603
+   },
+   {
+    "id": "6ac80dddb0ca951a2fbf75be",
+    "title": "Ginger-Sesame Chicken Slaw with Quail Eggs",
+    "action": "hold_review",
+    "without": 771,
+    "withFix": 356
+   },
+   {
     "id": "6ac80ddeb0ca951a2fbf75c2",
     "title": "Saffron Prawn Basmati with Garam Masala Onions",
     "action": "write",
     "without": 536,
     "withFix": 619
+   },
+   {
+    "id": "6ac80ddfb0ca951a2fbf75c4",
+    "title": "Chicken Parmesan Sweet Potato Fries",
+    "action": "hold_review",
+    "without": 756,
+    "withFix": 341
    },
    {
     "id": "6ac80de0b0ca951a2fbf75c8",
@@ -775,7 +950,7 @@
     "title": "Parmesan Herb Gougères with Whipped Lemon-Avocado Filling",
     "action": "write",
     "without": 490,
-    "withFix": 487
+    "withFix": 480
    },
    {
     "id": "6ac80e08b0ca951a2fbf7654",
@@ -806,6 +981,13 @@
     "withFix": 167
    },
    {
+    "id": "6ac80e18b0ca951a2fbf768c",
+    "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+    "action": "hold_review",
+    "without": 481,
+    "withFix": 206
+   },
+   {
     "id": "6ac80e1bb0ca951a2fbf7698",
     "title": "Sun-Dried Tomato Herb Breakfast Eggs with Spinach and Goat Cheese",
     "action": "write",
@@ -817,29 +999,59 @@
     "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
     "action": "hold_review",
     "without": 433,
-    "withFix": 351
+    "withFix": 144
    },
    {
     "id": "6ac80e21b0ca951a2fbf76ac",
     "title": "Savory Chicken, Chive, and Cheddar Scones",
-    "action": "write",
+    "action": "hold_review",
     "without": 388,
-    "withFix": 396
+    "withFix": 293
+   },
+   {
+    "id": "6ac80e23b0ca951a2fbf76b4",
+    "title": "Sesame-Miso Cucumber Salad with Chicken and Quail Eggs",
+    "action": "hold_review",
+    "without": 739,
+    "withFix": 282
+   },
+   {
+    "id": "6ac80e27b0ca951a2fbf76c2",
+    "title": "High-Protein Japanese Curry Puffs",
+    "action": "hold_review",
+    "without": 344,
+    "withFix": 161
    },
    {
     "id": "6ac80e36b0ca951a2fbf76f6",
     "title": "Cheddar Potato Corn Scones with Bacon and Chives",
     "action": "write",
     "without": 415,
-    "withFix": 431
+    "withFix": 424
+   },
+   {
+    "id": "6ac80e38b0ca951a2fbf76fe",
+    "title": "Crisp Chinese Chicken Salad with Sesame-Lime Crunch",
+    "action": "write",
+    "without": 912,
+    "withFix": 497
+   },
+   {
+    "id": "6ac80e3db0ca951a2fbf770e",
+    "title": "Saffron Prawn Biryani with Caramelized Onion and Mint",
+    "action": "write",
+    "without": 645,
+    "withFix": 637
    }
   ],
-  "canonFixEffectCount": 111
+  "canonFixEffectCount": 141
  },
  "canonFixes": [
   {
    "id": "6a5d33bef92108b016edecab",
    "canonical_name": "coconut milk",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "14-889",
     "food_name": "Coconut milk, retail",
@@ -850,6 +1062,7 @@
    },
    "why": "was 14-820 'Coconut milk' (22 kcal thin drink)",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 22,
@@ -871,6 +1084,8 @@
   {
    "id": "6a5d33bbf92108b016edec3a",
    "canonical_name": "spinach",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "13-572",
     "food_name": "Spinach, mature, raw",
@@ -881,6 +1096,7 @@
    },
    "why": "was 17-417 'Spinach, dried' (211 kcal)",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 211,
@@ -902,6 +1118,8 @@
   {
    "id": "6a5d33bdf92108b016edec89",
    "canonical_name": "mushroom",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "13-505",
     "food_name": "Mushrooms, white, raw",
@@ -912,6 +1130,7 @@
    },
    "why": "was 17-416 'Mushroom, dried' (159 kcal)",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 159,
@@ -933,6 +1152,8 @@
   {
    "id": "6a5d33bcf92108b016edec66",
    "canonical_name": "corn",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "13-529",
     "food_name": "Sweetcorn kernels, canned in water, drained",
@@ -943,6 +1164,7 @@
    },
    "why": "was 17-645 'Corn snacks' (526 kcal); recipes measure kernels by the cup",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 526,
@@ -964,6 +1186,8 @@
   {
    "id": "6a5d33c8f92108b016ededf8",
    "canonical_name": "green beans, trimmed",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "13-514",
     "food_name": "Beans, green, raw",
@@ -974,6 +1198,7 @@
    },
    "why": "was 13-608 'Green beans, dried' (246 kcal)",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 246,
@@ -995,6 +1220,8 @@
   {
    "id": "6a5d33c6f92108b016ededb2",
    "canonical_name": "pear",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "14-321",
     "food_name": "Pears, raw, flesh and skin",
@@ -1005,6 +1232,7 @@
    },
    "why": "was 14-196 'Pears, dried' (207 kcal)",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 207,
@@ -1026,6 +1254,8 @@
   {
    "id": "6a5d33c8f92108b016edede1",
    "canonical_name": "cooked rice (for serving)",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "11-862",
     "food_name": "Rice, white, long grain, boiled in unsalted water",
@@ -1036,6 +1266,7 @@
    },
    "why": "was 356 kcal (raw rice) on a cooked-rice canonical",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 356,
@@ -1057,6 +1288,8 @@
   {
    "id": "6a5d33bbf92108b016edec31",
    "canonical_name": "eyed peas",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": {
     "code": "13-063",
     "food_name": "Beans, blackeye, whole, dried, boiled in unsalted water",
@@ -1067,6 +1300,7 @@
    },
    "why": "canonical is mangled 'black-eyed peas'; values were near-identical, now sourced by code",
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "nutrition_per_100g": {
      "kcal": 116,
@@ -1088,9 +1322,12 @@
   {
    "id": "6a5d33b6f92108b016edeb8a",
    "canonical_name": "avocado",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": null,
    "why": null,
    "perItemGSource": "edible flesh only (CoFID avocado rows are flesh-only); USDA FDC 'Avocados, raw': 1 fruit without skin and seed = 136 g -> 140 g (cloud-specified); was 150",
+   "densityCupSource": null,
    "before": {
     "per_item_g": 150,
     "aliases": [
@@ -1116,9 +1353,12 @@
   {
    "id": "6a5d33c3f92108b016eded46",
    "canonical_name": "bananas",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": null,
    "why": null,
    "perItemGSource": "peeled/edible banana; USDA FDC 'Bananas, raw': 1 medium = 118 g peeled, CoFID 'weighed with skin' 51 vs 81 kcal flesh -> 110 g (cloud-specified)",
+   "densityCupSource": null,
    "before": {
     "per_item_g": null,
     "aliases": [
@@ -1137,9 +1377,12 @@
   {
    "id": "6a5d33bef92108b016edecad",
    "canonical_name": "egg",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": null,
    "why": null,
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "aliases": [
      "egg",
@@ -1162,9 +1405,12 @@
   {
    "id": "6a5d33c1f92108b016eded01",
    "canonical_name": "zucchini",
+   "round": 1,
+   "simulateOnly": false,
    "cofid": null,
    "why": null,
    "perItemGSource": null,
+   "densityCupSource": null,
    "before": {
     "aliases": [
      "zucchini"
@@ -1178,6 +1424,959 @@
     ]
    },
    "absent": []
+  },
+  {
+   "id": "6a5d33b6f92108b016edeba0",
+   "canonical_name": "chicken",
+   "round": 2,
+   "simulateOnly": false,
+   "cofid": {
+    "code": "18-488",
+    "food_name": "Chicken, meat, average, raw",
+    "kcal": 108,
+    "protein": 22.3,
+    "carbs": 0,
+    "fat": 2.1
+   },
+   "why": "was 474 kcal/100 g (fat 48.3 — not a raw-meat value)",
+   "perItemGSource": null,
+   "densityCupSource": null,
+   "before": {
+    "nutrition_per_100g": {
+     "kcal": 474,
+     "protein": 9.7,
+     "carbs": 0,
+     "fat": 48.3
+    }
+   },
+   "after": {
+    "nutrition_per_100g": {
+     "kcal": 108,
+     "protein": 22.3,
+     "carbs": 0,
+     "fat": 2.1
+    }
+   },
+   "absent": []
+  },
+  {
+   "id": "6a5d33c3f92108b016eded45",
+   "canonical_name": "milk",
+   "round": 2,
+   "simulateOnly": false,
+   "cofid": {
+    "code": "12-313",
+    "food_name": "Milk, semi-skimmed, pasteurised, average",
+    "kcal": 46,
+    "protein": 3.5,
+    "carbs": 4.7,
+    "fat": 1.7
+   },
+   "why": "was 12-329 'Milk, sheeps, raw' (93 kcal); UK default = semi-skimmed",
+   "perItemGSource": null,
+   "densityCupSource": null,
+   "before": {
+    "nutrition_per_100g": {
+     "kcal": 93,
+     "protein": 5.4,
+     "carbs": 5.1,
+     "fat": 5.8
+    }
+   },
+   "after": {
+    "nutrition_per_100g": {
+     "kcal": 46,
+     "protein": 3.5,
+     "carbs": 4.7,
+     "fat": 1.7
+    }
+   },
+   "absent": []
+  },
+  {
+   "id": "6a5d33c1f92108b016eded13",
+   "canonical_name": "cream",
+   "round": 2,
+   "simulateOnly": false,
+   "cofid": {
+    "code": "12-334",
+    "food_name": "Cream, fresh, double, including Jersey cream",
+    "kcal": 496,
+    "protein": 1.6,
+    "carbs": 1.7,
+    "fat": 53.7
+   },
+   "why": "was 12-592 'Cream, fresh, clotted' (586 kcal); cloud: double cream",
+   "perItemGSource": null,
+   "densityCupSource": null,
+   "before": {
+    "nutrition_per_100g": {
+     "kcal": 586,
+     "protein": 1.6,
+     "carbs": 2.3,
+     "fat": 63.5
+    }
+   },
+   "after": {
+    "nutrition_per_100g": {
+     "kcal": 496,
+     "protein": 1.6,
+     "carbs": 1.7,
+     "fat": 53.7
+    }
+   },
+   "absent": []
+  },
+  {
+   "id": "6a5d33bdf92108b016edec76",
+   "canonical_name": "heavy cream",
+   "round": 2,
+   "simulateOnly": false,
+   "cofid": {
+    "code": "12-334",
+    "food_name": "Cream, fresh, double, including Jersey cream",
+    "kcal": 496,
+    "protein": 1.6,
+    "carbs": 1.7,
+    "fat": 53.7
+   },
+   "why": "was 340 kcal / 36 g fat (not in CoFID, US heavy cream); cloud: double cream",
+   "perItemGSource": null,
+   "densityCupSource": null,
+   "before": {
+    "nutrition_per_100g": {
+     "kcal": 340,
+     "protein": 2.1,
+     "carbs": 2.8,
+     "fat": 36
+    }
+   },
+   "after": {
+    "nutrition_per_100g": {
+     "kcal": 496,
+     "protein": 1.6,
+     "carbs": 1.7,
+     "fat": 53.7
+    }
+   },
+   "absent": []
+  },
+  {
+   "id": "6a5d33bff92108b016edecb3",
+   "canonical_name": "mung bean sprouts",
+   "round": 2,
+   "simulateOnly": true,
+   "cofid": null,
+   "why": null,
+   "perItemGSource": null,
+   "densityCupSource": "USDA FDC 'Mung beans, mature seeds, sprouted, raw': 1 cup = 104 g (was 180) — cloud-specified",
+   "before": {
+    "density_cup": 180
+   },
+   "after": {
+    "density_cup": 104
+   },
+   "absent": []
+  }
+ ],
+ "canonProposalsNotApplied": [
+  {
+   "name": "rice noodles",
+   "reason": "cloud asked for 'rice noodles, dried' but the CoFID table has no raw/dried rice-noodle entry — the only rice-noodle row is 11-725 'Noodles, rice, fine, dried, boiled in unsalted water' (89 kcal), which is what the canonical already holds (cooked weight, while recipes give dry oz). Left unchanged; needs a non-CoFID source (e.g. USDA dry rice noodles ~360 kcal/100 g) approved by cloud."
+  }
+ ],
+ "flagExempt": [
+  {
+   "id": "6a5ff781a91e3f027a2961e9",
+   "why": "Korean Beef Rice Bowl: stored 1215 kcal accepted (cloud 2nd review 2026-10-12; recompute 1040)"
+  }
+ ],
+ "point1Affected": [
+  {
+   "id": "69b1db92974afef25b93a44c",
+   "title": "Chicken Suya",
+   "source": "spoonacular",
+   "servings": 1,
+   "action": "skip_authoritative",
+   "stored": 564.4,
+   "afterRound1": 2150,
+   "afterRound2": 490,
+   "canonLines": [
+    "chicken: 1 pound = 453.6g"
+   ]
+  },
+  {
+   "id": "69c5c81c64ee1f17b0563dd2",
+   "title": "Curry and Sage Roast Chicken",
+   "source": "spoonacular",
+   "servings": 4,
+   "action": "flag_unavailable",
+   "stored": 51,
+   "afterRound1": 1919,
+   "afterRound2": 547,
+   "canonLines": [
+    "chicken: 1  = 1500g"
+   ]
+  },
+  {
+   "id": "69b277e5f9069a06b5536b5b",
+   "title": "Light and Chunky Chicken Soup",
+   "source": "spoonacular",
+   "servings": 6,
+   "action": "skip_authoritative",
+   "stored": 419.9,
+   "afterRound1": 1303,
+   "afterRound2": 388,
+   "canonLines": [
+    "chicken: 1  = 1500g"
+   ]
+  },
+  {
+   "id": "69bf43f8742c2d2d3b4e88c0",
+   "title": "Boozy Bbq Chicken",
+   "source": "spoonacular",
+   "servings": 6,
+   "action": "skip_authoritative",
+   "stored": 725.3,
+   "afterRound1": 1438,
+   "afterRound2": 608,
+   "canonLines": [
+    "chicken: 3 lbs = 1360.8g"
+   ]
+  },
+  {
+   "id": "6ac80dd0b0ca951a2fbf758e",
+   "title": "Crispy Ginger Chicken & Cabbage Ribbon Salad",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 964,
+   "afterRound1": 1081,
+   "afterRound2": 453,
+   "canonLines": [
+    "chicken: 1.5 lb = 680.4g"
+   ]
+  },
+  {
+   "id": "69b277e5f9069a06b5536b5a",
+   "title": "Steamy Creamy Mushroom Risotto",
+   "source": "spoonacular",
+   "servings": 2,
+   "action": "skip_authoritative",
+   "stored": 956.6,
+   "afterRound1": 1426,
+   "afterRound2": 877,
+   "canonLines": [
+    "chicken: 300 g = 300g"
+   ]
+  },
+  {
+   "id": "6ac80e23b0ca951a2fbf76b4",
+   "title": "Sesame-Miso Cucumber Salad with Chicken and Quail Eggs",
+   "source": "ai_daily_draft",
+   "servings": 2,
+   "action": "hold_review",
+   "stored": 599,
+   "afterRound1": 739,
+   "afterRound2": 282,
+   "canonLines": [
+    "chicken: 250 g = 250g"
+   ]
+  },
+  {
+   "id": "6ac80d96b0ca951a2fbf74c2",
+   "title": "Spiced Sweet Potato Wedge Bowls with Chicken, Black Bean, and Lime Yogurt",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 674,
+   "afterRound1": 735,
+   "afterRound2": 320,
+   "canonLines": [
+    "chicken: 1 pound = 453.6g"
+   ]
+  },
+  {
+   "id": "6ac80dddb0ca951a2fbf75be",
+   "title": "Ginger-Sesame Chicken Slaw with Quail Eggs",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 690,
+   "afterRound1": 771,
+   "afterRound2": 356,
+   "canonLines": [
+    "chicken: 1 lb = 453.6g"
+   ]
+  },
+  {
+   "id": "6ac80ddfb0ca951a2fbf75c4",
+   "title": "Chicken Parmesan Sweet Potato Fries",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 626,
+   "afterRound1": 756,
+   "afterRound2": 341,
+   "canonLines": [
+    "chicken: 1 pound = 453.6g"
+   ]
+  },
+  {
+   "id": "6ac80e38b0ca951a2fbf76fe",
+   "title": "Crisp Chinese Chicken Salad with Sesame-Lime Crunch",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 861,
+   "afterRound1": 912,
+   "afterRound2": 497,
+   "canonLines": [
+    "chicken: 1 pound = 453.6g"
+   ]
+  },
+  {
+   "id": "69b277e5f9069a06b5536b58",
+   "title": "Chicken Arrozcaldo",
+   "source": "spoonacular",
+   "servings": 9,
+   "action": "flag_unavailable",
+   "stored": 1449.4,
+   "afterRound1": 516,
+   "afterRound2": 239,
+   "canonLines": [
+    "chicken: 1.5 pounds = 680.4g"
+   ]
+  },
+  {
+   "id": "6ac80e18b0ca951a2fbf768c",
+   "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 418,
+   "afterRound1": 481,
+   "afterRound2": 206,
+   "canonLines": [
+    "chicken: 300 g = 300g"
+   ]
+  },
+  {
+   "id": "6ac80e1fb0ca951a2fbf76a6",
+   "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 418,
+   "afterRound1": 351,
+   "afterRound2": 144,
+   "canonLines": [
+    "chicken: 8 oz = 226.8g",
+    "rice noodles: 5 oz = 141.8g"
+   ]
+  },
+  {
+   "id": "6ac80e27b0ca951a2fbf76c2",
+   "title": "High-Protein Japanese Curry Puffs",
+   "source": "ai_daily_draft",
+   "servings": 6,
+   "action": "hold_review",
+   "stored": 303,
+   "afterRound1": 344,
+   "afterRound2": 161,
+   "canonLines": [
+    "chicken: 300 g = 300g"
+   ]
+  },
+  {
+   "id": "69c4766a7393a7f0235b89c8",
+   "title": "Egg Souffle With Bacon and Asparagus",
+   "source": "spoonacular",
+   "servings": 2,
+   "action": "skip_authoritative",
+   "stored": 342,
+   "afterRound1": 779,
+   "afterRound2": 919,
+   "canonLines": [
+    "heavy cream: 0.75 cup = 180g"
+   ]
+  },
+  {
+   "id": "6ac80e21b0ca951a2fbf76ac",
+   "title": "Savory Chicken, Chive, and Cheddar Scones",
+   "source": "ai_daily_draft",
+   "servings": 8,
+   "action": "hold_review",
+   "stored": 366,
+   "afterRound1": 396,
+   "afterRound2": 293,
+   "canonLines": [
+    "chicken: 200 g = 200g",
+    "milk: 180 ml = 185.4g"
+   ]
+  },
+  {
+   "id": "69c4766a7393a7f0235b89ca",
+   "title": "Banana Creme Brulee",
+   "source": "spoonacular",
+   "servings": 8,
+   "action": "skip_flagged",
+   "stored": 48,
+   "afterRound1": 261,
+   "afterRound2": 349,
+   "canonLines": [
+    "heavy cream: 450 ml = 450g"
+   ]
+  },
+  {
+   "id": "6ac80d73b0ca951a2fbf7448",
+   "title": "Smoked Salmon, Broccoli, and Herb Crepes",
+   "source": "ai_daily_draft",
+   "servings": 2,
+   "action": "write",
+   "stored": 479,
+   "afterRound1": 978,
+   "afterRound2": 890,
+   "canonLines": [
+    "milk: 1.5 cups = 370.8g"
+   ]
+  },
+  {
+   "id": "69b4b0505ee86d48cd96c66b",
+   "title": "Lemon Pasta With Salmon",
+   "source": "spoonacular",
+   "servings": 6,
+   "action": "skip_authoritative",
+   "stored": 559.8,
+   "afterRound1": 458,
+   "afterRound2": 520,
+   "canonLines": [
+    "heavy cream: 1 cup = 240g"
+   ]
+  },
+  {
+   "id": "69b1db93974afef25b93a454",
+   "title": "Quick Chicken Enchilada Soup",
+   "source": "spoonacular",
+   "servings": 4,
+   "action": "skip_authoritative",
+   "stored": 645.6,
+   "afterRound1": 369,
+   "afterRound2": 326,
+   "canonLines": [
+    "milk: 1.5 cups = 370.8g"
+   ]
+  },
+  {
+   "id": "69b1db93974afef25b93a45e",
+   "title": "Blackberry Clafoutis",
+   "source": "spoonacular",
+   "servings": 2,
+   "action": "skip_authoritative",
+   "stored": 459.1,
+   "afterRound1": 178,
+   "afterRound2": 135,
+   "canonLines": [
+    "milk: 0.75 cup = 185.4g"
+   ]
+  },
+  {
+   "id": "69c4766a7393a7f0235b89c9",
+   "title": "Butternut Squash Souffle Side Dish",
+   "source": "spoonacular",
+   "servings": 4,
+   "action": "skip_flagged",
+   "stored": 7,
+   "afterRound1": 123,
+   "afterRound2": 163,
+   "canonLines": [
+    "heavy cream: 0.5 cup = 120g",
+    "milk: 0.25 cup = 61.8g"
+   ]
+  },
+  {
+   "id": "6ac80d76b0ca951a2fbf7454",
+   "title": "Lemony Salmon and Broccoli Breakfast Crepes",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 887,
+   "afterRound1": 540,
+   "afterRound2": 503,
+   "canonLines": [
+    "milk: 1.25 cup = 309g"
+   ]
+  },
+  {
+   "id": "69c4766a7393a7f0235b89cd",
+   "title": "Havarti and Asparagus Quiche",
+   "source": "spoonacular",
+   "servings": 8,
+   "action": "skip_authoritative",
+   "stored": 320,
+   "afterRound1": 512,
+   "afterRound2": 485,
+   "canonLines": [
+    "cream: 1 cup = 240g"
+   ]
+  },
+  {
+   "id": "6a42e05cd33617bebef22d83",
+   "title": "Almond Rainbow Cake",
+   "source": "spoonacular",
+   "servings": 8,
+   "action": "flag_unavailable",
+   "stored": 53,
+   "afterRound1": 260,
+   "afterRound2": 233,
+   "canonLines": [
+    "cream: 1 cup = 240g"
+   ]
+  },
+  {
+   "id": "6ac80d79b0ca951a2fbf745e",
+   "title": "Buffalo Chicken Pepper Cups",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 371,
+   "afterRound1": 409,
+   "afterRound2": 382,
+   "canonLines": [
+    "chicken: 2 cups = nullg (missing_density)",
+    "cream: 0.5 cup = 120g"
+   ]
+  },
+  {
+   "id": "6ac80db6b0ca951a2fbf7532",
+   "title": "Buckwheat Crêpes with Mushroom-Shallot Cream and Herb Salad",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 420,
+   "afterRound1": 612,
+   "afterRound2": 638,
+   "canonLines": [
+    "milk: 1.5 cup = 370.8g",
+    "heavy cream: 0.75 cup = 180g"
+   ]
+  },
+  {
+   "id": "6ac80d80b0ca951a2fbf7478",
+   "title": "Keto Morning Garden Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 931,
+   "afterRound1": 384,
+   "afterRound2": 408,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "6ac80d84b0ca951a2fbf7484",
+   "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 765,
+   "afterRound1": 337,
+   "afterRound2": 361,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "6a6cfaa5901ee72fdac214a5",
+   "title": "Spring Meadow Keto Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 177,
+   "afterRound1": 352,
+   "afterRound2": 375,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "6ac80d60b0ca951a2fbf7406",
+   "title": "Garden Sunrise Keto Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 833,
+   "afterRound1": 356,
+   "afterRound2": 379,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "6ac80d6cb0ca951a2fbf7430",
+   "title": "Golden Spinach-Asparagus Skillet Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 715,
+   "afterRound1": 354,
+   "afterRound2": 377,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "6ac80d8eb0ca951a2fbf74a8",
+   "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 715,
+   "afterRound1": 315,
+   "afterRound2": 338,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "6ac80dd0b0ca951a2fbf7590",
+   "title": "Spinach, Asparagus, and Mushroom Breakfast Skillet Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 174,
+   "afterRound1": 366,
+   "afterRound2": 389,
+   "canonLines": [
+    "heavy cream: 0.25 cup = 60g"
+   ]
+  },
+  {
+   "id": "69d04b0f26a6c4c3877dfccc",
+   "title": "Caramelized Red Onions and Pear Dip",
+   "source": "spoonacular",
+   "servings": 10,
+   "action": "skip_authoritative",
+   "stored": 162.6,
+   "afterRound1": 277,
+   "afterRound2": 256,
+   "canonLines": [
+    "cream: 1 cup = 240g"
+   ]
+  },
+  {
+   "id": "69d04b0f26a6c4c3877dfccb",
+   "title": "Charred Onion Dip w. Steamed Red Potatoes for Dipping",
+   "source": "spoonacular",
+   "servings": 6,
+   "action": "skip_authoritative",
+   "stored": 118.3,
+   "afterRound1": 225,
+   "afterRound2": 207,
+   "canonLines": [
+    "cream: 0.5 cup = 120g"
+   ]
+  },
+  {
+   "id": "69b1db93974afef25b93a45c",
+   "title": "Chess Pie Two Ways",
+   "source": "spoonacular",
+   "servings": 8,
+   "action": "skip_authoritative",
+   "stored": 680.1,
+   "afterRound1": 443,
+   "afterRound2": 427,
+   "canonLines": [
+    "milk: 250 ml = 257.5g"
+   ]
+  },
+  {
+   "id": "6a42e050d33617bebef22d7f",
+   "title": "Crab and Shrimp Burgers With Garlic Grits Fries",
+   "source": "spoonacular",
+   "servings": 8,
+   "action": "skip_authoritative",
+   "stored": 153,
+   "afterRound1": 195,
+   "afterRound2": 181,
+   "canonLines": [
+    "milk: 1 cup = 247.2g"
+   ]
+  },
+  {
+   "id": "69b9587c7d3db8c999c7df7a",
+   "title": "Finger Foods: Frittata Muffins",
+   "source": "spoonacular",
+   "servings": 1,
+   "action": "skip_authoritative",
+   "stored": 654.7,
+   "afterRound1": 766,
+   "afterRound2": 753,
+   "canonLines": [
+    "cream: 1 T = 15g"
+   ]
+  },
+  {
+   "id": "6ac80dc7b0ca951a2fbf7570",
+   "title": "Mushroom and Lentil Shepherd's Pie with Cheddar Potato Topping",
+   "source": "ai_daily_draft",
+   "servings": 6,
+   "action": "hold_review",
+   "stored": 604,
+   "afterRound1": 586,
+   "afterRound2": 576,
+   "canonLines": [
+    "milk: 120 ml = 123.6g"
+   ]
+  },
+  {
+   "id": "6ac80dbeb0ca951a2fbf754e",
+   "title": "Cheddar-Scallion Protein Scones with Buttered Herb Fold",
+   "source": "ai_daily_draft",
+   "servings": 6,
+   "action": "write",
+   "stored": 374,
+   "afterRound1": 400,
+   "afterRound2": 392,
+   "canonLines": [
+    "milk: 90 ml = 92.7g"
+   ]
+  },
+  {
+   "id": "6ac80e3db0ca951a2fbf770e",
+   "title": "Saffron Prawn Biryani with Caramelized Onion and Mint",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 496,
+   "afterRound1": 645,
+   "afterRound2": 637,
+   "canonLines": [
+    "milk: 0.25 cup = 61.8g"
+   ]
+  },
+  {
+   "id": "6ac80d6fb0ca951a2fbf743a",
+   "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "hold_review",
+   "stored": 476,
+   "afterRound1": 274,
+   "afterRound2": 267,
+   "canonLines": [
+    "milk: 60 ml = 61.8g"
+   ]
+  },
+  {
+   "id": "6ac80dc3b0ca951a2fbf7562",
+   "title": "Herbed Chicken Scones with White Cheddar and Peppery Scallion Butter",
+   "source": "ai_daily_draft",
+   "servings": 8,
+   "action": "write",
+   "stored": 238,
+   "afterRound1": 269,
+   "afterRound2": 262,
+   "canonLines": [
+    "milk: 120 ml = 123.6g"
+   ]
+  },
+  {
+   "id": "6ac80e07b0ca951a2fbf7650",
+   "title": "Parmesan Herb Gougères with Whipped Lemon-Avocado Filling",
+   "source": "ai_daily_draft",
+   "servings": 6,
+   "action": "write",
+   "stored": 354,
+   "afterRound1": 487,
+   "afterRound2": 480,
+   "canonLines": [
+    "cream: 3 tablespoons = 45g"
+   ]
+  },
+  {
+   "id": "6ac80e36b0ca951a2fbf76f6",
+   "title": "Cheddar Potato Corn Scones with Bacon and Chives",
+   "source": "ai_daily_draft",
+   "servings": 8,
+   "action": "write",
+   "stored": 401,
+   "afterRound1": 431,
+   "afterRound2": 424,
+   "canonLines": [
+    "milk: 120 ml = 123.6g"
+   ]
+  },
+  {
+   "id": "69c4766a7393a7f0235b89cb",
+   "title": "Vegetable Cheddar Quiche",
+   "source": "spoonacular",
+   "servings": 8,
+   "action": "skip_authoritative",
+   "stored": 162,
+   "afterRound1": 182,
+   "afterRound2": 177,
+   "canonLines": [
+    "milk: 0.33333334 cup = 82.4g"
+   ]
+  },
+  {
+   "id": "6ac80dc2b0ca951a2fbf755c",
+   "title": "Buckwheat Crepes with Wild Mushroom, White Wine, and Herb Sauce",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 206,
+   "afterRound1": 523,
+   "afterRound2": 527,
+   "canonLines": [
+    "milk: 1.5 cup = 370.8g",
+    "heavy cream: 0.5 cup = 120g"
+   ]
+  },
+  {
+   "id": "6ac80dd9b0ca951a2fbf75ae",
+   "title": "Fragrant Coastal Prawn Biryani",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 499,
+   "afterRound1": 607,
+   "afterRound2": 603,
+   "canonLines": [
+    "milk: 2 tablespoons = 30.9g"
+   ]
+  },
+  {
+   "id": "69c7275f754babcc25875c86",
+   "title": "Strawberry-Mango Quinoa Salad",
+   "source": "spoonacular",
+   "servings": 4,
+   "action": "skip_authoritative",
+   "stored": 353.6,
+   "afterRound1": 310,
+   "afterRound2": 307,
+   "canonLines": [
+    "cream: 1 T = 15g"
+   ]
+  },
+  {
+   "id": "69c5c81c64ee1f17b0563dcd",
+   "title": "Saffron Chicken Tikka",
+   "source": "spoonacular",
+   "servings": 3,
+   "action": "skip_authoritative",
+   "stored": 192,
+   "afterRound1": 195,
+   "afterRound2": 194,
+   "canonLines": [
+    "milk: 2 tsp = 10.3g"
+   ]
+  },
+  {
+   "id": "69b1db92974afef25b93a44d",
+   "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+   "source": "spoonacular",
+   "servings": 4,
+   "action": "skip_authoritative",
+   "stored": 337,
+   "afterRound1": 165,
+   "afterRound2": 165,
+   "canonLines": [
+    "chicken: 2 cups = nullg (missing_density)"
+   ]
+  },
+  {
+   "id": "69b1db93974afef25b93a455",
+   "title": "Quick and Easy Southwestern Corn Chowder",
+   "source": "spoonacular",
+   "servings": 6,
+   "action": "skip_authoritative",
+   "stored": 324.1,
+   "afterRound1": 38,
+   "afterRound2": 38,
+   "canonLines": [
+    "chicken: 2 cups = nullg (missing_density)"
+   ]
+  },
+  {
+   "id": "69b277e5f9069a06b5536b5c",
+   "title": "SLOW COOKER CHICKEN GUMBO SOUP",
+   "source": "spoonacular",
+   "servings": 6,
+   "action": "skip_authoritative",
+   "stored": 238.5,
+   "afterRound1": 161,
+   "afterRound2": 161,
+   "canonLines": [
+    "chicken: 3 cups = nullg (missing_density)"
+   ]
+  },
+  {
+   "id": "69d5710287d5d72710ae8eb0",
+   "title": "Crock Pot Chicken Pho",
+   "source": "spoonacular",
+   "servings": 4,
+   "action": "skip_authoritative",
+   "stored": 538.2,
+   "afterRound1": 242,
+   "afterRound2": 242,
+   "canonLines": [
+    "rice noodles: 6 oz = 170.1g"
+   ]
+  },
+  {
+   "id": "6ac80d7fb0ca951a2fbf7472",
+   "title": "Light Korean-Inspired Noodle Stir-Fry with Spinach and Mushrooms",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 870,
+   "afterRound1": 127,
+   "afterRound2": 127,
+   "canonLines": [
+    "rice noodles: 8 oz = 226.8g"
+   ]
+  },
+  {
+   "id": "6ac80d8bb0ca951a2fbf749c",
+   "title": "Light Korean-Style Glass Noodles with Spinach, Mushrooms, and Chicken",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 741,
+   "afterRound1": 199,
+   "afterRound2": 199,
+   "canonLines": [
+    "rice noodles: 8 oz = 226.8g"
+   ]
+  },
+  {
+   "id": "6ac80df3b0ca951a2fbf760a",
+   "title": "Light Korean Japchae with Chicken and Crisp Vegetables",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 269,
+   "afterRound1": 275,
+   "afterRound2": 275,
+   "canonLines": [
+    "rice noodles: 12 oz = 340.2g"
+   ]
+  },
+  {
+   "id": "6ac80e02b0ca951a2fbf7640",
+   "title": "Lemon-Sesame Mushroom Rice Noodles with Crisp Vegetables",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "action": "write",
+   "stored": 153,
+   "afterRound1": 142,
+   "afterRound2": 142,
+   "canonLines": [
+    "rice noodles: 10 oz = 283.5g"
+   ]
   }
  ],
  "coconutProposals": [
@@ -1237,7 +2436,7 @@
    "source": "spoonacular",
    "servings": 9,
    "storedKcal": 1449.4,
-   "recomputeKcal": 516,
+   "recomputeKcal": 239,
    "coverage": 0.5,
    "reason": "spoonacular stored 1449.4 kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)"
   },
@@ -1287,7 +2486,7 @@
    "source": "spoonacular",
    "servings": 4,
    "storedKcal": 51,
-   "recomputeKcal": 1919,
+   "recomputeKcal": 547,
    "coverage": 0.5,
    "reason": "spoonacular stored 51 kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)"
   },
@@ -1307,19 +2506,9 @@
    "source": "spoonacular",
    "servings": 8,
    "storedKcal": 53,
-   "recomputeKcal": 260,
+   "recomputeKcal": 233,
    "coverage": 0.375,
    "reason": "spoonacular stored 53 kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)"
-  },
-  {
-   "id": "6a5ff781a91e3f027a2961e9",
-   "title": "Korean Beef Rice Bowl",
-   "source": "spoonacular",
-   "servings": 4,
-   "storedKcal": 1215,
-   "recomputeKcal": 1040,
-   "coverage": 0.545,
-   "reason": "spoonacular stored 1215 kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)"
   }
  ],
  "top20Changes": [
@@ -1597,45 +2786,6 @@
    ]
   },
   {
-   "id": "6ac80d73b0ca951a2fbf7448",
-   "title": "Smoked Salmon, Broccoli, and Herb Crepes",
-   "servings": 2,
-   "before": 479,
-   "after": 978,
-   "delta": 499,
-   "coverage": 1,
-   "mainAddedLines": [
-    {
-     "raw": "brown rice flour",
-     "unit": "cup",
-     "grams": 180,
-     "kcal": 653.4,
-     "method": "density_cup"
-    },
-    {
-     "raw": "salmon",
-     "unit": "ounces",
-     "grams": 226.8,
-     "kcal": 417.3,
-     "method": "weight"
-    },
-    {
-     "raw": "milk",
-     "unit": "cups",
-     "grams": 370.8,
-     "kcal": 344.8,
-     "method": "liquid_fallback"
-    },
-    {
-     "raw": "goat cheese",
-     "unit": "cup",
-     "grams": 70,
-     "kcal": 224,
-     "method": "density_cup"
-    }
-   ]
-  },
-  {
    "id": "6ac80e09b0ca951a2fbf7658",
    "title": "Almond Meadow Matcha Breakfast Smoothie Bowl",
    "servings": 1,
@@ -1710,6 +2860,45 @@
      "grams": 220,
      "kcal": 178.2,
      "method": "per_item_g"
+    }
+   ]
+  },
+  {
+   "id": "6ac80d73b0ca951a2fbf7448",
+   "title": "Smoked Salmon, Broccoli, and Herb Crepes",
+   "servings": 2,
+   "before": 479,
+   "after": 890,
+   "delta": 411,
+   "coverage": 1,
+   "mainAddedLines": [
+    {
+     "raw": "brown rice flour",
+     "unit": "cup",
+     "grams": 180,
+     "kcal": 653.4,
+     "method": "density_cup"
+    },
+    {
+     "raw": "salmon",
+     "unit": "ounces",
+     "grams": 226.8,
+     "kcal": 417.3,
+     "method": "weight"
+    },
+    {
+     "raw": "goat cheese",
+     "unit": "cup",
+     "grams": 70,
+     "kcal": 224,
+     "method": "density_cup"
+    },
+    {
+     "raw": "milk",
+     "unit": "cups",
+     "grams": 370.8,
+     "kcal": 170.6,
+     "method": "liquid_fallback"
     }
    ]
   },
@@ -1870,6 +3059,45 @@
    ]
   },
   {
+   "id": "6ac80d76b0ca951a2fbf7454",
+   "title": "Lemony Salmon and Broccoli Breakfast Crepes",
+   "servings": 4,
+   "before": 887,
+   "after": 503,
+   "delta": -384,
+   "coverage": 1,
+   "mainAddedLines": [
+    {
+     "raw": "brown rice flour",
+     "unit": "cup",
+     "grams": 180,
+     "kcal": 653.4,
+     "method": "density_cup"
+    },
+    {
+     "raw": "salmon",
+     "unit": "ounces",
+     "grams": 283.5,
+     "kcal": 521.6,
+     "method": "weight"
+    },
+    {
+     "raw": "goat cheese",
+     "unit": "ounces",
+     "grams": 113.4,
+     "kcal": 362.9,
+     "method": "weight"
+    },
+    {
+     "raw": "milk",
+     "unit": "cup",
+     "grams": 309,
+     "kcal": 142.1,
+     "method": "liquid_fallback"
+    }
+   ]
+  },
+  {
    "id": "69d191951648bcfb8b55261a",
    "title": "Quinoa Power Bowl with Roasted Sweet Potatoes, Crispy Onions, and Ginger-Avocado Dressing",
    "servings": 2,
@@ -1987,41 +3215,41 @@
    ]
   },
   {
-   "id": "6ac80d76b0ca951a2fbf7454",
-   "title": "Lemony Salmon and Broccoli Breakfast Crepes",
+   "id": "6ac80e38b0ca951a2fbf76fe",
+   "title": "Crisp Chinese Chicken Salad with Sesame-Lime Crunch",
    "servings": 4,
-   "before": 887,
-   "after": 540,
-   "delta": -347,
+   "before": 861,
+   "after": 497,
+   "delta": -364,
    "coverage": 1,
    "mainAddedLines": [
     {
-     "raw": "brown rice flour",
-     "unit": "cup",
-     "grams": 180,
-     "kcal": 653.4,
+     "raw": "roasted coarse peanuts",
+     "unit": "third cup",
+     "grams": 135,
+     "kcal": 789.8,
      "method": "density_cup"
     },
     {
-     "raw": "salmon",
-     "unit": "ounces",
-     "grams": 283.5,
-     "kcal": 521.6,
+     "raw": "chicken",
+     "unit": "pound",
+     "grams": 453.6,
+     "kcal": 489.9,
      "method": "weight"
     },
     {
-     "raw": "goat cheese",
-     "unit": "ounces",
-     "grams": 113.4,
-     "kcal": 362.9,
-     "method": "weight"
-    },
-    {
-     "raw": "milk",
+     "raw": "chickpeas",
      "unit": "cup",
-     "grams": 309,
-     "kcal": 287.4,
-     "method": "liquid_fallback"
+     "grams": 164,
+     "kcal": 269,
+     "method": "density_cup"
+    },
+    {
+     "raw": "sesame oil",
+     "unit": "tablespoon",
+     "grams": 13.6,
+     "kcal": 122.4,
+     "method": "density_cup"
     }
    ]
   },
@@ -2063,45 +3291,6 @@
      "method": "per_item_g"
     }
    ]
-  },
-  {
-   "id": "69d191951648bcfb8b55261c",
-   "title": "Grilled Halloumi & Avocado Salad with Ginger-Lime Vinaigrette",
-   "servings": 2,
-   "before": 337,
-   "after": 654,
-   "delta": 317,
-   "coverage": 0.545,
-   "mainAddedLines": [
-    {
-     "raw": "Halloumi Cheese",
-     "unit": "grams",
-     "grams": 200,
-     "kcal": 626,
-     "method": "weight"
-    },
-    {
-     "raw": "Olive Oil",
-     "unit": "tablespoons",
-     "grams": 40.5,
-     "kcal": 364.1,
-     "method": "density_cup"
-    },
-    {
-     "raw": "Ripe Avocado",
-     "unit": "medium",
-     "grams": 140,
-     "kcal": 264.6,
-     "method": "per_item_g"
-    },
-    {
-     "raw": "Cherry Tomatoes",
-     "unit": "cup halved",
-     "grams": 149,
-     "kcal": 26.8,
-     "method": "density_cup"
-    }
-   ]
   }
  ],
  "outOfRange": [
@@ -2111,7 +3300,7 @@
    "servings": 9,
    "action": "flag_unavailable",
    "before": 1449.4,
-   "after": 516,
+   "after": 239,
    "finalKcal": 1449.4,
    "coverage": 0.5,
    "nutritionUnavailable": false
@@ -2155,7 +3344,7 @@
    "servings": 4,
    "action": "skip_flagged",
    "before": 7,
-   "after": 123,
+   "after": 163,
    "finalKcal": 7,
    "coverage": 0.375,
    "nutritionUnavailable": true
@@ -2166,7 +3355,7 @@
    "servings": 8,
    "action": "skip_flagged",
    "before": 48,
-   "after": 261,
+   "after": 349,
    "finalKcal": 48,
    "coverage": 0.5,
    "nutritionUnavailable": true
@@ -2276,7 +3465,7 @@
    "servings": 4,
    "action": "flag_unavailable",
    "before": 51,
-   "after": 1919,
+   "after": 547,
    "finalKcal": 51,
    "coverage": 0.5,
    "nutritionUnavailable": false
@@ -2309,7 +3498,7 @@
    "servings": 8,
    "action": "flag_unavailable",
    "before": 53,
-   "after": 260,
+   "after": 233,
    "finalKcal": 53,
    "coverage": 0.375,
    "nutritionUnavailable": false
@@ -2318,7 +3507,7 @@
    "id": "6a5ff781a91e3f027a2961e9",
    "title": "Korean Beef Rice Bowl",
    "servings": 4,
-   "action": "flag_unavailable",
+   "action": "skip_authoritative",
    "before": 1215,
    "after": 1040,
    "finalKcal": 1215,
@@ -2758,7 +3947,7 @@
    "source": "spoonacular",
    "servings": 4,
    "before": 7,
-   "after": 123,
+   "after": 163,
    "coverage": 0.375,
    "suggestion": "keep flagged"
   },
@@ -2768,7 +3957,7 @@
    "source": "spoonacular",
    "servings": 8,
    "before": 48,
-   "after": 261,
+   "after": 349,
    "coverage": 0.5,
    "suggestion": "keep flagged"
   },
@@ -3652,8 +4841,8 @@
      {
       "day": 5,
       "before": 1081,
-      "after": 1256,
-      "afterExcludingUnavailable": 1256,
+      "after": 1279,
+      "afterExcludingUnavailable": 1279,
       "unavailableEntries": 0,
       "unknown": 0
      },
@@ -3668,8 +4857,8 @@
      {
       "day": 7,
       "before": 671,
-      "after": 846,
-      "afterExcludingUnavailable": 817,
+      "after": 869,
+      "afterExcludingUnavailable": 840,
       "unavailableEntries": 1,
       "unknown": 0
      }
@@ -3708,16 +4897,16 @@
      {
       "day": 4,
       "before": 1347,
-      "after": 1749,
-      "afterExcludingUnavailable": 1749,
+      "after": 1753,
+      "afterExcludingUnavailable": 1753,
       "unavailableEntries": 0,
       "unknown": 0
      },
      {
       "day": 5,
       "before": 1493,
-      "after": 1685,
-      "afterExcludingUnavailable": 1685,
+      "after": 1708,
+      "afterExcludingUnavailable": 1708,
       "unavailableEntries": 0,
       "unknown": 0
      },
@@ -3845,29 +5034,6 @@
    ]
   },
   {
-   "id": "6ac80d80b0ca951a2fbf7478",
-   "title": "Keto Morning Garden Frittata",
-   "source": "ai_daily_draft",
-   "servings": 4,
-   "before": 931,
-   "after": 384,
-   "delta": -547,
-   "coverage": 0.909,
-   "action": "hold_review",
-   "holdReasons": [
-    "decrease_with_major_missing"
-   ],
-   "majorMissing": [
-    "asparagus (unmapped_unit)"
-   ],
-   "topLines": [
-    "egg: 8 large = 400g, 524kcal",
-    "mozzarella cheese: 1 cup = 112g, 287.8kcal",
-    "olive oil: 2 tablespoon = 27g, 242.7kcal",
-    "goat cheese: 0.5 cup = 70g, 224kcal"
-   ]
-  },
-  {
    "id": "6ac80d8bb0ca951a2fbf749c",
    "title": "Light Korean-Style Glass Noodles with Spinach, Mushrooms, and Chicken",
    "source": "ai_daily_draft",
@@ -3906,13 +5072,60 @@
    ]
   },
   {
+   "id": "6ac80d80b0ca951a2fbf7478",
+   "title": "Keto Morning Garden Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 931,
+   "after": 408,
+   "delta": -523,
+   "coverage": 0.909,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "asparagus (unmapped_unit)"
+   ],
+   "topLines": [
+    "egg: 8 large = 400g, 524kcal",
+    "heavy cream: 0.25 cup = 60g, 297.6kcal",
+    "mozzarella cheese: 1 cup = 112g, 287.8kcal",
+    "olive oil: 2 tablespoon = 27g, 242.7kcal"
+   ]
+  },
+  {
+   "id": "6ac80dd0b0ca951a2fbf758e",
+   "title": "Crispy Ginger Chicken & Cabbage Ribbon Salad",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 964,
+   "after": 453,
+   "delta": -511,
+   "coverage": 0.895,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "broccoli slaw (missing_density)",
+    "persian cucumber (missing_density)"
+   ],
+   "topLines": [
+    "chicken: 1.5 lb = 680.4g, 734.8kcal",
+    "roasted coarse peanuts: 0.5 cup = 67.5g, 394.9kcal",
+    "sesame oil: 2 tbsp = 27.3g, 244.7kcal",
+    "olive oil: 1 tbsp = 13.5g, 121.4kcal"
+   ]
+  },
+  {
    "id": "6ac80d60b0ca951a2fbf7406",
    "title": "Garden Sunrise Keto Frittata",
    "source": "ai_daily_draft",
    "servings": 4,
    "before": 833,
-   "after": 356,
-   "delta": -477,
+   "after": 379,
+   "delta": -454,
    "coverage": 0.923,
    "action": "hold_review",
    "holdReasons": [
@@ -3923,32 +5136,9 @@
    ],
    "topLines": [
     "egg: 8 large = 400g, 524kcal",
+    "heavy cream: 0.25 cup = 60g, 297.6kcal",
     "mozzarella cheese: 0.75 cup = 84g, 215.9kcal",
-    "parmesan cheese: 0.5 cup = 50g, 207.5kcal",
-    "heavy cream: 0.25 cup = 60g, 204kcal"
-   ]
-  },
-  {
-   "id": "6ac80d84b0ca951a2fbf7484",
-   "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
-   "source": "ai_daily_draft",
-   "servings": 4,
-   "before": 765,
-   "after": 337,
-   "delta": -428,
-   "coverage": 0.857,
-   "action": "hold_review",
-   "holdReasons": [
-    "decrease_with_major_missing"
-   ],
-   "majorMissing": [
-    "bacon (unit_unconvertible)"
-   ],
-   "topLines": [
-    "egg: 8 large = 400g, 524kcal",
-    "goat cheese: 1 cup = 140g, 448kcal",
-    "heavy cream: 0.25 cup = 60g, 204kcal",
-    "olive oil: 1 tbsp = 13.5g, 121.4kcal"
+    "parmesan cheese: 0.5 cup = 50g, 207.5kcal"
    ]
   },
   {
@@ -3971,26 +5161,26 @@
    ]
   },
   {
-   "id": "6ac80d8eb0ca951a2fbf74a8",
-   "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
+   "id": "6ac80d84b0ca951a2fbf7484",
+   "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
    "source": "ai_daily_draft",
    "servings": 4,
-   "before": 715,
-   "after": 315,
-   "delta": -400,
-   "coverage": 0.9,
+   "before": 765,
+   "after": 361,
+   "delta": -404,
+   "coverage": 0.857,
    "action": "hold_review",
    "holdReasons": [
     "decrease_with_major_missing"
    ],
    "majorMissing": [
-    "asparagus (missing_density)"
+    "bacon (unit_unconvertible)"
    ],
    "topLines": [
     "egg: 8 large = 400g, 524kcal",
-    "goat cheese: 4 ounce = 113.4g, 362.9kcal",
-    "heavy cream: 0.25 cup = 60g, 204kcal",
-    "olive oil: 1 tablespoon = 13.5g, 121.4kcal"
+    "goat cheese: 1 cup = 140g, 448kcal",
+    "heavy cream: 0.25 cup = 60g, 297.6kcal",
+    "olive oil: 1 tbsp = 13.5g, 121.4kcal"
    ]
   },
   {
@@ -4013,6 +5203,48 @@
    ]
   },
   {
+   "id": "6ac80d76b0ca951a2fbf7454",
+   "title": "Lemony Salmon and Broccoli Breakfast Crepes",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 887,
+   "after": 503,
+   "delta": -384,
+   "coverage": 1,
+   "action": "write",
+   "holdReasons": [],
+   "majorMissing": [],
+   "topLines": [
+    "brown rice flour: 1 cup = 180g, 653.4kcal",
+    "salmon: 10 ounces = 283.5g, 521.6kcal",
+    "goat cheese: 4 ounces = 113.4g, 362.9kcal",
+    "milk: 1.25 cup = 309g, 142.1kcal"
+   ]
+  },
+  {
+   "id": "6ac80d8eb0ca951a2fbf74a8",
+   "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 715,
+   "after": 338,
+   "delta": -377,
+   "coverage": 0.9,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "asparagus (missing_density)"
+   ],
+   "topLines": [
+    "egg: 8 large = 400g, 524kcal",
+    "goat cheese: 4 ounce = 113.4g, 362.9kcal",
+    "heavy cream: 0.25 cup = 60g, 297.6kcal",
+    "olive oil: 1 tablespoon = 13.5g, 121.4kcal"
+   ]
+  },
+  {
    "id": "6ac80d5ab0ca951a2fbf73f2",
    "title": "Lemon-Dill Salmon Skillet Frittata",
    "source": "ai_daily_draft",
@@ -4032,13 +5264,55 @@
    ]
   },
   {
+   "id": "6ac80e38b0ca951a2fbf76fe",
+   "title": "Crisp Chinese Chicken Salad with Sesame-Lime Crunch",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 861,
+   "after": 497,
+   "delta": -364,
+   "coverage": 1,
+   "action": "write",
+   "holdReasons": [],
+   "majorMissing": [],
+   "topLines": [
+    "roasted coarse peanuts: 1 third cup = 135g, 789.8kcal",
+    "chicken: 1 pound = 453.6g, 489.9kcal",
+    "chickpeas: 1 cup = 164g, 269kcal",
+    "sesame oil: 1 tablespoon = 13.6g, 122.4kcal"
+   ]
+  },
+  {
+   "id": "6ac80d96b0ca951a2fbf74c2",
+   "title": "Spiced Sweet Potato Wedge Bowls with Chicken, Black Bean, and Lime Yogurt",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 674,
+   "after": 320,
+   "delta": -354,
+   "coverage": 0.833,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "plain greek yogurt or sour cream (unresolved)"
+   ],
+   "topLines": [
+    "chicken: 1 pound = 453.6g, 489.9kcal",
+    "black beans: 1 cup = 180g, 306kcal",
+    "olive oil: 2 tablespoon = 27g, 242.7kcal",
+    "sweet potato: 2 medium = 260g, 218.4kcal"
+   ]
+  },
+  {
    "id": "6ac80d6cb0ca951a2fbf7430",
    "title": "Golden Spinach-Asparagus Skillet Frittata",
    "source": "ai_daily_draft",
    "servings": 4,
    "before": 715,
-   "after": 354,
-   "delta": -361,
+   "after": 377,
+   "delta": -338,
    "coverage": 0.909,
    "action": "hold_review",
    "holdReasons": [
@@ -4049,28 +5323,57 @@
    ],
    "topLines": [
     "_egg_: 8 large = 400g, 524kcal",
+    "heavy cream: 0.25 cup = 60g, 297.6kcal",
     "goat cheese: 0.5 cup = 70g, 224kcal",
-    "butter: 2 tablespoon = 28.4g, 211.1kcal",
-    "parmesan cheese: 0.5 cup = 50g, 207.5kcal"
+    "butter: 2 tablespoon = 28.4g, 211.1kcal"
    ]
   },
   {
-   "id": "6ac80d76b0ca951a2fbf7454",
-   "title": "Lemony Salmon and Broccoli Breakfast Crepes",
+   "id": "6ac80dddb0ca951a2fbf75be",
+   "title": "Ginger-Sesame Chicken Slaw with Quail Eggs",
    "source": "ai_daily_draft",
    "servings": 4,
-   "before": 887,
-   "after": 540,
-   "delta": -347,
-   "coverage": 1,
-   "action": "write",
-   "holdReasons": [],
-   "majorMissing": [],
+   "before": 690,
+   "after": 356,
+   "delta": -334,
+   "coverage": 0.778,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "hardboiled quail eggs (missing_per_item_g)",
+    "agave nectar (missing_density)"
+   ],
    "topLines": [
-    "brown rice flour: 1 cup = 180g, 653.4kcal",
-    "salmon: 10 ounces = 283.5g, 521.6kcal",
-    "goat cheese: 4 ounces = 113.4g, 362.9kcal",
-    "milk: 1.25 cup = 309g, 287.4kcal"
+    "chicken: 1 lb = 453.6g, 489.9kcal",
+    "roasted coarse peanuts: 0.5 cup = 67.5g, 394.9kcal",
+    "coconut & sesame oil: 2 tbsp = 27.6g, 244kcal",
+    "cabbage: 4 cups = 360g, 93.6kcal"
+   ]
+  },
+  {
+   "id": "6ac80e23b0ca951a2fbf76b4",
+   "title": "Sesame-Miso Cucumber Salad with Chicken and Quail Eggs",
+   "source": "ai_daily_draft",
+   "servings": 2,
+   "before": 599,
+   "after": 282,
+   "delta": -317,
+   "coverage": 0.75,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "hardboiled quail eggs (missing_per_item_g)",
+    "agave nectar (missing_density)"
+   ],
+   "topLines": [
+    "chicken: 250 g = 250g, 270kcal",
+    "cucumber: 3 large = 900g, 126kcal",
+    "sesame oil: 1 tbsp = 13.6g, 122.4kcal",
+    "soy sauce: 2 tbsp = 30g, 23.7kcal"
    ]
   },
   {
@@ -4141,6 +5444,31 @@
    ]
   },
   {
+   "id": "6ac80ddfb0ca951a2fbf75c4",
+   "title": "Chicken Parmesan Sweet Potato Fries",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 626,
+   "after": 341,
+   "delta": -285,
+   "coverage": 0.667,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "seasoned breadcrumbs (missing_density)",
+    "parmesan (missing_density)",
+    "worcestershire sauce (missing_density)"
+   ],
+   "topLines": [
+    "chicken: 1 pound = 453.6g, 489.9kcal",
+    "olive oil: 2 tablespoon = 27g, 242.7kcal",
+    "sweet potato: 2 large = 260g, 218.4kcal",
+    "plain greek yogurt: 1 cup = 245g, 144.6kcal"
+   ]
+  },
+  {
    "id": "6ac80d7fb0ca951a2fbf7474",
    "title": "Warm Romesco-Style Chickpea and Red Pepper Skillet",
    "source": "ai_daily_draft",
@@ -4181,6 +5509,30 @@
     "thinly cut chicken breast: 8 oz = 226.8g, 272.2kcal",
     "sesame seeds (for garnish): 1 tbsp = 8.4g, 50.5kcal",
     "white onion: 1 medium = 110g, 44kcal"
+   ]
+  },
+  {
+   "id": "6ac80e1fb0ca951a2fbf76a6",
+   "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 418,
+   "after": 144,
+   "delta": -274,
+   "coverage": 0.846,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "chicken stock (no_nutrition)",
+    "hardboiled quail eggs (missing_per_item_g)"
+   ],
+   "topLines": [
+    "chicken: 8 oz = 226.8g, 244.9kcal",
+    "rice noodles: 5 oz = 141.8g, 126.2kcal",
+    "unpasteurized shiro miso: 3 tbsp = 46.9g, 93.3kcal",
+    "sesame oil: 1 tsp = 4.5g, 40.8kcal"
    ]
   },
   {
@@ -4233,13 +5585,37 @@
    ]
   },
   {
+   "id": "6ac80e18b0ca951a2fbf768c",
+   "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+   "source": "ai_daily_draft",
+   "servings": 4,
+   "before": 418,
+   "after": 206,
+   "delta": -212,
+   "coverage": 0.813,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "puff pastry (unmapped_unit)",
+    "cornflour (missing_density)"
+   ],
+   "topLines": [
+    "chicken: 300 g = 300g, 324kcal",
+    "olive oil: 1 tbsp = 13.5g, 121.4kcal",
+    "butter: 1 tbsp = 14.2g, 105.6kcal",
+    "peas: 120 g = 120g, 99.6kcal"
+   ]
+  },
+  {
    "id": "6ac80d6fb0ca951a2fbf743a",
    "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
    "source": "ai_daily_draft",
    "servings": 4,
    "before": 476,
-   "after": 274,
-   "delta": -202,
+   "after": 267,
+   "delta": -209,
    "coverage": 0.9,
    "action": "hold_review",
    "holdReasons": [
@@ -4299,6 +5675,32 @@
     "olive oil: 3 tablespoons = 40.5g, 364.1kcal",
     "green beans: 1 pound = 453.6g, 108.9kcal",
     "red onion: 1 piece = 110g, 44kcal"
+   ]
+  },
+  {
+   "id": "6ac80e27b0ca951a2fbf76c2",
+   "title": "High-Protein Japanese Curry Puffs",
+   "source": "ai_daily_draft",
+   "servings": 6,
+   "before": 303,
+   "after": 161,
+   "delta": -142,
+   "coverage": 0.688,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "puff pastry (unmapped_unit)",
+    "baby potatoes (missing_per_item_g)",
+    "chicken stock (no_nutrition)",
+    "cornflour (missing_density)"
+   ],
+   "topLines": [
+    "chicken: 300 g = 300g, 324kcal",
+    "quinoa: 100 g = 100g, 309kcal",
+    "oil: 1 tablespoon = 13.8g, 124.1kcal",
+    "egg: 1 piece = 50g, 65.5kcal"
    ]
   },
   {
@@ -4451,6 +5853,29 @@
    ]
   },
   {
+   "id": "6ac80e21b0ca951a2fbf76ac",
+   "title": "Savory Chicken, Chive, and Cheddar Scones",
+   "source": "ai_daily_draft",
+   "servings": 8,
+   "before": 366,
+   "after": 293,
+   "delta": -73,
+   "coverage": 0.9,
+   "action": "hold_review",
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
+   "majorMissing": [
+    "baking powder (unresolved)"
+   ],
+   "topLines": [
+    "wheat flour: 300 g = 300g, 1017kcal",
+    "cheddar cheese: 120 g = 120g, 499.2kcal",
+    "butter: 60 g = 60g, 446.4kcal",
+    "chicken: 200 g = 200g, 216kcal"
+   ]
+  },
+  {
    "id": "6ac80dcbb0ca951a2fbf757e",
    "title": "Slow-Cooked Beef Chili with Tomato, Beans, and Warm Spice",
    "source": "ai_daily_draft",
@@ -4471,30 +5896,6 @@
     "kidney beans: 2 cups = 360g, 957.6kcal",
     "olive oil: 2 tbsp = 27g, 242.7kcal",
     "corn: 1 cup = 165g, 128.7kcal"
-   ]
-  },
-  {
-   "id": "6ac80e1fb0ca951a2fbf76a6",
-   "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
-   "source": "ai_daily_draft",
-   "servings": 4,
-   "before": 418,
-   "after": 351,
-   "delta": -67,
-   "coverage": 0.846,
-   "action": "hold_review",
-   "holdReasons": [
-    "decrease_with_major_missing"
-   ],
-   "majorMissing": [
-    "chicken stock (no_nutrition)",
-    "hardboiled quail eggs (missing_per_item_g)"
-   ],
-   "topLines": [
-    "chicken: 8 oz = 226.8g, 1075kcal",
-    "rice noodles: 5 oz = 141.8g, 126.2kcal",
-    "unpasteurized shiro miso: 3 tbsp = 46.9g, 93.3kcal",
-    "sesame oil: 1 tsp = 4.5g, 40.8kcal"
    ]
   },
   {
@@ -4546,8 +5947,8 @@
    "source": "ai_daily_draft",
    "servings": 6,
    "before": 604,
-   "after": 586,
-   "delta": -18,
+   "after": 576,
+   "delta": -28,
    "coverage": 0.947,
    "action": "hold_review",
    "holdReasons": [
@@ -4636,7 +6037,7 @@
    "title": "Garden Sunrise Keto Frittata",
    "servings": 4,
    "before": 833,
-   "after": 356,
+   "after": 379,
    "reviewFlags": []
   },
   {
@@ -4660,7 +6061,7 @@
    "title": "Golden Spinach-Asparagus Skillet Frittata",
    "servings": 4,
    "before": 715,
-   "after": 354,
+   "after": 377,
    "reviewFlags": []
   },
   {
@@ -4676,7 +6077,7 @@
    "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
    "servings": 4,
    "before": 476,
-   "after": 274,
+   "after": 267,
    "reviewFlags": []
   },
   {
@@ -4692,7 +6093,7 @@
    "title": "Keto Morning Garden Frittata",
    "servings": 4,
    "before": 931,
-   "after": 384,
+   "after": 408,
    "reviewFlags": []
   },
   {
@@ -4708,7 +6109,7 @@
    "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
    "servings": 4,
    "before": 765,
-   "after": 337,
+   "after": 361,
    "reviewFlags": []
   },
   {
@@ -4732,7 +6133,7 @@
    "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
    "servings": 4,
    "before": 715,
-   "after": 315,
+   "after": 338,
    "reviewFlags": []
   },
   {
@@ -4741,6 +6142,14 @@
    "servings": 4,
    "before": 668,
    "after": 411,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80d96b0ca951a2fbf74c2",
+   "title": "Spiced Sweet Potato Wedge Bowls with Chicken, Black Bean, and Lime Yogurt",
+   "servings": 4,
+   "before": 674,
+   "after": 320,
    "reviewFlags": []
   },
   {
@@ -4756,7 +6165,7 @@
    "title": "Mushroom and Lentil Shepherd's Pie with Cheddar Potato Topping",
    "servings": 6,
    "before": 604,
-   "after": 586,
+   "after": 576,
    "reviewFlags": []
   },
   {
@@ -4765,6 +6174,30 @@
    "servings": 6,
    "before": 541,
    "after": 469,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80dd0b0ca951a2fbf758e",
+   "title": "Crispy Ginger Chicken & Cabbage Ribbon Salad",
+   "servings": 4,
+   "before": 964,
+   "after": 453,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80dddb0ca951a2fbf75be",
+   "title": "Ginger-Sesame Chicken Slaw with Quail Eggs",
+   "servings": 4,
+   "before": 690,
+   "after": 356,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80ddfb0ca951a2fbf75c4",
+   "title": "Chicken Parmesan Sweet Potato Fries",
+   "servings": 4,
+   "before": 626,
+   "after": 341,
    "reviewFlags": []
   },
   {
@@ -4784,11 +6217,43 @@
    "reviewFlags": []
   },
   {
+   "id": "6ac80e18b0ca951a2fbf768c",
+   "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+   "servings": 4,
+   "before": 418,
+   "after": 206,
+   "reviewFlags": []
+  },
+  {
    "id": "6ac80e1fb0ca951a2fbf76a6",
    "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
    "servings": 4,
    "before": 418,
-   "after": 351,
+   "after": 144,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80e21b0ca951a2fbf76ac",
+   "title": "Savory Chicken, Chive, and Cheddar Scones",
+   "servings": 8,
+   "before": 366,
+   "after": 293,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80e23b0ca951a2fbf76b4",
+   "title": "Sesame-Miso Cucumber Salad with Chicken and Quail Eggs",
+   "servings": 2,
+   "before": 599,
+   "after": 282,
+   "reviewFlags": []
+  },
+  {
+   "id": "6ac80e27b0ca951a2fbf76c2",
+   "title": "High-Protein Japanese Curry Puffs",
+   "servings": 6,
+   "before": 303,
+   "after": 161,
    "reviewFlags": []
   }
  ],
@@ -4831,6 +6296,12 @@
     "fat": 9.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 109,
+    "protein": 3.3,
+    "carbs": 3.7,
+    "fat": 9.1
+   },
+   "afterRound1": {
     "calories": 109,
     "protein": 3.3,
     "carbs": 3.7,
@@ -4961,6 +6432,12 @@
     "protein": 56.1,
     "carbs": 56.8,
     "fat": 34.4
+   },
+   "afterRound1": {
+    "calories": 491,
+    "protein": 54.2,
+    "carbs": 30.2,
+    "fat": 18.1
    },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 55.19999999999999,
@@ -5176,6 +6653,12 @@
     "carbs": 11.7,
     "fat": 18.8
    },
+   "afterRound1": {
+    "calories": 301,
+    "protein": 19.8,
+    "carbs": 10.8,
+    "fat": 17.8
+   },
    "nutritionLineCoverage": 0.714,
    "deltaCalories": 3.8999999999999773,
    "unchangedValues": false,
@@ -5374,6 +6857,12 @@
     "carbs": 40.7,
     "fat": 6.1
    },
+   "afterRound1": {
+    "calories": 309,
+    "protein": 25.4,
+    "carbs": 40.7,
+    "fat": 6.1
+   },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": -84.10000000000002,
    "unchangedValues": false,
@@ -5528,6 +7017,12 @@
     "fat": 4.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 330,
+    "protein": 23.7,
+    "carbs": 52.6,
+    "fat": 4.1
+   },
+   "afterRound1": {
     "calories": 330,
     "protein": 23.7,
     "carbs": 52.6,
@@ -5718,10 +7213,10 @@
     "fat": 25.3
    },
    "after": {
-    "calories": 369,
-    "protein": 14.9,
-    "carbs": 59.7,
-    "fat": 9.6
+    "calories": 326,
+    "protein": 13.1,
+    "carbs": 59.3,
+    "fat": 5.8
    },
    "afterWithoutCanonFixes": {
     "calories": 846,
@@ -5729,8 +7224,14 @@
     "carbs": 109.5,
     "fat": 40.1
    },
+   "afterRound1": {
+    "calories": 369,
+    "protein": 14.9,
+    "carbs": 59.7,
+    "fat": 9.6
+   },
    "nutritionLineCoverage": 0.444,
-   "deltaCalories": -276.6,
+   "deltaCalories": -319.6,
    "unchangedValues": false,
    "lines": [
     {
@@ -5807,7 +7308,7 @@
      "g": 370.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 344.8,
+     "kcal": 170.6,
      "cov": true
     },
     {
@@ -5884,6 +7385,12 @@
     "fat": 0
    },
    "afterWithoutCanonFixes": {
+    "calories": 20,
+    "protein": 0,
+    "carbs": 5.4,
+    "fat": 0
+   },
+   "afterRound1": {
     "calories": 20,
     "protein": 0,
     "carbs": 5.4,
@@ -6009,10 +7516,10 @@
     "fat": 15.2
    },
    "after": {
-    "calories": 178,
-    "protein": 11.4,
-    "carbs": 11.6,
-    "fat": 9.9
+    "calories": 135,
+    "protein": 9.6,
+    "carbs": 11.3,
+    "fat": 6.1
    },
    "afterWithoutCanonFixes": {
     "calories": 178,
@@ -6020,8 +7527,14 @@
     "carbs": 11.6,
     "fat": 9.9
    },
+   "afterRound1": {
+    "calories": 178,
+    "protein": 11.4,
+    "carbs": 11.6,
+    "fat": 9.9
+   },
    "nutritionLineCoverage": 0.429,
-   "deltaCalories": -281.1,
+   "deltaCalories": -324.1,
    "unchangedValues": false,
    "lines": [
     {
@@ -6065,7 +7578,7 @@
      "g": 185.4,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 172.4,
+     "kcal": 85.3,
      "cov": true
     },
     {
@@ -6141,6 +7654,12 @@
     "fat": 61.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 868,
+    "protein": 52.4,
+    "carbs": 26.5,
+    "fat": 61.4
+   },
+   "afterRound1": {
     "calories": 868,
     "protein": 52.4,
     "carbs": 26.5,
@@ -6281,6 +7800,12 @@
     "protein": 32.5,
     "carbs": 19.5,
     "fat": 8.4
+   },
+   "afterRound1": {
+    "calories": 287,
+    "protein": 32,
+    "carbs": 19.4,
+    "fat": 8.3
    },
    "nutritionLineCoverage": 0.6,
    "deltaCalories": -29.19999999999999,
@@ -6447,6 +7972,12 @@
     "carbs": 14.1,
     "fat": 3.8
    },
+   "afterRound1": {
+    "calories": 110,
+    "protein": 5.7,
+    "carbs": 14.1,
+    "fat": 3.8
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": -352.1,
    "unchangedValues": false,
@@ -6530,6 +8061,12 @@
     "fat": 14.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 209,
+    "protein": 11.9,
+    "carbs": 8.4,
+    "fat": 14.6
+   },
+   "afterRound1": {
     "calories": 209,
     "protein": 11.9,
     "carbs": 8.4,
@@ -6651,6 +8188,12 @@
     "fat": 7.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 108,
+    "protein": 2.4,
+    "carbs": 8.4,
+    "fat": 7.3
+   },
+   "afterRound1": {
     "calories": 108,
     "protein": 2.4,
     "carbs": 8.4,
@@ -6815,6 +8358,12 @@
     "fat": 14.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 165,
+    "protein": 6.5,
+    "carbs": 3.5,
+    "fat": 14.1
+   },
+   "afterRound1": {
     "calories": 165,
     "protein": 6.5,
     "carbs": 3.5,
@@ -6990,6 +8539,12 @@
     "carbs": 65.3,
     "fat": 2.4
    },
+   "afterRound1": {
+    "calories": 467,
+    "protein": 45.3,
+    "carbs": 65.3,
+    "fat": 2.4
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": 3.3000000000000114,
    "unchangedValues": false,
@@ -7116,6 +8671,12 @@
     "fat": 16
    },
    "afterWithoutCanonFixes": {
+    "calories": 433,
+    "protein": 11.8,
+    "carbs": 61.2,
+    "fat": 16
+   },
+   "afterRound1": {
     "calories": 433,
     "protein": 11.8,
     "carbs": 61.2,
@@ -7280,6 +8841,12 @@
     "carbs": 22.1,
     "fat": 9.9
    },
+   "afterRound1": {
+    "calories": 231,
+    "protein": 14.9,
+    "carbs": 22.1,
+    "fat": 9.9
+   },
    "nutritionLineCoverage": 0.833,
    "deltaCalories": 13.599999999999994,
    "unchangedValues": false,
@@ -7379,6 +8946,12 @@
     "fat": 7.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 443,
+    "protein": 19.7,
+    "carbs": 79,
+    "fat": 7.6
+   },
+   "afterRound1": {
     "calories": 443,
     "protein": 19.7,
     "carbs": 79,
@@ -7642,6 +9215,12 @@
     "carbs": 57.4,
     "fat": 10.6
    },
+   "afterRound1": {
+    "calories": 345,
+    "protein": 8.8,
+    "carbs": 57.4,
+    "fat": 10.6
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 96.69999999999999,
    "unchangedValues": false,
@@ -7838,10 +9417,10 @@
     "fat": 106.6
    },
    "after": {
-    "calories": 516,
-    "protein": 10.8,
+    "calories": 239,
+    "protein": 20.3,
     "carbs": 35.4,
-    "fat": 37.8
+    "fat": 2.9
    },
    "afterWithoutCanonFixes": {
     "calories": 516,
@@ -7849,8 +9428,14 @@
     "carbs": 35.4,
     "fat": 37.8
    },
+   "afterRound1": {
+    "calories": 516,
+    "protein": 10.8,
+    "carbs": 35.4,
+    "fat": 37.8
+   },
    "nutritionLineCoverage": 0.5,
-   "deltaCalories": -933.4000000000001,
+   "deltaCalories": -1210.4,
    "unchangedValues": false,
    "lines": [
     {
@@ -7861,7 +9446,7 @@
      "g": 680.4,
      "m": "weight",
      "why": null,
-     "kcal": 3225.1,
+     "kcal": 734.8,
      "cov": true
     },
     {
@@ -8006,13 +9591,17 @@
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
    "action": "skip_authoritative",
-   "reviewFlags": [
-    "kcal_out_of_range:1426"
-   ],
+   "reviewFlags": [],
    "holdReasons": [],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "parmesan",
+     "c": "parmesan",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 0,
    "before": {
     "calories": 956.6,
@@ -8021,10 +9610,10 @@
     "fat": 41.4
    },
    "after": {
-    "calories": 1426,
-    "protein": 24.1,
+    "calories": 877,
+    "protein": 43,
     "carbs": 99.3,
-    "fat": 102.2
+    "fat": 32.9
    },
    "afterWithoutCanonFixes": {
     "calories": 1540,
@@ -8032,8 +9621,14 @@
     "carbs": 102.6,
     "fat": 106.5
    },
+   "afterRound1": {
+    "calories": 1426,
+    "protein": 24.1,
+    "carbs": 99.3,
+    "fat": 102.2
+   },
    "nutritionLineCoverage": 0.889,
-   "deltaCalories": 469.4,
+   "deltaCalories": -79.60000000000002,
    "unchangedValues": false,
    "lines": [
     {
@@ -8055,7 +9650,7 @@
      "g": 300,
      "m": "weight",
      "why": null,
-     "kcal": 1422,
+     "kcal": 324,
      "cov": true
     },
     {
@@ -8186,6 +9781,12 @@
     "fat": 23.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 371,
+    "protein": 31.2,
+    "carbs": 8.9,
+    "fat": 23.6
+   },
+   "afterRound1": {
     "calories": 371,
     "protein": 31.2,
     "carbs": 8.9,
@@ -8338,6 +9939,12 @@
     "protein": 47.5,
     "carbs": 61.8,
     "fat": 47.6
+   },
+   "afterRound1": {
+    "calories": 847,
+    "protein": 48,
+    "carbs": 61.3,
+    "fat": 47.7
    },
    "nutritionLineCoverage": 0.722,
    "deltaCalories": 281.20000000000005,
@@ -8597,6 +10204,12 @@
     "carbs": 40.3,
     "fat": 32.1
    },
+   "afterRound1": {
+    "calories": 609,
+    "protein": 42.3,
+    "carbs": 40.3,
+    "fat": 32.1
+   },
    "nutritionLineCoverage": 0.6,
    "deltaCalories": 91.39999999999998,
    "unchangedValues": false,
@@ -8698,6 +10311,12 @@
     "fat": 0.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 33,
+    "protein": 1.7,
+    "carbs": 6.6,
+    "fat": 0.3
+   },
+   "afterRound1": {
     "calories": 33,
     "protein": 1.7,
     "carbs": 6.6,
@@ -8810,6 +10429,12 @@
     "fat": 7
    },
    "afterWithoutCanonFixes": {
+    "calories": 81,
+    "protein": 0.7,
+    "carbs": 4.2,
+    "fat": 7
+   },
+   "afterRound1": {
     "calories": 81,
     "protein": 0.7,
     "carbs": 4.2,
@@ -8941,6 +10566,12 @@
     "carbs": 14.3,
     "fat": 27.5
    },
+   "afterRound1": {
+    "calories": 441,
+    "protein": 35.1,
+    "carbs": 14.3,
+    "fat": 27.5
+   },
    "nutritionLineCoverage": 0.5,
    "deltaCalories": 1,
    "unchangedValues": false,
@@ -9064,6 +10695,12 @@
     "fat": 2.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 92,
+    "protein": 14.3,
+    "carbs": 3.1,
+    "fat": 2.7
+   },
+   "afterRound1": {
     "calories": 92,
     "protein": 14.3,
     "carbs": 3.1,
@@ -9232,6 +10869,12 @@
     "carbs": 0.9,
     "fat": 29
    },
+   "afterRound1": {
+    "calories": 284,
+    "protein": 5,
+    "carbs": 0.9,
+    "fat": 29
+   },
    "nutritionLineCoverage": 0.444,
    "deltaCalories": -470.9,
    "unchangedValues": false,
@@ -9380,6 +11023,12 @@
     "carbs": 4.8,
     "fat": 26.1
    },
+   "afterRound1": {
+    "calories": 469,
+    "protein": 48.9,
+    "carbs": 4.8,
+    "fat": 26.1
+   },
    "nutritionLineCoverage": 0.833,
    "deltaCalories": 98.30000000000001,
    "unchangedValues": false,
@@ -9490,6 +11139,12 @@
     "fat": 23.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 324,
+    "protein": 26.2,
+    "carbs": 2.8,
+    "fat": 23.2
+   },
+   "afterRound1": {
     "calories": 324,
     "protein": 26.2,
     "carbs": 2.8,
@@ -9664,9 +11319,9 @@
     "fat": 22.5
    },
    "after": {
-    "calories": 328,
-    "protein": 6.5,
-    "carbs": 38,
+    "calories": 324,
+    "protein": 6.1,
+    "carbs": 37.2,
     "fat": 16.8
    },
    "afterWithoutCanonFixes": {
@@ -9675,8 +11330,14 @@
     "carbs": 39,
     "fat": 5.9
    },
+   "afterRound1": {
+    "calories": 328,
+    "protein": 6.5,
+    "carbs": 38,
+    "fat": 16.8
+   },
    "nutritionLineCoverage": 0.75,
-   "deltaCalories": -61.69999999999999,
+   "deltaCalories": -65.69999999999999,
    "unchangedValues": false,
    "lines": [
     {
@@ -9871,10 +11532,10 @@
      "q": 1,
      "u": "cup",
      "c": "mung bean sprouts",
-     "g": 180,
+     "g": 104,
      "m": "density_cup",
      "why": null,
-     "kcal": 54,
+     "kcal": 31.2,
      "cov": true
     },
     {
@@ -9988,6 +11649,12 @@
     "carbs": 71.3,
     "fat": 24.9
    },
+   "afterRound1": {
+    "calories": 616,
+    "protein": 27.8,
+    "carbs": 71.3,
+    "fat": 24.9
+   },
    "nutritionLineCoverage": 0.875,
    "deltaCalories": 135.3,
    "unchangedValues": false,
@@ -10090,13 +11757,37 @@
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
    "action": "skip_authoritative",
-   "reviewFlags": [
-    "kcal_out_of_range:1438"
-   ],
+   "reviewFlags": [],
    "holdReasons": [],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "molasses",
+     "c": "molasses",
+     "why": "missing_density"
+    },
+    {
+     "raw": "bite sized mushrooms",
+     "c": "bite sized mushrooms",
+     "why": "missing_per_item_g"
+    },
+    {
+     "raw": "orange",
+     "c": "orange",
+     "why": "missing_per_item_g"
+    },
+    {
+     "raw": "newman's own salad dressing",
+     "c": "newman's own salad dressing",
+     "why": "missing_density"
+    },
+    {
+     "raw": "tabasco sauce",
+     "c": "tabasco sauce",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 1,
    "before": {
     "calories": 725.3,
@@ -10105,10 +11796,10 @@
     "fat": 32.8
    },
    "after": {
-    "calories": 1438,
-    "protein": 31,
+    "calories": 608,
+    "protein": 59.6,
     "carbs": 48.6,
-    "fat": 121.8
+    "fat": 17.1
    },
    "afterWithoutCanonFixes": {
     "calories": 1438,
@@ -10116,8 +11807,14 @@
     "carbs": 48.6,
     "fat": 121.8
    },
+   "afterRound1": {
+    "calories": 1438,
+    "protein": 31,
+    "carbs": 48.6,
+    "fat": 121.8
+   },
    "nutritionLineCoverage": 0.739,
-   "deltaCalories": 712.7,
+   "deltaCalories": -117.29999999999995,
    "unchangedValues": false,
    "lines": [
     {
@@ -10403,7 +12100,7 @@
      "g": 1360.8,
      "m": "weight",
      "why": null,
-     "kcal": 6450.2,
+     "kcal": 1469.7,
      "cov": true
     }
    ]
@@ -10441,6 +12138,12 @@
     "fat": 4.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 126,
+    "protein": 3.7,
+    "carbs": 19.5,
+    "fat": 4.2
+   },
+   "afterRound1": {
     "calories": 126,
     "protein": 3.7,
     "carbs": 19.5,
@@ -10602,6 +12305,12 @@
     "fat": 5.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 96,
+    "protein": 1.2,
+    "carbs": 10.9,
+    "fat": 5.2
+   },
+   "afterRound1": {
     "calories": 96,
     "protein": 1.2,
     "carbs": 10.9,
@@ -10798,6 +12507,12 @@
     "protein": 34.8,
     "carbs": 19.1,
     "fat": 13.9
+   },
+   "afterRound1": {
+    "calories": 488,
+    "protein": 35.6,
+    "carbs": 17.5,
+    "fat": 30.5
    },
    "nutritionLineCoverage": 0.882,
    "deltaCalories": 172,
@@ -11037,6 +12752,12 @@
     "carbs": 11.5,
     "fat": 1.2
    },
+   "afterRound1": {
+    "calories": 61,
+    "protein": 1.6,
+    "carbs": 11.5,
+    "fat": 1.2
+   },
    "nutritionLineCoverage": 0.6,
    "deltaCalories": -19.599999999999994,
    "unchangedValues": false,
@@ -11125,6 +12846,12 @@
     "fat": 7.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 491,
+    "protein": 35.6,
+    "carbs": 75.3,
+    "fat": 7.2
+   },
+   "afterRound1": {
     "calories": 491,
     "protein": 35.6,
     "carbs": 75.3,
@@ -11245,6 +12972,12 @@
     "fat": 9.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 175,
+    "protein": 8.6,
+    "carbs": 15,
+    "fat": 9.5
+   },
+   "afterRound1": {
     "calories": 175,
     "protein": 8.6,
     "carbs": 15,
@@ -11420,6 +13153,12 @@
     "fat": 28.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 404,
+    "protein": 6.7,
+    "carbs": 32.8,
+    "fat": 28.6
+   },
+   "afterRound1": {
     "calories": 404,
     "protein": 6.7,
     "carbs": 32.8,
@@ -11601,6 +13340,12 @@
     "fat": 18.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 523,
+    "protein": 15.2,
+    "carbs": 74.1,
+    "fat": 18.7
+   },
+   "afterRound1": {
     "calories": 523,
     "protein": 15.2,
     "carbs": 74.1,
@@ -11820,6 +13565,12 @@
     "carbs": 53.6,
     "fat": 6.8
    },
+   "afterRound1": {
+    "calories": 307,
+    "protein": 13.3,
+    "carbs": 53.6,
+    "fat": 6.8
+   },
    "nutritionLineCoverage": 0.692,
    "deltaCalories": -570.3,
    "unchangedValues": false,
@@ -11996,6 +13747,12 @@
     "fat": 25.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 505,
+    "protein": 30.5,
+    "carbs": 41.4,
+    "fat": 25.3
+   },
+   "afterRound1": {
     "calories": 505,
     "protein": 30.5,
     "carbs": 41.4,
@@ -12203,6 +13960,12 @@
     "protein": 12.7,
     "carbs": 33.2,
     "fat": 2.4
+   },
+   "afterRound1": {
+    "calories": 174,
+    "protein": 10,
+    "carbs": 31.6,
+    "fat": 1.7
    },
    "nutritionLineCoverage": 0.813,
    "deltaCalories": -28.69999999999999,
@@ -12446,6 +14209,12 @@
     "carbs": 17.6,
     "fat": 13.7
    },
+   "afterRound1": {
+    "calories": 138,
+    "protein": 2.9,
+    "carbs": 11.2,
+    "fat": 9.4
+   },
    "nutritionLineCoverage": 0.769,
    "deltaCalories": -193.39999999999998,
    "unchangedValues": false,
@@ -12638,6 +14407,12 @@
     "fat": 10.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 286,
+    "protein": 16.3,
+    "carbs": 34.2,
+    "fat": 10.5
+   },
+   "afterRound1": {
     "calories": 286,
     "protein": 16.3,
     "carbs": 34.2,
@@ -12868,10 +14643,10 @@
     "fat": 0.1
    },
    "after": {
-    "calories": 123,
-    "protein": 1.7,
-    "carbs": 3.2,
-    "fat": 11.7
+    "calories": 163,
+    "protein": 1.2,
+    "carbs": 2.8,
+    "fat": 16.4
    },
    "afterWithoutCanonFixes": {
     "calories": 123,
@@ -12879,8 +14654,14 @@
     "carbs": 3.2,
     "fat": 11.7
    },
+   "afterRound1": {
+    "calories": 123,
+    "protein": 1.7,
+    "carbs": 3.2,
+    "fat": 11.7
+   },
    "nutritionLineCoverage": 0.375,
-   "deltaCalories": 116,
+   "deltaCalories": 156,
    "unchangedValues": false,
    "lines": [
     {
@@ -12946,7 +14727,7 @@
      "g": 120,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 408,
+     "kcal": 595.2,
      "cov": true
     },
     {
@@ -12968,7 +14749,7 @@
      "g": 61.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 57.5,
+     "kcal": 28.4,
      "cov": true
     }
    ]
@@ -12994,10 +14775,10 @@
     "fat": 0
    },
    "after": {
-    "calories": 261,
-    "protein": 1.5,
-    "carbs": 19.8,
-    "fat": 20.3
+    "calories": 349,
+    "protein": 1.2,
+    "carbs": 19.2,
+    "fat": 30.2
    },
    "afterWithoutCanonFixes": {
     "calories": 239,
@@ -13005,8 +14786,14 @@
     "carbs": 14.2,
     "fat": 20.3
    },
+   "afterRound1": {
+    "calories": 261,
+    "protein": 1.5,
+    "carbs": 19.8,
+    "fat": 20.3
+   },
    "nutritionLineCoverage": 0.5,
-   "deltaCalories": 213,
+   "deltaCalories": 301,
    "unchangedValues": false,
    "lines": [
     {
@@ -13050,7 +14837,7 @@
      "g": 450,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 1530,
+     "kcal": 2232,
      "cov": true
     },
     {
@@ -13124,6 +14911,12 @@
     "protein": 32.1,
     "carbs": 129.1,
     "fat": 46.4
+   },
+   "afterRound1": {
+    "calories": 548,
+    "protein": 28.4,
+    "carbs": 79.2,
+    "fat": 15.4
    },
    "nutritionLineCoverage": 0.533,
    "deltaCalories": -46.10000000000002,
@@ -13377,6 +15170,12 @@
     "carbs": 0.8,
     "fat": 0.5
    },
+   "afterRound1": {
+    "calories": 10,
+    "protein": 0.7,
+    "carbs": 0.8,
+    "fat": 0.5
+   },
    "nutritionLineCoverage": 0.125,
    "deltaCalories": -422,
    "unchangedValues": false,
@@ -13526,6 +15325,12 @@
     "fat": 1.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 38,
+    "protein": 1.8,
+    "carbs": 4.2,
+    "fat": 1.8
+   },
+   "afterRound1": {
     "calories": 38,
     "protein": 1.8,
     "carbs": 4.2,
@@ -13698,6 +15503,12 @@
     "carbs": 9.5,
     "fat": 0.5
    },
+   "afterRound1": {
+    "calories": 47,
+    "protein": 1.5,
+    "carbs": 9.5,
+    "fat": 0.5
+   },
    "nutritionLineCoverage": 0.714,
    "deltaCalories": -360.7,
    "unchangedValues": false,
@@ -13852,6 +15663,12 @@
     "carbs": 0,
     "fat": 1.4
    },
+   "afterRound1": {
+    "calories": 12,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 1.4
+   },
    "nutritionLineCoverage": 0.167,
    "deltaCalories": -101.6,
    "unchangedValues": false,
@@ -13991,6 +15808,12 @@
     "carbs": 0,
     "fat": 5.1
    },
+   "afterRound1": {
+    "calories": 74,
+    "protein": 7.1,
+    "carbs": 0,
+    "fat": 5.1
+   },
    "nutritionLineCoverage": 0.333,
    "deltaCalories": -222.5,
    "unchangedValues": false,
@@ -14085,6 +15908,12 @@
     "fat": 0
    },
    "afterWithoutCanonFixes": {
+    "calories": 4,
+    "protein": 1.1,
+    "carbs": 0,
+    "fat": 0
+   },
+   "afterRound1": {
     "calories": 4,
     "protein": 1.1,
     "carbs": 0,
@@ -14204,10 +16033,10 @@
     "fat": 38.3
    },
    "after": {
-    "calories": 443,
-    "protein": 5.9,
-    "carbs": 45.8,
-    "fat": 27.5
+    "calories": 427,
+    "protein": 5.3,
+    "carbs": 45.7,
+    "fat": 26.1
    },
    "afterWithoutCanonFixes": {
     "calories": 443,
@@ -14215,8 +16044,14 @@
     "carbs": 45.8,
     "fat": 27.5
    },
+   "afterRound1": {
+    "calories": 443,
+    "protein": 5.9,
+    "carbs": 45.8,
+    "fat": 27.5
+   },
    "nutritionLineCoverage": 0.667,
-   "deltaCalories": -237.10000000000002,
+   "deltaCalories": -253.10000000000002,
    "unchangedValues": false,
    "lines": [
     {
@@ -14293,7 +16128,7 @@
      "g": 257.5,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 239.5,
+     "kcal": 118.5,
      "cov": true
     },
     {
@@ -14442,6 +16277,12 @@
     "carbs": 4.1,
     "fat": 0
    },
+   "afterRound1": {
+    "calories": 21,
+    "protein": 0.2,
+    "carbs": 4.1,
+    "fat": 0
+   },
    "nutritionLineCoverage": 0.5,
    "deltaCalories": -148.9,
    "unchangedValues": false,
@@ -14525,6 +16366,12 @@
     "fat": 14.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 168,
+    "protein": 4.1,
+    "carbs": 5.8,
+    "fat": 14.3
+   },
+   "afterRound1": {
     "calories": 168,
     "protein": 4.1,
     "carbs": 5.8,
@@ -14721,6 +16568,12 @@
     "carbs": 1.6,
     "fat": 32.3
    },
+   "afterRound1": {
+    "calories": 453,
+    "protein": 39.2,
+    "carbs": 1.6,
+    "fat": 32.3
+   },
    "nutritionLineCoverage": 0.6,
    "deltaCalories": -86.79999999999995,
    "unchangedValues": false,
@@ -14885,10 +16738,10 @@
     "fat": 35
    },
    "after": {
-    "calories": 458,
-    "protein": 25.5,
-    "carbs": 4.6,
-    "fat": 37.8
+    "calories": 520,
+    "protein": 25.3,
+    "carbs": 4.1,
+    "fat": 44.9
    },
    "afterWithoutCanonFixes": {
     "calories": 458,
@@ -14896,8 +16749,14 @@
     "carbs": 4.6,
     "fat": 37.8
    },
+   "afterRound1": {
+    "calories": 458,
+    "protein": 25.5,
+    "carbs": 4.6,
+    "fat": 37.8
+   },
    "nutritionLineCoverage": 0.727,
-   "deltaCalories": -101.79999999999995,
+   "deltaCalories": -39.799999999999955,
    "unchangedValues": false,
    "lines": [
     {
@@ -14952,7 +16811,7 @@
      "g": 240,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 816,
+     "kcal": 1190.4,
      "cov": true
     },
     {
@@ -15067,6 +16926,12 @@
     "fat": 7.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 381,
+    "protein": 21.9,
+    "carbs": 59.4,
+    "fat": 7.8
+   },
+   "afterRound1": {
     "calories": 381,
     "protein": 21.9,
     "carbs": 59.4,
@@ -15270,6 +17135,12 @@
     "fat": 6.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 158,
+    "protein": 5.8,
+    "carbs": 20.3,
+    "fat": 6.8
+   },
+   "afterRound1": {
     "calories": 158,
     "protein": 5.8,
     "carbs": 20.3,
@@ -15514,6 +17385,12 @@
     "protein": 17.6,
     "carbs": 43.6,
     "fat": 17.3
+   },
+   "afterRound1": {
+    "calories": 331,
+    "protein": 10.8,
+    "carbs": 39.7,
+    "fat": 15.4
    },
    "nutritionLineCoverage": 0.647,
    "deltaCalories": -72.10000000000002,
@@ -15798,6 +17675,12 @@
     "carbs": 0.9,
     "fat": 0.5
    },
+   "afterRound1": {
+    "calories": 103,
+    "protein": 23.5,
+    "carbs": 0.9,
+    "fat": 0.5
+   },
    "nutritionLineCoverage": 0.462,
    "deltaCalories": -242.10000000000002,
    "unchangedValues": false,
@@ -15979,6 +17862,12 @@
     "carbs": 7.3,
     "fat": 8.9
    },
+   "afterRound1": {
+    "calories": 153,
+    "protein": 11.5,
+    "carbs": 7.3,
+    "fat": 8.9
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": -231.7,
    "unchangedValues": false,
@@ -16070,13 +17959,32 @@
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
    "action": "skip_authoritative",
-   "reviewFlags": [
-    "kcal_out_of_range:2150"
-   ],
+   "reviewFlags": [],
    "holdReasons": [],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "suya spice",
+     "c": "suya spice",
+     "why": "no_nutrition"
+    },
+    {
+     "raw": "cooking spoon groundnut oil",
+     "c": null,
+     "why": "unresolved"
+    },
+    {
+     "raw": "seasoning cubes",
+     "c": "seasoning cubes",
+     "why": "unit_unconvertible"
+    },
+    {
+     "raw": "onions and tomatoes",
+     "c": null,
+     "why": "unresolved"
+    }
+   ],
    "minorMissingCount": 2,
    "before": {
     "calories": 564.4,
@@ -16085,10 +17993,10 @@
     "fat": 35.1
    },
    "after": {
-    "calories": 2150,
-    "protein": 44,
+    "calories": 490,
+    "protein": 101.2,
     "carbs": 0,
-    "fat": 219.1
+    "fat": 9.5
    },
    "afterWithoutCanonFixes": {
     "calories": 2150,
@@ -16096,8 +18004,14 @@
     "carbs": 0,
     "fat": 219.1
    },
+   "afterRound1": {
+    "calories": 2150,
+    "protein": 44,
+    "carbs": 0,
+    "fat": 219.1
+   },
    "nutritionLineCoverage": 0.167,
-   "deltaCalories": 1585.6,
+   "deltaCalories": -74.39999999999998,
    "unchangedValues": false,
    "lines": [
     {
@@ -16119,7 +18033,7 @@
      "g": 453.6,
      "m": "weight",
      "why": null,
-     "kcal": 2150.1,
+     "kcal": 489.9,
      "cov": true
     },
     {
@@ -16232,6 +18146,12 @@
     "fat": 7.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 232,
+    "protein": 7.9,
+    "carbs": 35.7,
+    "fat": 7.4
+   },
+   "afterRound1": {
     "calories": 232,
     "protein": 7.9,
     "carbs": 35.7,
@@ -16429,6 +18349,12 @@
     "carbs": 33,
     "fat": 1.8
    },
+   "afterRound1": {
+    "calories": 161,
+    "protein": 5.5,
+    "carbs": 33,
+    "fat": 1.8
+   },
    "nutritionLineCoverage": 0.7,
    "deltaCalories": -77.5,
    "unchangedValues": false,
@@ -16599,6 +18525,12 @@
     "carbs": 23.3,
     "fat": 38.7
    },
+   "afterRound1": {
+    "calories": 580,
+    "protein": 46.7,
+    "carbs": 16.4,
+    "fat": 35.2
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 56.5,
    "unchangedValues": false,
@@ -16714,6 +18646,12 @@
     "fat": 10.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 222,
+    "protein": 21.8,
+    "carbs": 10.7,
+    "fat": 10.4
+   },
+   "afterRound1": {
     "calories": 222,
     "protein": 21.8,
     "carbs": 10.7,
@@ -16948,6 +18886,12 @@
     "carbs": 11.3,
     "fat": 62.4
    },
+   "afterRound1": {
+    "calories": 771,
+    "protein": 38.4,
+    "carbs": 11.3,
+    "fat": 62.4
+   },
    "nutritionLineCoverage": 0.615,
    "deltaCalories": -128.20000000000005,
    "unchangedValues": false,
@@ -17145,6 +19089,12 @@
     "carbs": 53,
     "fat": 10.2
    },
+   "afterRound1": {
+    "calories": 325,
+    "protein": 8.7,
+    "carbs": 53,
+    "fat": 10.2
+   },
    "nutritionLineCoverage": 0.727,
    "deltaCalories": -94.89999999999998,
    "unchangedValues": false,
@@ -17317,6 +19267,12 @@
     "carbs": 15.5,
     "fat": 0.1
    },
+   "afterRound1": {
+    "calories": 64,
+    "protein": 0.7,
+    "carbs": 15.5,
+    "fat": 0.1
+   },
    "nutritionLineCoverage": 0.818,
    "deltaCalories": -105,
    "unchangedValues": false,
@@ -17476,6 +19432,12 @@
     "carbs": 9.6,
     "fat": 6.8
    },
+   "afterRound1": {
+    "calories": 113,
+    "protein": 3.9,
+    "carbs": 9.6,
+    "fat": 6.8
+   },
    "nutritionLineCoverage": 0.571,
    "deltaCalories": 2,
    "unchangedValues": false,
@@ -17591,6 +19553,12 @@
     "carbs": 162.7,
     "fat": 0.9
    },
+   "afterRound1": {
+    "calories": 798,
+    "protein": 5.3,
+    "carbs": 161.1,
+    "fat": 17.5
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 147,
    "unchangedValues": false,
@@ -17695,10 +19663,10 @@
     "fat": 31.8
    },
    "after": {
-    "calories": 779,
-    "protein": 25.4,
-    "carbs": 5.9,
-    "fat": 73.1
+    "calories": 919,
+    "protein": 24.9,
+    "carbs": 5,
+    "fat": 89.1
    },
    "afterWithoutCanonFixes": {
     "calories": 779,
@@ -17706,8 +19674,14 @@
     "carbs": 5.9,
     "fat": 73.1
    },
+   "afterRound1": {
+    "calories": 779,
+    "protein": 25.4,
+    "carbs": 5.9,
+    "fat": 73.1
+   },
    "nutritionLineCoverage": 0.714,
-   "deltaCalories": 437,
+   "deltaCalories": 577,
    "unchangedValues": false,
    "lines": [
     {
@@ -17751,7 +19725,7 @@
      "g": 180,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 612,
+     "kcal": 892.8,
      "cov": true
     },
     {
@@ -17827,6 +19801,12 @@
     "fat": 16.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 175,
+    "protein": 1.7,
+    "carbs": 6.9,
+    "fat": 16.1
+   },
+   "afterRound1": {
     "calories": 175,
     "protein": 1.7,
     "carbs": 6.9,
@@ -17963,6 +19943,12 @@
     "carbs": 0.7,
     "fat": 10.1
    },
+   "afterRound1": {
+    "calories": 102,
+    "protein": 3.3,
+    "carbs": 0.7,
+    "fat": 9.6
+   },
    "nutritionLineCoverage": 0.4,
    "deltaCalories": -404.4,
    "unchangedValues": false,
@@ -18072,6 +20058,12 @@
     "fat": 4.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 207,
+    "protein": 13.2,
+    "carbs": 30.6,
+    "fat": 4.4
+   },
+   "afterRound1": {
     "calories": 207,
     "protein": 13.2,
     "carbs": 30.6,
@@ -18279,6 +20271,12 @@
     "fat": 31.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 507,
+    "protein": 29.3,
+    "carbs": 26.8,
+    "fat": 31.3
+   },
+   "afterRound1": {
     "calories": 507,
     "protein": 29.3,
     "carbs": 26.8,
@@ -18492,6 +20490,12 @@
     "carbs": 4.4,
     "fat": 12.1
    },
+   "afterRound1": {
+    "calories": 172,
+    "protein": 11.9,
+    "carbs": 4.4,
+    "fat": 12.1
+   },
    "nutritionLineCoverage": 0.5,
    "deltaCalories": -177.8,
    "unchangedValues": false,
@@ -18602,6 +20606,12 @@
     "fat": 8.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 582,
+    "protein": 17,
+    "carbs": 116.8,
+    "fat": 8.5
+   },
+   "afterRound1": {
     "calories": 582,
     "protein": 17,
     "carbs": 116.8,
@@ -18766,6 +20776,12 @@
     "carbs": 14.1,
     "fat": 4.4
    },
+   "afterRound1": {
+    "calories": 107,
+    "protein": 2,
+    "carbs": 14.1,
+    "fat": 4.4
+   },
    "nutritionLineCoverage": 0.5,
    "deltaCalories": -70,
    "unchangedValues": false,
@@ -18835,12 +20851,10 @@
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
    "action": "skip_authoritative",
-   "reviewFlags": [
-    "kcal_out_of_range:1303"
-   ],
+   "reviewFlags": [],
    "holdReasons": [],
    "flagReason": null,
-   "decrease": false,
+   "decrease": true,
    "majorMissing": [],
    "minorMissingCount": 0,
    "before": {
@@ -18850,10 +20864,10 @@
     "fat": 19.7
    },
    "after": {
-    "calories": 1303,
-    "protein": 27.2,
+    "calories": 388,
+    "protein": 58.7,
     "carbs": 25.9,
-    "fat": 121.8
+    "fat": 6.3
    },
    "afterWithoutCanonFixes": {
     "calories": 1303,
@@ -18861,8 +20875,14 @@
     "carbs": 25.9,
     "fat": 121.8
    },
+   "afterRound1": {
+    "calories": 1303,
+    "protein": 27.2,
+    "carbs": 25.9,
+    "fat": 121.8
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 883.1,
+   "deltaCalories": -31.899999999999977,
    "unchangedValues": false,
    "lines": [
     {
@@ -18950,7 +20970,7 @@
      "g": 1500,
      "m": "per_item_g",
      "why": null,
-     "kcal": 7110,
+     "kcal": 1620,
      "cov": true
     }
    ]
@@ -18982,6 +21002,12 @@
     "fat": 24.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 395,
+    "protein": 40.1,
+    "carbs": 1,
+    "fat": 24.6
+   },
+   "afterRound1": {
     "calories": 395,
     "protein": 40.1,
     "carbs": 1,
@@ -19151,6 +21177,12 @@
     "fat": 23.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 736,
+    "protein": 59.5,
+    "carbs": 72.2,
+    "fat": 23.3
+   },
+   "afterRound1": {
     "calories": 736,
     "protein": 59.5,
     "carbs": 72.2,
@@ -19350,6 +21382,12 @@
     "carbs": 1.1,
     "fat": 0
    },
+   "afterRound1": {
+    "calories": 5,
+    "protein": 0.2,
+    "carbs": 1.1,
+    "fat": 0
+   },
    "nutritionLineCoverage": 0.769,
    "deltaCalories": -48.7,
    "unchangedValues": false,
@@ -19520,10 +21558,10 @@
     "fat": 44.9
    },
    "after": {
-    "calories": 766,
+    "calories": 753,
     "protein": 56.6,
-    "carbs": 7.9,
-    "fat": 57.1
+    "carbs": 7.8,
+    "fat": 55.6
    },
    "afterWithoutCanonFixes": {
     "calories": 766,
@@ -19531,8 +21569,14 @@
     "carbs": 7.9,
     "fat": 57.1
    },
+   "afterRound1": {
+    "calories": 766,
+    "protein": 56.6,
+    "carbs": 7.9,
+    "fat": 57.1
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 111.29999999999995,
+   "deltaCalories": 98.29999999999995,
    "unchangedValues": false,
    "lines": [
     {
@@ -19565,7 +21609,7 @@
      "g": 15,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 87.9,
+     "kcal": 74.4,
      "cov": true
     },
     {
@@ -19652,6 +21696,12 @@
     "fat": 15.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 146,
+    "protein": 0.4,
+    "carbs": 0.2,
+    "fat": 15.4
+   },
+   "afterRound1": {
     "calories": 146,
     "protein": 0.4,
     "carbs": 0.2,
@@ -19767,6 +21817,12 @@
     "fat": 28.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 349,
+    "protein": 16,
+    "carbs": 9.3,
+    "fat": 28.2
+   },
+   "afterRound1": {
     "calories": 349,
     "protein": 16,
     "carbs": 9.3,
@@ -20014,6 +22070,12 @@
     "carbs": 9.7,
     "fat": 7.6
    },
+   "afterRound1": {
+    "calories": 147,
+    "protein": 3.9,
+    "carbs": 9.4,
+    "fat": 10.7
+   },
    "nutritionLineCoverage": 0.818,
    "deltaCalories": -21,
    "unchangedValues": false,
@@ -20203,6 +22265,12 @@
     "carbs": 1.4,
     "fat": 1.1
    },
+   "afterRound1": {
+    "calories": 17,
+    "protein": 0.2,
+    "carbs": 1.4,
+    "fat": 1.1
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": -32,
    "unchangedValues": false,
@@ -20282,6 +22350,12 @@
     "fat": 3.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 90,
+    "protein": 2.7,
+    "carbs": 13.8,
+    "fat": 3.3
+   },
+   "afterRound1": {
     "calories": 90,
     "protein": 2.7,
     "carbs": 13.8,
@@ -20424,10 +22498,10 @@
     "fat": 13.2
    },
    "after": {
-    "calories": 182,
-    "protein": 5,
-    "carbs": 3.3,
-    "fat": 16.5
+    "calories": 177,
+    "protein": 4.8,
+    "carbs": 3.2,
+    "fat": 16
    },
    "afterWithoutCanonFixes": {
     "calories": 202,
@@ -20435,8 +22509,14 @@
     "carbs": 4.1,
     "fat": 17.2
    },
+   "afterRound1": {
+    "calories": 182,
+    "protein": 5,
+    "carbs": 3.3,
+    "fat": 16.5
+   },
    "nutritionLineCoverage": 0.769,
-   "deltaCalories": 20,
+   "deltaCalories": 15,
    "unchangedValues": false,
    "lines": [
     {
@@ -20502,7 +22582,7 @@
      "g": 82.4,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 76.6,
+     "kcal": 37.9,
      "cov": true
     },
     {
@@ -20628,6 +22708,12 @@
     "fat": 25.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 466,
+    "protein": 13.2,
+    "carbs": 49.9,
+    "fat": 25.1
+   },
+   "afterRound1": {
     "calories": 466,
     "protein": 13.2,
     "carbs": 49.9,
@@ -20769,6 +22855,12 @@
     "protein": 8.4,
     "carbs": 16.8,
     "fat": 8.3
+   },
+   "afterRound1": {
+    "calories": 269,
+    "protein": 8.9,
+    "carbs": 15.7,
+    "fat": 19.3
    },
    "nutritionLineCoverage": 0.813,
    "deltaCalories": 15.099999999999994,
@@ -20995,6 +23087,12 @@
     "carbs": 2.1,
     "fat": 6.9
    },
+   "afterRound1": {
+    "calories": 337,
+    "protein": 3.5,
+    "carbs": 4.8,
+    "fat": 33.9
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 332,
    "unchangedValues": false,
@@ -21143,6 +23241,12 @@
     "carbs": 54.6,
     "fat": 9.3
    },
+   "afterRound1": {
+    "calories": 423,
+    "protein": 36.2,
+    "carbs": 54.6,
+    "fat": 9.3
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 111.19999999999999,
    "unchangedValues": false,
@@ -21264,6 +23368,12 @@
     "fat": 5.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 242,
+    "protein": 28.9,
+    "carbs": 21.9,
+    "fat": 5.2
+   },
+   "afterRound1": {
     "calories": 242,
     "protein": 28.9,
     "carbs": 21.9,
@@ -21461,6 +23571,12 @@
     "carbs": 7.4,
     "fat": 7.4
    },
+   "afterRound1": {
+    "calories": 102,
+    "protein": 1.6,
+    "carbs": 7.4,
+    "fat": 7.4
+   },
    "nutritionLineCoverage": 0.7,
    "deltaCalories": 89,
    "unchangedValues": false,
@@ -21604,6 +23720,12 @@
     "fat": 12.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 208,
+    "protein": 21.1,
+    "carbs": 1.8,
+    "fat": 12.8
+   },
+   "afterRound1": {
     "calories": 208,
     "protein": 21.1,
     "carbs": 1.8,
@@ -21795,10 +23917,10 @@
     "fat": 16.8
    },
    "after": {
-    "calories": 310,
+    "calories": 307,
     "protein": 6.2,
     "carbs": 32.7,
-    "fat": 18.1
+    "fat": 17.7
    },
    "afterWithoutCanonFixes": {
     "calories": 310,
@@ -21806,8 +23928,14 @@
     "carbs": 32.7,
     "fat": 18.1
    },
+   "afterRound1": {
+    "calories": 310,
+    "protein": 6.2,
+    "carbs": 32.7,
+    "fat": 18.1
+   },
    "nutritionLineCoverage": 0.7,
-   "deltaCalories": -43.60000000000002,
+   "deltaCalories": -46.60000000000002,
    "unchangedValues": false,
    "lines": [
     {
@@ -21906,7 +24034,7 @@
      "g": 15,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 87.9,
+     "kcal": 74.4,
      "cov": true
     },
     {
@@ -21971,6 +24099,12 @@
     "fat": 45.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 512,
+    "protein": 9.5,
+    "carbs": 17.7,
+    "fat": 45.5
+   },
+   "afterRound1": {
     "calories": 512,
     "protein": 9.5,
     "carbs": 17.7,
@@ -22086,6 +24220,12 @@
     "fat": 15.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 478,
+    "protein": 19.2,
+    "carbs": 68.8,
+    "fat": 15.7
+   },
+   "afterRound1": {
     "calories": 478,
     "protein": 19.2,
     "carbs": 68.8,
@@ -22305,6 +24445,12 @@
     "carbs": 11.9,
     "fat": 6.8
    },
+   "afterRound1": {
+    "calories": 129,
+    "protein": 5.7,
+    "carbs": 11.9,
+    "fat": 6.8
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": -172.60000000000002,
    "unchangedValues": false,
@@ -22398,10 +24544,10 @@
     "fat": 14.8
    },
    "after": {
-    "calories": 277,
+    "calories": 256,
     "protein": 0.7,
-    "carbs": 4.4,
-    "fat": 28.4
+    "carbs": 4.3,
+    "fat": 26
    },
    "afterWithoutCanonFixes": {
     "calories": 295,
@@ -22409,8 +24555,14 @@
     "carbs": 9,
     "fat": 28.4
    },
+   "afterRound1": {
+    "calories": 277,
+    "protein": 0.7,
+    "carbs": 4.4,
+    "fat": 28.4
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 114.4,
+   "deltaCalories": 93.4,
    "unchangedValues": false,
    "lines": [
     {
@@ -22509,7 +24661,7 @@
      "g": 240,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 1406.4,
+     "kcal": 1190.4,
      "cov": true
     },
     {
@@ -22556,6 +24708,12 @@
     "protein": 19.8,
     "carbs": 79.5,
     "fat": 26.5
+   },
+   "afterRound1": {
+    "calories": 817,
+    "protein": 22,
+    "carbs": 81.5,
+    "fat": 46.7
    },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 381,
@@ -22749,6 +24907,12 @@
     "carbs": 71,
     "fat": 31.8
    },
+   "afterRound1": {
+    "calories": 765,
+    "protein": 42.5,
+    "carbs": 71,
+    "fat": 31.8
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 156,
    "unchangedValues": false,
@@ -22907,6 +25071,12 @@
     "protein": 32.5,
     "carbs": 5.3,
     "fat": 21.8
+   },
+   "afterRound1": {
+    "calories": 335,
+    "protein": 32.4,
+    "carbs": 5.2,
+    "fat": 20.9
    },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 196,
@@ -23100,6 +25270,12 @@
     "carbs": 10.3,
     "fat": 21
    },
+   "afterRound1": {
+    "calories": 356,
+    "protein": 34,
+    "carbs": 10.3,
+    "fat": 21
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 193,
    "unchangedValues": false,
@@ -23232,6 +25408,12 @@
     "fat": 23.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 717,
+    "protein": 45.4,
+    "carbs": 87.3,
+    "fat": 23.5
+   },
+   "afterRound1": {
     "calories": 717,
     "protein": 45.4,
     "carbs": 87.3,
@@ -23435,6 +25617,12 @@
     "carbs": 2.7,
     "fat": 236.1
    },
+   "afterRound1": {
+    "calories": 2238,
+    "protein": 25.7,
+    "carbs": 2.7,
+    "fat": 236.1
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": 2131,
    "unchangedValues": false,
@@ -23611,6 +25799,12 @@
     "carbs": 36.2,
     "fat": 18.5
    },
+   "afterRound1": {
+    "calories": 461,
+    "protein": 41.7,
+    "carbs": 36.2,
+    "fat": 17.9
+   },
    "nutritionLineCoverage": 0.625,
    "deltaCalories": -182.20000000000005,
    "unchangedValues": false,
@@ -23726,10 +25920,10 @@
     "fat": 17.6
    },
    "after": {
-    "calories": 512,
+    "calories": 485,
     "protein": 2.3,
-    "carbs": 43.4,
-    "fat": 37.8
+    "carbs": 43.2,
+    "fat": 34.9
    },
    "afterWithoutCanonFixes": {
     "calories": 512,
@@ -23737,8 +25931,14 @@
     "carbs": 43.4,
     "fat": 37.8
    },
+   "afterRound1": {
+    "calories": 512,
+    "protein": 2.3,
+    "carbs": 43.4,
+    "fat": 37.8
+   },
    "nutritionLineCoverage": 0.714,
-   "deltaCalories": 192,
+   "deltaCalories": 165,
    "unchangedValues": false,
    "lines": [
     {
@@ -23760,7 +25960,7 @@
      "g": 240,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 1406.4,
+     "kcal": 1190.4,
      "cov": true
     },
     {
@@ -23869,6 +26069,12 @@
     "fat": 28.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 581,
+    "protein": 61.7,
+    "carbs": 20.1,
+    "fat": 28.8
+   },
+   "afterRound1": {
     "calories": 581,
     "protein": 61.7,
     "carbs": 20.1,
@@ -24142,6 +26348,12 @@
     "carbs": 7.4,
     "fat": 15.4
    },
+   "afterRound1": {
+    "calories": 181,
+    "protein": 4.1,
+    "carbs": 7.4,
+    "fat": 15.4
+   },
    "nutritionLineCoverage": 0.444,
    "deltaCalories": -283.8,
    "unchangedValues": false,
@@ -24279,6 +26491,12 @@
     "carbs": 15.4,
     "fat": 3.8
    },
+   "afterRound1": {
+    "calories": 119,
+    "protein": 7,
+    "carbs": 15.4,
+    "fat": 3.8
+   },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 12,
    "unchangedValues": false,
@@ -24393,6 +26611,12 @@
     "protein": 14.3,
     "carbs": 15,
     "fat": 24.1
+   },
+   "afterRound1": {
+    "calories": 531,
+    "protein": 16.5,
+    "carbs": 17,
+    "fat": 44.3
    },
    "nutritionLineCoverage": 0.636,
    "deltaCalories": 502,
@@ -24570,6 +26794,12 @@
     "fat": 11.9
    },
    "afterWithoutCanonFixes": {
+    "calories": 219,
+    "protein": 7.6,
+    "carbs": 21.8,
+    "fat": 11.9
+   },
+   "afterRound1": {
     "calories": 219,
     "protein": 7.6,
     "carbs": 21.8,
@@ -24767,6 +26997,12 @@
     "carbs": 3.1,
     "fat": 68.7
    },
+   "afterRound1": {
+    "calories": 869,
+    "protein": 42,
+    "carbs": 3.1,
+    "fat": 68.7
+   },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": 67,
    "unchangedValues": false,
@@ -24903,6 +27139,12 @@
     "protein": 15.6,
     "carbs": 26.3,
     "fat": 28.7
+   },
+   "afterRound1": {
+    "calories": 469,
+    "protein": 12.4,
+    "carbs": 24.7,
+    "fat": 35.9
    },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": 46,
@@ -25062,6 +27304,12 @@
     "fat": 56.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 602,
+    "protein": 4.7,
+    "carbs": 19.5,
+    "fat": 56.8
+   },
+   "afterRound1": {
     "calories": 602,
     "protein": 4.7,
     "carbs": 19.5,
@@ -25270,6 +27518,12 @@
     "carbs": 28.3,
     "fat": 30
    },
+   "afterRound1": {
+    "calories": 397,
+    "protein": 7.1,
+    "carbs": 28.3,
+    "fat": 30
+   },
    "nutritionLineCoverage": 0.875,
    "deltaCalories": 152.8,
    "unchangedValues": false,
@@ -25409,6 +27663,12 @@
     "carbs": 1.1,
     "fat": 2.2
    },
+   "afterRound1": {
+    "calories": 29,
+    "protein": 1.2,
+    "carbs": 1.1,
+    "fat": 2.2
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 4,
    "unchangedValues": false,
@@ -25490,6 +27750,12 @@
     "protein": 31,
     "carbs": 4.2,
     "fat": 14.1
+   },
+   "afterRound1": {
+    "calories": 465,
+    "protein": 33.2,
+    "carbs": 6.2,
+    "fat": 34.4
    },
    "nutritionLineCoverage": 0.889,
    "deltaCalories": 328,
@@ -25649,6 +27915,12 @@
     "protein": 8.9,
     "carbs": 31,
     "fat": 18.6
+   },
+   "afterRound1": {
+    "calories": 517,
+    "protein": 11.1,
+    "carbs": 33,
+    "fat": 38.8
    },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": 387,
@@ -25836,9 +28108,9 @@
     "fat": 13.5
    },
    "after": {
-    "calories": 221,
-    "protein": 17.6,
-    "carbs": 21.8,
+    "calories": 218,
+    "protein": 17.3,
+    "carbs": 21.3,
     "fat": 6.8
    },
    "afterWithoutCanonFixes": {
@@ -25847,8 +28119,14 @@
     "carbs": 23.1,
     "fat": 8.4
    },
+   "afterRound1": {
+    "calories": 221,
+    "protein": 17.6,
+    "carbs": 21.8,
+    "fat": 6.8
+   },
    "nutritionLineCoverage": 0.667,
-   "deltaCalories": -89.60000000000002,
+   "deltaCalories": -92.60000000000002,
    "unchangedValues": false,
    "lines": [
     {
@@ -25966,10 +28244,10 @@
      "q": 1,
      "u": "cup",
      "c": "mung bean sprouts",
-     "g": 180,
+     "g": 104,
      "m": "density_cup",
      "why": null,
-     "kcal": 54,
+     "kcal": 31.2,
      "cov": true
     },
     {
@@ -26049,6 +28327,12 @@
     "fat": 2.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 160,
+    "protein": 8.8,
+    "carbs": 26.9,
+    "fat": 2.8
+   },
+   "afterRound1": {
     "calories": 160,
     "protein": 8.8,
     "carbs": 26.9,
@@ -26301,6 +28585,12 @@
     "carbs": 12.1,
     "fat": 26
    },
+   "afterRound1": {
+    "calories": 393,
+    "protein": 32.7,
+    "carbs": 10.5,
+    "fat": 24
+   },
    "nutritionLineCoverage": 0.786,
    "deltaCalories": -8,
    "unchangedValues": false,
@@ -26493,6 +28783,12 @@
     "carbs": 22.8,
     "fat": 15.7
    },
+   "afterRound1": {
+    "calories": 254,
+    "protein": 8.5,
+    "carbs": 22.8,
+    "fat": 15.7
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 1.9000000000000057,
    "unchangedValues": false,
@@ -26612,6 +28908,12 @@
     "protein": 15.5,
     "carbs": 11.8,
     "fat": 29.5
+   },
+   "afterRound1": {
+    "calories": 355,
+    "protein": 15.3,
+    "carbs": 11.6,
+    "fat": 28.1
    },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": -192,
@@ -26843,6 +29145,12 @@
     "carbs": 33.5,
     "fat": 9
    },
+   "afterRound1": {
+    "calories": 263,
+    "protein": 15.5,
+    "carbs": 33.5,
+    "fat": 9
+   },
    "nutritionLineCoverage": 0.688,
    "deltaCalories": -82.19999999999999,
    "unchangedValues": false,
@@ -27068,6 +29376,12 @@
     "carbs": 54.6,
     "fat": 35.1
    },
+   "afterRound1": {
+    "calories": 821,
+    "protein": 39.7,
+    "carbs": 56,
+    "fat": 48.6
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 219,
    "unchangedValues": false,
@@ -27244,6 +29558,12 @@
     "fat": 15.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 555,
+    "protein": 38,
+    "carbs": 71.7,
+    "fat": 15.2
+   },
+   "afterRound1": {
     "calories": 555,
     "protein": 38,
     "carbs": 71.7,
@@ -27430,6 +29750,12 @@
     "carbs": 73.8,
     "fat": 25.1
    },
+   "afterRound1": {
+    "calories": 698,
+    "protein": 44.6,
+    "carbs": 73.8,
+    "fat": 25.1
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 400,
    "unchangedValues": false,
@@ -27611,6 +29937,12 @@
     "carbs": 24.5,
     "fat": 9.7
    },
+   "afterRound1": {
+    "calories": 194,
+    "protein": 3.4,
+    "carbs": 24.5,
+    "fat": 9.7
+   },
    "nutritionLineCoverage": 0.5,
    "deltaCalories": -608.3,
    "unchangedValues": false,
@@ -27699,6 +30031,12 @@
     "fat": 20.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 395,
+    "protein": 28.8,
+    "carbs": 24.5,
+    "fat": 20.3
+   },
+   "afterRound1": {
     "calories": 395,
     "protein": 28.8,
     "carbs": 24.5,
@@ -27986,6 +30324,12 @@
     "carbs": 4.8,
     "fat": 7.3
    },
+   "afterRound1": {
+    "calories": 90,
+    "protein": 1.6,
+    "carbs": 4.8,
+    "fat": 7.3
+   },
    "nutritionLineCoverage": 0.6,
    "deltaCalories": 80,
    "unchangedValues": false,
@@ -28156,6 +30500,12 @@
     "carbs": 26.4,
     "fat": 20
    },
+   "afterRound1": {
+    "calories": 285,
+    "protein": 5.2,
+    "carbs": 26.4,
+    "fat": 20
+   },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": -280.70000000000005,
    "unchangedValues": false,
@@ -28288,6 +30638,12 @@
     "fat": 9.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 343,
+    "protein": 6.5,
+    "carbs": 52.9,
+    "fat": 9.3
+   },
+   "afterRound1": {
     "calories": 343,
     "protein": 6.5,
     "carbs": 52.9,
@@ -28454,6 +30810,12 @@
     "carbs": 4.9,
     "fat": 0.7
    },
+   "afterRound1": {
+    "calories": 54,
+    "protein": 6.5,
+    "carbs": 4.9,
+    "fat": 0.7
+   },
    "nutritionLineCoverage": 0.833,
    "deltaCalories": -107.6,
    "unchangedValues": false,
@@ -28611,9 +30973,7 @@
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
    "action": "flag_unavailable",
-   "reviewFlags": [
-    "kcal_out_of_range:1919"
-   ],
+   "reviewFlags": [],
    "holdReasons": [],
    "flagReason": "spoonacular stored 51 kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)",
    "decrease": false,
@@ -28626,10 +30986,10 @@
     "fat": 0.3
    },
    "after": {
-    "calories": 1919,
-    "protein": 36.6,
+    "calories": 547,
+    "protein": 83.8,
     "carbs": 12.6,
-    "fat": 191.5
+    "fat": 18.3
    },
    "afterWithoutCanonFixes": {
     "calories": 1919,
@@ -28637,8 +30997,14 @@
     "carbs": 12.6,
     "fat": 191.5
    },
+   "afterRound1": {
+    "calories": 1919,
+    "protein": 36.6,
+    "carbs": 12.6,
+    "fat": 191.5
+   },
    "nutritionLineCoverage": 0.5,
-   "deltaCalories": 1868,
+   "deltaCalories": 496,
    "unchangedValues": false,
    "lines": [
     {
@@ -28748,7 +31114,7 @@
      "g": 1500,
      "m": "per_item_g",
      "why": null,
-     "kcal": 7110,
+     "kcal": 1620,
      "cov": true
     }
    ]
@@ -28784,6 +31150,12 @@
     "protein": 2.8,
     "carbs": 21,
     "fat": 8
+   },
+   "afterRound1": {
+    "calories": 455,
+    "protein": 4.4,
+    "carbs": 17.8,
+    "fat": 41.2
    },
    "nutritionLineCoverage": 0.733,
    "deltaCalories": 400,
@@ -29004,6 +31376,12 @@
     "carbs": 14.2,
     "fat": 8.5
    },
+   "afterRound1": {
+    "calories": 139,
+    "protein": 4.2,
+    "carbs": 14.1,
+    "fat": 8.2
+   },
    "nutritionLineCoverage": 0.625,
    "deltaCalories": -49.80000000000001,
    "unchangedValues": false,
@@ -29138,6 +31516,12 @@
     "carbs": 4.6,
     "fat": 0.1
    },
+   "afterRound1": {
+    "calories": 22,
+    "protein": 1.1,
+    "carbs": 4.6,
+    "fat": 0.1
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": -634,
    "unchangedValues": false,
@@ -29226,6 +31610,12 @@
     "fat": 11.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 327,
+    "protein": 39.6,
+    "carbs": 8.3,
+    "fat": 11.3
+   },
+   "afterRound1": {
     "calories": 327,
     "protein": 39.6,
     "carbs": 8.3,
@@ -29408,6 +31798,12 @@
     "protein": 51.3,
     "carbs": 159.6,
     "fat": 21.3
+   },
+   "afterRound1": {
+    "calories": 722,
+    "protein": 45.2,
+    "carbs": 72.2,
+    "fat": 30.3
    },
    "nutritionLineCoverage": 0.867,
    "deltaCalories": -158,
@@ -29623,6 +32019,12 @@
     "carbs": 6.9,
     "fat": 44.1
    },
+   "afterRound1": {
+    "calories": 654,
+    "protein": 27.3,
+    "carbs": 8.2,
+    "fat": 57.6
+   },
    "nutritionLineCoverage": 0.545,
    "deltaCalories": 317,
    "unchangedValues": false,
@@ -29804,6 +32206,12 @@
     "carbs": 87.8,
     "fat": 11
    },
+   "afterRound1": {
+    "calories": 805,
+    "protein": 39,
+    "carbs": 70.4,
+    "fat": 40.2
+   },
    "nutritionLineCoverage": 0.727,
    "deltaCalories": 269,
    "unchangedValues": false,
@@ -29963,6 +32371,12 @@
     "carbs": 4.5,
     "fat": 31.6
    },
+   "afterRound1": {
+    "calories": 470,
+    "protein": 42.6,
+    "carbs": 4.5,
+    "fat": 31.6
+   },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 127,
    "unchangedValues": false,
@@ -30117,6 +32531,12 @@
     "fat": 10.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 299,
+    "protein": 31.2,
+    "carbs": 21.8,
+    "fat": 10.2
+   },
+   "afterRound1": {
     "calories": 299,
     "protein": 31.2,
     "carbs": 21.8,
@@ -30292,6 +32712,12 @@
     "carbs": 31.9,
     "fat": 29
    },
+   "afterRound1": {
+    "calories": 596,
+    "protein": 53.7,
+    "carbs": 31.9,
+    "fat": 29
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": -113.70000000000005,
    "unchangedValues": false,
@@ -30391,6 +32817,12 @@
     "fat": 7.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 109,
+    "protein": 1.3,
+    "carbs": 10.8,
+    "fat": 7.1
+   },
+   "afterRound1": {
     "calories": 109,
     "protein": 1.3,
     "carbs": 10.8,
@@ -30561,6 +32993,12 @@
     "fat": 18.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 354,
+    "protein": 8.5,
+    "carbs": 41.4,
+    "fat": 18.7
+   },
+   "afterRound1": {
     "calories": 354,
     "protein": 8.5,
     "carbs": 41.4,
@@ -30780,10 +33218,10 @@
     "fat": 8.4
    },
    "after": {
-    "calories": 195,
-    "protein": 6.8,
-    "carbs": 17.4,
-    "fat": 10.8
+    "calories": 181,
+    "protein": 6.2,
+    "carbs": 17.3,
+    "fat": 9.5
    },
    "afterWithoutCanonFixes": {
     "calories": 195,
@@ -30791,8 +33229,14 @@
     "carbs": 17.4,
     "fat": 10.8
    },
+   "afterRound1": {
+    "calories": 195,
+    "protein": 6.8,
+    "carbs": 17.4,
+    "fat": 10.8
+   },
    "nutritionLineCoverage": 0.5,
-   "deltaCalories": 42,
+   "deltaCalories": 28,
    "unchangedValues": false,
    "lines": [
     {
@@ -31001,7 +33445,7 @@
      "g": 247.2,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 229.9,
+     "kcal": 113.7,
      "cov": true
     },
     {
@@ -31049,10 +33493,10 @@
     "fat": 0.1
    },
    "after": {
-    "calories": 260,
+    "calories": 233,
     "protein": 0.6,
-    "carbs": 14.5,
-    "fat": 22.6
+    "carbs": 14.3,
+    "fat": 19.7
    },
    "afterWithoutCanonFixes": {
     "calories": 260,
@@ -31060,8 +33504,14 @@
     "carbs": 14.5,
     "fat": 22.6
    },
+   "afterRound1": {
+    "calories": 260,
+    "protein": 0.6,
+    "carbs": 14.5,
+    "fat": 22.6
+   },
    "nutritionLineCoverage": 0.375,
-   "deltaCalories": 207,
+   "deltaCalories": 180,
    "unchangedValues": false,
    "lines": [
     {
@@ -31160,7 +33610,7 @@
      "g": 240,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 1406.4,
+     "kcal": 1190.4,
      "cov": true
     },
     {
@@ -31183,10 +33633,12 @@
    "servings": 4,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "flag_unavailable",
-   "reviewFlags": [],
+   "action": "skip_authoritative",
+   "reviewFlags": [
+    "flag_exempt:Korean Beef Rice Bowl: stored 1215 kcal accepted (cloud 2nd review 2026-10-12; recompute 1040)"
+   ],
    "holdReasons": [],
-   "flagReason": "spoonacular stored 1215 kcal/serving outside 100-1200 (nutrition recompute review 2026-10-12)",
+   "flagReason": null,
    "decrease": true,
    "majorMissing": [
     {
@@ -31233,6 +33685,12 @@
     "protein": 38.3,
     "carbs": 254.6,
     "fat": 13.1
+   },
+   "afterRound1": {
+    "calories": 1040,
+    "protein": 21.7,
+    "carbs": 230.1,
+    "fat": 9.7
    },
    "nutritionLineCoverage": 0.545,
    "deltaCalories": -175,
@@ -31393,6 +33851,12 @@
     "carbs": 0.2,
     "fat": 15.4
    },
+   "afterRound1": {
+    "calories": 220,
+    "protein": 20.1,
+    "carbs": 0.2,
+    "fat": 15.4
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 1,
    "unchangedValues": false,
@@ -31486,6 +33950,12 @@
     "carbs": 30.2,
     "fat": 8.7
    },
+   "afterRound1": {
+    "calories": 215,
+    "protein": 5.6,
+    "carbs": 30.2,
+    "fat": 8.7
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": 2,
    "unchangedValues": false,
@@ -31574,6 +34044,12 @@
     "fat": 32.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 527,
+    "protein": 11.2,
+    "carbs": 50.6,
+    "fat": 32.5
+   },
+   "afterRound1": {
     "calories": 527,
     "protein": 11.2,
     "carbs": 50.6,
@@ -31771,10 +34247,10 @@
     "fat": 10.3
    },
    "after": {
-    "calories": 225,
+    "calories": 207,
     "protein": 2.2,
-    "carbs": 5.4,
-    "fat": 21.7
+    "carbs": 5.3,
+    "fat": 19.8
    },
    "afterWithoutCanonFixes": {
     "calories": 225,
@@ -31782,8 +34258,14 @@
     "carbs": 5.4,
     "fat": 21.7
    },
+   "afterRound1": {
+    "calories": 225,
+    "protein": 2.2,
+    "carbs": 5.4,
+    "fat": 21.7
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 106.7,
+   "deltaCalories": 88.7,
    "unchangedValues": false,
    "lines": [
     {
@@ -31882,7 +34364,7 @@
      "g": 120,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 703.2,
+     "kcal": 595.2,
      "cov": true
     }
    ]
@@ -31934,6 +34416,12 @@
     "protein": 6.8,
     "carbs": 31.2,
     "fat": 15.9
+   },
+   "afterRound1": {
+    "calories": 307,
+    "protein": 6.9,
+    "carbs": 31,
+    "fat": 18.3
    },
    "nutritionLineCoverage": 0.636,
    "deltaCalories": -47,
@@ -32109,6 +34597,12 @@
     "protein": 4.9,
     "carbs": 26.4,
     "fat": 13.3
+   },
+   "afterRound1": {
+    "calories": 235,
+    "protein": 4.9,
+    "carbs": 26.4,
+    "fat": 13
    },
    "nutritionLineCoverage": 0.769,
    "deltaCalories": -44.5,
@@ -32297,6 +34791,12 @@
     "carbs": 25.3,
     "fat": 19.1
    },
+   "afterRound1": {
+    "calories": 383,
+    "protein": 27.6,
+    "carbs": 25.3,
+    "fat": 19.1
+   },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": -32.80000000000001,
    "unchangedValues": false,
@@ -32469,6 +34969,12 @@
     "carbs": 3.1,
     "fat": 6.8
    },
+   "afterRound1": {
+    "calories": 77,
+    "protein": 0.5,
+    "carbs": 3.1,
+    "fat": 6.8
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": -37.400000000000006,
    "unchangedValues": false,
@@ -32584,10 +35090,10 @@
     "fat": 6.2
    },
    "after": {
-    "calories": 195,
-    "protein": 33.6,
+    "calories": 194,
+    "protein": 33.5,
     "carbs": 1.1,
-    "fat": 6.4
+    "fat": 6.3
    },
    "afterWithoutCanonFixes": {
     "calories": 195,
@@ -32595,8 +35101,14 @@
     "carbs": 1.1,
     "fat": 6.4
    },
+   "afterRound1": {
+    "calories": 195,
+    "protein": 33.6,
+    "carbs": 1.1,
+    "fat": 6.4
+   },
    "nutritionLineCoverage": 0.462,
-   "deltaCalories": 3,
+   "deltaCalories": 2,
    "unchangedValues": false,
    "lines": [
     {
@@ -32717,7 +35229,7 @@
      "g": 10.3,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 9.6,
+     "kcal": 4.7,
      "cov": true
     },
     {
@@ -32773,6 +35285,12 @@
     "fat": 2
    },
    "afterWithoutCanonFixes": {
+    "calories": 38,
+    "protein": 1.8,
+    "carbs": 3.5,
+    "fat": 2
+   },
+   "afterRound1": {
     "calories": 38,
     "protein": 1.8,
     "carbs": 3.5,
@@ -32999,6 +35517,12 @@
     "carbs": 6,
     "fat": 1.9
    },
+   "afterRound1": {
+    "calories": 60,
+    "protein": 5,
+    "carbs": 6,
+    "fat": 1.9
+   },
    "nutritionLineCoverage": 0.4,
    "deltaCalories": -117.9,
    "unchangedValues": false,
@@ -33091,6 +35615,12 @@
     "protein": 28.2,
     "carbs": 9.7,
     "fat": 8.6
+   },
+   "afterRound1": {
+    "calories": 375,
+    "protein": 29.7,
+    "carbs": 11,
+    "fat": 22.1
    },
    "nutritionLineCoverage": 0.625,
    "deltaCalories": 214,
@@ -33328,6 +35858,12 @@
     "carbs": 104.4,
     "fat": 33.4
    },
+   "afterRound1": {
+    "calories": 896,
+    "protein": 51.5,
+    "carbs": 104.4,
+    "fat": 33.4
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 75,
    "unchangedValues": false,
@@ -33460,6 +35996,12 @@
     "fat": 18.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 578,
+    "protein": 44.3,
+    "carbs": 63.3,
+    "fat": 18.6
+   },
+   "afterRound1": {
     "calories": 578,
     "protein": 44.3,
     "carbs": 63.3,
@@ -33619,6 +36161,12 @@
     "fat": 34.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 813,
+    "protein": 47,
+    "carbs": 76.5,
+    "fat": 34.3
+   },
+   "afterRound1": {
     "calories": 813,
     "protein": 47,
     "carbs": 76.5,
@@ -33827,6 +36375,12 @@
     "carbs": 64.9,
     "fat": 9.9
    },
+   "afterRound1": {
+    "calories": 620,
+    "protein": 38.3,
+    "carbs": 63.4,
+    "fat": 25.5
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 229,
    "unchangedValues": false,
@@ -33991,6 +36545,12 @@
     "protein": 28.8,
     "carbs": 11.9,
     "fat": 10.2
+   },
+   "afterRound1": {
+    "calories": 221,
+    "protein": 25.1,
+    "carbs": 11.1,
+    "fat": 9.2
    },
    "nutritionLineCoverage": 0.917,
    "deltaCalories": -180.39999999999998,
@@ -34157,6 +36717,12 @@
     "fat": 5.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 176,
+    "protein": 20,
+    "carbs": 12.7,
+    "fat": 5.8
+   },
+   "afterRound1": {
     "calories": 176,
     "protein": 20,
     "carbs": 12.7,
@@ -34354,6 +36920,12 @@
     "carbs": 18,
     "fat": 19.4
    },
+   "afterRound1": {
+    "calories": 282,
+    "protein": 9,
+    "carbs": 18,
+    "fat": 19.4
+   },
    "nutritionLineCoverage": 0.636,
    "deltaCalories": 96,
    "unchangedValues": false,
@@ -34535,6 +37107,12 @@
     "carbs": 28.2,
     "fat": 5.1
    },
+   "afterRound1": {
+    "calories": 158,
+    "protein": 3.2,
+    "carbs": 28.2,
+    "fat": 5.1
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": -51.5,
    "unchangedValues": false,
@@ -34663,6 +37241,12 @@
     "carbs": 2.4,
     "fat": 0.1
    },
+   "afterRound1": {
+    "calories": 11,
+    "protein": 0.3,
+    "carbs": 2.4,
+    "fat": 0.1
+   },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 3,
    "unchangedValues": false,
@@ -34762,6 +37346,12 @@
     "fat": 14
    },
    "afterWithoutCanonFixes": {
+    "calories": 151,
+    "protein": 0.9,
+    "carbs": 6.6,
+    "fat": 14
+   },
+   "afterRound1": {
     "calories": 151,
     "protein": 0.9,
     "carbs": 6.6,
@@ -34879,6 +37469,12 @@
     "fat": 4
    },
    "afterWithoutCanonFixes": {
+    "calories": 88,
+    "protein": 7,
+    "carbs": 6.6,
+    "fat": 4
+   },
+   "afterRound1": {
     "calories": 88,
     "protein": 7,
     "carbs": 6.6,
@@ -35098,6 +37694,12 @@
     "carbs": 46.1,
     "fat": 30.6
    },
+   "afterRound1": {
+    "calories": 647,
+    "protein": 50.9,
+    "carbs": 46.1,
+    "fat": 30.6
+   },
    "nutritionLineCoverage": 0.9,
    "deltaCalories": 77,
    "unchangedValues": false,
@@ -35263,6 +37865,12 @@
     "fat": 19.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 333,
+    "protein": 12.7,
+    "carbs": 29,
+    "fat": 19.6
+   },
+   "afterRound1": {
     "calories": 333,
     "protein": 12.7,
     "carbs": 29,
@@ -35460,6 +38068,12 @@
     "carbs": 4.8,
     "fat": 22.7
    },
+   "afterRound1": {
+    "calories": 255,
+    "protein": 7.9,
+    "carbs": 4.8,
+    "fat": 22.7
+   },
    "nutritionLineCoverage": 0.571,
    "deltaCalories": 127,
    "unchangedValues": false,
@@ -35586,10 +38200,10 @@
     "fat": 12.1
    },
    "after": {
-    "calories": 352,
-    "protein": 21.9,
-    "carbs": 2.9,
-    "fat": 28.3
+    "calories": 375,
+    "protein": 21.8,
+    "carbs": 2.7,
+    "fat": 31
    },
    "afterWithoutCanonFixes": {
     "calories": 393,
@@ -35597,8 +38211,14 @@
     "carbs": 4.1,
     "fat": 29.9
    },
+   "afterRound1": {
+    "calories": 352,
+    "protein": 21.9,
+    "carbs": 2.9,
+    "fat": 28.3
+   },
    "nutritionLineCoverage": 0.9,
-   "deltaCalories": 175,
+   "deltaCalories": 198,
    "unchangedValues": false,
    "lines": [
     {
@@ -35686,7 +38306,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -35766,6 +38386,12 @@
     "protein": 4.9,
     "carbs": 21.7,
     "fat": 26.9
+   },
+   "afterRound1": {
+    "calories": 665,
+    "protein": 6.6,
+    "carbs": 18,
+    "fat": 63.5
    },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 514,
@@ -35921,6 +38547,12 @@
     "fat": 17.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 236,
+    "protein": 6.5,
+    "carbs": 13.5,
+    "fat": 17.8
+   },
+   "afterRound1": {
     "calories": 236,
     "protein": 6.5,
     "carbs": 13.5,
@@ -36118,6 +38750,12 @@
     "carbs": 33.9,
     "fat": 6
    },
+   "afterRound1": {
+    "calories": 241,
+    "protein": 12,
+    "carbs": 33.9,
+    "fat": 6
+   },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": 40,
    "unchangedValues": false,
@@ -36288,6 +38926,12 @@
     "carbs": 3.9,
     "fat": 20.7
    },
+   "afterRound1": {
+    "calories": 244,
+    "protein": 10.5,
+    "carbs": 3.9,
+    "fat": 20.7
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": 94,
    "unchangedValues": false,
@@ -36424,6 +39068,12 @@
     "protein": 6.3,
     "carbs": 38.1,
     "fat": 41.5
+   },
+   "afterRound1": {
+    "calories": 343,
+    "protein": 4.7,
+    "carbs": 19.2,
+    "fat": 28.1
    },
    "nutritionLineCoverage": 1,
    "deltaCalories": 86,
@@ -36572,6 +39222,12 @@
     "protein": 1.7,
     "carbs": 11.1,
     "fat": 7.4
+   },
+   "afterRound1": {
+    "calories": 281,
+    "protein": 2.6,
+    "carbs": 9.3,
+    "fat": 26.2
    },
    "nutritionLineCoverage": 0.714,
    "deltaCalories": 266,
@@ -36787,6 +39443,12 @@
     "carbs": 10.5,
     "fat": 16.2
    },
+   "afterRound1": {
+    "calories": 387,
+    "protein": 52.6,
+    "carbs": 10.5,
+    "fat": 16.2
+   },
    "nutritionLineCoverage": 0.889,
    "deltaCalories": 67,
    "unchangedValues": false,
@@ -36945,6 +39607,12 @@
     "protein": 2.2,
     "carbs": 33.1,
     "fat": 21.4
+   },
+   "afterRound1": {
+    "calories": 327,
+    "protein": 2.1,
+    "carbs": 33,
+    "fat": 20.5
    },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": 193,
@@ -37140,6 +39808,12 @@
     "carbs": 78.5,
     "fat": 24.5
    },
+   "afterRound1": {
+    "calories": 696,
+    "protein": 7.9,
+    "carbs": 29.3,
+    "fat": 61.6
+   },
    "nutritionLineCoverage": 0.6,
    "deltaCalories": -285,
    "unchangedValues": false,
@@ -37309,6 +39983,12 @@
     "protein": 9.6,
     "carbs": 12.6,
     "fat": 8.8
+   },
+   "afterRound1": {
+    "calories": 330,
+    "protein": 10.5,
+    "carbs": 10.8,
+    "fat": 27.5
    },
    "nutritionLineCoverage": 0.733,
    "deltaCalories": 29,
@@ -37519,6 +40199,12 @@
     "fat": 5.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 279,
+    "protein": 18.4,
+    "carbs": 42.9,
+    "fat": 5.2
+   },
+   "afterRound1": {
     "calories": 279,
     "protein": 18.4,
     "carbs": 42.9,
@@ -37749,6 +40435,12 @@
     "carbs": 3.3,
     "fat": 19.3
    },
+   "afterRound1": {
+    "calories": 262,
+    "protein": 23,
+    "carbs": 1.5,
+    "fat": 18.4
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": -370,
    "unchangedValues": false,
@@ -37892,6 +40584,12 @@
     "fat": 5.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 224,
+    "protein": 8.7,
+    "carbs": 36.9,
+    "fat": 5.7
+   },
+   "afterRound1": {
     "calories": 224,
     "protein": 8.7,
     "carbs": 36.9,
@@ -38110,6 +40808,12 @@
     "protein": 24,
     "carbs": 45.2,
     "fat": 4.4
+   },
+   "afterRound1": {
+    "calories": 262,
+    "protein": 19.1,
+    "carbs": 42.4,
+    "fat": 3.1
    },
    "nutritionLineCoverage": 0.867,
    "deltaCalories": -816,
@@ -38331,6 +41035,12 @@
     "fat": 3.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 152,
+    "protein": 4.3,
+    "carbs": 27.7,
+    "fat": 3.7
+   },
+   "afterRound1": {
     "calories": 152,
     "protein": 4.3,
     "carbs": 27.7,
@@ -38558,10 +41268,10 @@
     "fat": 54.2
    },
    "after": {
-    "calories": 356,
-    "protein": 22.4,
-    "carbs": 1.9,
-    "fat": 28.9
+    "calories": 379,
+    "protein": 22.3,
+    "carbs": 1.8,
+    "fat": 31.5
    },
    "afterWithoutCanonFixes": {
     "calories": 424,
@@ -38569,8 +41279,14 @@
     "carbs": 4.9,
     "fat": 31.3
    },
+   "afterRound1": {
+    "calories": 356,
+    "protein": 22.4,
+    "carbs": 1.9,
+    "fat": 28.9
+   },
    "nutritionLineCoverage": 0.923,
-   "deltaCalories": -477,
+   "deltaCalories": -454,
    "unchangedValues": false,
    "lines": [
     {
@@ -38592,7 +41308,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -38780,6 +41496,12 @@
     "carbs": 5.5,
     "fat": 7.8
    },
+   "afterRound1": {
+    "calories": 114,
+    "protein": 6.3,
+    "carbs": 5.5,
+    "fat": 7.8
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": -77,
    "unchangedValues": false,
@@ -38939,6 +41661,12 @@
     "protein": 16.4,
     "carbs": 25.6,
     "fat": 28.4
+   },
+   "afterRound1": {
+    "calories": 297,
+    "protein": 15.5,
+    "carbs": 12.7,
+    "fat": 20.5
    },
    "nutritionLineCoverage": 0.7,
    "deltaCalories": -571,
@@ -39220,6 +41948,12 @@
     "carbs": 12.7,
     "fat": 26.1
    },
+   "afterRound1": {
+    "calories": 466,
+    "protein": 26.1,
+    "carbs": 11.8,
+    "fat": 35.5
+   },
    "nutritionLineCoverage": 0.625,
    "deltaCalories": -565,
    "unchangedValues": false,
@@ -39453,10 +42187,10 @@
     "fat": 48.8
    },
    "after": {
-    "calories": 354,
+    "calories": 377,
     "protein": 22.1,
-    "carbs": 2.2,
-    "fat": 28.7
+    "carbs": 2.1,
+    "fat": 31.3
    },
    "afterWithoutCanonFixes": {
     "calories": 291,
@@ -39464,8 +42198,14 @@
     "carbs": 5.2,
     "fat": 22.1
    },
+   "afterRound1": {
+    "calories": 354,
+    "protein": 22.1,
+    "carbs": 2.2,
+    "fat": 28.7
+   },
    "nutritionLineCoverage": 0.909,
-   "deltaCalories": -361,
+   "deltaCalories": -338,
    "unchangedValues": false,
    "lines": [
     {
@@ -39487,7 +42227,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -39653,6 +42393,12 @@
     "carbs": 17.1,
     "fat": 38.7
    },
+   "afterRound1": {
+    "calories": 319,
+    "protein": 3.8,
+    "carbs": 7.2,
+    "fat": 30.8
+   },
    "nutritionLineCoverage": 0.889,
    "deltaCalories": -117,
    "unchangedValues": false,
@@ -39809,10 +42555,10 @@
     "fat": 32
    },
    "after": {
-    "calories": 274,
-    "protein": 22.3,
+    "calories": 267,
+    "protein": 22,
     "carbs": 3.5,
-    "fat": 19.2
+    "fat": 18.5
    },
    "afterWithoutCanonFixes": {
     "calories": 176,
@@ -39820,8 +42566,14 @@
     "carbs": 3.5,
     "fat": 12.4
    },
+   "afterRound1": {
+    "calories": 274,
+    "protein": 22.3,
+    "carbs": 3.5,
+    "fat": 19.2
+   },
    "nutritionLineCoverage": 0.9,
-   "deltaCalories": -202,
+   "deltaCalories": -209,
    "unchangedValues": false,
    "lines": [
     {
@@ -39854,7 +42606,7 @@
      "g": 61.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 57.5,
+     "kcal": 28.4,
      "cov": true
     },
     {
@@ -39989,6 +42741,12 @@
     "protein": 30.8,
     "carbs": 65.2,
     "fat": 14.3
+   },
+   "afterRound1": {
+    "calories": 646,
+    "protein": 31.6,
+    "carbs": 63.6,
+    "fat": 30.9
    },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": -407,
@@ -40237,10 +42995,10 @@
     "fat": 24.1
    },
    "after": {
-    "calories": 978,
-    "protein": 60,
-    "carbs": 81.8,
-    "fat": 45.6
+    "calories": 890,
+    "protein": 56.5,
+    "carbs": 81.1,
+    "fat": 37.9
    },
    "afterWithoutCanonFixes": {
     "calories": 912,
@@ -40248,8 +43006,14 @@
     "carbs": 81.8,
     "fat": 41.1
    },
+   "afterRound1": {
+    "calories": 978,
+    "protein": 60,
+    "carbs": 81.8,
+    "fat": 45.6
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 499,
+   "deltaCalories": 411,
    "unchangedValues": false,
    "lines": [
     {
@@ -40282,7 +43046,7 @@
      "g": 370.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 344.8,
+     "kcal": 170.6,
      "cov": true
     },
     {
@@ -40417,6 +43181,12 @@
     "protein": 6.4,
     "carbs": 30.5,
     "fat": 45.1
+   },
+   "afterRound1": {
+    "calories": 342,
+    "protein": 4.8,
+    "carbs": 10.9,
+    "fat": 31.4
    },
    "nutritionLineCoverage": 1,
    "deltaCalories": -526,
@@ -40555,10 +43325,10 @@
     "fat": 58
    },
    "after": {
-    "calories": 540,
-    "protein": 34.2,
-    "carbs": 42.8,
-    "fat": 26.1
+    "calories": 503,
+    "protein": 32.8,
+    "carbs": 42.5,
+    "fat": 22.9
    },
    "afterWithoutCanonFixes": {
     "calories": 507,
@@ -40566,8 +43336,14 @@
     "carbs": 42.8,
     "fat": 23.8
    },
+   "afterRound1": {
+    "calories": 540,
+    "protein": 34.2,
+    "carbs": 42.8,
+    "fat": 26.1
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": -347,
+   "deltaCalories": -384,
    "unchangedValues": false,
    "lines": [
     {
@@ -40600,7 +43376,7 @@
      "g": 309,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 287.4,
+     "kcal": 142.1,
      "cov": true
     },
     {
@@ -40747,10 +43523,10 @@
     "fat": 29.4
    },
    "after": {
-    "calories": 409,
+    "calories": 382,
     "protein": 14.9,
-    "carbs": 7.7,
-    "fat": 36
+    "carbs": 7.5,
+    "fat": 33
    },
    "afterWithoutCanonFixes": {
     "calories": 409,
@@ -40758,8 +43534,14 @@
     "carbs": 7.7,
     "fat": 36
    },
+   "afterRound1": {
+    "calories": 409,
+    "protein": 14.9,
+    "carbs": 7.7,
+    "fat": 36
+   },
    "nutritionLineCoverage": 0.8,
-   "deltaCalories": 38,
+   "deltaCalories": 11,
    "unchangedValues": false,
    "lines": [
     {
@@ -40781,7 +43563,7 @@
      "g": 120,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 703.2,
+     "kcal": 595.2,
      "cov": true
     },
     {
@@ -40927,6 +43709,12 @@
     "protein": 22.4,
     "carbs": 28.6,
     "fat": 8.1
+   },
+   "afterRound1": {
+    "calories": 127,
+    "protein": 4.1,
+    "carbs": 22.3,
+    "fat": 3
    },
    "nutritionLineCoverage": 1,
    "deltaCalories": -743,
@@ -41137,6 +43925,12 @@
     "fat": 29
    },
    "afterWithoutCanonFixes": {
+    "calories": 442,
+    "protein": 15.2,
+    "carbs": 31.9,
+    "fat": 29
+   },
+   "afterRound1": {
     "calories": 442,
     "protein": 15.2,
     "carbs": 31.9,
@@ -41353,6 +44147,12 @@
     "carbs": 22.9,
     "fat": 25.1
    },
+   "afterRound1": {
+    "calories": 380,
+    "protein": 12.2,
+    "carbs": 32.2,
+    "fat": 23.7
+   },
    "nutritionLineCoverage": 0.727,
    "deltaCalories": -87,
    "unchangedValues": false,
@@ -41531,10 +44331,10 @@
     "fat": 55.7
    },
    "after": {
-    "calories": 384,
+    "calories": 408,
     "protein": 23.1,
-    "carbs": 2.2,
-    "fat": 31.6
+    "carbs": 2,
+    "fat": 34.3
    },
    "afterWithoutCanonFixes": {
     "calories": 481,
@@ -41542,8 +44342,14 @@
     "carbs": 6.5,
     "fat": 35.1
    },
+   "afterRound1": {
+    "calories": 384,
+    "protein": 23.1,
+    "carbs": 2.2,
+    "fat": 31.6
+   },
    "nutritionLineCoverage": 0.909,
-   "deltaCalories": -547,
+   "deltaCalories": -523,
    "unchangedValues": false,
    "lines": [
     {
@@ -41565,7 +44371,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -41722,6 +44528,12 @@
     "protein": 8.7,
     "carbs": 40.4,
     "fat": 45.6
+   },
+   "afterRound1": {
+    "calories": 798,
+    "protein": 10.2,
+    "carbs": 49.7,
+    "fat": 63.5
    },
    "nutritionLineCoverage": 0.917,
    "deltaCalories": 121,
@@ -41901,6 +44713,12 @@
     "fat": 24.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 406,
+    "protein": 12.2,
+    "carbs": 34.9,
+    "fat": 24.7
+   },
+   "afterRound1": {
     "calories": 406,
     "protein": 12.2,
     "carbs": 34.9,
@@ -42095,10 +44913,10 @@
     "fat": 46.5
    },
    "after": {
-    "calories": 337,
-    "protein": 21.6,
-    "carbs": 2.2,
-    "fat": 27.1
+    "calories": 361,
+    "protein": 21.5,
+    "carbs": 2,
+    "fat": 29.8
    },
    "afterWithoutCanonFixes": {
     "calories": 407,
@@ -42106,8 +44924,14 @@
     "carbs": 6.8,
     "fat": 29.4
    },
+   "afterRound1": {
+    "calories": 337,
+    "protein": 21.6,
+    "carbs": 2.2,
+    "fat": 27.1
+   },
    "nutritionLineCoverage": 0.857,
-   "deltaCalories": -428,
+   "deltaCalories": -404,
    "unchangedValues": false,
    "lines": [
     {
@@ -42173,7 +44997,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -42255,6 +45079,12 @@
     "protein": 37.5,
     "carbs": 59.4,
     "fat": 9.8
+   },
+   "afterRound1": {
+    "calories": 342,
+    "protein": 19.2,
+    "carbs": 53.2,
+    "fat": 4.7
    },
    "nutritionLineCoverage": 0.867,
    "deltaCalories": -278,
@@ -42481,6 +45311,12 @@
     "carbs": 40.4,
     "fat": 9.2
    },
+   "afterRound1": {
+    "calories": 259,
+    "protein": 7,
+    "carbs": 40.4,
+    "fat": 9.2
+   },
    "nutritionLineCoverage": 0.846,
    "deltaCalories": -386,
    "unchangedValues": false,
@@ -42683,6 +45519,12 @@
     "protein": 33.1,
     "carbs": 25,
     "fat": 8.6
+   },
+   "afterRound1": {
+    "calories": 199,
+    "protein": 19.4,
+    "carbs": 19.8,
+    "fat": 4.7
    },
    "nutritionLineCoverage": 0.929,
    "deltaCalories": -542,
@@ -42900,6 +45742,12 @@
     "fat": 38.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 601,
+    "protein": 19.1,
+    "carbs": 47.4,
+    "fat": 38.2
+   },
+   "afterRound1": {
     "calories": 601,
     "protein": 19.1,
     "carbs": 47.4,
@@ -43127,10 +45975,10 @@
     "fat": 41.9
    },
    "after": {
-    "calories": 315,
+    "calories": 338,
     "protein": 20,
-    "carbs": 2.2,
-    "fat": 25.3
+    "carbs": 2,
+    "fat": 28
    },
    "afterWithoutCanonFixes": {
     "calories": 396,
@@ -43138,8 +45986,14 @@
     "carbs": 5.6,
     "fat": 28.3
    },
+   "afterRound1": {
+    "calories": 315,
+    "protein": 20,
+    "carbs": 2.2,
+    "fat": 25.3
+   },
    "nutritionLineCoverage": 0.9,
-   "deltaCalories": -400,
+   "deltaCalories": -377,
    "unchangedValues": false,
    "lines": [
     {
@@ -43161,7 +46015,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -43307,6 +46161,12 @@
     "protein": 53.4,
     "carbs": 35,
     "fat": 46.3
+   },
+   "afterRound1": {
+    "calories": 750,
+    "protein": 53.3,
+    "carbs": 34.9,
+    "fat": 45.4
    },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": 179,
@@ -43497,6 +46357,12 @@
     "fat": 17.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 411,
+    "protein": 25.4,
+    "carbs": 40.3,
+    "fat": 17.4
+   },
+   "afterRound1": {
     "calories": 411,
     "protein": 25.4,
     "carbs": 40.3,
@@ -43760,6 +46626,12 @@
     "carbs": 12.8,
     "fat": 18.9
    },
+   "afterRound1": {
+    "calories": 246,
+    "protein": 7.4,
+    "carbs": 12.8,
+    "fat": 18.9
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": -98,
    "unchangedValues": false,
@@ -43905,12 +46777,20 @@
    "servings": 4,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "plain greek yogurt or sour cream",
+     "c": null,
+     "why": "unresolved"
+    }
+   ],
    "minorMissingCount": 2,
    "before": {
     "calories": 674,
@@ -43919,10 +46799,10 @@
     "fat": 56.2
    },
    "after": {
-    "calories": 735,
-    "protein": 14.6,
+    "calories": 320,
+    "protein": 28.9,
     "carbs": 29.6,
-    "fat": 62.9
+    "fat": 10.5
    },
    "afterWithoutCanonFixes": {
     "calories": 735,
@@ -43930,8 +46810,14 @@
     "carbs": 29.6,
     "fat": 62.9
    },
+   "afterRound1": {
+    "calories": 735,
+    "protein": 14.6,
+    "carbs": 29.6,
+    "fat": 62.9
+   },
    "nutritionLineCoverage": 0.833,
-   "deltaCalories": 61,
+   "deltaCalories": -354,
    "unchangedValues": false,
    "lines": [
     {
@@ -43953,7 +46839,7 @@
      "g": 453.6,
      "m": "weight",
      "why": null,
-     "kcal": 2150.1,
+     "kcal": 489.9,
      "cov": true
     },
     {
@@ -44117,6 +47003,12 @@
     "fat": 14.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 181,
+    "protein": 11.3,
+    "carbs": 1.2,
+    "fat": 14.3
+   },
+   "afterRound1": {
     "calories": 181,
     "protein": 11.3,
     "carbs": 1.2,
@@ -44358,6 +47250,12 @@
     "carbs": 37.2,
     "fat": 25.6
    },
+   "afterRound1": {
+    "calories": 412,
+    "protein": 12.8,
+    "carbs": 37.2,
+    "fat": 24.6
+   },
    "nutritionLineCoverage": 0.9,
    "deltaCalories": 210,
    "unchangedValues": false,
@@ -44528,6 +47426,12 @@
     "carbs": 17.1,
     "fat": 26.6
    },
+   "afterRound1": {
+    "calories": 523,
+    "protein": 6.3,
+    "carbs": 26.3,
+    "fat": 44.4
+   },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": 368,
    "unchangedValues": false,
@@ -44671,6 +47575,12 @@
     "fat": 9.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 247,
+    "protein": 9.2,
+    "carbs": 33,
+    "fat": 9.7
+   },
+   "afterRound1": {
     "calories": 247,
     "protein": 9.2,
     "carbs": 33,
@@ -44879,6 +47789,12 @@
     "carbs": 52.6,
     "fat": 7.9
    },
+   "afterRound1": {
+    "calories": 303,
+    "protein": 10,
+    "carbs": 51.4,
+    "fat": 6.4
+   },
    "nutritionLineCoverage": 0.933,
    "deltaCalories": 9,
    "unchangedValues": false,
@@ -45082,6 +47998,12 @@
     "carbs": 61.2,
     "fat": 13
    },
+   "afterRound1": {
+    "calories": 385,
+    "protein": 4.2,
+    "carbs": 61.2,
+    "fat": 14.1
+   },
    "nutritionLineCoverage": 0.917,
    "deltaCalories": 122,
    "unchangedValues": false,
@@ -45269,6 +48191,12 @@
     "fat": 38.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 468,
+    "protein": 24.6,
+    "carbs": 5.7,
+    "fat": 38.3
+   },
+   "afterRound1": {
     "calories": 468,
     "protein": 24.6,
     "carbs": 5.7,
@@ -45554,6 +48482,12 @@
     "carbs": 8.9,
     "fat": 20.6
    },
+   "afterRound1": {
+    "calories": 278,
+    "protein": 15.4,
+    "carbs": 8.9,
+    "fat": 20.6
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": 50,
    "unchangedValues": false,
@@ -45763,6 +48697,12 @@
     "fat": 37.3
    },
    "afterWithoutCanonFixes": {
+    "calories": 738,
+    "protein": 45.5,
+    "carbs": 56.7,
+    "fat": 37.3
+   },
+   "afterRound1": {
     "calories": 738,
     "protein": 45.5,
     "carbs": 56.7,
@@ -46070,6 +49010,12 @@
     "carbs": 80.3,
     "fat": 13.7
    },
+   "afterRound1": {
+    "calories": 570,
+    "protein": 36,
+    "carbs": 80.3,
+    "fat": 13.7
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": 79,
    "unchangedValues": false,
@@ -46272,6 +49218,12 @@
     "protein": 17.9,
     "carbs": 67.4,
     "fat": 11.9
+   },
+   "afterRound1": {
+    "calories": 401,
+    "protein": 13.1,
+    "carbs": 64.6,
+    "fat": 10.5
    },
    "nutritionLineCoverage": 0.786,
    "deltaCalories": 31,
@@ -46493,6 +49445,12 @@
     "fat": 31.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 392,
+    "protein": 22.1,
+    "carbs": 5.3,
+    "fat": 31.1
+   },
+   "afterRound1": {
     "calories": 392,
     "protein": 22.1,
     "carbs": 5.3,
@@ -46734,6 +49692,12 @@
     "carbs": 52,
     "fat": 6.8
    },
+   "afterRound1": {
+    "calories": 377,
+    "protein": 13,
+    "carbs": 51.2,
+    "fat": 14.6
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": 137,
    "unchangedValues": false,
@@ -46959,6 +49923,12 @@
     "carbs": 45.7,
     "fat": 14.8
    },
+   "afterRound1": {
+    "calories": 450,
+    "protein": 16.4,
+    "carbs": 68,
+    "fat": 14.9
+   },
    "nutritionLineCoverage": 0.875,
    "deltaCalories": 198,
    "unchangedValues": false,
@@ -47091,6 +50061,12 @@
     "fat": 17.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 340,
+    "protein": 20.8,
+    "carbs": 25.9,
+    "fat": 17.2
+   },
+   "afterRound1": {
     "calories": 340,
     "protein": 20.8,
     "carbs": 25.9,
@@ -47332,6 +50308,12 @@
     "carbs": 31.5,
     "fat": 20.6
    },
+   "afterRound1": {
+    "calories": 340,
+    "protein": 11.1,
+    "carbs": 31.4,
+    "fat": 19.6
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 163,
    "unchangedValues": false,
@@ -47491,10 +50473,10 @@
     "fat": 17.7
    },
    "after": {
-    "calories": 612,
-    "protein": 18.3,
-    "carbs": 42.1,
-    "fat": 40.1
+    "calories": 638,
+    "protein": 16.3,
+    "carbs": 41.2,
+    "fat": 44.2
    },
    "afterWithoutCanonFixes": {
     "calories": 708,
@@ -47502,8 +50484,14 @@
     "carbs": 45.9,
     "fat": 42.7
    },
+   "afterRound1": {
+    "calories": 612,
+    "protein": 18.3,
+    "carbs": 42.1,
+    "fat": 40.1
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 192,
+   "deltaCalories": 218,
    "unchangedValues": false,
    "lines": [
     {
@@ -47536,7 +50524,7 @@
      "g": 370.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 344.8,
+     "kcal": 170.6,
      "cov": true
     },
     {
@@ -47668,7 +50656,7 @@
      "g": 180,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 612,
+     "kcal": 892.8,
      "cov": true
     },
     {
@@ -47733,6 +50721,12 @@
     "fat": 11
    },
    "afterWithoutCanonFixes": {
+    "calories": 295,
+    "protein": 11.8,
+    "carbs": 39.7,
+    "fat": 11
+   },
+   "afterRound1": {
     "calories": 295,
     "protein": 11.8,
     "carbs": 39.7,
@@ -47951,6 +50945,12 @@
     "protein": 23.8,
     "carbs": 53.6,
     "fat": 7.8
+   },
+   "afterRound1": {
+    "calories": 339,
+    "protein": 20.6,
+    "carbs": 51.7,
+    "fat": 6.9
    },
    "nutritionLineCoverage": 0.722,
    "deltaCalories": 17,
@@ -48223,6 +51223,12 @@
     "carbs": 157.5,
     "fat": 31.7
    },
+   "afterRound1": {
+    "calories": 620,
+    "protein": 28.7,
+    "carbs": 68.8,
+    "fat": 27.2
+   },
    "nutritionLineCoverage": 0.867,
    "deltaCalories": -299,
    "unchangedValues": false,
@@ -48437,10 +51443,10 @@
     "fat": 17.8
    },
    "after": {
-    "calories": 400,
-    "protein": 10.5,
+    "calories": 392,
+    "protein": 10.2,
     "carbs": 47.6,
-    "fat": 19.4
+    "fat": 18.8
    },
    "afterWithoutCanonFixes": {
     "calories": 400,
@@ -48448,8 +51454,14 @@
     "carbs": 47.6,
     "fat": 19.4
    },
+   "afterRound1": {
+    "calories": 400,
+    "protein": 10.5,
+    "carbs": 47.6,
+    "fat": 19.4
+   },
    "nutritionLineCoverage": 0.909,
-   "deltaCalories": 26,
+   "deltaCalories": 18,
    "unchangedValues": false,
    "lines": [
     {
@@ -48537,7 +51549,7 @@
      "g": 92.7,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 86.2,
+     "kcal": 42.6,
      "cov": true
     },
     {
@@ -48628,6 +51640,12 @@
     "protein": 6.2,
     "carbs": 30.4,
     "fat": 41.7
+   },
+   "afterRound1": {
+    "calories": 310,
+    "protein": 4.6,
+    "carbs": 10.9,
+    "fat": 28
    },
    "nutritionLineCoverage": 1,
    "deltaCalories": 87,
@@ -48766,10 +51784,10 @@
     "fat": 9.3
    },
    "after": {
-    "calories": 523,
-    "protein": 12.3,
-    "carbs": 39.3,
-    "fat": 34.5
+    "calories": 527,
+    "protein": 10.4,
+    "carbs": 38.6,
+    "fat": 36
    },
    "afterWithoutCanonFixes": {
     "calories": 523,
@@ -48777,8 +51795,14 @@
     "carbs": 39.3,
     "fat": 34.5
    },
+   "afterRound1": {
+    "calories": 523,
+    "protein": 12.3,
+    "carbs": 39.3,
+    "fat": 34.5
+   },
    "nutritionLineCoverage": 0.933,
-   "deltaCalories": 317,
+   "deltaCalories": 321,
    "unchangedValues": false,
    "lines": [
     {
@@ -48800,7 +51824,7 @@
      "g": 370.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 344.8,
+     "kcal": 170.6,
      "cov": true
     },
     {
@@ -48921,7 +51945,7 @@
      "g": 120,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 408,
+     "kcal": 595.2,
      "cov": true
     },
     {
@@ -48997,6 +52021,12 @@
     "fat": 6.4
    },
    "afterWithoutCanonFixes": {
+    "calories": 224,
+    "protein": 10.5,
+    "carbs": 33.5,
+    "fat": 6.4
+   },
+   "afterRound1": {
     "calories": 224,
     "protein": 10.5,
     "carbs": 33.5,
@@ -49194,10 +52224,10 @@
     "fat": 9.5
    },
    "after": {
-    "calories": 269,
-    "protein": 8,
-    "carbs": 35,
-    "fat": 11.5
+    "calories": 262,
+    "protein": 7.7,
+    "carbs": 34.9,
+    "fat": 10.9
    },
    "afterWithoutCanonFixes": {
     "calories": 253,
@@ -49205,8 +52235,14 @@
     "carbs": 35,
     "fat": 10.4
    },
+   "afterRound1": {
+    "calories": 269,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 11.5
+   },
    "nutritionLineCoverage": 0.8,
-   "deltaCalories": 31,
+   "deltaCalories": 24,
    "unchangedValues": false,
    "lines": [
     {
@@ -49283,7 +52319,7 @@
      "g": 123.6,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 114.9,
+     "kcal": 56.9,
      "cov": true
     },
     {
@@ -49370,6 +52406,12 @@
     "fat": 14.7
    },
    "afterWithoutCanonFixes": {
+    "calories": 293,
+    "protein": 9.6,
+    "carbs": 32.5,
+    "fat": 14.7
+   },
+   "afterRound1": {
     "calories": 293,
     "protein": 9.6,
     "carbs": 32.5,
@@ -49553,10 +52595,10 @@
     "fat": 25.3
    },
    "after": {
-    "calories": 586,
-    "protein": 26.9,
-    "carbs": 60.7,
-    "fat": 27.7
+    "calories": 576,
+    "protein": 26.5,
+    "carbs": 60.6,
+    "fat": 26.9
    },
    "afterWithoutCanonFixes": {
     "calories": 675,
@@ -49564,8 +52606,14 @@
     "carbs": 63.3,
     "fat": 31.1
    },
+   "afterRound1": {
+    "calories": 586,
+    "protein": 26.9,
+    "carbs": 60.7,
+    "fat": 27.7
+   },
    "nutritionLineCoverage": 0.947,
-   "deltaCalories": -18,
+   "deltaCalories": -28,
    "unchangedValues": false,
    "lines": [
     {
@@ -49598,7 +52646,7 @@
      "g": 123.6,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 114.9,
+     "kcal": 56.9,
      "cov": true
     },
     {
@@ -49833,6 +52881,12 @@
     "carbs": 15.5,
     "fat": 32.5
    },
+   "afterRound1": {
+    "calories": 415,
+    "protein": 23.9,
+    "carbs": 11.8,
+    "fat": 30.7
+   },
    "nutritionLineCoverage": 0.846,
    "deltaCalories": 33,
    "unchangedValues": false,
@@ -50036,6 +53090,12 @@
     "carbs": 29.4,
     "fat": 44.9
    },
+   "afterRound1": {
+    "calories": 334,
+    "protein": 4.3,
+    "carbs": 9.9,
+    "fat": 31.2
+   },
    "nutritionLineCoverage": 0.889,
    "deltaCalories": 111,
    "unchangedValues": false,
@@ -50190,6 +53250,12 @@
     "fat": 23.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 405,
+    "protein": 32,
+    "carbs": 18.5,
+    "fat": 23.1
+   },
+   "afterRound1": {
     "calories": 405,
     "protein": 32,
     "carbs": 18.5,
@@ -50376,6 +53442,12 @@
     "carbs": 5.9,
     "fat": 44.2
    },
+   "afterRound1": {
+    "calories": 451,
+    "protein": 10.4,
+    "carbs": 5.8,
+    "fat": 43.2
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 225,
    "unchangedValues": false,
@@ -50531,6 +53603,12 @@
     "protein": 49.4,
     "carbs": 49.5,
     "fat": 23.5
+   },
+   "afterRound1": {
+    "calories": 469,
+    "protein": 48.5,
+    "carbs": 36.6,
+    "fat": 15.6
    },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": -72,
@@ -50757,6 +53835,12 @@
     "carbs": 55.8,
     "fat": 12
    },
+   "afterRound1": {
+    "calories": 334,
+    "protein": 3.6,
+    "carbs": 55.8,
+    "fat": 12
+   },
    "nutritionLineCoverage": 0.778,
    "deltaCalories": 10,
    "unchangedValues": false,
@@ -50915,6 +53999,12 @@
     "protein": 11.7,
     "carbs": 49.8,
     "fat": 21.4
+   },
+   "afterRound1": {
+    "calories": 421,
+    "protein": 11.6,
+    "carbs": 49.8,
+    "fat": 20.9
    },
    "nutritionLineCoverage": 0.765,
    "deltaCalories": 169,
@@ -51163,6 +54253,12 @@
     "carbs": 41,
     "fat": 8.3
    },
+   "afterRound1": {
+    "calories": 302,
+    "protein": 18.8,
+    "carbs": 41,
+    "fat": 8.3
+   },
    "nutritionLineCoverage": 0.846,
    "deltaCalories": 74,
    "unchangedValues": false,
@@ -51352,12 +54448,25 @@
    "servings": 4,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "broccoli slaw",
+     "c": "broccoli slaw",
+     "why": "missing_density"
+    },
+    {
+     "raw": "persian cucumber",
+     "c": "persian cucumber",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 0,
    "before": {
     "calories": 964,
@@ -51366,10 +54475,10 @@
     "fat": 91.2
    },
    "after": {
-    "calories": 1081,
-    "protein": 25.2,
-    "carbs": 17.2,
-    "fat": 102.6
+    "calories": 453,
+    "protein": 46.1,
+    "carbs": 16.1,
+    "fat": 24
    },
    "afterWithoutCanonFixes": {
     "calories": 1081,
@@ -51377,8 +54486,14 @@
     "carbs": 17.2,
     "fat": 102.6
    },
+   "afterRound1": {
+    "calories": 1081,
+    "protein": 25.2,
+    "carbs": 17.2,
+    "fat": 102.6
+   },
    "nutritionLineCoverage": 0.895,
-   "deltaCalories": 117,
+   "deltaCalories": -511,
    "unchangedValues": false,
    "lines": [
     {
@@ -51389,7 +54504,7 @@
      "g": 680.4,
      "m": "weight",
      "why": null,
-     "kcal": 3225.1,
+     "kcal": 734.8,
      "cov": true
     },
     {
@@ -51529,10 +54644,10 @@
      "q": 1,
      "u": "cup",
      "c": "mung bean sprouts",
-     "g": 180,
+     "g": 104,
      "m": "density_cup",
      "why": null,
-     "kcal": 54,
+     "kcal": 31.2,
      "cov": true
     },
     {
@@ -51624,10 +54739,10 @@
     "fat": 11.2
    },
    "after": {
-    "calories": 366,
+    "calories": 389,
     "protein": 20.7,
-    "carbs": 3.2,
-    "fat": 30.3
+    "carbs": 3.1,
+    "fat": 33
    },
    "afterWithoutCanonFixes": {
     "calories": 419,
@@ -51635,8 +54750,14 @@
     "carbs": 4.8,
     "fat": 32.3
    },
+   "afterRound1": {
+    "calories": 366,
+    "protein": 20.7,
+    "carbs": 3.2,
+    "fat": 30.3
+   },
    "nutritionLineCoverage": 0.909,
-   "deltaCalories": 192,
+   "deltaCalories": 215,
    "unchangedValues": false,
    "lines": [
     {
@@ -51658,7 +54779,7 @@
      "g": 60,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 204,
+     "kcal": 297.6,
      "cov": true
     },
     {
@@ -51811,6 +54932,12 @@
     "fat": 46.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 781,
+    "protein": 39.8,
+    "carbs": 53.5,
+    "fat": 46.6
+   },
+   "afterRound1": {
     "calories": 781,
     "protein": 39.8,
     "carbs": 53.5,
@@ -52008,6 +55135,12 @@
     "carbs": 32.3,
     "fat": 21.6
    },
+   "afterRound1": {
+    "calories": 264,
+    "protein": 5.3,
+    "carbs": 27.7,
+    "fat": 15.3
+   },
    "nutritionLineCoverage": 0.9,
    "deltaCalories": 102,
    "unchangedValues": false,
@@ -52166,6 +55299,12 @@
     "protein": 16.4,
     "carbs": 52.1,
     "fat": 6.9
+   },
+   "afterRound1": {
+    "calories": 315,
+    "protein": 12.8,
+    "carbs": 51.3,
+    "fat": 5.9
    },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": -12,
@@ -52332,6 +55471,12 @@
     "fat": 16.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 609,
+    "protein": 34.1,
+    "carbs": 87.5,
+    "fat": 16.2
+   },
+   "afterRound1": {
     "calories": 609,
     "protein": 34.1,
     "carbs": 87.5,
@@ -52628,6 +55773,12 @@
     "carbs": 16.3,
     "fat": 16.4
    },
+   "afterRound1": {
+    "calories": 294,
+    "protein": 21.4,
+    "carbs": 16.3,
+    "fat": 16.4
+   },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 76,
    "unchangedValues": false,
@@ -52831,10 +55982,10 @@
     "fat": 6
    },
    "after": {
-    "calories": 607,
-    "protein": 32.2,
+    "calories": 603,
+    "protein": 32,
     "carbs": 87.9,
-    "fat": 16.5
+    "fat": 16.2
    },
    "afterWithoutCanonFixes": {
     "calories": 607,
@@ -52842,8 +55993,14 @@
     "carbs": 87.9,
     "fat": 16.5
    },
+   "afterRound1": {
+    "calories": 607,
+    "protein": 32.2,
+    "carbs": 87.9,
+    "fat": 16.5
+   },
    "nutritionLineCoverage": 0.667,
-   "deltaCalories": 108,
+   "deltaCalories": 104,
    "unchangedValues": false,
    "lines": [
     {
@@ -53030,7 +56187,7 @@
      "g": 30.9,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 28.7,
+     "kcal": 14.2,
      "cov": true
     },
     {
@@ -53119,12 +56276,25 @@
    "servings": 4,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "hardboiled quail eggs",
+     "c": "hardboiled quail eggs",
+     "why": "missing_per_item_g"
+    },
+    {
+     "raw": "agave nectar",
+     "c": "agave nectar",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 2,
    "before": {
     "calories": 690,
@@ -53133,10 +56303,10 @@
     "fat": 63.9
    },
    "after": {
-    "calories": 771,
-    "protein": 20.3,
+    "calories": 356,
+    "protein": 34.6,
     "carbs": 14.7,
-    "fat": 71.2
+    "fat": 18.8
    },
    "afterWithoutCanonFixes": {
     "calories": 771,
@@ -53144,8 +56314,14 @@
     "carbs": 14.7,
     "fat": 71.2
    },
+   "afterRound1": {
+    "calories": 771,
+    "protein": 20.3,
+    "carbs": 14.7,
+    "fat": 71.2
+   },
    "nutritionLineCoverage": 0.778,
-   "deltaCalories": 81,
+   "deltaCalories": -334,
    "unchangedValues": false,
    "lines": [
     {
@@ -53156,7 +56332,7 @@
      "g": 453.6,
      "m": "weight",
      "why": null,
-     "kcal": 2150.1,
+     "kcal": 489.9,
      "cov": true
     },
     {
@@ -53391,6 +56567,12 @@
     "carbs": 78,
     "fat": 14.2
    },
+   "afterRound1": {
+    "calories": 619,
+    "protein": 29.8,
+    "carbs": 77.1,
+    "fat": 23.5
+   },
    "nutritionLineCoverage": 0.889,
    "deltaCalories": 173,
    "unchangedValues": false,
@@ -53624,12 +56806,30 @@
    "servings": 4,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "seasoned breadcrumbs",
+     "c": "seasoned breadcrumbs",
+     "why": "missing_density"
+    },
+    {
+     "raw": "parmesan",
+     "c": "parmesan",
+     "why": "missing_density"
+    },
+    {
+     "raw": "worcestershire sauce",
+     "c": "worcestershire sauce",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 2,
    "before": {
     "calories": 626,
@@ -53638,10 +56838,10 @@
     "fat": 55.3
    },
    "after": {
-    "calories": 756,
-    "protein": 22,
+    "calories": 341,
+    "protein": 36.3,
     "carbs": 22.6,
-    "fat": 64.5
+    "fat": 12.1
    },
    "afterWithoutCanonFixes": {
     "calories": 756,
@@ -53649,8 +56849,14 @@
     "carbs": 22.6,
     "fat": 64.5
    },
+   "afterRound1": {
+    "calories": 756,
+    "protein": 22,
+    "carbs": 22.6,
+    "fat": 64.5
+   },
    "nutritionLineCoverage": 0.667,
-   "deltaCalories": 130,
+   "deltaCalories": -285,
    "unchangedValues": false,
    "lines": [
     {
@@ -53672,7 +56878,7 @@
      "g": 453.6,
      "m": "weight",
      "why": null,
-     "kcal": 2150.1,
+     "kcal": 489.9,
      "cov": true
     },
     {
@@ -53863,6 +57069,12 @@
     "carbs": 61.4,
     "fat": 29.5
    },
+   "afterRound1": {
+    "calories": 567,
+    "protein": 10.3,
+    "carbs": 68.8,
+    "fat": 29.6
+   },
    "nutritionLineCoverage": 0.625,
    "deltaCalories": 184,
    "unchangedValues": false,
@@ -53999,6 +57211,12 @@
     "protein": 31.9,
     "carbs": 13.1,
     "fat": 32.9
+   },
+   "afterRound1": {
+    "calories": 401,
+    "protein": 23.8,
+    "carbs": 8.6,
+    "fat": 30.6
    },
    "nutritionLineCoverage": 0.769,
    "deltaCalories": 8,
@@ -54214,6 +57432,12 @@
     "carbs": 15.8,
     "fat": 16.4
    },
+   "afterRound1": {
+    "calories": 359,
+    "protein": 37.9,
+    "carbs": 15.8,
+    "fat": 16.4
+   },
    "nutritionLineCoverage": 0.727,
    "deltaCalories": 119,
    "unchangedValues": false,
@@ -54383,6 +57607,12 @@
     "protein": 39.5,
     "carbs": 62.8,
     "fat": 19.4
+   },
+   "afterRound1": {
+    "calories": 544,
+    "protein": 36.2,
+    "carbs": 61,
+    "fat": 18.5
    },
    "nutritionLineCoverage": 0.882,
    "deltaCalories": 50,
@@ -54631,6 +57861,12 @@
     "carbs": 70.6,
     "fat": 7.1
    },
+   "afterRound1": {
+    "calories": 634,
+    "protein": 14.8,
+    "carbs": 91.1,
+    "fat": 25.9
+   },
    "nutritionLineCoverage": 0.889,
    "deltaCalories": 302,
    "unchangedValues": false,
@@ -54785,6 +58021,12 @@
     "fat": 5.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 243,
+    "protein": 20.1,
+    "carbs": 30,
+    "fat": 5.6
+   },
+   "afterRound1": {
     "calories": 243,
     "protein": 20.1,
     "carbs": 30,
@@ -55037,6 +58279,12 @@
     "carbs": 25.4,
     "fat": 30.3
    },
+   "afterRound1": {
+    "calories": 636,
+    "protein": 7.9,
+    "carbs": 45.9,
+    "fat": 48.2
+   },
    "nutritionLineCoverage": 0.9,
    "deltaCalories": 413,
    "unchangedValues": false,
@@ -55191,6 +58439,12 @@
     "fat": 32.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 428,
+    "protein": 24,
+    "carbs": 10.4,
+    "fat": 32.8
+   },
+   "afterRound1": {
     "calories": 428,
     "protein": 24,
     "carbs": 10.4,
@@ -55443,6 +58697,12 @@
     "carbs": 18.7,
     "fat": 21.2
    },
+   "afterRound1": {
+    "calories": 477,
+    "protein": 55.4,
+    "carbs": 18.7,
+    "fat": 21.2
+   },
    "nutritionLineCoverage": 0.929,
    "deltaCalories": 44,
    "unchangedValues": false,
@@ -55668,6 +58928,12 @@
     "carbs": 13.9,
     "fat": 12.9
    },
+   "afterRound1": {
+    "calories": 301,
+    "protein": 33.2,
+    "carbs": 13.9,
+    "fat": 12.9
+   },
    "nutritionLineCoverage": 0.875,
    "deltaCalories": 61,
    "unchangedValues": false,
@@ -55815,6 +59081,12 @@
     "protein": 29.2,
     "carbs": 30.7,
     "fat": 8.8
+   },
+   "afterRound1": {
+    "calories": 275,
+    "protein": 23.6,
+    "carbs": 29.4,
+    "fat": 7.2
    },
    "nutritionLineCoverage": 0.929,
    "deltaCalories": 6,
@@ -56036,6 +59308,12 @@
     "fat": 17.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 569,
+    "protein": 31.3,
+    "carbs": 77.3,
+    "fat": 17.2
+   },
+   "afterRound1": {
     "calories": 569,
     "protein": 31.3,
     "carbs": 77.3,
@@ -56321,6 +59599,12 @@
     "carbs": 19.6,
     "fat": 12.1
    },
+   "afterRound1": {
+    "calories": 392,
+    "protein": 52.1,
+    "carbs": 19.6,
+    "fat": 12.1
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": 47,
    "unchangedValues": false,
@@ -56546,6 +59830,12 @@
     "carbs": 10.7,
     "fat": 20.5
    },
+   "afterRound1": {
+    "calories": 385,
+    "protein": 38.7,
+    "carbs": 10.7,
+    "fat": 20.5
+   },
    "nutritionLineCoverage": 0.909,
    "deltaCalories": 111,
    "unchangedValues": false,
@@ -56727,6 +60017,12 @@
     "carbs": 6.1,
     "fat": 45.7
    },
+   "afterRound1": {
+    "calories": 471,
+    "protein": 11.9,
+    "carbs": 6,
+    "fat": 44.7
+   },
    "nutritionLineCoverage": 0.875,
    "deltaCalories": 226,
    "unchangedValues": false,
@@ -56870,6 +60166,12 @@
     "fat": 18
    },
    "afterWithoutCanonFixes": {
+    "calories": 385,
+    "protein": 36.1,
+    "carbs": 20.8,
+    "fat": 18
+   },
+   "afterRound1": {
     "calories": 385,
     "protein": 36.1,
     "carbs": 20.8,
@@ -57033,6 +60335,12 @@
     "protein": 11.9,
     "carbs": 29.2,
     "fat": 4.9
+   },
+   "afterRound1": {
+    "calories": 142,
+    "protein": 5.5,
+    "carbs": 25.5,
+    "fat": 3
    },
    "nutritionLineCoverage": 1,
    "deltaCalories": -11,
@@ -57237,6 +60545,12 @@
     "carbs": 16.9,
     "fat": 10.9
    },
+   "afterRound1": {
+    "calories": 132,
+    "protein": 11.6,
+    "carbs": 7.8,
+    "fat": 6.3
+   },
    "nutritionLineCoverage": 0.923,
    "deltaCalories": -113,
    "unchangedValues": false,
@@ -57424,6 +60738,12 @@
     "fat": 28.6
    },
    "afterWithoutCanonFixes": {
+    "calories": 470,
+    "protein": 29.8,
+    "carbs": 24.4,
+    "fat": 28.6
+   },
+   "afterRound1": {
     "calories": 470,
     "protein": 29.8,
     "carbs": 24.4,
@@ -57621,10 +60941,10 @@
     "fat": 31.3
    },
    "after": {
-    "calories": 487,
+    "calories": 480,
     "protein": 5.3,
-    "carbs": 19.6,
-    "fat": 43.6
+    "carbs": 19.5,
+    "fat": 42.9
    },
    "afterWithoutCanonFixes": {
     "calories": 490,
@@ -57632,8 +60952,14 @@
     "carbs": 19.6,
     "fat": 43.9
    },
+   "afterRound1": {
+    "calories": 487,
+    "protein": 5.3,
+    "carbs": 19.6,
+    "fat": 43.6
+   },
    "nutritionLineCoverage": 0.889,
-   "deltaCalories": 133,
+   "deltaCalories": 126,
    "unchangedValues": false,
    "lines": [
     {
@@ -57743,7 +61069,7 @@
      "g": 45,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 263.7,
+     "kcal": 223.2,
      "cov": true
     },
     {
@@ -57809,6 +61135,12 @@
     "protein": 34.4,
     "carbs": 17.6,
     "fat": 21.7
+   },
+   "afterRound1": {
+    "calories": 258,
+    "protein": 18.3,
+    "carbs": 8.4,
+    "fat": 17.2
    },
    "nutritionLineCoverage": 0.933,
    "deltaCalories": -116,
@@ -58035,6 +61367,12 @@
     "carbs": 44.1,
     "fat": 55.1
    },
+   "afterRound1": {
+    "calories": 877,
+    "protein": 26,
+    "carbs": 77.5,
+    "fat": 54.3
+   },
    "nutritionLineCoverage": 0.75,
    "deltaCalories": 441,
    "unchangedValues": false,
@@ -58224,6 +61562,12 @@
     "carbs": 41.6,
     "fat": 22.9
    },
+   "afterRound1": {
+    "calories": 235,
+    "protein": 9.2,
+    "carbs": 8.9,
+    "fat": 18.4
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": -147,
    "unchangedValues": false,
@@ -58389,6 +61733,12 @@
     "fat": 11.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 387,
+    "protein": 49.9,
+    "carbs": 10.8,
+    "fat": 11.2
+   },
+   "afterRound1": {
     "calories": 387,
     "protein": 49.9,
     "carbs": 10.8,
@@ -58652,6 +62002,12 @@
     "carbs": 43.6,
     "fat": 9.7
    },
+   "afterRound1": {
+    "calories": 280,
+    "protein": 8.2,
+    "carbs": 43.6,
+    "fat": 9.7
+   },
    "nutritionLineCoverage": 0.813,
    "deltaCalories": 86,
    "unchangedValues": false,
@@ -58888,6 +62244,12 @@
     "carbs": 64.8,
     "fat": 12.6
    },
+   "afterRound1": {
+    "calories": 388,
+    "protein": 7.4,
+    "carbs": 64.8,
+    "fat": 12.6
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": 116,
    "unchangedValues": false,
@@ -59108,6 +62470,12 @@
     "fat": 14.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 424,
+    "protein": 51,
+    "carbs": 10.7,
+    "fat": 14.8
+   },
+   "afterRound1": {
     "calories": 424,
     "protein": 51,
     "carbs": 10.7,
@@ -59349,6 +62717,12 @@
     "carbs": 18.3,
     "fat": 13.5
    },
+   "afterRound1": {
+    "calories": 167,
+    "protein": 13.1,
+    "carbs": 9.2,
+    "fat": 9
+   },
    "nutritionLineCoverage": 0.813,
    "deltaCalories": -73,
    "unchangedValues": false,
@@ -59560,12 +62934,25 @@
    "servings": 4,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "puff pastry",
+     "c": "puff pastry",
+     "why": "unmapped_unit"
+    },
+    {
+     "raw": "cornflour",
+     "c": "cornflour",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 2,
    "before": {
     "calories": 418,
@@ -59574,10 +62961,10 @@
     "fat": 39.9
    },
    "after": {
-    "calories": 481,
-    "protein": 12.1,
+    "calories": 206,
+    "protein": 21.5,
     "carbs": 8.7,
-    "fat": 44.5
+    "fat": 9.8
    },
    "afterWithoutCanonFixes": {
     "calories": 481,
@@ -59585,8 +62972,14 @@
     "carbs": 8.7,
     "fat": 44.5
    },
+   "afterRound1": {
+    "calories": 481,
+    "protein": 12.1,
+    "carbs": 8.7,
+    "fat": 44.5
+   },
    "nutritionLineCoverage": 0.813,
-   "deltaCalories": 63,
+   "deltaCalories": -212,
    "unchangedValues": false,
    "lines": [
     {
@@ -59608,7 +63001,7 @@
      "g": 300,
      "m": "weight",
      "why": null,
-     "kcal": 1422,
+     "kcal": 324,
      "cov": true
     },
     {
@@ -59827,6 +63220,12 @@
     "fat": 48.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 744,
+    "protein": 42,
+    "carbs": 34,
+    "fat": 48.8
+   },
+   "afterRound1": {
     "calories": 744,
     "protein": 42,
     "carbs": 34,
@@ -60068,6 +63467,12 @@
     "carbs": 13.3,
     "fat": 33.6
    },
+   "afterRound1": {
+    "calories": 410,
+    "protein": 29.6,
+    "carbs": 6,
+    "fat": 30
+   },
    "nutritionLineCoverage": 0.9,
    "deltaCalories": 149,
    "unchangedValues": false,
@@ -60233,6 +63638,12 @@
     "fat": 12
    },
    "afterWithoutCanonFixes": {
+    "calories": 258,
+    "protein": 11.3,
+    "carbs": 27.9,
+    "fat": 12
+   },
+   "afterRound1": {
     "calories": 258,
     "protein": 11.3,
     "carbs": 27.9,
@@ -60454,10 +63865,10 @@
     "fat": 31.3
    },
    "after": {
-    "calories": 351,
-    "protein": 9,
+    "calories": 144,
+    "protein": 16.1,
     "carbs": 13.2,
-    "fat": 29.6
+    "fat": 3.4
    },
    "afterWithoutCanonFixes": {
     "calories": 433,
@@ -60465,8 +63876,14 @@
     "carbs": 17.1,
     "fat": 32.5
    },
+   "afterRound1": {
+    "calories": 351,
+    "protein": 9,
+    "carbs": 13.2,
+    "fat": 29.6
+   },
    "nutritionLineCoverage": 0.846,
-   "deltaCalories": -67,
+   "deltaCalories": -274,
    "unchangedValues": false,
    "lines": [
     {
@@ -60510,7 +63927,7 @@
      "g": 226.8,
      "m": "weight",
      "why": null,
-     "kcal": 1075,
+     "kcal": 244.9,
      "cov": true
     },
     {
@@ -60679,6 +64096,12 @@
     "carbs": 19.1,
     "fat": 22.2
    },
+   "afterRound1": {
+    "calories": 332,
+    "protein": 15.2,
+    "carbs": 19.1,
+    "fat": 22.2
+   },
    "nutritionLineCoverage": 0.857,
    "deltaCalories": 44,
    "unchangedValues": false,
@@ -60822,6 +64245,12 @@
     "fat": 31.2
    },
    "afterWithoutCanonFixes": {
+    "calories": 566,
+    "protein": 28.9,
+    "carbs": 44.6,
+    "fat": 31.2
+   },
+   "afterRound1": {
     "calories": 566,
     "protein": 28.9,
     "carbs": 44.6,
@@ -61005,12 +64434,20 @@
    "servings": 8,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "baking powder",
+     "c": null,
+     "why": "unresolved"
+    }
+   ],
    "minorMissingCount": 1,
    "before": {
     "calories": 366,
@@ -61019,10 +64456,10 @@
     "fat": 24.3
    },
    "after": {
-    "calories": 396,
-    "protein": 13.1,
-    "carbs": 28.8,
-    "fat": 26.2
+    "calories": 293,
+    "protein": 15.8,
+    "carbs": 28.7,
+    "fat": 13.7
    },
    "afterWithoutCanonFixes": {
     "calories": 388,
@@ -61030,8 +64467,14 @@
     "carbs": 28.8,
     "fat": 25.6
    },
+   "afterRound1": {
+    "calories": 396,
+    "protein": 13.1,
+    "carbs": 28.8,
+    "fat": 26.2
+   },
    "nutritionLineCoverage": 0.9,
-   "deltaCalories": 30,
+   "deltaCalories": -73,
    "unchangedValues": false,
    "lines": [
     {
@@ -61042,7 +64485,7 @@
      "g": 200,
      "m": "weight",
      "why": null,
-     "kcal": 948,
+     "kcal": 216,
      "cov": true
     },
     {
@@ -61119,7 +64562,7 @@
      "g": 185.4,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 172.4,
+     "kcal": 85.3,
      "cov": true
     },
     {
@@ -61195,6 +64638,12 @@
     "fat": 9.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 561,
+    "protein": 18.2,
+    "carbs": 108.7,
+    "fat": 9.1
+   },
+   "afterRound1": {
     "calories": 561,
     "protein": 18.2,
     "carbs": 108.7,
@@ -61458,6 +64907,12 @@
     "carbs": 38.5,
     "fat": 20.4
    },
+   "afterRound1": {
+    "calories": 397,
+    "protein": 17.2,
+    "carbs": 38.5,
+    "fat": 20.4
+   },
    "nutritionLineCoverage": 0.769,
    "deltaCalories": 124,
    "unchangedValues": false,
@@ -61647,12 +65102,25 @@
    "servings": 2,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "hardboiled quail eggs",
+     "c": "hardboiled quail eggs",
+     "why": "missing_per_item_g"
+    },
+    {
+     "raw": "agave nectar",
+     "c": "agave nectar",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 1,
    "before": {
     "calories": 599,
@@ -61661,10 +65129,10 @@
     "fat": 60.4
    },
    "after": {
-    "calories": 739,
-    "protein": 17.4,
+    "calories": 282,
+    "protein": 33.2,
     "carbs": 10,
-    "fat": 69.9
+    "fat": 12.2
    },
    "afterWithoutCanonFixes": {
     "calories": 739,
@@ -61672,8 +65140,14 @@
     "carbs": 10,
     "fat": 69.9
    },
+   "afterRound1": {
+    "calories": 739,
+    "protein": 17.4,
+    "carbs": 10,
+    "fat": 69.9
+   },
    "nutritionLineCoverage": 0.75,
-   "deltaCalories": 140,
+   "deltaCalories": -317,
    "unchangedValues": false,
    "lines": [
     {
@@ -61695,7 +65169,7 @@
      "g": 250,
      "m": "weight",
      "why": null,
-     "kcal": 1185,
+     "kcal": 270,
      "cov": true
     },
     {
@@ -61848,6 +65322,12 @@
     "fat": 5.5
    },
    "afterWithoutCanonFixes": {
+    "calories": 211,
+    "protein": 8,
+    "carbs": 34.7,
+    "fat": 5.5
+   },
+   "afterRound1": {
     "calories": 211,
     "protein": 8,
     "carbs": 34.7,
@@ -62067,6 +65547,12 @@
     "carbs": 85.2,
     "fat": 16.5
    },
+   "afterRound1": {
+    "calories": 602,
+    "protein": 31.8,
+    "carbs": 85.2,
+    "fat": 16.5
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": 101,
    "unchangedValues": false,
@@ -62267,12 +65753,35 @@
    "servings": 6,
    "nutritionUnavailable": false,
    "nutritionApproximate": false,
-   "action": "write",
+   "action": "hold_review",
    "reviewFlags": [],
-   "holdReasons": [],
+   "holdReasons": [
+    "decrease_with_major_missing"
+   ],
    "flagReason": null,
-   "decrease": false,
-   "majorMissing": [],
+   "decrease": true,
+   "majorMissing": [
+    {
+     "raw": "puff pastry",
+     "c": "puff pastry",
+     "why": "unmapped_unit"
+    },
+    {
+     "raw": "baby potatoes",
+     "c": "baby potatoes",
+     "why": "missing_per_item_g"
+    },
+    {
+     "raw": "chicken stock",
+     "c": "chicken stock",
+     "why": "no_nutrition"
+    },
+    {
+     "raw": "cornflour",
+     "c": "cornflour",
+     "why": "missing_density"
+    }
+   ],
    "minorMissingCount": 1,
    "before": {
     "calories": 303,
@@ -62281,10 +65790,10 @@
     "fat": 25.4
    },
    "after": {
-    "calories": 344,
-    "protein": 9.3,
+    "calories": 161,
+    "protein": 15.6,
     "carbs": 13.3,
-    "fat": 28.5
+    "fat": 5.4
    },
    "afterWithoutCanonFixes": {
     "calories": 344,
@@ -62292,8 +65801,14 @@
     "carbs": 13.3,
     "fat": 28.5
    },
+   "afterRound1": {
+    "calories": 344,
+    "protein": 9.3,
+    "carbs": 13.3,
+    "fat": 28.5
+   },
    "nutritionLineCoverage": 0.688,
-   "deltaCalories": 41,
+   "deltaCalories": -142,
    "unchangedValues": false,
    "lines": [
     {
@@ -62315,7 +65830,7 @@
      "g": 300,
      "m": "weight",
      "why": null,
-     "kcal": 1422,
+     "kcal": 324,
      "cov": true
     },
     {
@@ -62512,6 +66027,12 @@
     "fat": 16.1
    },
    "afterWithoutCanonFixes": {
+    "calories": 257,
+    "protein": 3.4,
+    "carbs": 25.1,
+    "fat": 16.1
+   },
+   "afterRound1": {
     "calories": 257,
     "protein": 3.4,
     "carbs": 25.1,
@@ -62786,6 +66307,12 @@
     "carbs": 79.4,
     "fat": 14
    },
+   "afterRound1": {
+    "calories": 493,
+    "protein": 9.9,
+    "carbs": 79.4,
+    "fat": 14
+   },
    "nutritionLineCoverage": 0.8,
    "deltaCalories": 135,
    "unchangedValues": false,
@@ -63022,6 +66549,12 @@
     "carbs": 7.5,
     "fat": 11.9
    },
+   "afterRound1": {
+    "calories": 270,
+    "protein": 33.3,
+    "carbs": 7.5,
+    "fat": 11.9
+   },
    "nutritionLineCoverage": 0.667,
    "deltaCalories": 109,
    "unchangedValues": false,
@@ -63214,6 +66747,12 @@
     "carbs": 6.5,
     "fat": 26.2
    },
+   "afterRound1": {
+    "calories": 323,
+    "protein": 16,
+    "carbs": 6.5,
+    "fat": 26.2
+   },
    "nutritionLineCoverage": 0.875,
    "deltaCalories": 62,
    "unchangedValues": false,
@@ -63357,6 +66896,12 @@
     "fat": 13.9
    },
    "afterWithoutCanonFixes": {
+    "calories": 765,
+    "protein": 22.5,
+    "carbs": 137.7,
+    "fat": 13.9
+   },
+   "afterRound1": {
     "calories": 765,
     "protein": 22.5,
     "carbs": 137.7,
@@ -63598,6 +67143,12 @@
     "carbs": 55.6,
     "fat": 21.9
    },
+   "afterRound1": {
+    "calories": 494,
+    "protein": 22.4,
+    "carbs": 55.6,
+    "fat": 21.9
+   },
    "nutritionLineCoverage": 1,
    "deltaCalories": 92,
    "unchangedValues": false,
@@ -63724,10 +67275,10 @@
     "fat": 25.8
    },
    "after": {
-    "calories": 431,
-    "protein": 13.4,
-    "carbs": 34.1,
-    "fat": 27.8
+    "calories": 424,
+    "protein": 13.1,
+    "carbs": 34,
+    "fat": 27.2
    },
    "afterWithoutCanonFixes": {
     "calories": 415,
@@ -63735,8 +67286,14 @@
     "carbs": 34.1,
     "fat": 26.7
    },
+   "afterRound1": {
+    "calories": 431,
+    "protein": 13.4,
+    "carbs": 34.1,
+    "fat": 27.8
+   },
    "nutritionLineCoverage": 0.9,
-   "deltaCalories": 30,
+   "deltaCalories": 23,
    "unchangedValues": false,
    "lines": [
     {
@@ -63857,7 +67414,7 @@
      "g": 123.6,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 114.9,
+     "kcal": 56.9,
      "cov": true
     },
     {
@@ -63900,6 +67457,12 @@
     "fat": 47.9
    },
    "afterWithoutCanonFixes": {
+    "calories": 786,
+    "protein": 35.3,
+    "carbs": 57.2,
+    "fat": 47.9
+   },
+   "afterRound1": {
     "calories": 786,
     "protein": 35.3,
     "carbs": 57.2,
@@ -64076,7 +67639,7 @@
    "reviewFlags": [],
    "holdReasons": [],
    "flagReason": null,
-   "decrease": false,
+   "decrease": true,
    "majorMissing": [],
    "minorMissingCount": 0,
    "before": {
@@ -64086,10 +67649,10 @@
     "fat": 74.4
    },
    "after": {
-    "calories": 912,
-    "protein": 26.8,
+    "calories": 497,
+    "protein": 41,
     "carbs": 29.8,
-    "fat": 78.3
+    "fat": 25.9
    },
    "afterWithoutCanonFixes": {
     "calories": 912,
@@ -64097,8 +67660,14 @@
     "carbs": 29.8,
     "fat": 78.3
    },
+   "afterRound1": {
+    "calories": 912,
+    "protein": 26.8,
+    "carbs": 29.8,
+    "fat": 78.3
+   },
    "nutritionLineCoverage": 1,
-   "deltaCalories": 51,
+   "deltaCalories": -364,
    "unchangedValues": false,
    "lines": [
     {
@@ -64109,7 +67678,7 @@
      "g": 453.6,
      "m": "weight",
      "why": null,
-     "kcal": 2150.1,
+     "kcal": 489.9,
      "cov": true
     },
     {
@@ -64328,6 +67897,12 @@
     "fat": 16.8
    },
    "afterWithoutCanonFixes": {
+    "calories": 638,
+    "protein": 38.6,
+    "carbs": 89.4,
+    "fat": 16.8
+   },
+   "afterRound1": {
     "calories": 638,
     "protein": 38.6,
     "carbs": 89.4,
@@ -64657,6 +68232,12 @@
     "carbs": 39.5,
     "fat": 14.9
    },
+   "afterRound1": {
+    "calories": 349,
+    "protein": 16.7,
+    "carbs": 39.5,
+    "fat": 14.9
+   },
    "nutritionLineCoverage": 0.833,
    "deltaCalories": 95,
    "unchangedValues": false,
@@ -64904,10 +68485,10 @@
     "fat": 5.3
    },
    "after": {
-    "calories": 645,
-    "protein": 42.3,
+    "calories": 637,
+    "protein": 42,
     "carbs": 86.4,
-    "fat": 16.8
+    "fat": 16.2
    },
    "afterWithoutCanonFixes": {
     "calories": 645,
@@ -64915,8 +68496,14 @@
     "carbs": 86.4,
     "fat": 16.8
    },
+   "afterRound1": {
+    "calories": 645,
+    "protein": 42.3,
+    "carbs": 86.4,
+    "fat": 16.8
+   },
    "nutritionLineCoverage": 0.778,
-   "deltaCalories": 149,
+   "deltaCalories": 141,
    "unchangedValues": false,
    "lines": [
     {
@@ -65092,7 +68679,7 @@
      "g": 61.8,
      "m": "liquid_fallback",
      "why": null,
-     "kcal": 57.5,
+     "kcal": 28.4,
      "cov": true
     },
     {
