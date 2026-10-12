@@ -1,0 +1,76 @@
+{
+ "batch": "pdfix-20261012",
+ "appliedAt": "2026-10-12T16:11:39.797Z",
+ "source": "price_density_fix_dryrun_2026-10-12.json",
+ "priceDocModified": 1,
+ "densityModified": 1,
+ "recipeCostModified": 5,
+ "requery": {
+  "price": {
+   "_id": "6a5d4195f92108b016edefa7",
+   "listings": [
+    {
+     "store": "Tesco",
+     "title": "Tesco Beansprouts 300G",
+     "price": 0.85,
+     "pack": {
+      "qty": 300,
+      "unit": "g_or_ml"
+     },
+     "source_of_pack": "title",
+     "per_unit": 0.0028
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose Fresh Mung Beansprouts",
+     "price": 0.9,
+     "pack": null,
+     "source_of_pack": "unknown",
+     "per_unit": null
+    },
+    {
+     "store": "Ocado",
+     "title": "Kingfisher Bean Sprouts in Water",
+     "price": 1.15,
+     "pack": null,
+     "source_of_pack": "unknown",
+     "per_unit": null
+    }
+   ],
+   "n_supermarkets": 3,
+   "per_unit_metric": {
+    "value": 0.0028,
+    "unit": "g_or_ml",
+    "n": 1
+   }
+  },
+  "density": 104,
+  "recipeCost": [
+   {
+    "recipeId": "69b9587c7d3db8c999c7df7d",
+    "basket": 6.0099,
+    "perServing": 1.0017
+   },
+   {
+    "recipeId": "69d5710287d5d72710ae8eb2",
+    "basket": 19.6472,
+    "perServing": 2.4559
+   },
+   {
+    "recipeId": "6a68c1cee9ca2eb201736077",
+    "basket": 10.1778,
+    "perServing": 2.5445
+   },
+   {
+    "recipeId": "6ac80dd0b0ca951a2fbf758e",
+    "basket": 8.3988,
+    "perServing": 2.0997
+   },
+   {
+    "recipeId": "6ac80deab0ca951a2fbf75ec",
+    "basket": 8.4103,
+    "perServing": 2.1026
+   }
+  ]
+ }
+}

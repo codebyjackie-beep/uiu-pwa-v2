@@ -1,0 +1,79 @@
+{
+  "batch": "nutrition-20261012",
+  "appliedAt": "2026-10-12T16:11:57.835Z",
+  "source": "nutrition_recompute_dryrun_2026-10-12.json",
+  "canonicalModified": 17,
+  "recipesModified": 152,
+  "flagsModified": 8,
+  "flaggedStillUnavailable": 26,
+  "distributionAfter": {
+    "<150": 35,
+    "150-300": 63,
+    "300-600": 166,
+    "600-900": 60,
+    ">900": 4,
+    "n/a": 0
+  },
+  "sample": [
+    {
+      "id": "69d191951648bcfb8b55261a",
+      "title": "Quinoa Power Bowl with Roasted Sweet Potatoes, Crispy Onions, and Ginger-Avocado Dressing",
+      "before": 436,
+      "after": 817
+    },
+    {
+      "id": "69d1933f0ce7d5269f69526a",
+      "title": "Prawn Scampi with Linguine",
+      "before": 609,
+      "after": 765
+    },
+    {
+      "id": "69d1933f0ce7d5269f69526b",
+      "title": "Spicy Prawn Tacos with Avocado Crema",
+      "before": 139,
+      "after": 335
+    },
+    {
+      "id": "69d1933f0ce7d5269f69526d",
+      "title": "Lemon Herb King Prawns with Roasted Asparagus & Cherry Tomatoes",
+      "before": 163,
+      "after": 356
+    },
+    {
+      "id": "69d1933f0ce7d5269f69526e",
+      "title": "Prawn and Vegetable Stir-fry with Egg Noodles",
+      "before": 511,
+      "after": 717
+    },
+    {
+      "id": "69d5776887d5d72710ae8ec8",
+      "title": "Rustic Vegetable & Dumpling Stew with Soda-Glazed Tomatoes & Herb Salad",
+      "before": 90,
+      "after": 219
+    },
+    {
+      "id": "69d191951648bcfb8b552616",
+      "title": "Ginger-Lime Shrimp with Avocado-Shallot Salsa",
+      "before": 137,
+      "after": 465
+    },
+    {
+      "id": "69d191951648bcfb8b552620",
+      "title": "Sweet Potato & Avocado Hash with Poached Eggs and Sautéed Onions/Shallots",
+      "before": 130,
+      "after": 517
+    },
+    {
+      "id": "69d191951648bcfb8b55261b",
+      "title": "Miso-Glazed Salmon with Ginger-Shallot Rice and Avocado",
+      "before": 602,
+      "after": 821
+    },
+    {
+      "id": "69d1933f0ce7d5269f695270",
+      "title": "Cajun King Prawns with Dirty Rice",
+      "before": 406,
+      "after": 555
+    }
+  ]
+}
