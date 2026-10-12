@@ -67,6 +67,12 @@ const CANON_FIXES = [
   { round: 2, name: "milk", cofid: "12-313", cofidName: "Milk, semi-skimmed, pasteurised, average", why: "was 12-329 'Milk, sheeps, raw' (93 kcal); UK default = semi-skimmed" },
   { round: 2, name: "cream", cofid: "12-334", cofidName: "Cream, fresh, double, including Jersey cream", why: "was 12-592 'Cream, fresh, clotted' (586 kcal); cloud: double cream" },
   { round: 2, name: "heavy cream", cofid: "12-334", cofidName: "Cream, fresh, double, including Jersey cream", why: "was 340 kcal / 36 g fat (not in CoFID, US heavy cream); cloud: double cream" },
+  // --- cloud 3rd review (2026-10-12): CoFID has no dried rice-noodle row (only 11-725 boiled, 89 kcal) while recipes give dry oz;
+  // copy the existing dry-weight canonical instead of inventing a number ---
+  {
+    round: 3, name: "rice noodles", copyNutritionFrom: "rice stick noodles", nutritionSource: "copied from rice stick noodles",
+    why: "was 11-725 'Noodles, rice, fine, dried, boiled' (89 kcal, cooked weight) but recipes list dry oz; cloud: copy canonical 'rice stick noodles' (364 kcal, dry)",
+  },
   // density_cup is OWNED by price_density_fix.cjs (written there, it drives the price too); here it is only simulated so the
   // nutrition numbers already use 104 g/cup. NOT written by nutrition_recompute --write.
   {
@@ -74,13 +80,8 @@ const CANON_FIXES = [
     densityCupSource: "USDA FDC 'Mung beans, mature seeds, sprouted, raw': 1 cup = 104 g (was 180) — cloud-specified",
   },
 ];
-// Proposals NOT applied (report only): no CoFID entry exists, nothing is invented.
-const CANON_PROPOSALS_NOT_APPLIED = [
-  {
-    name: "rice noodles",
-    reason: "cloud asked for 'rice noodles, dried' but the CoFID table has no raw/dried rice-noodle entry — the only rice-noodle row is 11-725 'Noodles, rice, fine, dried, boiled in unsalted water' (89 kcal), which is what the canonical already holds (cooked weight, while recipes give dry oz). Left unchanged; needs a non-CoFID source (e.g. USDA dry rice noodles ~360 kcal/100 g) approved by cloud.",
-  },
-];
+// Proposals NOT applied (report only): no CoFID entry exists, nothing is invented. (Round 3: rice noodles resolved below.)
+const CANON_PROPOSALS_NOT_APPLIED = [];
 // Spoonacular recipes that stay skip_authoritative although stored kcal is outside 100..1200 (cloud decision).
 const FLAG_EXEMPT = new Map([
   ["6a5ff781a91e3f027a2961e9", "Korean Beef Rice Bowl: stored 1215 kcal accepted (cloud 2nd review 2026-10-12; recompute 1040)"],
@@ -97,6 +98,21 @@ const MINOR_MISSING_RE = new RegExp(
     "(fresh |dried |chopped |mixed |italian |ground )?(oregano|thyme|rosemary|basil|parsley|flat[- ]leaf parsley|coriander leaves|cilantro|dill|mint|sage|tarragon|chives|bay leaf|bay leaves|herbs|herbes de provence|marjoram|lemongrass|curry leaves|kaffir lime leaves|lime leaves)( leaves| sprigs?)?",
   ].join("|") + ")( to taste)?$",
 );
+// Cloud 3rd review (2026-10-12): a missing line is also "low-kcal" (does not block a kcal decrease) when it is a
+// vegetable < 50 kcal/100 g, a thin liquid (lemon/lime juice, stock/broth), a condiment sauce (sriracha, hot sauce,
+// worcestershire, soy) or garlic / baking powder / sugar substitute / generic spices. Anything else (bacon, pastry, bread,
+// beans, chia, ghee, eggs, thighs, honey/agave/maple, parmesan, breadcrumbs, cornflour, yogurt, potatoes ...) stays "major".
+const LOW_KCAL_MISSING_RE = new RegExp(
+  "^(" + [
+    "(fresh |raw |organic |baby |english |persian |mini |small |large |medium |red |green |yellow |orange |sweet |bell |sliced |chopped |diced )*(asparagus( spears?| tips)?|cucumbers?|zucchinis?|courgettes?|peppers?|(cherry |plum |vine |roma )?tomato(e)?s?|broccoli slaw|spinach|baby spinach)",
+    "(fresh |freshly squeezed |bottled )?(lemon|lime|lemon or lime|lime or lemon) juice( from (a|an|half a|one|1) (lemon|lime))?",
+    "(low[- ]sodium |reduced[- ]sodium |homemade |good[- ]quality )?(chicken|vegetable|veg|veggie|beef|fish) (stock|broth)", "(low[- ]sodium |reduced[- ]sodium )?(stock|broth)",
+    "sriracha( sauce)?", "(louisiana |tabasco )?hot sauce", "tabasco( sauce)?", "worcestershire( sauce)?",
+    "(light |dark |low[- ]sodium |reduced[- ]sodium |reduced salt )?soy sauce",
+    "(fresh |minced |crushed )?garlic( cloves?)?", "baking powder", "(granulated |powdered )?sugar substitute", "(mixed |ground )?spices?",
+  ].join("|") + ")( to taste)?$",
+);
+const isMinorMissing = (name) => MINOR_MISSING_RE.test(name) || LOW_KCAL_MISSING_RE.test(name);
 
 function loadDevVars() {
   const env = {};
@@ -197,6 +213,16 @@ async function main() {
         rec("nutrition_per_100g");
         set.nutrition_per_100g = { kcal: cofid.kcal, protein: cofid.protein, carbs: cofid.carbs, fat: cofid.fat };
       }
+      if (f.copyNutritionFrom) {
+        const src = docByName.get(f.copyNutritionFrom);
+        const sn = src && src.nutrition_per_100g;
+        if (!sn || typeof sn.kcal !== "number") throw new Error(`copy source ${f.copyNutritionFrom} has no nutrition_per_100g`);
+        cofid = { code: null, food_name: `canonical "${f.copyNutritionFrom}"`, kcal: sn.kcal, protein: sn.protein, carbs: sn.carbs, fat: sn.fat };
+        rec("nutrition_per_100g");
+        set.nutrition_per_100g = { kcal: sn.kcal, protein: sn.protein, carbs: sn.carbs, fat: sn.fat };
+        rec("nutrition_source");
+        set.nutrition_source = f.nutritionSource;
+      }
       if (f.perItemG != null) { rec("per_item_g"); set.per_item_g = f.perItemG; }
       if (f.densityCup != null) { rec("density_cup"); set.density_cup = f.densityCup; }
       if (f.addAliases) {
@@ -220,7 +246,12 @@ async function main() {
     // state after the FIRST review round only (all fixes except round 2) — to show what the 2nd round changed
     const ingredientsMapPrevRound = new Map(canonDocs.map((d) => {
       const fx = fixById.get(String(d._id));
-      return [d.canonical_name, fx && fx.round !== 2 ? { ...d, ...fx.after } : d];
+      return [d.canonical_name, fx && fx.round < 2 ? { ...d, ...fx.after } : d];
+    }));
+    // state after rounds 1+2 (= the previous committed dry-run) — to show what the 3rd round changed
+    const ingredientsMapRound2 = new Map(canonDocs.map((d) => {
+      const fx = fixById.get(String(d._id));
+      return [d.canonical_name, fx && fx.round <= 2 ? { ...d, ...fx.after } : d];
     }));
     // buildAliasIndex() only does collection.find({quarantine:{$ne:true}}).project().toArray() - feed it the simulated docs
     const shimCol = (docs) => ({ find: () => ({ project: () => ({ toArray: async () => docs.filter((d) => d.quarantine !== true) }) }) });
@@ -238,6 +269,7 @@ async function main() {
       const res = computeRecipeNutrition(ings, r.servings, resolveFn, ingredientsMapFixed);
       const resOld = computeRecipeNutrition(ings, r.servings, resolveFnBefore, ingredientsMapBefore); // new code, canonical data as it is today
       const resPrev = computeRecipeNutrition(ings, r.servings, resolveFn, ingredientsMapPrevRound); // after round-1 fixes only
+      const resRound2 = computeRecipeNutrition(ings, r.servings, resolveFn, ingredientsMapRound2); // after rounds 1+2
       const before = pickNutrition(r.nutrition);
       const after = pickNutrition(res.nutrition);
       const storedK = before?.calories ?? 0;
@@ -253,7 +285,8 @@ async function main() {
       // lines that contributed 0 kcal: minor (spice/salt/pepper/water/herb by name) vs major
       const cleanName = (l) => cleanMissingName(l.canonical_name ?? l.rawName);
       const missingLines = res.lines.filter((l) => l.reason != null);
-      const majorMissing = missingLines.filter((l) => !MINOR_MISSING_RE.test(cleanName(l)));
+      const majorMissing = missingLines.filter((l) => !isMinorMissing(cleanName(l)));
+      const majorMissingRound2Rule = missingLines.filter((l) => !MINOR_MISSING_RE.test(cleanName(l))); // rule before the 3rd review
       const decrease = !!(before && after && after.calories < before.calories);
       const holdReasons = [];
       let action;
@@ -284,12 +317,16 @@ async function main() {
         holdReasons: [...new Set(holdReasons)],
         flagReason,
         decrease,
+        // hold -> write because of the 3rd-review low-kcal rule (every missing line is low-kcal; the old rule would have held it)
+        relaxedByRound3: action === "write" && decrease && majorMissing.length === 0 && majorMissingRound2Rule.length > 0,
+        relaxedLines: action === "write" && decrease && majorMissing.length === 0 ? majorMissingRound2Rule.map((l) => `${l.canonical_name ?? l.rawName} (${l.reason})`) : [],
         majorMissing: decrease || action === "hold_review" ? majorMissing.map((l) => ({ raw: l.rawName, c: l.canonical_name, why: l.reason })) : [],
         minorMissingCount: missingLines.length - majorMissing.length,
         before,
         after,
         afterWithoutCanonFixes: pickNutrition(resOld.nutrition),
         afterRound1: pickNutrition(resPrev.nutrition),
+        afterRound2: pickNutrition(resRound2.nutrition),
         nutritionLineCoverage: res.nutrition.nutritionLineCoverage,
         deltaCalories: before && after ? after.calories - before.calories : null,
         unchangedValues: same(before, after),
@@ -322,7 +359,8 @@ async function main() {
       writeRowsDecreaseWithMajorMissing: rows.filter((x) => x.action === "write" && x.decrease && x.majorMissing.length).length,
       heldDecreaseWithMajorMissing: rows.filter((x) => x.holdReasons.includes("decrease_with_major_missing")).length,
       // informational: write rows that go UP/equal but still have a major line without kcal (under-count remains)
-      writeRowsStillMissingMajorLines: rows.filter((x) => x.action === "write" && x.lines.some((l) => l.why != null && !MINOR_MISSING_RE.test(cleanMissingName(l.c ?? l.raw)))).length,
+      writeRowsStillMissingMajorLines: rows.filter((x) => x.action === "write" && x.lines.some((l) => l.why != null && !isMinorMissing(cleanMissingName(l.c ?? l.raw)))).length,
+      relaxedByRound3: rows.filter((x) => x.relaxedByRound3).length,
       canonFixEffect: rows.filter((x) => x.after && x.afterWithoutCanonFixes && x.after.calories !== x.afterWithoutCanonFixes.calories)
         .map((x) => ({ id: x.id, title: x.title, action: x.action, without: x.afterWithoutCanonFixes.calories, withFix: x.after.calories })),
     };
@@ -357,16 +395,33 @@ async function main() {
       .filter((d) => d.nutrition_per_100g && d.nutrition_per_100g.kcal > 60 && PRODUCE_RE.test(d.canonical_name.toLowerCase()) && !NOT_PLAIN_PRODUCE_RE.test(d.canonical_name.toLowerCase()) && d.quarantine !== true)
       .map((d) => ({ canonical_name: d.canonical_name, kcalPer100g: d.nutrition_per_100g.kcal, recipe_count: d.recipe_count ?? null }))
       .sort((a, b) => b.kcalPer100g - a.kcalPer100g);
-    // recipes with a line on a canonical touched by the 2nd review round (chicken / milk / cream / heavy cream; rice noodles unchanged)
-    const ROUND2_NAMES = new Set(CANON_FIXES.filter((f) => f.round === 2 && f.cofid).map((f) => f.name).concat(CANON_PROPOSALS_NOT_APPLIED.map((x) => x.name)));
+    // recipes with a line on a canonical touched by the 2nd review round (chicken / milk / cream / heavy cream)
+    const ROUND2_NAMES = new Set(CANON_FIXES.filter((f) => f.round === 2 && f.cofid).map((f) => f.name));
     const point1Affected = rows
       .filter((x) => x.lines.some((l) => ROUND2_NAMES.has(l.c)))
       .map((x) => ({
         id: x.id, title: x.title, source: x.source, servings: x.servings, action: x.action, stored: x.before?.calories ?? null,
-        afterRound1: x.afterRound1?.calories ?? null, afterRound2: x.after?.calories ?? null,
+        afterRound1: x.afterRound1?.calories ?? null, afterRound2: x.afterRound2?.calories ?? null, afterRound3: x.after?.calories ?? null,
         canonLines: x.lines.filter((l) => ROUND2_NAMES.has(l.c)).map((l) => `${l.c}: ${l.q} ${l.u} = ${l.g}g${l.why ? " (" + l.why + ")" : ""}`),
       }))
       .sort((a, b) => Math.abs((b.afterRound2 ?? 0) - (b.afterRound1 ?? 0)) - Math.abs((a.afterRound2 ?? 0) - (a.afterRound1 ?? 0)));
+    // 3rd review: the recipes with a "rice noodles" line (canonical now copied from rice stick noodles) ...
+    const riceNoodleRecipes = rows
+      .filter((x) => x.lines.some((l) => l.c === "rice noodles"))
+      .map((x) => ({
+        id: x.id, title: x.title, source: x.source, servings: x.servings, action: x.action, holdReasons: x.holdReasons,
+        stored: x.before?.calories ?? null, afterRound2: x.afterRound2?.calories ?? null, afterRound3: x.after?.calories ?? null,
+        finalKcal: finalKcal(x), inRange200to700: finalKcal(x) != null && finalKcal(x) >= 200 && finalKcal(x) <= 700,
+        riceNoodleLines: x.lines.filter((l) => l.c === "rice noodles").map((l) => `${l.q} ${l.u} = ${l.g}g, ${l.kcal} kcal`),
+      }));
+    // ... and the rows that moved hold_review -> write because of the low-kcal missing-line rule
+    const holdToWrite = rows
+      .filter((x) => x.relaxedByRound3)
+      .map((x) => ({
+        id: x.id, title: x.title, servings: x.servings, stored: x.before?.calories ?? null, after: x.after?.calories ?? null,
+        coverage: x.nutritionLineCoverage, relaxedLines: x.relaxedLines,
+        inRange100to1200: x.after != null && x.after.calories >= 100 && x.after.calories <= 1200,
+      }));
     const flagUnavailable = rows.filter((x) => x.action === "flag_unavailable").map((x) => ({
       id: x.id, title: x.title, source: x.source, servings: x.servings, storedKcal: x.before?.calories ?? null, recomputeKcal: x.after?.calories ?? null,
       coverage: x.nutritionLineCoverage, reason: x.flagReason,
@@ -445,7 +500,7 @@ async function main() {
     const out = {
       generatedAt: new Date().toISOString(),
       baseCommit: "3349e50+",
-      stats, canonFixes, canonProposalsNotApplied: CANON_PROPOSALS_NOT_APPLIED, flagExempt: [...FLAG_EXEMPT].map(([id, why]) => ({ id, why })), point1Affected, coconutProposals, suspectCanonicalScan, flagUnavailable,
+      stats, canonFixes, canonProposalsNotApplied: CANON_PROPOSALS_NOT_APPLIED, flagExempt: [...FLAG_EXEMPT].map(([id, why]) => ({ id, why })), point1Affected, riceNoodleRecipes, holdToWrite, coconutProposals, suspectCanonicalScan, flagUnavailable,
       top20Changes: top20, outOfRange, topNullLines: topNull, nullLineTotalsByReason: nullTotals,
       flaggedUnavailable: flaggedReport, samples, impact,
       decreases, suspectPer100g,
