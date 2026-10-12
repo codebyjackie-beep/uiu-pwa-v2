@@ -1,0 +1,347 @@
+{
+  "generatedAt": "2026-10-12T09:39:07.299Z",
+  "publicRecipes": 328,
+  "titleMatches": 94,
+  "flagged": 18,
+  "rows": [
+    {
+      "id": "69b1db93974afef25b93a471",
+      "title": "Asparagus and Pea Soup: Real Convenience Food",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec9",
+      "title": "Creamy Broccoli & Celery Soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec4",
+      "title": "Vegan Colcannon Soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec3",
+      "title": "Spicy lentil and black rice soup with kale, spinach and leek",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecf",
+      "title": "Azteca Soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4eca",
+      "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69b277e5f9069a06b5536b5c",
+      "title": "SLOW COOKER CHICKEN GUMBO SOUP",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec7",
+      "title": "Celery Apple Risotto With Crispy Pancetta",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch+dinner (+appetizer)"
+    },
+    {
+      "id": "69c473017393a7f0235b89b7",
+      "title": "Xocai Oatmeal Dark Chocolate No-Bake Cookies",
+      "currentClasses": [
+        "dessert",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "dessert"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "keep (finger food / dessert: snack is correct)"
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecb",
+      "title": "Chilled Green Pea & Onion Soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd3",
+      "title": "Red Curry Stew & Vegetable Noodles",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch+dinner (+appetizer)"
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd0",
+      "title": "Apple Curry Soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c7275f754babcc25875c84",
+      "title": "Chilled Cucumber Avocado Soup with Yogurt and Kefir",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd4",
+      "title": "Baked Indian Samosas",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "keep (finger food / dessert: snack is correct)"
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd2",
+      "title": "Red quinoa cranberry arugula soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dcf",
+      "title": "Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch+dinner (+appetizer)"
+    },
+    {
+      "id": "6a5ff992a91e3f027a2961eb",
+      "title": "Carrot and Coriander Soup",
+      "currentClasses": [
+        "appetizer",
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack",
+        "appetizer"
+      ],
+      "mealType": null,
+      "source": "spoonacular",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "remove tag \"snack\" (keep \"appetizer\") -> classifier gives lunch (+appetizer)"
+    },
+    {
+      "id": "6ac80e27b0ca951a2fbf76c2",
+      "title": "High-Protein Japanese Curry Puffs",
+      "currentClasses": [
+        "snack"
+      ],
+      "slotTagsPresent": [
+        "snack"
+      ],
+      "mealType": "snack",
+      "source": "ai_daily_draft",
+      "suggestedClasses": [
+        "lunch",
+        "dinner"
+      ],
+      "suggestedAction": "keep (finger food / dessert: snack is correct)"
+    }
+  ]
+}
