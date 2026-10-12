@@ -1,0 +1,44 @@
+{
+ "batch": "rcr-20261012",
+ "appliedAt": "2026-10-12T16:32:33.358Z",
+ "source": "recipe_cost_recompute_dryrun_2026-10-12.json",
+ "recipeCostModified": 3,
+ "expected": 3,
+ "requery": {
+  "rowMismatch": 0,
+  "tiers": {
+   "full": 251,
+   "partial": 65,
+   "unavailable": 12
+  },
+  "tiersMatchDryRunAfter": true,
+  "priceBuckets": {
+   "under1_5": 108,
+   "1_5to3": 137,
+   "3plus": 71,
+   "excluded_no_price_or_unavailable": 12
+  },
+  "bucketsMatchDryRunAfter": true,
+  "plans": [
+   {
+    "name": "Weekly Plan 6",
+    "id": "6ab52b2f9b0819afa3920923",
+    "isActive": true,
+    "entries": 21,
+    "entriesWithoutPrice": 0,
+    "total": 37.48,
+    "byDay": {
+     "1": 4.84,
+     "2": 5.87,
+     "3": 4.89,
+     "4": 5.86,
+     "5": 4.77,
+     "6": 5.83,
+     "7": 5.42
+    }
+   }
+  ],
+  "plansMatchDryRunAfter": true,
+  "publicAbove8": 5
+ }
+}
