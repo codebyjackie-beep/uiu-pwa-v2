@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formatTotalWithIncomplete } from "@uiu/shared";
+import { formatTotalWithIncomplete, recipePerServingPrice } from "@uiu/shared";
 import type {
   ApiResponse,
   FavouriteRecipe,
@@ -308,7 +308,8 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
               {!searching && results.length === 0 ? <p className="meal-picker__status">No recipes found.</p> : null}
               {results.map((recipe) => {
                 const mealBadge = mealTypeBadge(recipe);
-                const cost = recipe.cost && recipe.cost.basket > 0 ? recipe.cost : null;
+                // Per-serving, same as the Recipes list and the plan cards (never the whole-recipe basket).
+                const perServing = recipePerServingPrice(recipe.cost);
                 return (
                   <button
                     key={recipe._id}
@@ -326,10 +327,11 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                     <div className="recipe-card__body">
                       <div className="recipe-card__header">
                         {mealBadge ? <span className="badge">{mealBadge}</span> : <span />}
-                        {cost ? (
+                        {perServing != null ? (
                           <CoveragePrice
-                            value={cost.basket}
-                            coveragePct={cost.adjustedCoveragePct}
+                            value={perServing}
+                            coveragePct={recipe.cost!.adjustedCoveragePct}
+                            suffix="/ serving"
                             className="recipe-card__price"
                             pendingClassName="recipe-card__price--pending"
                           />

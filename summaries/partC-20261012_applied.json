@@ -1,0 +1,427 @@
+{
+  "batch": "partC-20261012",
+  "appliedAt": "2026-10-12T14:14:23.606Z",
+  "source": "partC_mealtype_dryrun_2026-10-12.json",
+  "modified": 15,
+  "changed": [
+    {
+      "id": "69b1db93974afef25b93a471",
+      "title": "Asparagus and Pea Soup: Real Convenience Food",
+      "tags": [
+        "soup",
+        "antipasti",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "paleolithic",
+        "lacto ovo vegetarian",
+        "primal",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec9",
+      "title": "Creamy Broccoli & Celery Soup",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "whole 30"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec4",
+      "title": "Vegan Colcannon Soup",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "lacto ovo vegetarian",
+        "whole 30",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31dd4b17f27d65b4f4ec3",
+      "title": "Spicy lentil and black rice soup with kale, spinach and leek",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "lacto ovo vegetarian",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecf",
+      "title": "Azteca Soup",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "lacto ovo vegetarian"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4eca",
+      "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69b277e5f9069a06b5536b5c",
+      "title": "SLOW COOKER CHICKEN GUMBO SOUP",
+      "tags": [
+        "soup",
+        "antipasti",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ec7",
+      "title": "Celery Apple Risotto With Crispy Pancetta",
+      "tags": [
+        "side dish",
+        "antipasti",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "dinner",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c31de2b17f27d65b4f4ecb",
+      "title": "Chilled Green Pea & Onion Soup",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "paleolithic",
+        "lacto ovo vegetarian",
+        "primal",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd3",
+      "title": "Red Curry Stew & Vegetable Noodles",
+      "tags": [
+        "side dish",
+        "antipasti",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "pescatarian"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "dinner",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd0",
+      "title": "Apple Curry Soup",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "lacto ovo vegetarian"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c7275f754babcc25875c84",
+      "title": "Chilled Cucumber Avocado Soup with Yogurt and Kefir",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "lacto ovo vegetarian",
+        "primal"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69d04b0f26a6c4c3877dfcd2",
+      "title": "Red quinoa cranberry arugula soup",
+      "tags": [
+        "soup",
+        "antipasti",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "lacto ovo vegetarian",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dcf",
+      "title": "Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant",
+      "tags": [
+        "antipasti",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "lacto ovo vegetarian",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "dinner",
+        "lunch"
+      ]
+    },
+    {
+      "id": "6a5ff992a91e3f027a2961eb",
+      "title": "Carrot and Coriander Soup",
+      "tags": [
+        "antipasti",
+        "soup",
+        "starter",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "gluten free",
+        "dairy free",
+        "paleolithic",
+        "lacto ovo vegetarian",
+        "primal",
+        "whole 30",
+        "vegan"
+      ],
+      "classBefore": [
+        "appetizer",
+        "snack"
+      ],
+      "classAfter": [
+        "appetizer",
+        "lunch"
+      ]
+    }
+  ],
+  "kept": [
+    {
+      "id": "69c473017393a7f0235b89b7",
+      "title": "Xocai Oatmeal Dark Chocolate No-Bake Cookies",
+      "tags": [
+        "dessert",
+        "gluten free"
+      ],
+      "classes": [
+        "dessert",
+        "snack"
+      ],
+      "untouched": true
+    },
+    {
+      "id": "69c5c81c64ee1f17b0563dd4",
+      "title": "Baked Indian Samosas",
+      "tags": [
+        "antipasti",
+        "starter",
+        "snack",
+        "appetizer",
+        "antipasto",
+        "hor d'oeuvre",
+        "dairy free"
+      ],
+      "classes": [
+        "appetizer",
+        "snack"
+      ],
+      "untouched": true
+    },
+    {
+      "id": "6ac80e27b0ca951a2fbf76c2",
+      "title": "High-Protein Japanese Curry Puffs",
+      "tags": [
+        "japanese",
+        "curry",
+        "puff-pastry",
+        "high-protein",
+        "chicken",
+        "meal-prep",
+        "comfort-food",
+        "savory",
+        "weeknight"
+      ],
+      "classes": [
+        "snack"
+      ],
+      "untouched": true
+    }
+  ],
+  "public": {
+    "recipes": 328,
+    "perChip": {
+      "lunch": 188,
+      "dinner": 182,
+      "breakfast": 40,
+      "snack": 56,
+      "dessert": 8,
+      "appetizer": 46
+    },
+    "unreachableByAnyChip": 0
+  }
+}
