@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isSignedOutPublicPath } from "../lib/signedOutPublicPaths";
 
 const ICON_PROPS = {
   width: 22,
@@ -85,8 +86,9 @@ const TABS = [
   { label: "Health", href: "/health", Icon: HealthIcon },
 ] as const;
 
-export function BottomNav() {
+export function BottomNav({ isSignedIn }: { isSignedIn: boolean }) {
   const pathname = usePathname();
+  if (!isSignedIn && isSignedOutPublicPath(pathname)) return null;
   // cc_prompt_recipe-list-redesign-and-cook-mode.md Part C — cook mode is full-screen.
   if (pathname.endsWith("/cook")) return null;
 

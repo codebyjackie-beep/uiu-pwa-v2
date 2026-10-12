@@ -37,8 +37,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className={!isPublicShop && userId ? "app-shell app-shell--with-app-header" : "app-shell"}>
             {children}
           </div>
-          {!isPublicShop && <SiteFooter />}
-          {!isPublicShop && <BottomNav />}
+          {!isPublicShop && <SiteFooter isSignedIn={!!userId} />}
+          {!isPublicShop && <BottomNav isSignedIn={!!userId} />}
         </ClerkProvider>
       </body>
     </html>
