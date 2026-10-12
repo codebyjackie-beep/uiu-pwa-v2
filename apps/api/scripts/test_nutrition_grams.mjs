@@ -92,6 +92,10 @@ check("raw unit \"unit\"/\"pcs\" counts like a piece (per_item_g), still null wi
   assert.equal(ingredientGrams(3, "pcs", egg).grams, 165);
   assert.equal(ingredientGrams(2, "unit", { ...weirdLiquid, canonical_name: "dragon thing" }).reason, "missing_per_item_g");
 });
+check("raw unit \"count\" (\"3 count large eggs\") counts like a piece", () => {
+  assert.equal(ingredientGrams(3, "count", egg).grams, 165);
+  assert.equal(ingredientGrams(2, "counts", egg).method, "per_item_g");
+});
 check("bad quantity → null", () => {
   assert.equal(ingredientGrams(0, "g", flour).reason, "bad_quantity");
   assert.equal(ingredientGrams(NaN, "g", flour).reason, "bad_quantity");

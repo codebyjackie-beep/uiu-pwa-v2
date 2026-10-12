@@ -61,7 +61,7 @@ export function liquidFallbackGPerMl(canonicalName: string): number | null {
  * Raw unit words that mean "a count of the thing" but that classifyUnit() (price-side) leaves
  * unmapped ("2 unit bananas", "3 pcs"). Nutrition treats them as count; the price branch is untouched.
  */
-const COUNT_ALIAS_UNIT_WORDS = new Set(["unit", "units", "pc", "pcs", "ea", "x"]);
+const COUNT_ALIAS_UNIT_WORDS = new Set(["unit", "units", "pc", "pcs", "ea", "x", "count", "counts"]);
 
 /** Grams for one ingredient line, or null + reason. Pure; no DB. */
 export function ingredientGrams(

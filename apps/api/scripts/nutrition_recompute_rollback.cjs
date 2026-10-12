@@ -1,6 +1,9 @@
 // Roll back a nutrition_recompute.cjs batch.   node scripts/nutrition_recompute_rollback.cjs <batch> [--write]
-// Dry run by default (counts only). Restores recipes.nutrition from nutritionPrev (unsets nutrition when
-// there was none), restores canonical nutrition_per_100g from nutritionPer100gPrev, and removes the batch markers.
+// Dry run by default (counts only). Restores:
+//   recipes.nutrition            from nutritionPrev (unsets nutrition when there was none)
+//   canonical fixed fields       from canonFixPrev (fields listed in canonFixPrevAbsent are unset — they did not exist)
+//   nutritionUnavailable flags   unset on recipes carrying nutritionFlagBatch == <batch>
+// and removes the batch markers.
 const fs = require("fs");
 const path = require("path");
 const { MongoClient } = require("mongodb");
@@ -33,12 +36,20 @@ function loadDevVars() {
     const recipes = db.collection("recipes");
     const canon = db.collection("canonical_ingredients");
     const rDocs = await recipes.find({ nutritionRecomputeBatch: batch }).project({ title: 1, nutrition: 1, nutritionPrev: 1 }).toArray();
-    const cDocs = await canon.find({ nutritionFixBatch: batch }).project({ canonical_name: 1, nutrition_per_100g: 1, nutritionPer100gPrev: 1 }).toArray();
-    console.log(`batch ${batch} (${WRITE ? "WRITE" : "dry run"}): ${rDocs.length} recipes, ${cDocs.length} canonical docs carry the marker`);
-    for (const d of cDocs) console.log(`  canon ${d.canonical_name}: ${d.nutrition_per_100g?.kcal} -> ${d.nutritionPer100gPrev?.kcal} kcal/100g`);
+    const fDocs = await recipes.find({ nutritionFlagBatch: batch }).project({ title: 1, nutritionFlagReason: 1 }).toArray();
+    const cDocs = await canon
+      .find({ nutritionFixBatch: batch })
+      .project({ canonical_name: 1, canonFixPrev: 1, canonFixPrevAbsent: 1, nutrition_per_100g: 1 })
+      .toArray();
+    console.log(`batch ${batch} (${WRITE ? "WRITE" : "dry run"}): ${rDocs.length} recipes, ${fDocs.length} flagged recipes, ${cDocs.length} canonical docs carry the marker`);
+    for (const d of cDocs) {
+      const prev = d.canonFixPrev || {};
+      console.log(`  canon ${d.canonical_name}: fields ${Object.keys(prev).join(", ")} (absent before: ${(d.canonFixPrevAbsent || []).join(", ") || "-"}); kcal ${d.nutrition_per_100g?.kcal} -> ${prev.nutrition_per_100g?.kcal ?? "(unchanged)"}`);
+    }
     for (const d of rDocs.slice(0, 30)) console.log(`  recipe ${d._id}: ${d.nutrition?.calories} -> ${d.nutritionPrev?.calories ?? "(none)"}  ${d.title}`);
     if (rDocs.length > 30) console.log(`  … ${rDocs.length - 30} more`);
-    if (!rDocs.length && !cDocs.length) return;
+    for (const d of fDocs.slice(0, 20)) console.log(`  flag ${d._id}: ${d.nutritionFlagReason}  ${d.title}`);
+    if (!rDocs.length && !cDocs.length && !fDocs.length) return;
     if (!WRITE) { console.log("re-run with --write to apply"); return; }
 
     let r = 0;
@@ -48,14 +59,26 @@ function loadDevVars() {
         : { $unset: { nutrition: "", nutritionPrev: "", nutritionRecomputeBatch: "", nutritionRecomputeAt: "" } };
       r += (await recipes.updateOne({ _id: d._id, nutritionRecomputeBatch: batch }, update)).modifiedCount;
     }
+    const f = (
+      await recipes.updateMany(
+        { nutritionFlagBatch: batch },
+        { $unset: { nutritionUnavailable: "", nutritionFlagBatch: "", nutritionFlagAt: "", nutritionFlagReason: "" } },
+      )
+    ).modifiedCount;
     let c = 0;
     for (const d of cDocs) {
-      const update = d.nutritionPer100gPrev
-        ? { $set: { nutrition_per_100g: d.nutritionPer100gPrev }, $unset: { nutritionPer100gPrev: "", nutritionFixBatch: "", nutritionFixCofid: "", nutritionFixAt: "" } }
-        : { $unset: { nutrition_per_100g: "", nutritionPer100gPrev: "", nutritionFixBatch: "", nutritionFixCofid: "", nutritionFixAt: "" } };
+      const prev = d.canonFixPrev || {};
+      const absent = new Set(d.canonFixPrevAbsent || []);
+      const $set = {};
+      const $unset = { canonFixPrev: "", canonFixPrevAbsent: "", nutritionFixBatch: "", nutritionFixCofid: "", nutritionFixAt: "" };
+      for (const [field, value] of Object.entries(prev)) {
+        if (absent.has(field)) $unset[field] = "";
+        else $set[field] = value;
+      }
+      const update = Object.keys($set).length ? { $set, $unset } : { $unset };
       c += (await canon.updateOne({ _id: d._id, nutritionFixBatch: batch }, update)).modifiedCount;
     }
-    console.log(`rolled back: recipes ${r}/${rDocs.length}, canonical ${c}/${cDocs.length}`);
+    console.log(`rolled back: recipes ${r}/${rDocs.length}, flags ${f}/${fDocs.length}, canonical ${c}/${cDocs.length}`);
   } finally {
     await client.close();
   }
