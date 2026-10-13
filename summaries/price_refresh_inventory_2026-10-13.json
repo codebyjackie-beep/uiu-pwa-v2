@@ -1,0 +1,4417 @@
+{
+ "generatedAt": "2026-10-13T22:00:25.057Z",
+ "composition": {
+  "total": 636,
+  "bySource": {
+   "serper": 635,
+   "(no metadata)": 1
+  },
+  "byConfidence": {
+   "high": 525,
+   "manual_curated": 25,
+   "price_only": 53,
+   "low": 15,
+   "none": 16,
+   "manual_nominal": 2
+  },
+  "fetchedAt": {
+   "2026-07-20": 635,
+   "(none)": 1
+  },
+  "perUnitMetricNull": 96,
+  "perUnitCountNull": 560,
+  "bothNull": 69,
+  "needsReview": 34,
+  "zeroListings": 19,
+  "queryUsedDiffersFromCanonical": 1,
+  "topLevelKeyCensus": {
+   "_id": 636,
+   "canonical_name": 636,
+   "cheapest": 636,
+   "confidence": 636,
+   "listings": 635,
+   "metadata": 635,
+   "n_supermarkets": 635,
+   "needs_review": 635,
+   "per_unit_count": 636,
+   "per_unit_metric": 636,
+   "curation_note": 8,
+   "priceFixAt": 1,
+   "priceFixBatch": 1,
+   "priceFixPrev": 1
+  },
+  "metadataKeyCensus": {
+   "source": 635,
+   "query_used": 635,
+   "reference_pack_used": 635,
+   "raw_listing_count": 635,
+   "attempts": 635,
+   "fetched_at": 635
+  },
+  "canonicalsWithoutPriceDoc": 14,
+  "priceDocsWithoutCanonical": [
+   "pcs lemon",
+   "a onion",
+   "to 5 garlic cloves",
+   "p of pepper",
+   "you can use regular basil",
+   "sweetner"
+  ],
+  "priceDocsForQuarantinedCanonical": 30
+ },
+ "aggregateFormulaCheck": {
+  "docsWithMetric": 522,
+  "plainMean": 196,
+  "plainMedian": 514,
+  "trimmedMedian": 514,
+  "nEqualsRawCount": 515,
+  "nEqualsTrimmedCount": 0,
+  "noneMatch": [
+   {
+    "canonical_name": "fried garlic",
+    "why": "no g_or_ml listing values",
+    "stored": 0.025
+   },
+   {
+    "canonical_name": "juice of lemon",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0087
+   },
+   {
+    "canonical_name": "parmesan",
+    "stored": 0.028,
+    "mean": 0.02369,
+    "median": 0.0225,
+    "trimmedMedian": 0.0225
+   },
+   {
+    "canonical_name": "dry white wine (e.g., pinot grigio)",
+    "why": "no g_or_ml listing values",
+    "stored": 0.011
+   },
+   {
+    "canonical_name": "salt and pepper",
+    "why": "no g_or_ml listing values",
+    "stored": 0.02
+   },
+   {
+    "canonical_name": "safflower",
+    "why": "no g_or_ml listing values",
+    "stored": 0.02256
+   },
+   {
+    "canonical_name": "thumb sized ginger",
+    "stored": 0.0112,
+    "mean": 0.01585,
+    "median": 0.01585,
+    "trimmedMedian": 0.01585
+   },
+   {
+    "canonical_name": "lemon rind",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0069
+   },
+   {
+    "canonical_name": "jicama",
+    "why": "no g_or_ml listing values",
+    "stored": 0.007
+   },
+   {
+    "canonical_name": "monterrey jack and cheddar cheese",
+    "stored": 0.0086,
+    "mean": 0.0156,
+    "median": 0.0156,
+    "trimmedMedian": 0.0156
+   },
+   {
+    "canonical_name": "new potatoes",
+    "stored": 0.0044,
+    "mean": 0.00201,
+    "median": 0.00105,
+    "trimmedMedian": 0.00105
+   },
+   {
+    "canonical_name": "kosher salt",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0094
+   },
+   {
+    "canonical_name": "romaine lettuce",
+    "why": "no g_or_ml listing values",
+    "stored": 0.00227
+   },
+   {
+    "canonical_name": "dale's seasoning",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0069
+   },
+   {
+    "canonical_name": "grain bread",
+    "stored": 0.00225,
+    "mean": 0.00583,
+    "median": 0.0056,
+    "trimmedMedian": 0.0056
+   },
+   {
+    "canonical_name": "herbs",
+    "stored": 0.0288,
+    "mean": 0.09443,
+    "median": 0.06835,
+    "trimmedMedian": 0.06835
+   },
+   {
+    "canonical_name": "curry paste",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0118
+   },
+   {
+    "canonical_name": "liquid egg substitute",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0061
+   },
+   {
+    "canonical_name": "cardamom seeds",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0367
+   },
+   {
+    "canonical_name": "persian cucumber",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0041
+   },
+   {
+    "canonical_name": "unpasteurized shiro miso",
+    "why": "no g_or_ml listing values",
+    "stored": 0.02075
+   },
+   {
+    "canonical_name": "saffron threads",
+    "why": "no g_or_ml listing values",
+    "stored": 10.25
+   },
+   {
+    "canonical_name": "salt and black pepper",
+    "stored": 0.02,
+    "mean": 0.034,
+    "median": 0.0333,
+    "trimmedMedian": 0.0333
+   },
+   {
+    "canonical_name": "water chestnuts",
+    "why": "no g_or_ml listing values",
+    "stored": 0.0051
+   },
+   {
+    "canonical_name": "hake",
+    "why": "no g_or_ml listing values",
+    "stored": 0.009
+   }
+  ],
+  "noneMatchCount": 25
+ },
+ "protected": {
+  "count": 29,
+  "memoryClaim": "9 人手 doc (memory.md)",
+  "round4PriceUpdateNames": {
+   "names": [
+    "juice of lemon",
+    "parmesan",
+    "lemon rind",
+    "jicama",
+    "romaine lettuce",
+    "thumb sized ginger",
+    "unpasteurized shiro miso",
+    "hardboiled quail eggs",
+    "curry paste",
+    "saffron threads",
+    "cardamom seeds",
+    "water chestnuts",
+    "baby carrots",
+    "grain bread",
+    "fried garlic",
+    "new potatoes",
+    "kosher salt",
+    "persian cucumber",
+    "salt and pepper",
+    "salt and black pepper",
+    "monterrey jack and cheddar cheese",
+    "dale's seasoning",
+    "liquid egg substitute",
+    "dry white wine (e.g., pinot grigio)",
+    "herbs",
+    "safflower"
+   ],
+   "file": "apps/api/scripts/write_curation_round4.cjs",
+   "fromLine": 124,
+   "note": "§1+§3 canonical_price_cache $set updates, confidence=manual_curated"
+  },
+  "round4MissingFromProtected": [],
+  "round4NotInPriceCache": [],
+  "scriptWriters": [
+   {
+    "file": "apps/api/scripts/write_curation_round4.cjs",
+    "effect": "PC_UPDATES $set (+ possible insert of hake)",
+    "names": [
+     "juice of lemon",
+     "parmesan",
+     "lemon rind",
+     "jicama",
+     "romaine lettuce",
+     "thumb sized ginger",
+     "unpasteurized shiro miso",
+     "hardboiled quail eggs",
+     "curry paste",
+     "saffron threads",
+     "cardamom seeds",
+     "water chestnuts",
+     "baby carrots",
+     "grain bread",
+     "fried garlic",
+     "new potatoes",
+     "kosher salt",
+     "persian cucumber",
+     "salt and pepper",
+     "salt and black pepper",
+     "monterrey jack and cheddar cheese",
+     "dale's seasoning",
+     "liquid egg substitute",
+     "dry white wine (e.g., pinot grigio)",
+     "herbs",
+     "safflower"
+    ]
+   },
+   {
+    "file": "apps/api/scripts/price_density_fix.cjs",
+    "effect": "mung bean sprouts: listings/per_unit_metric/n_supermarkets, priceFixPrev/priceFixBatch",
+    "names": [
+     "mung bean sprouts"
+    ]
+   },
+   {
+    "file": "apps/api/scripts/investigate_recompute_costs_aggregate_quirk.cjs",
+    "effect": "TEMP-set sugar per_unit_metric.value then restored to hard-coded 0.00145 (lines 74, 102) — value may differ from the pre-test original",
+    "names": [
+     "sugar"
+    ]
+   }
+  ],
+  "items": [
+   {
+    "canonical_name": "fried garlic",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:33:34.448Z"
+   },
+   {
+    "canonical_name": "juice of lemon",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:33:07.631Z"
+   },
+   {
+    "canonical_name": "sugar",
+    "reasons": [
+     "written by script: apps/api/scripts/investigate_recompute_costs_aggregate_quirk.cjs"
+    ],
+    "confidence": "high",
+    "fetched_at": "2026-07-20T22:33:00.692Z"
+   },
+   {
+    "canonical_name": "parmesan",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:33:45.516Z"
+   },
+   {
+    "canonical_name": "dry white wine (e.g., pinot grigio)",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:44:57.248Z"
+   },
+   {
+    "canonical_name": "salt and pepper",
+    "reasons": [
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_nominal",
+    "fetched_at": "2026-07-20T22:33:36.464Z"
+   },
+   {
+    "canonical_name": "safflower",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:33:32.543Z"
+   },
+   {
+    "canonical_name": "thumb sized ginger",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:33:23.811Z"
+   },
+   {
+    "canonical_name": "hardboiled quail eggs",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:33:35.225Z"
+   },
+   {
+    "canonical_name": "lemon rind",
+    "reasons": [
+     "confidence=manual_curated",
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:36:46.396Z"
+   },
+   {
+    "canonical_name": "jicama",
+    "reasons": [
+     "confidence=manual_curated",
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:36:54.307Z"
+   },
+   {
+    "canonical_name": "baby carrots",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:36:05.271Z"
+   },
+   {
+    "canonical_name": "monterrey jack and cheddar cheese",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:35:51.758Z"
+   },
+   {
+    "canonical_name": "new potatoes",
+    "reasons": [
+     "confidence=manual_curated",
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:35:05.270Z"
+   },
+   {
+    "canonical_name": "kosher salt",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:35:39.120Z"
+   },
+   {
+    "canonical_name": "romaine lettuce",
+    "reasons": [
+     "confidence=manual_curated",
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:36:29.394Z"
+   },
+   {
+    "canonical_name": "dale's seasoning",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:35:07.023Z"
+   },
+   {
+    "canonical_name": "grain bread",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:37:46.296Z"
+   },
+   {
+    "canonical_name": "mung bean sprouts",
+    "reasons": [
+     "priceFixBatch=pdfix-20261012 (price_density_fix.cjs)",
+     "written by script: apps/api/scripts/price_density_fix.cjs"
+    ],
+    "confidence": "high",
+    "fetched_at": "2026-07-20T22:38:04.068Z"
+   },
+   {
+    "canonical_name": "herbs",
+    "reasons": [
+     "confidence=manual_curated",
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:38:59.830Z"
+   },
+   {
+    "canonical_name": "curry paste",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:43:10.730Z"
+   },
+   {
+    "canonical_name": "liquid egg substitute",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:37:43.377Z"
+   },
+   {
+    "canonical_name": "cardamom seeds",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:41:22.307Z"
+   },
+   {
+    "canonical_name": "persian cucumber",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:42:11.638Z"
+   },
+   {
+    "canonical_name": "unpasteurized shiro miso",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:42:24.548Z"
+   },
+   {
+    "canonical_name": "saffron threads",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:43:16.417Z"
+   },
+   {
+    "canonical_name": "salt and black pepper",
+    "reasons": [
+     "has curation_note",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_nominal",
+    "fetched_at": "2026-07-20T22:45:34.489Z"
+   },
+   {
+    "canonical_name": "water chestnuts",
+    "reasons": [
+     "confidence=manual_curated",
+     "written by script: apps/api/scripts/write_curation_round4.cjs"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": "2026-07-20T22:46:32.636Z"
+   },
+   {
+    "canonical_name": "hake",
+    "reasons": [
+     "metadata.source=(missing)",
+     "confidence=manual_curated",
+     "has curation_note"
+    ],
+    "confidence": "manual_curated",
+    "fetched_at": null
+   }
+  ]
+ },
+ "oldRules": {
+  "repo": "C:\\Project\\UseItUp\\useitup_backend\\src (frozen, read-only)",
+  "query": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/services/serper_price.service.js",
+   "line": 142,
+   "rule": "POST https://google.serper.dev/shopping {q: `${name} price`, gl:'gb', location:'United Kingdom'}; `name` = canonical_name (weekly_price_refresh.js:57, no query_alias used)"
+  },
+  "whitelist": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/services/serper_price.service.js",
+   "lines": "6-9, 30-34",
+   "value": [
+    "tesco",
+    "sainsbury",
+    "asda",
+    "morrisons",
+    "waitrose",
+    "ocado",
+    "iceland",
+    "co-op",
+    "coop",
+    "aldi",
+    "lidl"
+   ],
+   "rule": "substring match on listing `source`, lowercased"
+  },
+  "blocklist": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/services/serper_price.service.js",
+   "lines": "11-13, 31-32",
+   "value": [
+    "amazon",
+    "ebay"
+   ],
+   "rule": "source containing these is never a supermarket; NO title/keyword blocklist exists in the old code"
+  },
+  "packParse": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/services/serper_price.service.js",
+   "lines": "15-56",
+   "rule": "WEIGHT_VOLUME_RE /(\\d+(?:\\.\\d+)?)\\s?(kg|g|l|ml|cl)\\b/i -> g_or_ml (kg,l x1000, cl x10); MULTIPACK_RE /(\\d+)\\s?(?:pack|x|×)\\b/i multiplies qty; no weight but multipack -> {qty:N, unit:'each'}; EACH_RE /\\beach\\b/i -> {1,'each'}; else null. Falls back to canonical_ingredients.reference_pack (source_of_pack='reference')."
+  },
+  "aggregate": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/services/serper_price.service.js",
+   "lines": "91-101, 158-170",
+   "rule": "per_unit = price/pack.qty (rounded 4dp); per dimension (g_or_ml vs each) separately: trimOutliers (n>=5 -> drop 1 lowest + 1 highest) then median; confidence high(>=3 listings & any per_unit) / low(>=1 & per_unit) / price_only(>=1) / none; cheapest = lowest `price` listing (NOT per-unit)."
+  },
+  "retry": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/services/rescue_shared.service.js",
+   "lines": "74-100",
+   "rule": "up to 3 attempts (backoff 0/300/600ms) while n_supermarkets == 0 -> up to 3 credits per doc"
+  },
+  "upsert": {
+   "file": "C:/Project/UseItUp/useitup_backend/src/scripts/weekly_price_refresh.js",
+   "lines": "43-92",
+   "rule": "all non-quarantined canonicals; `$set` whole cacheDoc (listings, per_unit_*, cheapest, confidence, needs_review, metadata{source:'serper',query_used,reference_pack_used,raw_listing_count,attempts,fetched_at}) with upsert — overwrites hand curation and writes no previous values"
+  },
+  "kitchenSinkWarning": "Serper `price` is the *shown* price; no unit-price field is used. Titles are never checked against the ingredient (hence seeds / supplements / multipacks slipping in)."
+ },
+ "impact": {
+  "publicRecipes": 328,
+  "canonicalsWithCost": 393,
+  "totalImpactGbpSumPerServing": 732.6851,
+  "top30": [
+   {
+    "canonical_name": "king prawns, peeled and deveined",
+    "impactGbpSumPerServing": 33.4163,
+    "publicRecipes": 14,
+    "lines": 14,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.019950000000000002,
+     "unit": "g_or_ml",
+     "n": 6
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 2.32
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0066,
+      "median": 0.01995,
+      "max": 0.038,
+      "spreadRatio": 5.8
+     }
+    }
+   },
+   {
+    "canonical_name": "chicken breast",
+    "impactGbpSumPerServing": 30.6839,
+    "publicRecipes": 22,
+    "lines": 22,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.01,
+     "unit": "g_or_ml",
+     "n": 11
+    },
+    "storedCount": {
+     "value": 3.625,
+     "unit": "each",
+     "n": 1
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 3.97,
+     "title": "ASDA Tender Chicken Breast Mini Fillets"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 11,
+      "min": 0.005,
+      "median": 0.01,
+      "max": 0.0405,
+      "spreadRatio": 8.1
+     },
+     "each": {
+      "n": 1,
+      "min": 3.625,
+      "median": 3.625,
+      "max": 3.625,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "avocado",
+    "impactGbpSumPerServing": 23.8875,
+    "publicRecipes": 36,
+    "lines": 36,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": null,
+    "storedCount": {
+     "value": 1.225,
+     "unit": "each",
+     "n": 4
+    },
+    "cheapest": {
+     "store": "Ocado",
+     "price": 0.6,
+     "title": "Ocado Medium Avocado Loose"
+    },
+    "listingSpread": {
+     "each": {
+      "n": 4,
+      "min": 0.895,
+      "median": 1.225,
+      "max": 1.4,
+      "spreadRatio": 1.6
+     }
+    }
+   },
+   {
+    "canonical_name": "vegetable or fish broth, hot",
+    "impactGbpSumPerServing": 19.705,
+    "publicRecipes": 1,
+    "lines": 1,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0563,
+     "unit": "g_or_ml",
+     "n": 1
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Waitrose & Partners",
+     "price": 1.5
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 1,
+      "min": 0.0563,
+      "median": 0.0563,
+      "max": 0.0563,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "garlic",
+    "impactGbpSumPerServing": 19.5489,
+    "publicRecipes": 141,
+    "lines": 141,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.01975,
+     "unit": "g_or_ml",
+     "n": 2
+    },
+    "storedCount": {
+     "value": 0.22,
+     "unit": "each",
+     "n": 5
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 0.47,
+     "title": "ASDA Garlic"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 2,
+      "min": 0.0125,
+      "median": 0.01975,
+      "max": 0.027,
+      "spreadRatio": 2.2
+     },
+     "each": {
+      "n": 5,
+      "min": 0.2175,
+      "median": 0.22,
+      "max": 0.3333,
+      "spreadRatio": 1.5
+     }
+    }
+   },
+   {
+    "canonical_name": "prawns",
+    "impactGbpSumPerServing": 19.34,
+    "publicRecipes": 8,
+    "lines": 8,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.02,
+     "unit": "g_or_ml",
+     "n": 16
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Morrisons.com",
+     "price": 2.03
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 16,
+      "min": 0.0066,
+      "median": 0.02,
+      "max": 0.0353,
+      "spreadRatio": 5.3
+     }
+    }
+   },
+   {
+    "canonical_name": "olive oil",
+    "impactGbpSumPerServing": 18.4249,
+    "publicRecipes": 169,
+    "lines": 172,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0124,
+     "unit": "g_or_ml",
+     "n": 3
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Tesco",
+     "price": 3.1,
+     "title": "Tesco Olive Oil 250Ml"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 3,
+      "min": 0.0068,
+      "median": 0.0124,
+      "max": 0.013,
+      "spreadRatio": 1.9
+     }
+    }
+   },
+   {
+    "canonical_name": "vegetable broth",
+    "impactGbpSumPerServing": 17.6159,
+    "publicRecipes": 21,
+    "lines": 21,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.00675,
+     "unit": "g_or_ml",
+     "n": 4
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 1,
+     "title": "Kallo Vegetable Stock Cubes"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0011,
+      "median": 0.00675,
+      "max": 0.0215,
+      "spreadRatio": 19.5
+     }
+    }
+   },
+   {
+    "canonical_name": "mango",
+    "impactGbpSumPerServing": 17.27,
+    "publicRecipes": 12,
+    "lines": 12,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.01,
+     "unit": "g_or_ml",
+     "n": 1
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 0.88
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 1,
+      "min": 0.01,
+      "median": 0.01,
+      "max": 0.01,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "salmon fillet",
+    "impactGbpSumPerServing": 14.3214,
+    "publicRecipes": 6,
+    "lines": 6,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0181,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "storedCount": {
+     "value": 2.6125,
+     "unit": "each",
+     "n": 2
+    },
+    "cheapest": {
+     "store": "Tesco",
+     "price": 3
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.013,
+      "median": 0.0181,
+      "max": 0.0304,
+      "spreadRatio": 2.3
+     },
+     "each": {
+      "n": 2,
+      "min": 2.6,
+      "median": 2.6125,
+      "max": 2.625,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "goat cheese",
+    "impactGbpSumPerServing": 13.4839,
+    "publicRecipes": 25,
+    "lines": 25,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0246,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Waitrose & Partners",
+     "price": 2.06,
+     "title": "Bettine Mild Goat's Cheese Plain Slices"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.02,
+      "median": 0.0246,
+      "max": 0.0279,
+      "spreadRatio": 1.4
+     }
+    }
+   },
+   {
+    "canonical_name": "egg",
+    "impactGbpSumPerServing": 13.1396,
+    "publicRecipes": 48,
+    "lines": 48,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": null,
+    "storedCount": {
+     "value": 0.265,
+     "unit": "each",
+     "n": 6
+    },
+    "cheapest": {
+     "store": "Waitrose & Partners",
+     "price": 1.3,
+     "title": "Essential Waitrose & Partners Free Range White Eggs (6 Pack)"
+    },
+    "listingSpread": {
+     "each": {
+      "n": 6,
+      "min": 0.2167,
+      "median": 0.265,
+      "max": 0.4667,
+      "spreadRatio": 2.2
+     }
+    }
+   },
+   {
+    "canonical_name": "garlic clove",
+    "impactGbpSumPerServing": 12.561,
+    "publicRecipes": 42,
+    "lines": 43,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": null,
+    "storedCount": {
+     "value": 0.3333,
+     "unit": "each",
+     "n": 1
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 0.47,
+     "title": "ASDA Garlic"
+    },
+    "listingSpread": {
+     "each": {
+      "n": 1,
+      "min": 0.3333,
+      "median": 0.3333,
+      "max": 0.3333,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "chicken or fish broth",
+    "impactGbpSumPerServing": 12.24,
+    "publicRecipes": 2,
+    "lines": 2,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0288,
+     "unit": "g_or_ml",
+     "n": 1
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 1.4
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 1,
+      "min": 0.0288,
+      "median": 0.0288,
+      "max": 0.0288,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "salmon",
+    "impactGbpSumPerServing": 11.078,
+    "publicRecipes": 6,
+    "lines": 6,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.022600000000000002,
+     "unit": "g_or_ml",
+     "n": 8
+    },
+    "storedCount": {
+     "value": 2.6125,
+     "unit": "each",
+     "n": 4
+    },
+    "cheapest": {
+     "store": "Tesco",
+     "price": 3,
+     "title": "Tesco Boneless Salmon Fillet"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 8,
+      "min": 0.0181,
+      "median": 0.0226,
+      "max": 0.0695,
+      "spreadRatio": 3.8
+     },
+     "each": {
+      "n": 4,
+      "min": 1.125,
+      "median": 2.6125,
+      "max": 2.875,
+      "spreadRatio": 2.6
+     }
+    }
+   },
+   {
+    "canonical_name": "chicken stock",
+    "impactGbpSumPerServing": 10.976,
+    "publicRecipes": 9,
+    "lines": 9,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0064,
+     "unit": "g_or_ml",
+     "n": 9
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 1.08,
+     "title": "ASDA Chicken Stock Cubes 12 x 10g"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0011,
+      "median": 0.0064,
+      "max": 0.11,
+      "spreadRatio": 100
+     }
+    }
+   },
+   {
+    "canonical_name": "shrimp",
+    "impactGbpSumPerServing": 10.686,
+    "publicRecipes": 6,
+    "lines": 6,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.02,
+     "unit": "g_or_ml",
+     "n": 11
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Morrisons.com",
+     "price": 2.03
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 11,
+      "min": 0.0066,
+      "median": 0.02,
+      "max": 0.0263,
+      "spreadRatio": 4
+     }
+    }
+   },
+   {
+    "canonical_name": "quinoa",
+    "impactGbpSumPerServing": 10.3892,
+    "publicRecipes": 21,
+    "lines": 21,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.01005,
+     "unit": "g_or_ml",
+     "n": 6
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 2.15,
+     "title": "Merchant Gourmet Red & White Quinoa"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0058,
+      "median": 0.01005,
+      "max": 0.0117,
+      "spreadRatio": 2
+     }
+    }
+   },
+   {
+    "canonical_name": "chicken",
+    "impactGbpSumPerServing": 9.7006,
+    "publicRecipes": 16,
+    "lines": 16,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0044,
+     "unit": "g_or_ml",
+     "n": 3
+    },
+    "storedCount": {
+     "value": 3.625,
+     "unit": "each",
+     "n": 1
+    },
+    "cheapest": {
+     "store": "Morrisons.com",
+     "price": 1.5,
+     "title": "Morrisons Chicken Drumsticks"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 3,
+      "min": 0.0027,
+      "median": 0.0044,
+      "max": 0.0058,
+      "spreadRatio": 2.1
+     },
+     "each": {
+      "n": 1,
+      "min": 3.625,
+      "median": 3.625,
+      "max": 3.625,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "vegetable stock",
+    "impactGbpSumPerServing": 9.548,
+    "publicRecipes": 6,
+    "lines": 6,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.011,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 1.08,
+     "title": "ASDA Vegetable Stock Cubes 12 x 10g"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0011,
+      "median": 0.011,
+      "max": 0.0215,
+      "spreadRatio": 19.5
+     }
+    }
+   },
+   {
+    "canonical_name": "tomato",
+    "impactGbpSumPerServing": 8.5682,
+    "publicRecipes": 35,
+    "lines": 35,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.003,
+     "unit": "g_or_ml",
+     "n": 6
+    },
+    "storedCount": {
+     "value": 0.51835,
+     "unit": "each",
+     "n": 2
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 0.68,
+     "title": "ASDA Fragrant & Juicy Sweet Vine Ripened Tomatoes"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0019,
+      "median": 0.003,
+      "max": 0.0044,
+      "spreadRatio": 2.3
+     },
+     "each": {
+      "n": 2,
+      "min": 0.1667,
+      "median": 0.51835,
+      "max": 0.87,
+      "spreadRatio": 5.2
+     }
+    }
+   },
+   {
+    "canonical_name": "cucumber",
+    "impactGbpSumPerServing": 8.415,
+    "publicRecipes": 18,
+    "lines": 18,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0115,
+     "unit": "g_or_ml",
+     "n": 3
+    },
+    "storedCount": {
+     "value": 0.99,
+     "unit": "each",
+     "n": 1
+    },
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 0.7,
+     "title": "Sainsbury's Small Whole Cucumber"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 3,
+      "min": 0.0065,
+      "median": 0.0115,
+      "max": 0.0144,
+      "spreadRatio": 2.2
+     },
+     "each": {
+      "n": 1,
+      "min": 0.99,
+      "median": 0.99,
+      "max": 0.99,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "sirloin beef tips",
+    "impactGbpSumPerServing": 8.2782,
+    "publicRecipes": 1,
+    "lines": 1,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0365,
+     "unit": "g_or_ml",
+     "n": 3
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Morrisons.com",
+     "price": 4,
+     "title": "Morrisons Market Street British Beef Sirloin Steak"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 3,
+      "min": 0.0239,
+      "median": 0.0365,
+      "max": 0.0441,
+      "spreadRatio": 1.8
+     }
+    }
+   },
+   {
+    "canonical_name": "flank steak",
+    "impactGbpSumPerServing": 8.0798,
+    "publicRecipes": 4,
+    "lines": 4,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.015,
+     "unit": "g_or_ml",
+     "n": 1
+    },
+    "storedCount": {
+     "value": 0.6875,
+     "unit": "each",
+     "n": 1
+    },
+    "cheapest": {
+     "store": "Iceland",
+     "price": 2,
+     "title": "Stateside Diner Steak Canadian Slices"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 1,
+      "min": 0.015,
+      "median": 0.015,
+      "max": 0.015,
+      "spreadRatio": 1
+     },
+     "each": {
+      "n": 1,
+      "min": 0.6875,
+      "median": 0.6875,
+      "max": 0.6875,
+      "spreadRatio": 1
+     }
+    }
+   },
+   {
+    "canonical_name": "lump crab meat",
+    "impactGbpSumPerServing": 7.938,
+    "publicRecipes": 1,
+    "lines": 1,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0525,
+     "unit": "g_or_ml",
+     "n": 2
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Ocado",
+     "price": 2.75,
+     "title": "Seafood & Eat It Handpicked Brown Cornish Crab"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 2,
+      "min": 0.045,
+      "median": 0.0525,
+      "max": 0.06,
+      "spreadRatio": 1.3
+     }
+    }
+   },
+   {
+    "canonical_name": "ground beef",
+    "impactGbpSumPerServing": 7.1064,
+    "publicRecipes": 8,
+    "lines": 8,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.009399999999999999,
+     "unit": "g_or_ml",
+     "n": 12
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 3.09,
+     "title": "Just Essentials Beef Mince"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 12,
+      "min": 0.0065,
+      "median": 0.0094,
+      "max": 0.0135,
+      "spreadRatio": 2.1
+     }
+    }
+   },
+   {
+    "canonical_name": "beef brisket",
+    "impactGbpSumPerServing": 7.0187,
+    "publicRecipes": 2,
+    "lines": 2,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0211,
+     "unit": "g_or_ml",
+     "n": 3
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Waitrose & Partners",
+     "price": 9.1
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 3,
+      "min": 0.0182,
+      "median": 0.0211,
+      "max": 0.0278,
+      "spreadRatio": 1.5
+     }
+    }
+   },
+   {
+    "canonical_name": "white fish fillets (cod, tilapia)",
+    "impactGbpSumPerServing": 6.8975,
+    "publicRecipes": 4,
+    "lines": 4,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0125,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 2.28
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0044,
+      "median": 0.0125,
+      "max": 0.0196,
+      "spreadRatio": 4.5
+     }
+    }
+   },
+   {
+    "canonical_name": "chickpeas",
+    "impactGbpSumPerServing": 6.0554,
+    "publicRecipes": 23,
+    "lines": 23,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0034,
+     "unit": "g_or_ml",
+     "n": 7
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "Tesco",
+     "price": 0.41,
+     "title": "Tesco Chickpeas In Water 400G"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 7,
+      "min": 0.001,
+      "median": 0.0034,
+      "max": 0.0081,
+      "spreadRatio": 8.1
+     }
+    }
+   },
+   {
+    "canonical_name": "canned tomatoes",
+    "impactGbpSumPerServing": 5.9271,
+    "publicRecipes": 49,
+    "lines": 49,
+    "protected": false,
+    "confidence": "high",
+    "storedMetric": {
+     "value": 0.0012,
+     "unit": "g_or_ml",
+     "n": 16
+    },
+    "storedCount": null,
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 0.4,
+     "title": "Sainsbury's Premium Peeled Plum Tomatoes"
+    },
+    "listingSpread": {
+     "g_or_ml": {
+      "n": 16,
+      "min": 0.0002,
+      "median": 0.0012,
+      "max": 0.0111,
+      "spreadRatio": 55.5
+     }
+    }
+   }
+  ],
+  "top30ShareOfTotal": 0.5491,
+  "top30ProtectedCount": 0
+ },
+ "wideSpreadCanonicals": {
+  "threshold": 5,
+  "count": 145,
+  "top40ByImpact": [
+   {
+    "canonical_name": "king prawns, peeled and deveined",
+    "spread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0066,
+      "median": 0.01995,
+      "max": 0.038,
+      "spreadRatio": 5.8
+     }
+    },
+    "impact": 33.4163
+   },
+   {
+    "canonical_name": "chicken breast",
+    "spread": {
+     "g_or_ml": {
+      "n": 11,
+      "min": 0.005,
+      "median": 0.01,
+      "max": 0.0405,
+      "spreadRatio": 8.1
+     },
+     "each": {
+      "n": 1,
+      "min": 3.625,
+      "median": 3.625,
+      "max": 3.625,
+      "spreadRatio": 1
+     }
+    },
+    "impact": 30.6839
+   },
+   {
+    "canonical_name": "prawns",
+    "spread": {
+     "g_or_ml": {
+      "n": 16,
+      "min": 0.0066,
+      "median": 0.02,
+      "max": 0.0353,
+      "spreadRatio": 5.3
+     }
+    },
+    "impact": 19.34
+   },
+   {
+    "canonical_name": "vegetable broth",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0011,
+      "median": 0.00675,
+      "max": 0.0215,
+      "spreadRatio": 19.5
+     }
+    },
+    "impact": 17.6159
+   },
+   {
+    "canonical_name": "chicken stock",
+    "spread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0011,
+      "median": 0.0064,
+      "max": 0.11,
+      "spreadRatio": 100
+     }
+    },
+    "impact": 10.976
+   },
+   {
+    "canonical_name": "vegetable stock",
+    "spread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0011,
+      "median": 0.011,
+      "max": 0.0215,
+      "spreadRatio": 19.5
+     }
+    },
+    "impact": 9.548
+   },
+   {
+    "canonical_name": "tomato",
+    "spread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0019,
+      "median": 0.003,
+      "max": 0.0044,
+      "spreadRatio": 2.3
+     },
+     "each": {
+      "n": 2,
+      "min": 0.1667,
+      "median": 0.51835,
+      "max": 0.87,
+      "spreadRatio": 5.2
+     }
+    },
+    "impact": 8.5682
+   },
+   {
+    "canonical_name": "chickpeas",
+    "spread": {
+     "g_or_ml": {
+      "n": 7,
+      "min": 0.001,
+      "median": 0.0034,
+      "max": 0.0081,
+      "spreadRatio": 8.1
+     }
+    },
+    "impact": 6.0554
+   },
+   {
+    "canonical_name": "canned tomatoes",
+    "spread": {
+     "g_or_ml": {
+      "n": 16,
+      "min": 0.0002,
+      "median": 0.0012,
+      "max": 0.0111,
+      "spreadRatio": 55.5
+     }
+    },
+    "impact": 5.9271
+   },
+   {
+    "canonical_name": "basa fillets",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0072,
+      "median": 0.01175,
+      "max": 0.0403,
+      "spreadRatio": 5.6
+     },
+     "each": {
+      "n": 1,
+      "min": 1.125,
+      "median": 1.125,
+      "max": 1.125,
+      "spreadRatio": 1
+     }
+    },
+    "impact": 5.6781
+   },
+   {
+    "canonical_name": "parsley",
+    "spread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0125,
+      "median": 0.02715,
+      "max": 0.1917,
+      "spreadRatio": 15.3
+     }
+    },
+    "impact": 5.3638
+   },
+   {
+    "canonical_name": "mushroom",
+    "spread": {
+     "g_or_ml": {
+      "n": 7,
+      "min": 0.0032,
+      "median": 0.0056,
+      "max": 0.1,
+      "spreadRatio": 31.3
+     }
+    },
+    "impact": 4.9151
+   },
+   {
+    "canonical_name": "balsamic vinegar",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0038,
+      "median": 0.0174,
+      "max": 0.03,
+      "spreadRatio": 7.9
+     }
+    },
+    "impact": 4.8829
+   },
+   {
+    "canonical_name": "chicken thighs",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0023,
+      "median": 0.0073,
+      "max": 0.019,
+      "spreadRatio": 8.3
+     }
+    },
+    "impact": 4.4508
+   },
+   {
+    "canonical_name": "chicken broth",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0038,
+      "median": 0.0054,
+      "max": 0.0288,
+      "spreadRatio": 7.6
+     }
+    },
+    "impact": 4.0933
+   },
+   {
+    "canonical_name": "white wine",
+    "spread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0047,
+      "median": 0.0107,
+      "max": 0.0388,
+      "spreadRatio": 8.3
+     }
+    },
+    "impact": 2.9425
+   },
+   {
+    "canonical_name": "butter",
+    "spread": {
+     "g_or_ml": {
+      "n": 15,
+      "min": 0.0019,
+      "median": 0.008,
+      "max": 0.0143,
+      "spreadRatio": 7.5
+     }
+    },
+    "impact": 2.5706
+   },
+   {
+    "canonical_name": "salad greens",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0018,
+      "median": 0.00585,
+      "max": 0.0145,
+      "spreadRatio": 8.1
+     }
+    },
+    "impact": 2.457
+   },
+   {
+    "canonical_name": "spinach leaves",
+    "spread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0018,
+      "median": 0.0052,
+      "max": 0.01,
+      "spreadRatio": 5.6
+     }
+    },
+    "impact": 2.4245
+   },
+   {
+    "canonical_name": "rice",
+    "spread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0005,
+      "median": 0.0025,
+      "max": 0.0095,
+      "spreadRatio": 19
+     }
+    },
+    "impact": 2.2528
+   },
+   {
+    "canonical_name": "carrot",
+    "spread": {
+     "g_or_ml": {
+      "n": 12,
+      "min": 0.0007,
+      "median": 0.0021,
+      "max": 0.0097,
+      "spreadRatio": 13.9
+     }
+    },
+    "impact": 2.2425
+   },
+   {
+    "canonical_name": "mozzarella",
+    "spread": {
+     "g_or_ml": {
+      "n": 14,
+      "min": 0.003,
+      "median": 0.0089,
+      "max": 0.0225,
+      "spreadRatio": 7.5
+     }
+    },
+    "impact": 2.015
+   },
+   {
+    "canonical_name": "soy milk",
+    "spread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0014,
+      "median": 0.0022,
+      "max": 0.0156,
+      "spreadRatio": 11.1
+     }
+    },
+    "impact": 1.947
+   },
+   {
+    "canonical_name": "pepper",
+    "spread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0031,
+      "median": 0.009,
+      "max": 0.05,
+      "spreadRatio": 16.1
+     }
+    },
+    "impact": 1.8121
+   },
+   {
+    "canonical_name": "organic red peppers",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.007,
+      "median": 0.01515,
+      "max": 0.036,
+      "spreadRatio": 5.1
+     }
+    },
+    "impact": 1.6665
+   },
+   {
+    "canonical_name": "basmati rice",
+    "spread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0009,
+      "median": 0.0023,
+      "max": 0.005,
+      "spreadRatio": 5.6
+     }
+    },
+    "impact": 1.6388
+   },
+   {
+    "canonical_name": "corn",
+    "spread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0015,
+      "median": 0.0028,
+      "max": 0.0127,
+      "spreadRatio": 8.5
+     }
+    },
+    "impact": 1.4629
+   },
+   {
+    "canonical_name": "beef broth",
+    "spread": {
+     "g_or_ml": {
+      "n": 8,
+      "min": 0.0043,
+      "median": 0.00725,
+      "max": 0.075,
+      "spreadRatio": 17.4
+     }
+    },
+    "impact": 1.3667
+   },
+   {
+    "canonical_name": "broccoli",
+    "spread": {
+     "g_or_ml": {
+      "n": 12,
+      "min": 0.0013,
+      "median": 0.00225,
+      "max": 0.0163,
+      "spreadRatio": 12.5
+     }
+    },
+    "impact": 1.1081
+   },
+   {
+    "canonical_name": "broccoli florets",
+    "spread": {
+     "g_or_ml": {
+      "n": 11,
+      "min": 0.0012,
+      "median": 0.0022,
+      "max": 0.0125,
+      "spreadRatio": 10.4
+     }
+    },
+    "impact": 1.0478
+   },
+   {
+    "canonical_name": "chicken quarters",
+    "spread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0025,
+      "median": 0.0067,
+      "max": 0.021,
+      "spreadRatio": 8.4
+     }
+    },
+    "impact": 0.938
+   },
+   {
+    "canonical_name": "green beans, trimmed",
+    "spread": {
+     "g_or_ml": {
+      "n": 5,
+      "min": 0.0013,
+      "median": 0.0035,
+      "max": 0.0103,
+      "spreadRatio": 7.9
+     }
+    },
+    "impact": 0.8696
+   },
+   {
+    "canonical_name": "brussels sprouts",
+    "spread": {
+     "g_or_ml": {
+      "n": 8,
+      "min": 0.0012,
+      "median": 0.00545,
+      "max": 0.0089,
+      "spreadRatio": 7.4
+     }
+    },
+    "impact": 0.7416
+   },
+   {
+    "canonical_name": "peas",
+    "spread": {
+     "g_or_ml": {
+      "n": 9,
+      "min": 0.0013,
+      "median": 0.002,
+      "max": 0.0086,
+      "spreadRatio": 6.6
+     }
+    },
+    "impact": 0.7311
+   },
+   {
+    "canonical_name": "dill",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.024,
+      "median": 0.0395,
+      "max": 0.1571,
+      "spreadRatio": 6.5
+     }
+    },
+    "impact": 0.7201
+   },
+   {
+    "canonical_name": "cooked white or brown rice",
+    "spread": {
+     "g_or_ml": {
+      "n": 11,
+      "min": 0.0014,
+      "median": 0.004,
+      "max": 0.0096,
+      "spreadRatio": 6.9
+     }
+    },
+    "impact": 0.72
+   },
+   {
+    "canonical_name": "basil",
+    "spread": {
+     "g_or_ml": {
+      "n": 6,
+      "min": 0.0135,
+      "median": 0.0175,
+      "max": 0.0967,
+      "spreadRatio": 7.2
+     }
+    },
+    "impact": 0.718
+   },
+   {
+    "canonical_name": "bread crumbs",
+    "spread": {
+     "g_or_ml": {
+      "n": 3,
+      "min": 0.0031,
+      "median": 0.0071,
+      "max": 0.0158,
+      "spreadRatio": 5.1
+     }
+    },
+    "impact": 0.6118
+   },
+   {
+    "canonical_name": "potato",
+    "spread": {
+     "g_or_ml": {
+      "n": 10,
+      "min": 0.0003,
+      "median": 0.0009,
+      "max": 0.0049,
+      "spreadRatio": 16.3
+     }
+    },
+    "impact": 0.6006
+   },
+   {
+    "canonical_name": "ground coriander",
+    "spread": {
+     "g_or_ml": {
+      "n": 4,
+      "min": 0.0033,
+      "median": 0.03125,
+      "max": 0.0833,
+      "spreadRatio": 25.2
+     }
+    },
+    "impact": 0.5866
+   }
+  ]
+ },
+ "baselinePerServing": {
+  "method": "costRecipe() live, isPublic===true; perServing>0 else 'unavailable' (recipePerServingPrice rule)",
+  "publicRecipes": 328,
+  "distribution": {
+   "<£1": 67,
+   "£1-3": 190,
+   "£3-5": 58,
+   "£5-8": 8,
+   ">£8": 5,
+   "unavailable": 0
+  },
+  "storedRecipeCostDistribution": {
+   "<£1": 67,
+   "£1-3": 190,
+   "£3-5": 58,
+   "£5-8": 8,
+   ">£8": 5,
+   "unavailable": 0
+  },
+  "freshVsStoredPerServingDriftRecipes": 0,
+  "perRecipe": [
+   {
+    "id": "69b1db93974afef25b93a463",
+    "title": "Pesto & Yogurt Pasta",
+    "servings": 4,
+    "perServing": 0.6397,
+    "storedPerServing": 0.6397
+   },
+   {
+    "id": "69b4af41734a319b1f59a1c6",
+    "title": "Garlic Lime Grilled Chicken Salad",
+    "servings": 4,
+    "perServing": 3.0835,
+    "storedPerServing": 3.0835
+   },
+   {
+    "id": "69b5c9a95ee86d48cd96c673",
+    "title": "Chicken Rou Zao With Rice",
+    "servings": 4,
+    "perServing": 2.5081,
+    "storedPerServing": 2.5081
+   },
+   {
+    "id": "69b5c9a95ee86d48cd96c675",
+    "title": "Chicken Porridge",
+    "servings": 4,
+    "perServing": 3.1642,
+    "storedPerServing": 3.1642
+   },
+   {
+    "id": "69c31dd4b17f27d65b4f4ec0",
+    "title": "Moosewood Lentil Soup",
+    "servings": 6,
+    "perServing": 0.71,
+    "storedPerServing": 0.71
+   },
+   {
+    "id": "69b1db93974afef25b93a454",
+    "title": "Quick Chicken Enchilada Soup",
+    "servings": 4,
+    "perServing": 0.8038,
+    "storedPerServing": 0.8038
+   },
+   {
+    "id": "69b1db93974afef25b93a45d",
+    "title": "Berry Fruit Crumble",
+    "servings": 6,
+    "perServing": 0.0698,
+    "storedPerServing": 0.0698
+   },
+   {
+    "id": "69b1db93974afef25b93a45e",
+    "title": "Blackberry Clafoutis",
+    "servings": 2,
+    "perServing": 0.3869,
+    "storedPerServing": 0.3869
+   },
+   {
+    "id": "69b4aeaee736bc836fd51331",
+    "title": "Chorizo and Beef Quinoa Stuffed Pepper",
+    "servings": 4,
+    "perServing": 3.6543,
+    "storedPerServing": 3.6543
+   },
+   {
+    "id": "69b4aeaee736bc836fd51335",
+    "title": "Venison Stew",
+    "servings": 7,
+    "perServing": 2.9063,
+    "storedPerServing": 2.9063
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df7b",
+    "title": "Butternut Squash Frittata",
+    "servings": 1,
+    "perServing": 1.1587,
+    "storedPerServing": 1.1587
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df7c",
+    "title": "Poached Egg With Spinach and Tomato",
+    "servings": 2,
+    "perServing": 1.5459,
+    "storedPerServing": 1.5459
+   },
+   {
+    "id": "69c31dd4b17f27d65b4f4ec2",
+    "title": "Delightful Kale and Cabbage Slaw",
+    "servings": 6,
+    "perServing": 0.6384,
+    "storedPerServing": 0.6384
+   },
+   {
+    "id": "69b1db92974afef25b93a44d",
+    "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+    "servings": 4,
+    "perServing": 1.3541,
+    "storedPerServing": 1.3541
+   },
+   {
+    "id": "69b1db93974afef25b93a462",
+    "title": "Italian Tuna Pasta",
+    "servings": 3,
+    "perServing": 2.7738,
+    "storedPerServing": 2.7738
+   },
+   {
+    "id": "69b1db93974afef25b93a464",
+    "title": "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+    "servings": 2,
+    "perServing": 1.2614,
+    "storedPerServing": 1.2614
+   },
+   {
+    "id": "69b1db93974afef25b93a471",
+    "title": "Asparagus and Pea Soup: Real Convenience Food",
+    "servings": 2,
+    "perServing": 2.0922,
+    "storedPerServing": 2.0922
+   },
+   {
+    "id": "69b1db93974afef25b93a473",
+    "title": "Red Kidney Bean Jambalaya",
+    "servings": 6,
+    "perServing": 2.1006,
+    "storedPerServing": 2.1006
+   },
+   {
+    "id": "69b1db93974afef25b93a474",
+    "title": "Cauliflower, Brown Rice, and Vegetable Fried Rice",
+    "servings": 8,
+    "perServing": 0.5695,
+    "storedPerServing": 0.5695
+   },
+   {
+    "id": "69b277e5f9069a06b5536b58",
+    "title": "Chicken Arrozcaldo",
+    "servings": 9,
+    "perServing": 0.9951,
+    "storedPerServing": 0.9951
+   },
+   {
+    "id": "69b277e5f9069a06b5536b5a",
+    "title": "Steamy Creamy Mushroom Risotto",
+    "servings": 2,
+    "perServing": 2.3569,
+    "storedPerServing": 2.3569
+   },
+   {
+    "id": "69b4aeaee736bc836fd5132f",
+    "title": "Slow Cooker Beef Stew",
+    "servings": 6,
+    "perServing": 2.8471,
+    "storedPerServing": 2.8471
+   },
+   {
+    "id": "69b4aeaee736bc836fd51330",
+    "title": "Easy Vegetable Beef Soup",
+    "servings": 8,
+    "perServing": 3.0553,
+    "storedPerServing": 3.0553
+   },
+   {
+    "id": "69b4af41734a319b1f59a1c5",
+    "title": "Baked Chicken With Lemon & Garlic",
+    "servings": 8,
+    "perServing": 2.384,
+    "storedPerServing": 2.384
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ec8",
+    "title": "Caponata Style Celery Spaghetti",
+    "servings": 4,
+    "perServing": 0.4558,
+    "storedPerServing": 0.4558
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ec9",
+    "title": "Creamy Broccoli & Celery Soup",
+    "servings": 4,
+    "perServing": 1.0962,
+    "storedPerServing": 1.0962
+   },
+   {
+    "id": "69c473017393a7f0235b89b3",
+    "title": "Thai Street Vendor Salmon Skewers",
+    "servings": 4,
+    "perServing": 3.3014,
+    "storedPerServing": 3.3014
+   },
+   {
+    "id": "69c473017393a7f0235b89b4",
+    "title": "Thai Shrimp",
+    "servings": 4,
+    "perServing": 4.5724,
+    "storedPerServing": 4.5724
+   },
+   {
+    "id": "69b1db93974afef25b93a453",
+    "title": "Quick and Easy Scallop Pasta",
+    "servings": 2,
+    "perServing": 0.8838,
+    "storedPerServing": 0.8838
+   },
+   {
+    "id": "69b4aeaee736bc836fd51334",
+    "title": "Easy Instant Pot Beef Tips and Rice",
+    "servings": 4,
+    "perServing": 8.4683,
+    "storedPerServing": 8.4683
+   },
+   {
+    "id": "69b4b0675ee86d48cd96c66f",
+    "title": "Baked Chicken with Citrus and Garlic Marinade",
+    "servings": 6,
+    "perServing": 1.4055,
+    "storedPerServing": 1.4055
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df7d",
+    "title": "Vietnamese Pancakes with Vegetables, Herbs and a Fragrant Dipping Sauce (Bánh Xèo)",
+    "servings": 6,
+    "perServing": 1.0017,
+    "storedPerServing": 1.0017
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df82",
+    "title": "Baked Rigatoni",
+    "servings": 6,
+    "perServing": 1.5272,
+    "storedPerServing": 1.5272
+   },
+   {
+    "id": "69bf43f8742c2d2d3b4e88c0",
+    "title": "Boozy Bbq Chicken",
+    "servings": 6,
+    "perServing": 2.3682,
+    "storedPerServing": 2.3682
+   },
+   {
+    "id": "69c31dd4b17f27d65b4f4ec4",
+    "title": "Vegan Colcannon Soup",
+    "servings": 8,
+    "perServing": 2.0903,
+    "storedPerServing": 2.0903
+   },
+   {
+    "id": "69c473017393a7f0235b89b9",
+    "title": "Thai Cucumber Salad (By Roz)",
+    "servings": 6,
+    "perServing": 0.7938,
+    "storedPerServing": 0.7938
+   },
+   {
+    "id": "69c473017393a7f0235b89ba",
+    "title": "Green Thai Curry with Beef",
+    "servings": 4,
+    "perServing": 3.9306,
+    "storedPerServing": 3.9306
+   },
+   {
+    "id": "69b09f21118169bbfaa697b3",
+    "title": "Avocado Sweet Lassi - How to make Avocado Lassi - Indian Avocado",
+    "servings": 6,
+    "perServing": 0.1593,
+    "storedPerServing": 0.1593
+   },
+   {
+    "id": "69b1db92974afef25b93a44a",
+    "title": "Chicken and Mango Skewer",
+    "servings": 1,
+    "perServing": 7.9215,
+    "storedPerServing": 7.9215
+   },
+   {
+    "id": "69b1db93974afef25b93a461",
+    "title": "Pasta With Tuna",
+    "servings": 4,
+    "perServing": 1.1596,
+    "storedPerServing": 1.1596
+   },
+   {
+    "id": "69b1db93974afef25b93a465",
+    "title": "Pasta with Butternut Squash, Sausage and Sage Pesto",
+    "servings": 8,
+    "perServing": 0.6934,
+    "storedPerServing": 0.6934
+   },
+   {
+    "id": "69b1db93974afef25b93a466",
+    "title": "Pasta With Cream Sauce and Mushrooms",
+    "servings": 4,
+    "perServing": 0.9649,
+    "storedPerServing": 0.9649
+   },
+   {
+    "id": "69b4aeaee736bc836fd51332",
+    "title": "Coffee-braised Short Ribs",
+    "servings": 5,
+    "perServing": 2.1081,
+    "storedPerServing": 2.1081
+   },
+   {
+    "id": "69b4aeaee736bc836fd51336",
+    "title": "Ground Turkey Stuffed Peppers",
+    "servings": 4,
+    "perServing": 2.5727,
+    "storedPerServing": 2.5727
+   },
+   {
+    "id": "69c31dd4b17f27d65b4f4ec3",
+    "title": "Spicy lentil and black rice soup with kale, spinach and leek",
+    "servings": 12,
+    "perServing": 1.162,
+    "storedPerServing": 1.162
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ecf",
+    "title": "Azteca Soup",
+    "servings": 6,
+    "perServing": 2.4652,
+    "storedPerServing": 2.4652
+   },
+   {
+    "id": "69c31df4b17f27d65b4f4ed3",
+    "title": "The Best Quinoa Minestrone",
+    "servings": 8,
+    "perServing": 2.6251,
+    "storedPerServing": 2.6251
+   },
+   {
+    "id": "69c4766a7393a7f0235b89c9",
+    "title": "Butternut Squash Souffle Side Dish",
+    "servings": 4,
+    "perServing": 0.7354,
+    "storedPerServing": 0.7354
+   },
+   {
+    "id": "69c4766a7393a7f0235b89ca",
+    "title": "Banana Creme Brulee",
+    "servings": 8,
+    "perServing": 1.0321,
+    "storedPerServing": 1.0321
+   },
+   {
+    "id": "69b1db92974afef25b93a44b",
+    "title": "Cheesy Chicken Enchilada Quinoa Casserole",
+    "servings": 4,
+    "perServing": 2.4155,
+    "storedPerServing": 2.4155
+   },
+   {
+    "id": "69b1db93974afef25b93a451",
+    "title": "Grilled Ham and Cheese French Toast For A Quick Weeknight Dinner",
+    "servings": 4,
+    "perServing": 0.1459,
+    "storedPerServing": 0.1459
+   },
+   {
+    "id": "69b1db93974afef25b93a455",
+    "title": "Quick and Easy Southwestern Corn Chowder",
+    "servings": 6,
+    "perServing": 2.0215,
+    "storedPerServing": 2.0215
+   },
+   {
+    "id": "69b1db93974afef25b93a456",
+    "title": "Clear & Quick Chicken Soup",
+    "servings": 2,
+    "perServing": 1.4296,
+    "storedPerServing": 1.4296
+   },
+   {
+    "id": "69b1db93974afef25b93a459",
+    "title": "Healthy Hazelnut Cookies",
+    "servings": 10,
+    "perServing": 0.0123,
+    "storedPerServing": 0.0123
+   },
+   {
+    "id": "69b1db93974afef25b93a45a",
+    "title": "Scotch Eggs",
+    "servings": 8,
+    "perServing": 0.2981,
+    "storedPerServing": 0.2981
+   },
+   {
+    "id": "69b1db93974afef25b93a45b",
+    "title": "Macha Macarons",
+    "servings": 4,
+    "perServing": 2.8,
+    "storedPerServing": 2.8
+   },
+   {
+    "id": "69b1db93974afef25b93a45c",
+    "title": "Chess Pie Two Ways",
+    "servings": 8,
+    "perServing": 0.4621,
+    "storedPerServing": 0.4621
+   },
+   {
+    "id": "69b1db93974afef25b93a472",
+    "title": "Garlicky Kale",
+    "servings": 2,
+    "perServing": 0.5015,
+    "storedPerServing": 0.5015
+   },
+   {
+    "id": "69b4aeaee736bc836fd51337",
+    "title": "Chimichurri Skirt Steak with Grilled Asparagus",
+    "servings": 4,
+    "perServing": 2.7217,
+    "storedPerServing": 2.7217
+   },
+   {
+    "id": "69b4b0505ee86d48cd96c66a",
+    "title": "Smoked Salmon Eggs Benedict With Lemon Dill Hollandaise",
+    "servings": 2,
+    "perServing": 4.262,
+    "storedPerServing": 4.262
+   },
+   {
+    "id": "69b4b0505ee86d48cd96c66b",
+    "title": "Lemon Pasta With Salmon",
+    "servings": 6,
+    "perServing": 2.9414,
+    "storedPerServing": 2.9414
+   },
+   {
+    "id": "69c31dd4b17f27d65b4f4ebe",
+    "title": "Moroccan chickpea and lentil stew",
+    "servings": 3,
+    "perServing": 1.0548,
+    "storedPerServing": 1.0548
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4eca",
+    "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
+    "servings": 7,
+    "perServing": 1.8358,
+    "storedPerServing": 1.8358
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ecc",
+    "title": "Minestrone",
+    "servings": 9,
+    "perServing": 1.1364,
+    "storedPerServing": 1.1364
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ece",
+    "title": "Aspic Jelly",
+    "servings": 4,
+    "perServing": 5.6417,
+    "storedPerServing": 5.6417
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ed0",
+    "title": "Classic Ragu",
+    "servings": 6,
+    "perServing": 0.9878,
+    "storedPerServing": 0.9878
+   },
+   {
+    "id": "69b1db92974afef25b93a44c",
+    "title": "Chicken Suya",
+    "servings": 1,
+    "perServing": 2.0502,
+    "storedPerServing": 2.0502
+   },
+   {
+    "id": "69b1db93974afef25b93a475",
+    "title": "Quinoa and Chickpea Salad with Sun-Dried Tomatoes and Dried Cherries",
+    "servings": 6,
+    "perServing": 0.6804,
+    "storedPerServing": 0.6804
+   },
+   {
+    "id": "69b277e5f9069a06b5536b5c",
+    "title": "SLOW COOKER CHICKEN GUMBO SOUP",
+    "servings": 6,
+    "perServing": 0.8984,
+    "storedPerServing": 0.8984
+   },
+   {
+    "id": "69b4aeaee736bc836fd51333",
+    "title": "Spinach and Gorgonzola Stuffed Flank Steak",
+    "servings": 4,
+    "perServing": 3.6878,
+    "storedPerServing": 3.6878
+   },
+   {
+    "id": "69b5c9a95ee86d48cd96c676",
+    "title": "Chicken Spring Rolls",
+    "servings": 4,
+    "perServing": 1.8785,
+    "storedPerServing": 1.8785
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df81",
+    "title": "Crab Cakes Eggs Benedict",
+    "servings": 3,
+    "perServing": 9.2336,
+    "storedPerServing": 9.2336
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ec7",
+    "title": "Celery Apple Risotto With Crispy Pancetta",
+    "servings": 6,
+    "perServing": 1.1737,
+    "storedPerServing": 1.1737
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ecd",
+    "title": "Corn Salsa",
+    "servings": 4,
+    "perServing": 0.4117,
+    "storedPerServing": 0.4117
+   },
+   {
+    "id": "69c473017393a7f0235b89b7",
+    "title": "Xocai Oatmeal Dark Chocolate No-Bake Cookies",
+    "servings": 24,
+    "perServing": 0.0969,
+    "storedPerServing": 0.0969
+   },
+   {
+    "id": "69c473017393a7f0235b89b8",
+    "title": "Thai Sweet Coconut Sticky Rice With Fresh Mango",
+    "servings": 4,
+    "perServing": 2.2575,
+    "storedPerServing": 2.2575
+   },
+   {
+    "id": "69c4766a7393a7f0235b89c8",
+    "title": "Egg Souffle With Bacon and Asparagus",
+    "servings": 2,
+    "perServing": 1.9379,
+    "storedPerServing": 1.9379
+   },
+   {
+    "id": "69c4766a7393a7f0235b89cc",
+    "title": "Julia Child's Ratatouille",
+    "servings": 6,
+    "perServing": 0.9209,
+    "storedPerServing": 0.9209
+   },
+   {
+    "id": "69b09f21118169bbfaa697b4",
+    "title": "Avocado Tomato & Mozzarella Panini/sandwiches",
+    "servings": 4,
+    "perServing": 0.8659,
+    "storedPerServing": 0.8659
+   },
+   {
+    "id": "69b1db92974afef25b93a449",
+    "title": "Red Lentil Soup with Chicken and Turnips",
+    "servings": 8,
+    "perServing": 3.3369,
+    "storedPerServing": 3.3369
+   },
+   {
+    "id": "69b1db92974afef25b93a44e",
+    "title": "Chicken Piccata With Angel Hair Pasta",
+    "servings": 2,
+    "perServing": 3.6271,
+    "storedPerServing": 3.6271
+   },
+   {
+    "id": "69b1db93974afef25b93a452",
+    "title": "Quick and Easy Caprese Salad",
+    "servings": 4,
+    "perServing": 1.0998,
+    "storedPerServing": 1.0998
+   },
+   {
+    "id": "69b1db93974afef25b93a476",
+    "title": "Easy Homemade Rice and Beans",
+    "servings": 2,
+    "perServing": 0.9295,
+    "storedPerServing": 0.9295
+   },
+   {
+    "id": "69b277e5f9069a06b5536b59",
+    "title": "Easy Chicken Pot Pie",
+    "servings": 6,
+    "perServing": 0.3143,
+    "storedPerServing": 0.3143
+   },
+   {
+    "id": "69b277e5f9069a06b5536b5b",
+    "title": "Light and Chunky Chicken Soup",
+    "servings": 6,
+    "perServing": 0.773,
+    "storedPerServing": 0.773
+   },
+   {
+    "id": "69b4af41734a319b1f59a1c4",
+    "title": "Garlic Lemon Chicken",
+    "servings": 2,
+    "perServing": 2.0717,
+    "storedPerServing": 2.0717
+   },
+   {
+    "id": "69b5c9a95ee86d48cd96c674",
+    "title": "Stir Fried Quinoa, Brown Rice and Chicken Breast",
+    "servings": 1,
+    "perServing": 5.625,
+    "storedPerServing": 5.625
+   },
+   {
+    "id": "69b5c9a95ee86d48cd96c677",
+    "title": "Vegetable Fried Wontons",
+    "servings": 16,
+    "perServing": 0.1056,
+    "storedPerServing": 0.1056
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df7a",
+    "title": "Finger Foods: Frittata Muffins",
+    "servings": 1,
+    "perServing": 2.8028,
+    "storedPerServing": 2.8028
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df80",
+    "title": "Egg Salad Sandwiches With Tarragon",
+    "servings": 6,
+    "perServing": 1.2656,
+    "storedPerServing": 1.2656
+   },
+   {
+    "id": "69b9587c7d3db8c999c7df83",
+    "title": "Open-Face Egg Sandwich with Bacon, Asparagus, and Pesto",
+    "servings": 4,
+    "perServing": 2.8285,
+    "storedPerServing": 2.8285
+   },
+   {
+    "id": "69c31de2b17f27d65b4f4ecb",
+    "title": "Chilled Green Pea & Onion Soup",
+    "servings": 4,
+    "perServing": 0.9907,
+    "storedPerServing": 0.9907
+   },
+   {
+    "id": "69c473017393a7f0235b89b5",
+    "title": "Kyuri Tsukemono",
+    "servings": 4,
+    "perServing": 0.0967,
+    "storedPerServing": 0.0967
+   },
+   {
+    "id": "69c473017393a7f0235b89b6",
+    "title": "Thai Green Mango Salad",
+    "servings": 6,
+    "perServing": 1.2124,
+    "storedPerServing": 1.2124
+   },
+   {
+    "id": "69c4766a7393a7f0235b89cb",
+    "title": "Vegetable Cheddar Quiche",
+    "servings": 8,
+    "perServing": 0.4058,
+    "storedPerServing": 0.4058
+   },
+   {
+    "id": "69c7275f754babcc25875c8c",
+    "title": "Quinoa Vegetable Salad",
+    "servings": 2,
+    "perServing": 2.8699,
+    "storedPerServing": 2.8699
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcd3",
+    "title": "Red Curry Stew & Vegetable Noodles",
+    "servings": 6,
+    "perServing": 3.2273,
+    "storedPerServing": 3.2273
+   },
+   {
+    "id": "69d191951648bcfb8b552615",
+    "title": "Zesty Avocado Toast with Ginger-Shallot Relish",
+    "servings": 2,
+    "perServing": 1.5067,
+    "storedPerServing": 1.5067
+   },
+   {
+    "id": "69d570ab87d5d72710ae8ea8",
+    "title": "Slow Cooker Chicken Taco Soup",
+    "servings": 6,
+    "perServing": 2.8292,
+    "storedPerServing": 2.8292
+   },
+   {
+    "id": "69d5710287d5d72710ae8eb0",
+    "title": "Crock Pot Chicken Pho",
+    "servings": 4,
+    "perServing": 6.2789,
+    "storedPerServing": 6.2789
+   },
+   {
+    "id": "69d5776887d5d72710ae8ec3",
+    "title": "Creamy Tomato Soup with Pan-Seared Dumplings & Balsamic-Cola Dressed Salad",
+    "servings": 2,
+    "perServing": 1.0278,
+    "storedPerServing": 1.0278
+   },
+   {
+    "id": "69fa56304476f68485ccfcf5",
+    "title": "Curried Chicken Roll-Ups",
+    "servings": 4,
+    "perServing": 1.0534,
+    "storedPerServing": 1.0534
+   },
+   {
+    "id": "69c7275f754babcc25875c86",
+    "title": "Strawberry-Mango Quinoa Salad",
+    "servings": 4,
+    "perServing": 1.2018,
+    "storedPerServing": 1.2018
+   },
+   {
+    "id": "69c7275f754babcc25875c89",
+    "title": "Easy Tabouleh",
+    "servings": 1,
+    "perServing": 4.1747,
+    "storedPerServing": 4.1747
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcc8",
+    "title": "Butternut Squash, Red Onion and Chickpea Salad",
+    "servings": 4,
+    "perServing": 1.9546,
+    "storedPerServing": 1.9546
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcca",
+    "title": "Sweet Potato, Red Onion & Cotija Stacks",
+    "servings": 8,
+    "perServing": 0.6856,
+    "storedPerServing": 0.6856
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfccc",
+    "title": "Caramelized Red Onions and Pear Dip",
+    "servings": 10,
+    "perServing": 0.349,
+    "storedPerServing": 0.349
+   },
+   {
+    "id": "69d191951648bcfb8b55261a",
+    "title": "Quinoa Power Bowl with Roasted Sweet Potatoes, Crispy Onions, and Ginger-Avocado Dressing",
+    "servings": 2,
+    "perServing": 2.5714,
+    "storedPerServing": 2.5714
+   },
+   {
+    "id": "69d1933f0ce7d5269f69526a",
+    "title": "Prawn Scampi with Linguine",
+    "servings": 2,
+    "perServing": 4.071,
+    "storedPerServing": 4.071
+   },
+   {
+    "id": "69d1933f0ce7d5269f69526b",
+    "title": "Spicy Prawn Tacos with Avocado Crema",
+    "servings": 2,
+    "perServing": 3.4929,
+    "storedPerServing": 3.4929
+   },
+   {
+    "id": "69d1933f0ce7d5269f69526d",
+    "title": "Lemon Herb King Prawns with Roasted Asparagus & Cherry Tomatoes",
+    "servings": 2,
+    "perServing": 5.1579,
+    "storedPerServing": 5.1579
+   },
+   {
+    "id": "69d1933f0ce7d5269f69526e",
+    "title": "Prawn and Vegetable Stir-fry with Egg Noodles",
+    "servings": 2,
+    "perServing": 4.0889,
+    "storedPerServing": 4.0889
+   },
+   {
+    "id": "69d1933f0ce7d5269f695273",
+    "title": "Crispy Sesame Prawn Toast",
+    "servings": 2,
+    "perServing": 2.5676,
+    "storedPerServing": 2.5676
+   },
+   {
+    "id": "69d570ab87d5d72710ae8ea7",
+    "title": "Chicken Fajita Stuffed Bell Pepper",
+    "servings": 3,
+    "perServing": 3.7485,
+    "storedPerServing": 3.7485
+   },
+   {
+    "id": "69c4766a7393a7f0235b89cd",
+    "title": "Havarti and Asparagus Quiche",
+    "servings": 8,
+    "perServing": 0.4754,
+    "storedPerServing": 0.4754
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dce",
+    "title": "Trinidadian Chicken Potato Curry",
+    "servings": 4,
+    "perServing": 2.4346,
+    "storedPerServing": 2.4346
+   },
+   {
+    "id": "69c7275f754babcc25875c8d",
+    "title": "Lettuce, Apple, and Cucumber Salad with Fennel and Walnuts",
+    "servings": 1,
+    "perServing": 1.9695,
+    "storedPerServing": 1.9695
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcce",
+    "title": "Cannellini Bean Side Dish With Fennel, Red Onion, and Saffron",
+    "servings": 6,
+    "perServing": 0.2472,
+    "storedPerServing": 0.2472
+   },
+   {
+    "id": "69d191951648bcfb8b55261d",
+    "title": "Black Bean Burgers with Caramelized Onions & Avocado Mash",
+    "servings": 2,
+    "perServing": 1.6365,
+    "storedPerServing": 1.6365
+   },
+   {
+    "id": "69d5776887d5d72710ae8ec8",
+    "title": "Rustic Vegetable & Dumpling Stew with Soda-Glazed Tomatoes & Herb Salad",
+    "servings": 2,
+    "perServing": 3.7352,
+    "storedPerServing": 3.7352
+   },
+   {
+    "id": "69c4766a7393a7f0235b89cf",
+    "title": "Julia Child's Coq au Vin",
+    "servings": 6,
+    "perServing": 3.1055,
+    "storedPerServing": 3.1055
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dd0",
+    "title": "Apple Curry Soup",
+    "servings": 4,
+    "perServing": 2.6745,
+    "storedPerServing": 2.6745
+   },
+   {
+    "id": "69c7275f754babcc25875c87",
+    "title": "Turkish Chicken Salad with Home-made Cacik Yogurt Sauce",
+    "servings": 4,
+    "perServing": 2.2127,
+    "storedPerServing": 2.2127
+   },
+   {
+    "id": "69c7275f754babcc25875c8b",
+    "title": "Quinoa Tabouli Salad",
+    "servings": 4,
+    "perServing": 1.6713,
+    "storedPerServing": 1.6713
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcc9",
+    "title": "Kale With Red Onion",
+    "servings": 8,
+    "perServing": 0.3105,
+    "storedPerServing": 0.3105
+   },
+   {
+    "id": "69d191951648bcfb8b552616",
+    "title": "Ginger-Lime Shrimp with Avocado-Shallot Salsa",
+    "servings": 2,
+    "perServing": 3.9926,
+    "storedPerServing": 3.9926
+   },
+   {
+    "id": "69d191951648bcfb8b552620",
+    "title": "Sweet Potato & Avocado Hash with Poached Eggs and Sautéed Onions/Shallots",
+    "servings": 2,
+    "perServing": 1.9023,
+    "storedPerServing": 1.9023
+   },
+   {
+    "id": "69d5710287d5d72710ae8eb2",
+    "title": "Chinese Hot Pots Gluten-Free and Low-Carb",
+    "servings": 8,
+    "perServing": 2.4559,
+    "storedPerServing": 2.4559
+   },
+   {
+    "id": "69fa56304476f68485ccfcf1",
+    "title": "Vegetarian Falafels",
+    "servings": 6,
+    "perServing": 1.2098,
+    "storedPerServing": 1.2098
+   },
+   {
+    "id": "6a42e05cd33617bebef22d84",
+    "title": "Flank Steak With Garlicky Mediterranean Salad",
+    "servings": 2,
+    "perServing": 4.1869,
+    "storedPerServing": 4.1869
+   },
+   {
+    "id": "69c7275f754babcc25875c85",
+    "title": "Tomato, Cucumber & Onion Salad with Feta Cheese: Real Convenience Food",
+    "servings": 1,
+    "perServing": 2.2959,
+    "storedPerServing": 2.2959
+   },
+   {
+    "id": "69c7275f754babcc25875c88",
+    "title": "Chilled Avocado and Cucumber Soup With Prawn and Scallop Salsa",
+    "servings": 4,
+    "perServing": 2.9422,
+    "storedPerServing": 2.9422
+   },
+   {
+    "id": "69c7275f754babcc25875c8a",
+    "title": "Winter Fattoush Salad",
+    "servings": 6,
+    "perServing": 1.0335,
+    "storedPerServing": 1.0335
+   },
+   {
+    "id": "69d191951648bcfb8b55261b",
+    "title": "Miso-Glazed Salmon with Ginger-Shallot Rice and Avocado",
+    "servings": 2,
+    "perServing": 4.8168,
+    "storedPerServing": 4.8168
+   },
+   {
+    "id": "69d1933f0ce7d5269f695270",
+    "title": "Cajun King Prawns with Dirty Rice",
+    "servings": 2,
+    "perServing": 8.4167,
+    "storedPerServing": 8.4167
+   },
+   {
+    "id": "69d1933f0ce7d5269f695274",
+    "title": "Creamy Prawn Risotto",
+    "servings": 2,
+    "perServing": 23.3484,
+    "storedPerServing": 23.3484
+   },
+   {
+    "id": "69d570ab87d5d72710ae8eaa",
+    "title": "4 Ingredient Chicken Pot Pie",
+    "servings": 6,
+    "perServing": 0.9923,
+    "storedPerServing": 0.9923
+   },
+   {
+    "id": "69d5710287d5d72710ae8eb3",
+    "title": "Dan Dan Noodles",
+    "servings": 4,
+    "perServing": 2.6043,
+    "storedPerServing": 2.6043
+   },
+   {
+    "id": "69d5776887d5d72710ae8ecc",
+    "title": "Hearty Beef Broth with Dumplings, Zesty Red Onion & Tomato Gremolata, & Side Salad",
+    "servings": 2,
+    "perServing": 0.8733,
+    "storedPerServing": 0.8733
+   },
+   {
+    "id": "69fa56304476f68485ccfcec",
+    "title": "Fennel, Pepper & Lettuce Salad",
+    "servings": 1,
+    "perServing": 3.6089,
+    "storedPerServing": 3.6089
+   },
+   {
+    "id": "69fa56304476f68485ccfcf6",
+    "title": "Tuscan Style Bread Salad",
+    "servings": 4,
+    "perServing": 4.0414,
+    "storedPerServing": 4.0414
+   },
+   {
+    "id": "69fa56304476f68485ccfcf7",
+    "title": "Easy To Make Spring Rolls",
+    "servings": 4,
+    "perServing": 1.2396,
+    "storedPerServing": 1.2396
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dd2",
+    "title": "Curry and Sage Roast Chicken",
+    "servings": 4,
+    "perServing": 1.2299,
+    "storedPerServing": 1.2299
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dd3",
+    "title": "Easy Fish Molee (South Indian-Style Fish Stew With Coconut)",
+    "servings": 2,
+    "perServing": 3.2675,
+    "storedPerServing": 3.2675
+   },
+   {
+    "id": "69c7275f754babcc25875c84",
+    "title": "Chilled Cucumber Avocado Soup with Yogurt and Kefir",
+    "servings": 3,
+    "perServing": 1.3134,
+    "storedPerServing": 1.3134
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfccf",
+    "title": "Red Wine Stewed Oxtail",
+    "servings": 6,
+    "perServing": 0.2657,
+    "storedPerServing": 0.2657
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcd1",
+    "title": "Red Wine Braised Beef Brisket",
+    "servings": 10,
+    "perServing": 5.2275,
+    "storedPerServing": 5.2275
+   },
+   {
+    "id": "69d191951648bcfb8b552618",
+    "title": "Ginger-Onion Chicken Stir-fry with Avocado",
+    "servings": 2,
+    "perServing": 3.3896,
+    "storedPerServing": 3.3896
+   },
+   {
+    "id": "69d191951648bcfb8b55261c",
+    "title": "Grilled Halloumi & Avocado Salad with Ginger-Lime Vinaigrette",
+    "servings": 2,
+    "perServing": 3.5193,
+    "storedPerServing": 3.5193
+   },
+   {
+    "id": "69d1933f0ce7d5269f69526c",
+    "title": "Thai Green Curry with King Prawns",
+    "servings": 2,
+    "perServing": 3.8249,
+    "storedPerServing": 3.8249
+   },
+   {
+    "id": "69d1933f0ce7d5269f695271",
+    "title": "Grilled Prawn & Halloumi Skewers with Zucchini",
+    "servings": 2,
+    "perServing": 4.0906,
+    "storedPerServing": 4.0906
+   },
+   {
+    "id": "69d1933f0ce7d5269f695276",
+    "title": "Spicy Honey-Garlic King Prawns",
+    "servings": 2,
+    "perServing": 3.4647,
+    "storedPerServing": 3.4647
+   },
+   {
+    "id": "69d570ab87d5d72710ae8ea5",
+    "title": "Herb chicken with sweet potato mash and sautéed broccoli",
+    "servings": 4,
+    "perServing": 2.2974,
+    "storedPerServing": 2.2974
+   },
+   {
+    "id": "69d5776887d5d72710ae8ec9",
+    "title": "Creamy Chicken & Dumpling Soup with Cola-Caramelized Red Onions & Crisp Greens",
+    "servings": 2,
+    "perServing": 0.8277,
+    "storedPerServing": 0.8277
+   },
+   {
+    "id": "69fa56304476f68485ccfcf0",
+    "title": "Spicy Black Bean Lettuce Wraps",
+    "servings": 4,
+    "perServing": 1.4074,
+    "storedPerServing": 1.4074
+   },
+   {
+    "id": "6a42e050d33617bebef22d7f",
+    "title": "Crab and Shrimp Burgers With Garlic Grits Fries",
+    "servings": 8,
+    "perServing": 0.4305,
+    "storedPerServing": 0.4305
+   },
+   {
+    "id": "6a42e05cd33617bebef22d83",
+    "title": "Almond Rainbow Cake",
+    "servings": 8,
+    "perServing": 0.3624,
+    "storedPerServing": 0.3624
+   },
+   {
+    "id": "6a5ff781a91e3f027a2961e9",
+    "title": "Korean Beef Rice Bowl",
+    "servings": 4,
+    "perServing": 1.1654,
+    "storedPerServing": 1.1654
+   },
+   {
+    "id": "69c4766a7393a7f0235b89ce",
+    "title": "Poached Prawns with Fettuccine and French String Beans",
+    "servings": 4,
+    "perServing": 2.4226,
+    "storedPerServing": 2.4226
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dd1",
+    "title": "Indian-Style Dill and Turmeric Potato Salad",
+    "servings": 4,
+    "perServing": 0.513,
+    "storedPerServing": 0.513
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dd4",
+    "title": "Baked Indian Samosas",
+    "servings": 8,
+    "perServing": 1.4435,
+    "storedPerServing": 1.4435
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfccb",
+    "title": "Charred Onion Dip w. Steamed Red Potatoes for Dipping",
+    "servings": 6,
+    "perServing": 0.4692,
+    "storedPerServing": 0.4692
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfcd2",
+    "title": "Red quinoa cranberry arugula soup",
+    "servings": 4,
+    "perServing": 2.4321,
+    "storedPerServing": 2.4321
+   },
+   {
+    "id": "69fa56304476f68485ccfcef",
+    "title": "Mexican Chicken Lettuce Wraps",
+    "servings": 6,
+    "perServing": 0.6339,
+    "storedPerServing": 0.6339
+   },
+   {
+    "id": "69fa56304476f68485ccfcf2",
+    "title": "Ginger Beef Stir Fry",
+    "servings": 4,
+    "perServing": 4.5463,
+    "storedPerServing": 4.5463
+   },
+   {
+    "id": "69fa56304476f68485ccfcf3",
+    "title": "Lemon Cucumber Salad",
+    "servings": 4,
+    "perServing": 0.4285,
+    "storedPerServing": 0.4285
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dcd",
+    "title": "Saffron Chicken Tikka",
+    "servings": 3,
+    "perServing": 1.2848,
+    "storedPerServing": 1.2848
+   },
+   {
+    "id": "69c5c81c64ee1f17b0563dcf",
+    "title": "Spicy Black-Eyed Pea Curry with Swiss Chard and Roasted Eggplant",
+    "servings": 6,
+    "perServing": 0.6976,
+    "storedPerServing": 0.6976
+   },
+   {
+    "id": "69d04b0f26a6c4c3877dfccd",
+    "title": "Roasted Brussels Sprouts With Red Onions and Pancetta",
+    "servings": 5,
+    "perServing": 0.9176,
+    "storedPerServing": 0.9176
+   },
+   {
+    "id": "69d191951648bcfb8b552619",
+    "title": "Spicy Fish Tacos with Avocado-Lime Crema & Pickled Shallots",
+    "servings": 2,
+    "perServing": 3.1169,
+    "storedPerServing": 3.1169
+   },
+   {
+    "id": "69d1933f0ce7d5269f695269",
+    "title": "Garlic Butter King Prawns with Crusty Bread",
+    "servings": 2,
+    "perServing": 4.6824,
+    "storedPerServing": 4.6824
+   },
+   {
+    "id": "69d1933f0ce7d5269f69526f",
+    "title": "Creamy Tomato King Prawn Pasta",
+    "servings": 2,
+    "perServing": 3.7654,
+    "storedPerServing": 3.7654
+   },
+   {
+    "id": "69d1933f0ce7d5269f695272",
+    "title": "Quick Prawn and Chorizo Paella",
+    "servings": 2,
+    "perServing": 11.9405,
+    "storedPerServing": 11.9405
+   },
+   {
+    "id": "69d1933f0ce7d5269f695275",
+    "title": "Coconut Lime King Prawns with Coriander Rice",
+    "servings": 2,
+    "perServing": 3.48,
+    "storedPerServing": 3.48
+   },
+   {
+    "id": "69d5710287d5d72710ae8eaf",
+    "title": "Chicken Lo Mein",
+    "servings": 2,
+    "perServing": 2.1644,
+    "storedPerServing": 2.1644
+   },
+   {
+    "id": "69d5710287d5d72710ae8eb1",
+    "title": "Chili-Garlic Stir Fry",
+    "servings": 6,
+    "perServing": 2.2653,
+    "storedPerServing": 2.2653
+   },
+   {
+    "id": "69d5776887d5d72710ae8ec5",
+    "title": "Loaded Potato Soup with Cheesy Dumplings & Zesty Ginger Ale Slaw",
+    "servings": 2,
+    "perServing": 0.9692,
+    "storedPerServing": 0.9692
+   },
+   {
+    "id": "69fa56304476f68485ccfced",
+    "title": "Beet Salad With Peppers and Lettuce",
+    "servings": 1,
+    "perServing": 1.3813,
+    "storedPerServing": 1.3813
+   },
+   {
+    "id": "6a42e050d33617bebef22d80",
+    "title": "Tart Raspberry Sorbet with a Hint of Heat",
+    "servings": 6,
+    "perServing": 0.3715,
+    "storedPerServing": 0.3715
+   },
+   {
+    "id": "6a5ff992a91e3f027a2961eb",
+    "title": "Carrot and Coriander Soup",
+    "servings": 1,
+    "perServing": 0.5516,
+    "storedPerServing": 0.5516
+   },
+   {
+    "id": "6a5ffd1ca91e3f027a2961f9",
+    "title": "Pad Se Ew Tofu With Vegetable Noodles",
+    "servings": 6,
+    "perServing": 0.9817,
+    "storedPerServing": 0.9817
+   },
+   {
+    "id": "6a69323fb048d5e7f4ddfb31",
+    "title": "One-Tray Honey Mustard Chicken Thighs with New Potatoes",
+    "servings": 4,
+    "perServing": 2.344,
+    "storedPerServing": 2.344
+   },
+   {
+    "id": "6a6cfa88901ee72fdac2149f",
+    "title": "Tuscan Broccolini Quinoa Pilaf with Lemon, Herbs, and Goat Cheese",
+    "servings": 4,
+    "perServing": 2.5378,
+    "storedPerServing": 2.5378
+   },
+   {
+    "id": "6a6cfaa4901ee72fdac214a3",
+    "title": "Raspberry Arugula Bites with Goat Cheese and Bacon",
+    "servings": 2,
+    "perServing": 1.8602,
+    "storedPerServing": 1.8602
+   },
+   {
+    "id": "6a6cfaa5901ee72fdac214a5",
+    "title": "Spring Meadow Keto Frittata",
+    "servings": 4,
+    "perServing": 1.811,
+    "storedPerServing": 1.811
+   },
+   {
+    "id": "6a6cfaa5901ee72fdac214a7",
+    "title": "Goldilocks Coconut Chia Breakfast Porridge",
+    "servings": 2,
+    "perServing": 1.9508,
+    "storedPerServing": 1.9508
+   },
+   {
+    "id": "6a7125a91ee1eaaddd32d6f5",
+    "title": "Chilled Andalusian Tomato-Cucumber Soup with Green Herb Swirl",
+    "servings": 4,
+    "perServing": 1.5551,
+    "storedPerServing": 1.5551
+   },
+   {
+    "id": "6a724c34839c335789cfe29d",
+    "title": "Miso Noodle Soup with Mushrooms and Greens",
+    "servings": 4,
+    "perServing": 1.9867,
+    "storedPerServing": 1.9867
+   },
+   {
+    "id": "6a75188a7a409c2c73f12b47",
+    "title": "Caprese-Stuffed Tomato and Mozzarella Toasts with Basil Oil",
+    "servings": 4,
+    "perServing": 1.0238,
+    "storedPerServing": 1.0238
+   },
+   {
+    "id": "6a7792246d22c1d009304b0c",
+    "title": "Charred Mango Guacamole with Corn and Jalapeño",
+    "servings": 4,
+    "perServing": 2.385,
+    "storedPerServing": 2.385
+   },
+   {
+    "id": "6a7b9cdf8427001f36231d76",
+    "title": "Goan-Style Curry Mussels with Coconut, Lime, and Cilantro",
+    "servings": 4,
+    "perServing": 0.9903,
+    "storedPerServing": 0.9903
+   },
+   {
+    "id": "6a7b9e3091b580138f0b6685",
+    "title": "Lemon-Chili Broccoli Chicken Skillet",
+    "servings": 4,
+    "perServing": 2.4158,
+    "storedPerServing": 2.4158
+   },
+   {
+    "id": "6a88b8baddbff3a7489ec28e",
+    "title": "Crispy Polenta Rounds with Smoky Avocado Salsa",
+    "servings": 4,
+    "perServing": 1.2105,
+    "storedPerServing": 1.2105
+   },
+   {
+    "id": "6ac80d57b0ca951a2fbf73e8",
+    "title": "Goldilocks Coconut Chia Porridge with Warm Cinnamon Pear and Walnut Crunch",
+    "servings": 2,
+    "perServing": 1.6999,
+    "storedPerServing": 1.6999
+   },
+   {
+    "id": "6ac80d59b0ca951a2fbf73ee",
+    "title": "Thai Coconut Beetroot Soup with Lime, Ginger, and Tofu",
+    "servings": 4,
+    "perServing": 2.925,
+    "storedPerServing": 2.925
+   },
+   {
+    "id": "6ac80d59b0ca951a2fbf73f0",
+    "title": "Lemon-Lentil Soup with Parsley and Warm Spices",
+    "servings": 4,
+    "perServing": 1.1709,
+    "storedPerServing": 1.1709
+   },
+   {
+    "id": "6ac80d5ab0ca951a2fbf73f2",
+    "title": "Lemon-Dill Salmon Skillet Frittata",
+    "servings": 4,
+    "perServing": 1.9677,
+    "storedPerServing": 1.9677
+   },
+   {
+    "id": "6ac80d5ab0ca951a2fbf73f4",
+    "title": "Warm Pumpkin and Chickpea Curry Sabzi",
+    "servings": 4,
+    "perServing": 1.7844,
+    "storedPerServing": 1.7844
+   },
+   {
+    "id": "6ac80d5cb0ca951a2fbf73f8",
+    "title": "Lemon-Kissed Lebanese Lentil Soup",
+    "servings": 4,
+    "perServing": 1.8832,
+    "storedPerServing": 1.8832
+   },
+   {
+    "id": "6ac80d5fb0ca951a2fbf7402",
+    "title": "Spiced Pumpkin with Mustard Seeds and Yogurt",
+    "servings": 4,
+    "perServing": 1.6585,
+    "storedPerServing": 1.6585
+   },
+   {
+    "id": "6ac80d60b0ca951a2fbf7406",
+    "title": "Garden Sunrise Keto Frittata",
+    "servings": 4,
+    "perServing": 1.6828,
+    "storedPerServing": 1.6828
+   },
+   {
+    "id": "6ac80d61b0ca951a2fbf740a",
+    "title": "Garlicky Lemon Chili Broccoli Skillet",
+    "servings": 4,
+    "perServing": 0.8587,
+    "storedPerServing": 0.8587
+   },
+   {
+    "id": "6ac80d63b0ca951a2fbf7410",
+    "title": "Smoky Rainbow Skillet Chili",
+    "servings": 6,
+    "perServing": 2.1195,
+    "storedPerServing": 2.1195
+   },
+   {
+    "id": "6ac80d67b0ca951a2fbf7420",
+    "title": "Tangy Coastal Fish Curry with Mustard, Tamarind, and Basil",
+    "servings": 4,
+    "perServing": 3.3026,
+    "storedPerServing": 3.3026
+   },
+   {
+    "id": "6ac80d6cb0ca951a2fbf7430",
+    "title": "Golden Spinach-Asparagus Skillet Frittata",
+    "servings": 4,
+    "perServing": 1.8614,
+    "storedPerServing": 1.8614
+   },
+   {
+    "id": "6ac80d6eb0ca951a2fbf7438",
+    "title": "Smoky Citrus Guacamole with Crunchy Tomatoe Relish",
+    "servings": 4,
+    "perServing": 1.5142,
+    "storedPerServing": 1.5142
+   },
+   {
+    "id": "6ac80d6fb0ca951a2fbf743a",
+    "title": "Sunrise Salmon Frittata with Asparagus and Herbed Tomato",
+    "servings": 4,
+    "perServing": 1.8746,
+    "storedPerServing": 1.8746
+   },
+   {
+    "id": "6ac80d70b0ca951a2fbf7440",
+    "title": "Coconut Tamarind-Style Assam Fish Curry",
+    "servings": 4,
+    "perServing": 3.1844,
+    "storedPerServing": 3.1844
+   },
+   {
+    "id": "6ac80d73b0ca951a2fbf7448",
+    "title": "Smoked Salmon, Broccoli, and Herb Crepes",
+    "servings": 2,
+    "perServing": 4.226,
+    "storedPerServing": 4.226
+   },
+   {
+    "id": "6ac80d73b0ca951a2fbf744a",
+    "title": "Smoky Avocado Guacamole with Corn and Lime",
+    "servings": 4,
+    "perServing": 1.7494,
+    "storedPerServing": 1.7494
+   },
+   {
+    "id": "6ac80d76b0ca951a2fbf7454",
+    "title": "Lemony Salmon and Broccoli Breakfast Crepes",
+    "servings": 4,
+    "perServing": 2.7103,
+    "storedPerServing": 2.7103
+   },
+   {
+    "id": "6ac80d79b0ca951a2fbf745e",
+    "title": "Buffalo Chicken Pepper Cups",
+    "servings": 4,
+    "perServing": 1.969,
+    "storedPerServing": 1.969
+   },
+   {
+    "id": "6ac80d7fb0ca951a2fbf7472",
+    "title": "Light Korean-Inspired Noodle Stir-Fry with Spinach and Mushrooms",
+    "servings": 4,
+    "perServing": 1.5425,
+    "storedPerServing": 1.5425
+   },
+   {
+    "id": "6ac80d7fb0ca951a2fbf7474",
+    "title": "Warm Romesco-Style Chickpea and Red Pepper Skillet",
+    "servings": 4,
+    "perServing": 1.9161,
+    "storedPerServing": 1.9161
+   },
+   {
+    "id": "6ac80d80b0ca951a2fbf7476",
+    "title": "Almond-Matcha Sunrise Breakfast Smoothie",
+    "servings": 2,
+    "perServing": 1.3336,
+    "storedPerServing": 1.3336
+   },
+   {
+    "id": "6ac80d80b0ca951a2fbf7478",
+    "title": "Keto Morning Garden Frittata",
+    "servings": 4,
+    "perServing": 1.9579,
+    "storedPerServing": 1.9579
+   },
+   {
+    "id": "6ac80d81b0ca951a2fbf747a",
+    "title": "Sunrise Mango-Berry Swirl Breakfast Smoothie Bowl",
+    "servings": 2,
+    "perServing": 4.5498,
+    "storedPerServing": 4.5498
+   },
+   {
+    "id": "6ac80d83b0ca951a2fbf7482",
+    "title": "Romesco-Style Sun-Dried Tomato Chickpea Bake",
+    "servings": 4,
+    "perServing": 1.8867,
+    "storedPerServing": 1.8867
+   },
+   {
+    "id": "6ac80d84b0ca951a2fbf7484",
+    "title": "Cloud-Lift Spinach and Goat Cheese Frittata",
+    "servings": 4,
+    "perServing": 1.8166,
+    "storedPerServing": 1.8166
+   },
+   {
+    "id": "6ac80d86b0ca951a2fbf748c",
+    "title": "Lighter Korean-Style Glass Noodle Stir-Fry with Chicken and Greens",
+    "servings": 4,
+    "perServing": 1.994,
+    "storedPerServing": 1.994
+   },
+   {
+    "id": "6ac80d88b0ca951a2fbf7494",
+    "title": "Smoky Black Bean and Pepper Taco Filling",
+    "servings": 4,
+    "perServing": 1.193,
+    "storedPerServing": 1.193
+   },
+   {
+    "id": "6ac80d8bb0ca951a2fbf749c",
+    "title": "Light Korean-Style Glass Noodles with Spinach, Mushrooms, and Chicken",
+    "servings": 4,
+    "perServing": 1.7559,
+    "storedPerServing": 1.7559
+   },
+   {
+    "id": "6ac80d8bb0ca951a2fbf749e",
+    "title": "Romesco Roasted Vegetables with Crispy Chickpeas and Goat Cheese Toast",
+    "servings": 4,
+    "perServing": 3.4136,
+    "storedPerServing": 3.4136
+   },
+   {
+    "id": "6ac80d8eb0ca951a2fbf74a8",
+    "title": "Spinach, Asparagus & Mushroom Goat Cheese Frittata",
+    "servings": 4,
+    "perServing": 1.8974,
+    "storedPerServing": 1.8974
+   },
+   {
+    "id": "6ac80d91b0ca951a2fbf74b2",
+    "title": "Garlicky Black Bean Shrimp Breakfast Scramble",
+    "servings": 2,
+    "perServing": 4.7412,
+    "storedPerServing": 4.7412
+   },
+   {
+    "id": "6ac80d91b0ca951a2fbf74b4",
+    "title": "Sweet Potato Chicken Sloppy Joes with Smoky Tomato Slaw",
+    "servings": 4,
+    "perServing": 2.2025,
+    "storedPerServing": 2.2025
+   },
+   {
+    "id": "6ac80d93b0ca951a2fbf74b8",
+    "title": "Andalusian Garden Gazpacho with Cucumber, Cucumber, and Olive Oil",
+    "servings": 4,
+    "perServing": 1.6856,
+    "storedPerServing": 1.6856
+   },
+   {
+    "id": "6ac80d96b0ca951a2fbf74c2",
+    "title": "Spiced Sweet Potato Wedge Bowls with Chicken, Black Bean, and Lime Yogurt",
+    "servings": 4,
+    "perServing": 0.9732,
+    "storedPerServing": 0.9732
+   },
+   {
+    "id": "6ac80d98b0ca951a2fbf74ca",
+    "title": "Moroccan-Spiced Meatball Lettuce Bites with Lemon-Parsley Yogurt",
+    "servings": 8,
+    "perServing": 0.8423,
+    "storedPerServing": 0.8423
+   },
+   {
+    "id": "6ac80d98b0ca951a2fbf74cc",
+    "title": "Crispy Quinoa Guacamole Bites",
+    "servings": 4,
+    "perServing": 1.5245,
+    "storedPerServing": 1.5245
+   },
+   {
+    "id": "6ac80d9cb0ca951a2fbf74da",
+    "title": "Coconut Bliss Sunrise Smoothie Bowl",
+    "servings": 2,
+    "perServing": 2.1667,
+    "storedPerServing": 2.1667
+   },
+   {
+    "id": "6ac80d9eb0ca951a2fbf74de",
+    "title": "Crispy Amaranth Veggie Crunch Cups",
+    "servings": 4,
+    "perServing": 1.2046,
+    "storedPerServing": 1.2046
+   },
+   {
+    "id": "6ac80d9eb0ca951a2fbf74e0",
+    "title": "Sesame Veggie Noodle Bowl with Ginger-Soy Glaze",
+    "servings": 4,
+    "perServing": 1.6309,
+    "storedPerServing": 1.6309
+   },
+   {
+    "id": "6ac80da1b0ca951a2fbf74ea",
+    "title": "Lemon-Herb Sweet Potato Gnocchi with Tomato and Olive Ragout",
+    "servings": 4,
+    "perServing": 2.196,
+    "storedPerServing": 2.196
+   },
+   {
+    "id": "6ac80da4b0ca951a2fbf74f6",
+    "title": "Spiced Lamb Meatball Lettuce Cups with Tahini-Lime Drizzle",
+    "servings": 4,
+    "perServing": 2.0208,
+    "storedPerServing": 2.0208
+   },
+   {
+    "id": "6ac80da5b0ca951a2fbf74fa",
+    "title": "Silken Spinach Paneer-Style Curry",
+    "servings": 4,
+    "perServing": 1.6355,
+    "storedPerServing": 1.6355
+   },
+   {
+    "id": "6ac80da6b0ca951a2fbf74fc",
+    "title": "Slow-Simmered Beef Chili with Coffee and Beer",
+    "servings": 6,
+    "perServing": 2.8,
+    "storedPerServing": 2.8
+   },
+   {
+    "id": "6ac80da7b0ca951a2fbf74fe",
+    "title": "Gochu-Scented Cabbage and Shrimp Rice Bowl",
+    "servings": 4,
+    "perServing": 3.1075,
+    "storedPerServing": 3.1075
+   },
+   {
+    "id": "6ac80da9b0ca951a2fbf7506",
+    "title": "Herbed Chickpea Gnocchi with Tomato, Olive, and Spinach Ragout",
+    "servings": 4,
+    "perServing": 1.1418,
+    "storedPerServing": 1.1418
+   },
+   {
+    "id": "6ac80dabb0ca951a2fbf750e",
+    "title": "Spiced Lambless Meatball Bites with Tomato-Olive Glaze",
+    "servings": 4,
+    "perServing": 1.5333,
+    "storedPerServing": 1.5333
+   },
+   {
+    "id": "6ac80dacb0ca951a2fbf7512",
+    "title": "Smoky Indian Pumpkin with Chickpeas and Coconut",
+    "servings": 4,
+    "perServing": 2.1708,
+    "storedPerServing": 2.1708
+   },
+   {
+    "id": "6ac80db0b0ca951a2fbf751e",
+    "title": "Almond-Matcha Morning Fuel Smoothie",
+    "servings": 2,
+    "perServing": 1.0505,
+    "storedPerServing": 1.0505
+   },
+   {
+    "id": "6ac80db2b0ca951a2fbf7526",
+    "title": "Slow Cooker Smoky Three-Bean Chili",
+    "servings": 6,
+    "perServing": 1.4849,
+    "storedPerServing": 1.4849
+   },
+   {
+    "id": "6ac80db5b0ca951a2fbf7530",
+    "title": "Crispy Avocado Chickpea Guacamole Bites",
+    "servings": 4,
+    "perServing": 1.2292,
+    "storedPerServing": 1.2292
+   },
+   {
+    "id": "6ac80db6b0ca951a2fbf7532",
+    "title": "Buckwheat Crêpes with Mushroom-Shallot Cream and Herb Salad",
+    "servings": 4,
+    "perServing": 2.1681,
+    "storedPerServing": 2.1681
+   },
+   {
+    "id": "6ac80db7b0ca951a2fbf7536",
+    "title": "Citrus Herb Red Quinoa Salad with Cucumber, Tomato, and Mint",
+    "servings": 4,
+    "perServing": 1.8741,
+    "storedPerServing": 1.8741
+   },
+   {
+    "id": "6ac80db9b0ca951a2fbf753e",
+    "title": "Gujarati-Style Dry Mung-Inspired Curry with Chickpeas and Spinach",
+    "servings": 4,
+    "perServing": 1.2549,
+    "storedPerServing": 1.2549
+   },
+   {
+    "id": "6ac80dbab0ca951a2fbf7540",
+    "title": "Quick-Pickled Kimchi Bowl with Seared Salmon and Sesame Cabbage",
+    "servings": 3,
+    "perServing": 3.3815,
+    "storedPerServing": 3.3815
+   },
+   {
+    "id": "6ac80dbeb0ca951a2fbf754e",
+    "title": "Cheddar-Scallion Protein Scones with Buttered Herb Fold",
+    "servings": 6,
+    "perServing": 0.7067,
+    "storedPerServing": 0.7067
+   },
+   {
+    "id": "6ac80dbeb0ca951a2fbf7550",
+    "title": "Charred Corn Avocado Salsa",
+    "servings": 4,
+    "perServing": 1.575,
+    "storedPerServing": 1.575
+   },
+   {
+    "id": "6ac80dc2b0ca951a2fbf755c",
+    "title": "Buckwheat Crepes with Wild Mushroom, White Wine, and Herb Sauce",
+    "servings": 4,
+    "perServing": 1.8601,
+    "storedPerServing": 1.8601
+   },
+   {
+    "id": "6ac80dc3b0ca951a2fbf7560",
+    "title": "Bright Middle Eastern Chopped Salad with Sumac Lemon Dressing",
+    "servings": 4,
+    "perServing": 2.1637,
+    "storedPerServing": 2.1637
+   },
+   {
+    "id": "6ac80dc3b0ca951a2fbf7562",
+    "title": "Herbed Chicken Scones with White Cheddar and Peppery Scallion Butter",
+    "servings": 8,
+    "perServing": 1.0331,
+    "storedPerServing": 1.0331
+   },
+   {
+    "id": "6ac80dc6b0ca951a2fbf756a",
+    "title": "Crispy Chickpea Gnocchi with Lemon-Garlic Tomatoe Sauce",
+    "servings": 4,
+    "perServing": 0.9335,
+    "storedPerServing": 0.9335
+   },
+   {
+    "id": "6ac80dc7b0ca951a2fbf7570",
+    "title": "Mushroom and Lentil Shepherd's Pie with Cheddar Potato Topping",
+    "servings": 6,
+    "perServing": 1.867,
+    "storedPerServing": 1.867
+   },
+   {
+    "id": "6ac80dc8b0ca951a2fbf7572",
+    "title": "Spinach-Ricotta Lasagna Rolls with Peppery Tomato Marinara",
+    "servings": 4,
+    "perServing": 1.9188,
+    "storedPerServing": 1.9188
+   },
+   {
+    "id": "6ac80dc9b0ca951a2fbf7574",
+    "title": "Smoky Lime Guacamole with Charred Corn and Tomatoe",
+    "servings": 4,
+    "perServing": 1.5721,
+    "storedPerServing": 1.5721
+   },
+   {
+    "id": "6ac80dcab0ca951a2fbf7578",
+    "title": "Savory Turkey-Style Scramble with Sweet Potato, Chard & Herb Finish",
+    "servings": 4,
+    "perServing": 2.7056,
+    "storedPerServing": 2.7056
+   },
+   {
+    "id": "6ac80dcab0ca951a2fbf757a",
+    "title": "Keto Raspberry Arugula Avocado Crunch Cups",
+    "servings": 2,
+    "perServing": 3.4994,
+    "storedPerServing": 3.4994
+   },
+   {
+    "id": "6ac80dcbb0ca951a2fbf757e",
+    "title": "Slow-Cooked Beef Chili with Tomato, Beans, and Warm Spice",
+    "servings": 6,
+    "perServing": 4.7349,
+    "storedPerServing": 4.7349
+   },
+   {
+    "id": "6ac80dccb0ca951a2fbf7580",
+    "title": "Herby High-Protein British Cheese Scones with White Cheddar and Quail Egg",
+    "servings": 6,
+    "perServing": 1.2008,
+    "storedPerServing": 1.2008
+   },
+   {
+    "id": "6ac80dcdb0ca951a2fbf7584",
+    "title": "Smoky Mexican Bean Salad with Lime-Cilantro Dressing",
+    "servings": 4,
+    "perServing": 1.6582,
+    "storedPerServing": 1.6582
+   },
+   {
+    "id": "6ac80dcfb0ca951a2fbf758a",
+    "title": "Za'atar Lentil Stuffed Flatbreads with Warm Tomato-Parsley Drizzle",
+    "servings": 4,
+    "perServing": 1.0005,
+    "storedPerServing": 1.0005
+   },
+   {
+    "id": "6ac80dd0b0ca951a2fbf758e",
+    "title": "Crispy Ginger Chicken & Cabbage Ribbon Salad",
+    "servings": 4,
+    "perServing": 2.0997,
+    "storedPerServing": 2.0997
+   },
+   {
+    "id": "6ac80dd0b0ca951a2fbf7590",
+    "title": "Spinach, Asparagus, and Mushroom Breakfast Skillet Frittata",
+    "servings": 4,
+    "perServing": 1.8964,
+    "storedPerServing": 1.8964
+   },
+   {
+    "id": "6ac80dd3b0ca951a2fbf759a",
+    "title": "Warm Caprese Farro-Style Quinoa Bowl with Roasted Tomatoes and Basil",
+    "servings": 2,
+    "perServing": 3.0118,
+    "storedPerServing": 3.0118
+   },
+   {
+    "id": "6ac80dd4b0ca951a2fbf759c",
+    "title": "Charred Mushroom and Jalapeño Cilantro Salsa Tacos",
+    "servings": 4,
+    "perServing": 1.49,
+    "storedPerServing": 1.49
+   },
+   {
+    "id": "6ac80dd4b0ca951a2fbf759e",
+    "title": "Miso Broth Noodles with Ginger, Bok Choy, and Tofu",
+    "servings": 4,
+    "perServing": 1.9378,
+    "storedPerServing": 1.9378
+   },
+   {
+    "id": "6ac80dd5b0ca951a2fbf75a0",
+    "title": "Saffron Prawn Basmati Biryani with Minted Tomato Masala",
+    "servings": 4,
+    "perServing": 3.7022,
+    "storedPerServing": 3.7022
+   },
+   {
+    "id": "6ac80dd5b0ca951a2fbf75a2",
+    "title": "Sweet Potato Turkey Sloppy Joes with Smoky Tomato Glaze",
+    "servings": 4,
+    "perServing": 2.4533,
+    "storedPerServing": 2.4533
+   },
+   {
+    "id": "6ac80dd9b0ca951a2fbf75ae",
+    "title": "Fragrant Coastal Prawn Biryani",
+    "servings": 4,
+    "perServing": 3.7621,
+    "storedPerServing": 3.7621
+   },
+   {
+    "id": "6ac80dddb0ca951a2fbf75be",
+    "title": "Ginger-Sesame Chicken Slaw with Quail Eggs",
+    "servings": 4,
+    "perServing": 2.701,
+    "storedPerServing": 2.701
+   },
+   {
+    "id": "6ac80ddeb0ca951a2fbf75c2",
+    "title": "Saffron Prawn Basmati with Garam Masala Onions",
+    "servings": 4,
+    "perServing": 3.4106,
+    "storedPerServing": 3.4106
+   },
+   {
+    "id": "6ac80ddfb0ca951a2fbf75c4",
+    "title": "Chicken Parmesan Sweet Potato Fries",
+    "servings": 4,
+    "perServing": 1.0069,
+    "storedPerServing": 1.0069
+   },
+   {
+    "id": "6ac80de0b0ca951a2fbf75c8",
+    "title": "Cacao Coconut Crunch Morning Granola",
+    "servings": 6,
+    "perServing": 1.0258,
+    "storedPerServing": 1.0258
+   },
+   {
+    "id": "6ac80de2b0ca951a2fbf75ce",
+    "title": "Spinach-Ricotta Lasagna Rolls with Peppery Tomato-Parmesan Sauce",
+    "servings": 4,
+    "perServing": 1.8616,
+    "storedPerServing": 1.8616
+   },
+   {
+    "id": "6ac80de4b0ca951a2fbf75d4",
+    "title": "Crispy Sweet Potato Wedges with Chicken, Chive Yogurt, and Bacon",
+    "servings": 4,
+    "perServing": 1.4971,
+    "storedPerServing": 1.4971
+   },
+   {
+    "id": "6ac80de4b0ca951a2fbf75d6",
+    "title": "Light Korean Beef and Vegetable Rice Bowl",
+    "servings": 4,
+    "perServing": 2.7731,
+    "storedPerServing": 2.7731
+   },
+   {
+    "id": "6ac80de9b0ca951a2fbf75e8",
+    "title": "Sunrise Mango-Banana Coconut Breakfast Quinoa",
+    "servings": 2,
+    "perServing": 2.3531,
+    "storedPerServing": 2.3531
+   },
+   {
+    "id": "6ac80deab0ca951a2fbf75ea",
+    "title": "Za'atar Lentil Stuffed Pita Breads with Herbed Lemon Yogurt",
+    "servings": 4,
+    "perServing": 1.4878,
+    "storedPerServing": 1.4878
+   },
+   {
+    "id": "6ac80dedb0ca951a2fbf75f6",
+    "title": "Sunrise Mango-Banana Coconut Breakfast Cream",
+    "servings": 2,
+    "perServing": 1.6611,
+    "storedPerServing": 1.6611
+   },
+   {
+    "id": "6ac80deeb0ca951a2fbf75f8",
+    "title": "Roasted Vegetable Lasagna Spirals with Peppery Pecorino Marinara",
+    "servings": 4,
+    "perServing": 2.9379,
+    "storedPerServing": 2.9379
+   },
+   {
+    "id": "6ac80df2b0ca951a2fbf7606",
+    "title": "Crisp Ginger Chicken and Napa-Style Slaw Salad",
+    "servings": 4,
+    "perServing": 3.1784,
+    "storedPerServing": 3.1784
+   },
+   {
+    "id": "6ac80df2b0ca951a2fbf7608",
+    "title": "Crispy Sweet Potato Fries with Garlic Parmesan Chicken Crumble",
+    "servings": 4,
+    "perServing": 1.4001,
+    "storedPerServing": 1.4001
+   },
+   {
+    "id": "6ac80df3b0ca951a2fbf760a",
+    "title": "Light Korean Japchae with Chicken and Crisp Vegetables",
+    "servings": 4,
+    "perServing": 2.2642,
+    "storedPerServing": 2.2642
+   },
+   {
+    "id": "6ac80df5b0ca951a2fbf7612",
+    "title": "Fragrant Prawn Basmati Rice with Saffron, Curry Leaves, and Golden Onions",
+    "servings": 4,
+    "perServing": 4.0061,
+    "storedPerServing": 4.0061
+   },
+   {
+    "id": "6ac80dfbb0ca951a2fbf7626",
+    "title": "Gochujang-Style Glazed Chicken with Crisp Cabbage Slaw",
+    "servings": 4,
+    "perServing": 2.6978,
+    "storedPerServing": 2.6978
+   },
+   {
+    "id": "6ac80dfcb0ca951a2fbf762a",
+    "title": "Greek Baked Fish with Tomato, Lemon, and Feta",
+    "servings": 4,
+    "perServing": 3.7717,
+    "storedPerServing": 3.7717
+   },
+   {
+    "id": "6ac80e00b0ca951a2fbf763a",
+    "title": "Raspberry Arugula Avocado Bites",
+    "servings": 2,
+    "perServing": 2.6508,
+    "storedPerServing": 2.6508
+   },
+   {
+    "id": "6ac80e01b0ca951a2fbf763c",
+    "title": "Smoky Chicken Sweet Potato Fries with Herbed Yogurt Drizzle",
+    "servings": 4,
+    "perServing": 1.772,
+    "storedPerServing": 1.772
+   },
+   {
+    "id": "6ac80e02b0ca951a2fbf7640",
+    "title": "Lemon-Sesame Mushroom Rice Noodles with Crisp Vegetables",
+    "servings": 4,
+    "perServing": 1.5586,
+    "storedPerServing": 1.5586
+   },
+   {
+    "id": "6ac80e04b0ca951a2fbf7646",
+    "title": "Velvety Spinach-Paneer Style Skillet",
+    "servings": 4,
+    "perServing": 2.0756,
+    "storedPerServing": 2.0756
+   },
+   {
+    "id": "6ac80e05b0ca951a2fbf764a",
+    "title": "Crispy Sweet Potato Fries with Chili-Garlic Chicken Crumble",
+    "servings": 4,
+    "perServing": 1.9032,
+    "storedPerServing": 1.9032
+   },
+   {
+    "id": "6ac80e07b0ca951a2fbf7650",
+    "title": "Parmesan Herb Gougères with Whipped Lemon-Avocado Filling",
+    "servings": 6,
+    "perServing": 0.8365,
+    "storedPerServing": 0.8365
+   },
+   {
+    "id": "6ac80e08b0ca951a2fbf7654",
+    "title": "Silken Spinach Paneer-Style Skillet",
+    "servings": 4,
+    "perServing": 2.1173,
+    "storedPerServing": 2.1173
+   },
+   {
+    "id": "6ac80e09b0ca951a2fbf7658",
+    "title": "Almond Meadow Matcha Breakfast Smoothie Bowl",
+    "servings": 1,
+    "perServing": 3.3097,
+    "storedPerServing": 3.3097
+   },
+   {
+    "id": "6ac80e0bb0ca951a2fbf765e",
+    "title": "Greek Lemon Chicken Tray Bake with Green Beans and Feta",
+    "servings": 4,
+    "perServing": 1.5738,
+    "storedPerServing": 1.5738
+   },
+   {
+    "id": "6ac80e0bb0ca951a2fbf7660",
+    "title": "Tuscan-Style Seafood Stew with Lemon and Herbs",
+    "servings": 4,
+    "perServing": 6.0807,
+    "storedPerServing": 6.0807
+   },
+   {
+    "id": "6ac80e0cb0ca951a2fbf7664",
+    "title": "Smoky Butternut Black Bean Chili with Bulgur",
+    "servings": 4,
+    "perServing": 2.6636,
+    "storedPerServing": 2.6636
+   },
+   {
+    "id": "6ac80e15b0ca951a2fbf7682",
+    "title": "Gochu-Lime Salmon with Crunchy Cabbage Slaw",
+    "servings": 4,
+    "perServing": 3.7017,
+    "storedPerServing": 3.7017
+   },
+   {
+    "id": "6ac80e16b0ca951a2fbf7688",
+    "title": "Tuscan Shrimp, Cod, and Olive Stew",
+    "servings": 4,
+    "perServing": 6.1208,
+    "storedPerServing": 6.1208
+   },
+   {
+    "id": "6ac80e17b0ca951a2fbf768a",
+    "title": "Silky Spinach Paneer-Style Skillet",
+    "servings": 4,
+    "perServing": 2.3539,
+    "storedPerServing": 2.3539
+   },
+   {
+    "id": "6ac80e18b0ca951a2fbf768c",
+    "title": "Japanese Curry Puff Pockets with Chicken and Peas",
+    "servings": 4,
+    "perServing": 0.9649,
+    "storedPerServing": 0.9649
+   },
+   {
+    "id": "6ac80e19b0ca951a2fbf7692",
+    "title": "Mango-Glazed Pulled Chicken Sandwiches",
+    "servings": 6,
+    "perServing": 2.9914,
+    "storedPerServing": 2.9914
+   },
+   {
+    "id": "6ac80e1bb0ca951a2fbf7698",
+    "title": "Sun-Dried Tomato Herb Breakfast Eggs with Spinach and Goat Cheese",
+    "servings": 2,
+    "perServing": 2.7591,
+    "storedPerServing": 2.7591
+   },
+   {
+    "id": "6ac80e1cb0ca951a2fbf769a",
+    "title": "Roast Veggie Amaranth Crunch Cups",
+    "servings": 4,
+    "perServing": 1.4903,
+    "storedPerServing": 1.4903
+   },
+   {
+    "id": "6ac80e1fb0ca951a2fbf76a6",
+    "title": "Miso Chicken Noodle Broth with Quail Eggs and Greens",
+    "servings": 4,
+    "perServing": 2.8929,
+    "storedPerServing": 2.8929
+   },
+   {
+    "id": "6ac80e20b0ca951a2fbf76a8",
+    "title": "Gruyère-Style Cheese Puffs with Thyme and Pepper",
+    "servings": 6,
+    "perServing": 0.924,
+    "storedPerServing": 0.924
+   },
+   {
+    "id": "6ac80e20b0ca951a2fbf76aa",
+    "title": "Quick Kimchi-Style Salmon Rice Bowls",
+    "servings": 4,
+    "perServing": 2.8958,
+    "storedPerServing": 2.8958
+   },
+   {
+    "id": "6ac80e21b0ca951a2fbf76ac",
+    "title": "Savory Chicken, Chive, and Cheddar Scones",
+    "servings": 8,
+    "perServing": 0.5728,
+    "storedPerServing": 0.5728
+   },
+   {
+    "id": "6ac80e21b0ca951a2fbf76ae",
+    "title": "Za'atar Lentil Stuffed Flatbreads with Herb Oil",
+    "servings": 4,
+    "perServing": 1.2453,
+    "storedPerServing": 1.2453
+   },
+   {
+    "id": "6ac80e22b0ca951a2fbf76b2",
+    "title": "Crispy Amaranth Veggie Bites with Herby Quinoa-Style Crunch",
+    "servings": 4,
+    "perServing": 1.9466,
+    "storedPerServing": 1.9466
+   },
+   {
+    "id": "6ac80e23b0ca951a2fbf76b4",
+    "title": "Sesame-Miso Cucumber Salad with Chicken and Quail Eggs",
+    "servings": 2,
+    "perServing": 4.3385,
+    "storedPerServing": 4.3385
+   },
+   {
+    "id": "6ac80e24b0ca951a2fbf76b6",
+    "title": "Pumpkin and Chickpea Masala with Mustard Seed Tadka",
+    "servings": 4,
+    "perServing": 1.558,
+    "storedPerServing": 1.558
+   },
+   {
+    "id": "6ac80e25b0ca951a2fbf76ba",
+    "title": "Korean-Spiced Cabbage and Basa Rice Bowls with Quick Tangy Crunch",
+    "servings": 4,
+    "perServing": 2.7642,
+    "storedPerServing": 2.7642
+   },
+   {
+    "id": "6ac80e27b0ca951a2fbf76c2",
+    "title": "High-Protein Japanese Curry Puffs",
+    "servings": 6,
+    "perServing": 0.75,
+    "storedPerServing": 0.75
+   },
+   {
+    "id": "6ac80e29b0ca951a2fbf76c8",
+    "title": "Mango-Glazed Pork Shoulder Sandwiches",
+    "servings": 6,
+    "perServing": 2.2867,
+    "storedPerServing": 2.2867
+   },
+   {
+    "id": "6ac80e29b0ca951a2fbf76ca",
+    "title": "Quick-Pickled Kimchi Rice Bowl with Crispy Basa",
+    "servings": 4,
+    "perServing": 2.4834,
+    "storedPerServing": 2.4834
+   },
+   {
+    "id": "6ac80e2eb0ca951a2fbf76da",
+    "title": "Mediterranean Lemon-Olive Baked Hake",
+    "servings": 4,
+    "perServing": 2.4055,
+    "storedPerServing": 2.4055
+   },
+   {
+    "id": "6ac80e30b0ca951a2fbf76e2",
+    "title": "Raspberry Arugula Halloumi Snack Salad Cups",
+    "servings": 2,
+    "perServing": 2.2014,
+    "storedPerServing": 2.2014
+   },
+   {
+    "id": "6ac80e31b0ca951a2fbf76e6",
+    "title": "Lemon Herb Chickpea Gnocchi Skillet",
+    "servings": 4,
+    "perServing": 1.7377,
+    "storedPerServing": 1.7377
+   },
+   {
+    "id": "6ac80e34b0ca951a2fbf76ee",
+    "title": "Caprese Farro-Style Tomato Melts with Basil and Mozzarella",
+    "servings": 4,
+    "perServing": 1.9283,
+    "storedPerServing": 1.9283
+   },
+   {
+    "id": "6ac80e36b0ca951a2fbf76f6",
+    "title": "Cheddar Potato Corn Scones with Bacon and Chives",
+    "servings": 8,
+    "perServing": 0.6277,
+    "storedPerServing": 0.6277
+   },
+   {
+    "id": "6ac80e37b0ca951a2fbf76fa",
+    "title": "Warm Caprese Grain Bowl with Basil Oil and Balsamic Tomatoes",
+    "servings": 2,
+    "perServing": 3.1464,
+    "storedPerServing": 3.1464
+   },
+   {
+    "id": "6ac80e38b0ca951a2fbf76fe",
+    "title": "Crisp Chinese Chicken Salad with Sesame-Lime Crunch",
+    "servings": 4,
+    "perServing": 2.1052,
+    "storedPerServing": 2.1052
+   },
+   {
+    "id": "6ac80e39b0ca951a2fbf7702",
+    "title": "Saffron Prawn Biryani with Crisp Onion Notes",
+    "servings": 4,
+    "perServing": 4.3681,
+    "storedPerServing": 4.3681
+   },
+   {
+    "id": "6ac80e3bb0ca951a2fbf7706",
+    "title": "Crispy Amaranth-Free Quinoa Veggie Snack Cakes with Lemon Herb Smash",
+    "servings": 4,
+    "perServing": 1.7383,
+    "storedPerServing": 1.7383
+   },
+   {
+    "id": "6ac80e3db0ca951a2fbf770e",
+    "title": "Saffron Prawn Biryani with Caramelized Onion and Mint",
+    "servings": 4,
+    "perServing": 4.901,
+    "storedPerServing": 4.901
+   }
+  ]
+ }
+}
