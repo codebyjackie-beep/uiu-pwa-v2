@@ -236,8 +236,122 @@ function parseRound4PriceUpdates() {
       .sort((a, b) => b.impact - a.impact)
       .map((x) => ({ ...x, impact: r4(x.impact) }));
 
+    // ---- 3. wrong-price source classification (spread > 5x) ----------------------------------------
+    // For every doc whose per-unit spread (g_or_ml or each) exceeds 5x: where do the listings' packs come from
+    // (title / reference_pack fallback / unknown), and is the spread explained by reference-pack listings?
+    const SUSPECT_TITLE_RE = /\b(seeds?|plants?|grow|kit|supplements?|capsules?|tablets?|powder|pets?|dog|cat|candle|gift|hamper)\b/i;
+    const ratioOf = (v) => (v.length >= 2 && Math.min(...v) > 0 ? Math.max(...v) / Math.min(...v) : null);
+    const srcTotals = { title: 0, reference: 0, unknown: 0, other: 0 };
+    const causeCounts = { resolvedByOutlierRule_3x: 0, reference_pack_explains: 0, reference_pack_involved_not_sufficient: 0, multipack_or_parse: 0, suspect_title_word: 0, no_reference_listing_genuine_or_other: 0 };
+    const spreadDocs = [];
+    for (const d of priceDocs) {
+      const ls = (d.listings || []).filter((l) => typeof l.per_unit === "number" && l.per_unit > 0 && l.pack);
+      for (const unit of ["g_or_ml", "each"]) {
+        const lu = ls.filter((l) => l.pack.unit === unit);
+        const ratio = ratioOf(lu.map((l) => l.per_unit));
+        if (!ratio || ratio <= 5) continue;
+        const src = count(lu, (l) => l.source_of_pack ?? "other");
+        for (const k of Object.keys(src)) srcTotals[k in srcTotals ? k : "other"] += src[k];
+        const titleOnly = lu.filter((l) => l.source_of_pack === "title");
+        const titleRatio = ratioOf(titleOnly.map((l) => l.per_unit));
+        const lo = lu.reduce((a, b) => (b.per_unit < a.per_unit ? b : a));
+        const hi = lu.reduce((a, b) => (b.per_unit > a.per_unit ? b : a));
+        const refInvolved = lu.some((l) => l.source_of_pack === "reference");
+        const extremeIsRef = lo.source_of_pack === "reference" || hi.source_of_pack === "reference";
+        const explained = refInvolved && titleOnly.length >= 1 && (titleRatio == null || titleRatio <= 5);
+        const suspect = lu.some((l) => SUSPECT_TITLE_RE.test(String(l.title)));
+        const multi = [lo, hi].some((l) => /(\d+)\s?(?:pack|x|×)\b/i.test(String(l.title)));
+        const medAll = median(lu.map((l) => l.per_unit));
+        const kept = lu.filter((l) => l.per_unit <= medAll * 3 && l.per_unit >= medAll / 3);
+        const ratioAfterOutlierRule = ratioOf(kept.map((l) => l.per_unit));
+        const resolvedByOutlierRule = kept.length >= 1 && (ratioAfterOutlierRule == null || ratioAfterOutlierRule <= 5);
+        if (resolvedByOutlierRule) causeCounts.resolvedByOutlierRule_3x += 1;
+        let cause;
+        if (explained) cause = "reference_pack_explains";
+        else if (refInvolved && extremeIsRef) cause = "reference_pack_involved_not_sufficient";
+        else if (suspect) cause = "suspect_title_word";
+        else if (multi) cause = "multipack_or_parse";
+        else cause = "no_reference_listing_genuine_or_other";
+        causeCounts[cause] += 1;
+        spreadDocs.push({
+          canonical_name: d.canonical_name, unit, ratio: Math.round(ratio * 10) / 10, impact: r4(impact.get(d.canonical_name)?.perServingSum ?? 0),
+          sourceOfPack: src, titleOnlyRatio: titleRatio == null ? null : Math.round(titleRatio * 10) / 10, cause, resolvedByOutlierRule, ratioAfterOutlierRule: ratioAfterOutlierRule == null ? null : Math.round(ratioAfterOutlierRule * 10) / 10, keptAfterOutlierRule: kept.length,
+          reference_pack: canonByName.get(d.canonical_name)?.reference_pack ?? null,
+          low: { store: lo.store, title: lo.title, price: lo.price, pack: lo.pack, source_of_pack: lo.source_of_pack, per_unit: lo.per_unit },
+          high: { store: hi.store, title: hi.title, price: hi.price, pack: hi.pack, source_of_pack: hi.source_of_pack, per_unit: hi.per_unit },
+        });
+      }
+    }
+    spreadDocs.sort((a, b) => b.impact - a.impact);
+    const allListings = priceDocs.flatMap((d) => d.listings || []);
+    const NAMED_RE = [
+      ["broth", /\bbroth\b/i], ["stock", /\bstock\b/i], ["cola", /\bcola\b/i],
+      ["chopped/canned tomatoes", /(chopped|canned|tinned|plum) tomato/i],
+      ["rice", /(^|\s)rice(\s|$)/i],
+    ];
+    const NAMED_EXCLUDE = /vinegar|wine|noodle|paper|flour|milk|cake|cracker|pudding|syrup|bran/i;
+    const namedGroups = {};
+    for (const [label, re] of NAMED_RE) {
+      namedGroups[label] = priceDocs
+        .filter((d) => re.test(d.canonical_name) && !NAMED_EXCLUDE.test(d.canonical_name))
+        .map((d) => ({
+          canonical_name: d.canonical_name, confidence: d.confidence, reference_pack: canonByName.get(d.canonical_name)?.reference_pack ?? null,
+          per_unit_metric: d.per_unit_metric ?? null, per_unit_count: d.per_unit_count ?? null, cheapest: d.cheapest ?? null,
+          sourceOfPack: count(d.listings || [], (l) => l.source_of_pack ?? "other"),
+          listings: (d.listings || []).map((l) => ({ store: l.store, title: l.title, price: l.price, pack: l.pack, source_of_pack: l.source_of_pack, per_unit: l.per_unit })),
+        }));
+    }
+    // reference_pack fallback: do those listings ever reach per_unit_metric / per_unit_count?
+    // computePerUnit() only aggregates pack.unit === 'g_or_ml' (metric) or 'each' (count); reference_pack units are g / ml / each.
+    const refListings = [];
+    for (const d of priceDocs) for (const l of d.listings || []) if (l.source_of_pack === "reference") refListings.push({ doc: d, l });
+    const refDocs = new Set(refListings.map((x) => x.doc.canonical_name));
+    const refAnalysis = {
+      listings: refListings.length,
+      docs: refDocs.size,
+      listingsByPackUnit: count(refListings, (x) => x.l.pack?.unit ?? "(null)"),
+      canonicalReferencePackUnits: count(canonDocs.filter((c) => c.reference_pack), (c) => c.reference_pack.unit),
+      aggregateEligibleListings: refListings.filter((x) => x.l.pack && (x.l.pack.unit === "g_or_ml" || x.l.pack.unit === "each")).length,
+      docsWithAnyAggregateEligibleRefListing: new Set(refListings.filter((x) => x.l.pack && (x.l.pack.unit === "g_or_ml" || x.l.pack.unit === "each")).map((x) => x.doc.canonical_name)).size,
+      docsWithBothRefAndTitleListings: priceDocs.filter((d) => (d.listings || []).some((l) => l.source_of_pack === "reference") && (d.listings || []).some((l) => l.source_of_pack === "title")).length,
+      docsWithRefListingsButMetricAndCountNull: priceDocs
+        .filter((d) => refDocs.has(d.canonical_name) && !d.per_unit_metric && !d.per_unit_count)
+        .map((d) => ({ canonical_name: d.canonical_name, refListings: (d.listings || []).filter((l) => l.source_of_pack === "reference").length, reference_pack: canonByName.get(d.canonical_name)?.reference_pack ?? null, publicRecipeImpact: r4(impact.get(d.canonical_name)?.perServingSum ?? 0) })),
+      conclusion: "reference_pack listings carry pack.unit g/ml (not g_or_ml), so they are shown in `listings` with a per_unit but never enter per_unit_metric; only 'each' reference packs can reach per_unit_count.",
+    };
+    // title pack-parse issues (old regexes re-applied to the stored titles of listings whose pack came from the title)
+    const WV = /(\d+(?:\.\d+)?)\s?(kg|g|l|ml|cl)\b/i;
+    const toBase = { g: 1, ml: 1, kg: 1000, l: 1000, cl: 10 };
+    const parseIssues = { nxm_no_space_not_multiplied: [], n_pack_plus_total_weight_multiplied: [], pack_of_n_not_multiplied: [] };
+    for (const d of priceDocs) {
+      for (const l of d.listings || []) {
+        if (l.source_of_pack !== "title" || !l.pack || l.pack.unit !== "g_or_ml") continue;
+        const t = String(l.title);
+        const wv = t.match(WV);
+        if (!wv) continue;
+        const single = parseFloat(wv[1]) * toBase[wv[2].toLowerCase()];
+        const row = { canonical_name: d.canonical_name, store: l.store, title: t, price: l.price, parsedQty: l.pack.qty, per_unit: l.per_unit, impact: r4(impact.get(d.canonical_name)?.perServingSum ?? 0) };
+        const nxm = t.match(/(\d+)\s?[x×]\s?(\d+(?:\.\d+)?)\s?(kg|g|l|ml|cl)\b/i);
+        if (nxm && !/(\d+)\s?(?:pack|x|×)\b/i.test(t) && Math.abs(l.pack.qty - single) < 1e-9) { row.likelyQty = parseInt(nxm[1], 10) * parseFloat(nxm[2]) * toBase[nxm[3].toLowerCase()]; parseIssues.nxm_no_space_not_multiplied.push(row); continue; }
+        const np = t.match(/\b(\d+)\s?pack\b/i);
+        if (np && !nxm && Math.abs(l.pack.qty - single * parseInt(np[1], 10)) < 1e-9 && parseInt(np[1], 10) > 1) { row.note = "multiplier applied to a weight that may already be the pack total"; parseIssues.n_pack_plus_total_weight_multiplied.push(row); continue; }
+        const po = t.match(/pack of (\d+)/i);
+        if (po && Math.abs(l.pack.qty - single) < 1e-9) { row.likelyQty = single * parseInt(po[1], 10); parseIssues.pack_of_n_not_multiplied.push(row); }
+      }
+    }
+    const parseIssueSummary = Object.fromEntries(Object.entries(parseIssues).map(([k, v]) => [k, { count: v.length, examples: v.sort((a, b) => b.impact - a.impact).slice(0, 25) }]));
+    const wrongPriceSources = {
+      referencePackAnalysis: refAnalysis,
+      titleParseIssues: parseIssueSummary,
+      note: "source_of_pack over ALL listings in the cache, then over listings of docs with spread>5x",
+      allListings: { total: allListings.length, bySourceOfPack: count(allListings, (l) => l.source_of_pack ?? "other"), noPack: allListings.filter((l) => !l.pack).length },
+      spreadGt5: { docUnitCount: spreadDocs.length, listingsBySourceOfPack: srcTotals, causeCounts, docs: spreadDocs },
+      namedGroups,
+    };
+
     const report = {
       generatedAt: new Date().toISOString(),
+      wrongPriceSources,
       composition,
       aggregateFormulaCheck: formula,
       protected: {
