@@ -258,6 +258,7 @@ function pfApplies(scope, nameLower) {
 // `from` = actions the review saw (override applies only if the computed action is one of them). `ref` = which review decided.
 const P2 = "Part 2 live pilot decision 15";
 const P3 = "Part 3 full dry-run decision 23";
+const P4 = "Final dry-run decisions 25-26";
 const KEEP_ANY = ["hold", "hold_low_n", "hold_rise", "update"]; // keep_old wins over whatever the guards computed
 const CLOUD_OVERRIDES = {
   tomato: { ref: P2, from: ["hold"], decision: "update", note: "write count £0.166 each (Tesco/Ocado 6 Pack ÷ 6, real price; old £0.518 ~3x too high) + metric as guarded; count ratio 0.32 accepted" },
@@ -272,6 +273,8 @@ const CLOUD_OVERRIDES = {
   "vegetable oil": { ref: P3, from: KEEP_ANY, decision: "keep_old", note: "keep old value" },
   "basa fillets": { ref: P3, from: KEEP_ANY, decision: "keep_old", note: "keep old value" },
   mango: { ref: P3, from: KEEP_ANY, decision: "keep_old", note: "keep old value" },
+  // --- final dry-run review (decisions 25-26) ---
+  "oregano leaves": { ref: P4, from: KEEP_ANY, decision: "skip", note: "skip (not written): £228/kg is a dried-herb jar price, recipes use fresh oregano; stays unpriced" },
 };
 // remaining small-impact holds of the Part 3 run: keep old value
 for (const n of ["vinegar", "chili pepper flakes", "dill", "multigrain bread", "ground turmeric", "saffron", "fresh basil, torn", "garlic paste", "fresh basil leaves", "lettuce leaves", "snow peas", "muffins", "sage", "tomato slices", "ginger ale", "cola (regular) or ginger ale", "raspberry jam"]) {
@@ -842,6 +845,7 @@ async function runWrite(args, env) {
               decision = { action: "update", reason: `cloud_override(${decision.reason})`, fields: ["per_unit_metric"], supported: ["per_unit_metric"], detail: decision.detail };
             } else override = { ...override, skipped: true, note: `override NOT applied: listing "${ov.listingTitle}" not in the kept listings` };
           } else if (ov.decision === "keep_old" && decision.action === "update") decision = { action: "hold", reason: `cloud_keep_old(${decision.reason})`, fields: [], supported: decision.supported, ratios: decision.ratios };
+          else if (ov.decision === "skip" && decision.action === "update") decision = { action: "hold", reason: `cloud_skip(${decision.reason})`, fields: [], supported: decision.supported, ratios: decision.ratios };
         } else override = { by: "cloud", skipped: true, expectedAction: ov.from, actualAction: decision.action, note: "override NOT applied: computed action differs from the one cloud reviewed" };
       }
       const listingsOut = g.rows.map((r) => {
@@ -879,7 +883,7 @@ async function runWrite(args, env) {
         baseline: { per_unit_metric: baseline.per_unit_metric, per_unit_count: baseline.per_unit_count, cheapest: baseline.cheapest, confidence: baseline.confidence, n_supermarkets: baseline.n_supermarkets },
         guarded: { per_unit_metric: g.per_unit_metric, per_unit_count: g.per_unit_count, cheapest: g.cheapest, confidence: g.confidence, n_supermarkets: g.n_supermarkets, outlierMedians: g.dims },
         ratio: { guardedVsCurrent: { metric: ratioMetric, count: ratioCount }, baselineVsCurrent: { metric: baseline.per_unit_metric && cur.metric?.value > 0 ? Math.round((baseline.per_unit_metric.value / cur.metric.value) * 1000) / 1000 : null, count: baseline.per_unit_count && cur.count?.value > 0 ? Math.round((baseline.per_unit_count.value / cur.count.value) * 1000) / 1000 : null } },
-        override, keepOldByCloud: !!(override && !override.skipped && override.decision === "keep_old"),
+        override, keepOldByCloud: !!(override && !override.skipped && (override.decision === "keep_old" || override.decision === "skip")),
         ambiguityFallback, decisionDetail: decision.detail ?? null, listings: listingsOut, proposed,
         fieldsToWrite: decision.fields,
       };
