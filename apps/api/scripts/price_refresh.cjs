@@ -184,21 +184,47 @@ function tokenStems(phrase) {
 }
 // Guard 3 is deliberately lenient: ANY content token of canonical_name / query_alias / aliases may appear in the title
 // (it exists to drop non-food and wrong-category listings, not to demand an exact product name).
+// Spices that are only ever sold as powder: a "powder" listing is the right product (cloud rule 10).
+const POWDER_SPICE_RE = /\b(turmeric|paprika|cayenne|garam masala|five[- ]spice|mixed spice|allspice|curry)\b/i;
 function makeTitleMatcher(canon, priceDoc) {
   const name = canon?.canonical_name ?? priceDoc?.canonical_name;
-  const phrases = [name, canon?.query_alias, ...(Array.isArray(canon?.aliases) ? canon.aliases : [])].filter((x) => typeof x === "string");
+  const aliasList = Array.isArray(canon?.aliases) ? canon.aliases.filter((x) => typeof x === "string") : [];
+  const phrases = [name, canon?.query_alias, ...aliasList].filter((x) => typeof x === "string");
   const tokens = new Set();
   for (const p of phrases) for (const h of tokenStems(p)) tokens.add(h);
   const nameLower = String(name || "").toLowerCase();
-  const exclusions = EXCLUDE_WORDS.filter(([label]) => !new RegExp(`\\b${label}`, "i").test(nameLower)); // canonical that itself contains the word keeps it
+  const aliasLower = aliasList.join(" | ").toLowerCase();
+  const isGround = /^ground\b/.test(nameLower);
+  const wordIn = (label, s) => new RegExp(`\\b${label}`, "i").test(s);
+  // pre-rule-10 behaviour: only the canonical name itself exempts the word
+  const oldExempt = (label) => wordIn(label, nameLower);
+  // rule 10: canonical name OR an alias exempts it; `powder` also exempt for ground X / powder-only spices;
+  // `seed` is NOT exempted by an alias on `ground X` (seeds and ground spice are different products).
+  const newExempt = (label) => {
+    if (oldExempt(label)) return true;
+    if (label === "powder" && (isGround || POWDER_SPICE_RE.test(nameLower))) return true;
+    if (wordIn(label, aliasLower)) return !(label === "seed" && isGround);
+    return false;
+  };
   return (title) => {
     const t = String(title || "").toLowerCase();
-    for (const [label, re] of exclusions) if (re.test(t)) return { ok: false, reason: `excluded_word:${label}` };
-    if (!tokens.size) return { ok: true };
+    const rescued = [];
+    for (const [label, re] of EXCLUDE_WORDS) {
+      if (!re.test(t)) continue;
+      if (!newExempt(label)) return { ok: false, reason: `excluded_word:${label}` };
+      if (!oldExempt(label)) rescued.push(label);
+    }
+    if (!tokens.size) return { ok: true, rescued };
     const tStems = [...tokenStems(normChilli(t))];
     const hit = [...tokens].some((tok) => tStems.some((ts) => ts === tok || (ts.length >= 4 && tok.length >= 4 && (ts.startsWith(tok) || tok.startsWith(ts)))));
-    return hit ? { ok: true } : { ok: false, reason: "title_no_match" };
+    return hit ? { ok: true, rescued } : { ok: false, reason: "title_no_match" };
   };
+}
+// Does the title contain every content word of the full canonical name? (rule 11 audit of the lenient Guard 3)
+function titleHasFullName(title, name) {
+  const words = String(name || "").toLowerCase().split(/[^a-zà-ÿ]+/).filter((w) => w.length >= 2 && !["of", "and", "or", "with", "the", "in", "a"].includes(w)).map(stem);
+  const tStems = new Set(String(title || "").toLowerCase().split(/[^a-zà-ÿ]+/).filter(Boolean).map(stem));
+  return words.length > 0 && words.every((w) => tStems.has(w));
 }
 const normChilli = (s) => s.replace(/\bchill?(?:ies|ie|i|y|es|e)\b/g, "chilli");
 
@@ -242,6 +268,7 @@ function guardedEvaluate(rawListings, ctx, ambiguousMode) {
     if (price == null) { row.status = "dropped"; row.reason = "no_price"; return row; }
     const m = ctx.matcher(s.title);
     if (!m.ok) { row.status = "dropped"; row.reason = m.reason; return row; }
+    if (m.rescued && m.rescued.length) row.rule10Rescued = m.rescued;
     const p = parsePackGuarded(s.title, ctx.referencePack);
     row.flags = p.flags;
     row.source_of_pack = p.source;
@@ -324,7 +351,9 @@ function docStockType(name) {
     const m = l.match(re);
     if (m && (best == null || m.index < best.idx)) best = { type: t, idx: m.index };
   }
-  return best ? { type: best.type, source: "name_first_type_word" } : { type: "vegetable", source: "default_vegetable_no_type_word" };
+  if (best) return { type: best.type, source: "name_first_type_word" };
+  if (/\bbrown\b/.test(l)) return { type: "beef", source: "brown_stock_is_beef_group" }; // cloud rule 9
+  return { type: "vegetable", source: "default_vegetable_no_type_word" };
 }
 function titleStockTypes(title) {
   const l = title.toLowerCase();
@@ -351,8 +380,9 @@ function stockCount(title) {
 }
 function stockMl(title) {
   const l = title.toLowerCase();
+  if (/\bpots?\b/.test(l)) return { ml: 500, source: "stock_pot_500ml_any_brand" }; // rule 8: every pot = Knorr pot spec
   if (/\boxo\b/.test(l)) return { ml: 190, source: "oxo_cube_190ml" };
-  if (/\bknorr\b/.test(l)) return { ml: 500, source: /\bpots?\b/.test(l) ? "knorr_stock_pot_500ml" : "knorr_stock_cube_500ml" };
+  if (/\bknorr\b/.test(l)) return { ml: 500, source: "knorr_stock_cube_500ml" };
   return { ml: 190, source: "other_or_own_brand_190ml" };
 }
 function classifyStockListing(l, groupType) {
@@ -598,11 +628,50 @@ async function runWrite(args, env) {
     const creditLog = { calls: 0, creditsReported: 0, callsWithoutCredits: 0 };
 
     // ---- per doc --------------------------------------------------------------------------------
-    const stockQueryCache = new Map(); // type -> Promise<fetch result>
-    const stockQuery = (type) => {
-      if (!stockQueryCache.has(type)) stockQueryCache.set(type, fetchWithRetry(apiKey, `${type} stock cubes price`, creditLog));
-      return stockQueryCache.get(type);
-    };
+    // ---- stock groups (cloud rule 9): pool usable cube/pot listings of ALL non-protected stock-family canonicals by type ----
+    const stockDocs = eligibleDocs.filter((d) => STOCK_NAME_RE.test(d.canonical_name) && !protectedMap.has(d.canonical_name));
+    const stockGroups = {};
+    for (const t of CORE_TYPES) stockGroups[t] = { type: t, appliedTo: [], contributingCanonicals: [], serper: null };
+    for (const d of stockDocs) stockGroups[docStockType(d.canonical_name).type].appliedTo.push(d.canonical_name);
+    for (const t of CORE_TYPES) {
+      const grp = stockGroups[t];
+      if (!grp.appliedTo.length) { grp.result = "no_canonical_of_this_type"; continue; }
+      const seen = new Map();
+      const addRow = (c, origin, fromName) => {
+        const key = `${c.store}|${c.title}|${c.price}`;
+        if (seen.has(key)) { if (fromName && !seen.get(key).fromCanonicals.includes(fromName)) seen.get(key).fromCanonicals.push(fromName); return; }
+        seen.set(key, { ...c, origin, fromCanonicals: fromName ? [fromName] : [] });
+      };
+      for (const d of stockDocs) {
+        for (const l of d.listings || []) {
+          const c = classifyStockListing({ store: l.store, title: l.title, price: l.price }, t);
+          const titleTypes = titleStockTypes(String(l.title || ""));
+          if (c.used || titleTypes.includes(t) || !titleTypes.length) addRow(c, "cache", d.canonical_name);
+        }
+      }
+      let usable = [...seen.values()].filter((r) => r.used);
+      if (!usable.length && !offline) {
+        try {
+          const f = await fetchWithRetry(apiKey, `${t} stock cubes price`, creditLog);
+          grp.serper = { query: `${t} stock cubes price`, calls: f.calls, whitelisted: f.listings.length };
+          for (const l of f.listings) addRow(classifyStockListing(l, t), "serper_type_query", null);
+        } catch (e) { grp.serper = { query: `${t} stock cubes price`, error: String(e.message || e).slice(0, 160) }; }
+        usable = [...seen.values()].filter((r) => r.used);
+      }
+      const rows = [...seen.values()];
+      grp.contributingCanonicals = [...new Set(usable.flatMap((r) => r.fromCanonicals))];
+      grp.listingsUsed = usable.map((r) => ({ store: r.store, title: r.title, price: r.price, count: r.count, count_rule: r.count_rule, ml: r.ml, ml_source: r.ml_source, per_cube: r.per_cube, per_l: r.per_l, origin: r.origin, fromCanonicals: r.fromCanonicals }));
+      grp.listingsDropped = rows.filter((r) => !r.used).map((r) => ({ store: r.store, title: r.title, price: r.price, reason: r.reason, origin: r.origin, fromCanonicals: r.fromCanonicals }));
+      grp.droppedReasonCounts = countBy(grp.listingsDropped, (r) => String(r.reason).replace(/\(.*$/, ""));
+      grp.nUsed = usable.length;
+      if (!usable.length) { grp.result = "hold_stock_no_usable_listing"; grp.medianPerL = null; continue; }
+      const med = _median(usable.map((r) => r.per_ml));
+      const nearest = usable.reduce((m, r) => (Math.abs(r.per_ml - med) < Math.abs(m.per_ml - med) ? r : m));
+      grp.medianPerMl = r6(med);
+      grp.medianPerL = r4(med * 1000);
+      grp.nearest = { store: nearest.store, title: nearest.title, per_cube: nearest.per_cube, ml: nearest.ml, per_l: nearest.per_l };
+      grp.result = med * 1000 < 0.2 || med * 1000 > 1.0 ? "stock_out_of_range" : "ok";
+    }
 
     const processOne = async (name) => {
       const base = { canonical_name: name, impactRank: rankOf.get(name) ?? null, impactGbpPerServingSum: r4(impact.get(name)?.sum ?? 0), publicRecipes: impact.get(name)?.recipes.size ?? 0 };
@@ -617,37 +686,24 @@ async function runWrite(args, env) {
       // ---------------- stock family ----------------
       if (STOCK_NAME_RE.test(name)) {
         const { type, source: typeSource } = docStockType(name);
-        const cached = (doc.listings || []).map((l) => ({ store: l.store, title: l.title, price: l.price, origin: "cache" }));
-        let rows = cached.map((l) => ({ ...classifyStockListing(l, type), origin: "cache" }));
-        let usable = rows.filter((r) => r.used);
-        let serperLog = null;
-        if (usable.length < 2 && !offline) {
-          const f = await stockQuery(type);
-          serperLog = { query: `${type} stock cubes price`, calls: f.calls };
-          const seen = new Set(rows.map((r) => `${r.store}|${r.title}|${r.price}`));
-          for (const l of f.listings) {
-            const c = { ...classifyStockListing(l, type), origin: "serper_type_query" };
-            const key = `${c.store}|${c.title}|${c.price}`;
-            if (seen.has(key)) continue;
-            seen.add(key);
-            rows.push(c);
-          }
-          usable = rows.filter((r) => r.used);
-        }
+        const grp = stockGroups[type];
+        const cached = (doc.listings || []).map((l) => ({ store: l.store, title: l.title, price: l.price }));
         const baseline = computePerUnit(cached, referencePack);
-        const out = { ...base, family: "stock", stock: { type, typeSource }, current: cur, baseline: { per_unit_metric: baseline.per_unit_metric, per_unit_count: baseline.per_unit_count, cheapest: baseline.cheapest, basis: "old computePerUnit() over cached listings (no Serper for stock docs)" }, serper: serperLog, listings: rows.map((r) => ({ ...r, per_ml: r.per_ml != null ? r6(r.per_ml) : undefined })) };
-        out.dropped_reason_counts = countBy(rows.filter((r) => !r.used), (r) => r.reason.replace(/\(.*$/, ""));
-        if (!usable.length) return { ...out, action: "hold_stock", reason: "no_usable_cube_or_pot_listing_with_count", oldPerL: cur.metric ? r4(cur.metric.value * 1000) : null, newPerL: null };
-        const med = _median(usable.map((r) => r.per_ml));
-        const perL = med * 1000;
-        const nearest = usable.reduce((m, r) => (Math.abs(r.per_ml - med) < Math.abs(m.per_ml - med) ? r : m));
-        const out2 = { ...out, oldPerL: cur.metric ? r4(cur.metric.value * 1000) : null, newPerL: r4(perL), newPerMl: r6(med), n_used: usable.length, flags: usable.length === 1 ? ["n_used_1"] : [] };
-        const note = `Stock cube made up: £${r4(nearest.per_cube)} per cube ÷ ${nearest.ml} ml = £${r4(perL).toFixed(2)}/L, source ${nearest.store} ${nearest.title}`;
-        if (perL < 0.2 || perL > 1.0) return { ...out2, action: "hold_stock", reason: "stock_out_of_range", flags: ["stock_out_of_range"], proposed: { set: { per_unit_metric: { value: r6(med), unit: "g_or_ml", n: usable.length }, confidence: "manual_nominal", price_basis: "stock_cube_made_up", curation_note: note } } };
-        return {
-          ...out2, action: "nominal_stock", reason: "ok",
-          proposed: { set: { per_unit_metric: { value: r6(med), unit: "g_or_ml", n: usable.length }, confidence: "manual_nominal", price_basis: "stock_cube_made_up", curation_note: note }, protectAfterWrite: true },
+        const own = cached.map((l) => classifyStockListing(l, type));
+        const out = {
+          ...base, family: "stock", stock: { type, typeSource }, stockGroup: type, current: cur,
+          baseline: { per_unit_metric: baseline.per_unit_metric, per_unit_count: baseline.per_unit_count, cheapest: baseline.cheapest, basis: "old computePerUnit() over this doc's cached listings" },
+          ownCachedListings: { total: own.length, usableForGroup: own.filter((r) => r.used).length, dropped: countBy(own.filter((r) => !r.used), (r) => String(r.reason).replace(/\(.*$/, "")) },
+          group: { type, result: grp.result, nUsed: grp.nUsed ?? 0, medianPerL: grp.medianPerL ?? null, serper: grp.serper },
+          oldPerL: cur.metric ? r4(cur.metric.value * 1000) : null,
         };
+        if (!grp.nUsed) return { ...out, action: "hold_stock", reason: "no_usable_cube_or_pot_listing_in_type_group", newPerL: null };
+        const nearest = grp.nearest;
+        const note = `Stock cube made up: £${r4(nearest.per_cube).toFixed(4).replace(/0+$/, "").replace(/\.$/, "")} per cube ÷ ${nearest.ml} ml = £${nearest.per_l.toFixed(2)}/L, source ${nearest.store} ${nearest.title}; ${type} group median of ${grp.nUsed} listings = £${grp.medianPerL.toFixed(2)}/L`;
+        const set = { per_unit_metric: { value: grp.medianPerMl, unit: "g_or_ml", n: grp.nUsed }, confidence: "manual_nominal", price_basis: "stock_cube_made_up", curation_note: note };
+        const out2 = { ...out, newPerL: grp.medianPerL, newPerMl: grp.medianPerMl, n_used: grp.nUsed, flags: grp.nUsed === 1 ? ["n_used_1"] : [] };
+        if (grp.result === "stock_out_of_range") return { ...out2, action: "hold_stock", reason: "stock_out_of_range", flags: [...out2.flags, "stock_out_of_range"], proposed: { set } };
+        return { ...out2, action: "nominal_stock", reason: "ok", proposed: { set, protectAfterWrite: true } };
       }
 
       // ---------------- normal path ----------------
@@ -695,6 +751,7 @@ async function runWrite(args, env) {
           baseline: old ? { pack: old.pack, source_of_pack: old.source_of_pack, per_unit: old.per_unit } : null,
           guarded: { pack: r.pack, source_of_pack: r.source_of_pack, per_unit: r.per_unit },
           ambiguous: r.ambiguous,
+          ...(r.rule10Rescued ? { rule10Rescued: r.rule10Rescued } : {}),
         };
       });
       const proposedSet = {};
@@ -769,8 +826,17 @@ async function runWrite(args, env) {
       pack_nxm_multiplied: allListings.filter((l) => l.flags.includes("nxm_multiplied") && l.baseline?.pack && l.guarded.pack && l.baseline.pack.qty !== l.guarded.pack.qty),
       pack_of_n_each: allListings.filter((l) => l.flags.includes("pack_of_n_each") && (l.baseline?.pack?.qty ?? null) !== (l.guarded.pack?.qty ?? null)),
       ambiguous_pack: allListings.filter((l) => l.status === "ambiguous" || (l.flags || []).includes("ambiguous_pack")),
+      rule10_rescued_by_exemption: allListings.filter((l) => Array.isArray(l.rule10Rescued) && l.rule10Rescued.length),
     };
-    const ruleEffectSummary = Object.fromEntries(Object.entries(ruleEffect).map(([k, v]) => [k, { listings: v.length, examples: v.slice(0, 5).map((l) => ({ title: l.title, store: l.store, price: l.price, reason: l.reason, baselinePack: l.baseline?.pack ?? null, guardedPack: l.guarded?.pack ?? null, per_unit_old: l.baseline?.per_unit ?? null, per_unit_new: l.guarded?.per_unit ?? null })) }]));
+    const ruleEffectSummary = Object.fromEntries(Object.entries(ruleEffect).map(([k, v]) => [k, { listings: v.length, examples: v.slice(0, 5).map((l) => ({ title: l.title, store: l.store, price: l.price, reason: l.reason, status: l.status, rule10Rescued: l.rule10Rescued, baselinePack: l.baseline?.pack ?? null, guardedPack: l.guarded?.pack ?? null, per_unit_old: l.baseline?.per_unit ?? null, per_unit_new: l.guarded?.per_unit ?? null })) }]));
+    // rule 11: listings kept by the lenient Guard 3 although the title lacks the full canonical name; by doc impact, max 3 per doc
+    const lenientKept = [];
+    for (const d of normalDocs) {
+      const kept = (d.listings || []).filter((l) => (l.status === "kept" || l.status === "ambiguous") && !titleHasFullName(l.title, d.canonical_name));
+      for (const l of kept.slice(0, 3)) lenientKept.push({ canonical_name: d.canonical_name, impactRank: d.impactRank, impactGbpPerServingSum: d.impactGbpPerServingSum, store: l.store, title: l.title, price: l.price, status: l.status, per_unit_guarded: l.guarded?.per_unit ?? null, docAction: d.action });
+    }
+    lenientKept.sort((a, b) => b.impactGbpPerServingSum - a.impactGbpPerServingSum);
+    const lenientTotal = normalDocs.reduce((s, d) => s + (d.listings || []).filter((l) => (l.status === "kept" || l.status === "ambiguous") && !titleHasFullName(l.title, d.canonical_name)).length, 0);
     const recipeRows = (name) => [...(recipesByCanon.get(name) || [])].map((id) => ({ id, title: recipeById.get(id)?.title, oldPerServing: r4(baseServingById.get(id)), newPerServing: r4(newServingById.get(id)) }));
     const holdList = results.filter((r) => ["hold", "hold_low_n", "hold_stock"].includes(r.action)).map((r) => ({
       canonical_name: r.canonical_name, action: r.action, reason: r.reason, impactGbpPerServingSum: r.impactGbpPerServingSum,
@@ -800,6 +866,9 @@ async function runWrite(args, env) {
         note: "proposed = action update + nominal_stock docs in THIS run only; everything else keeps live values",
       },
       holds: holdList,
+      holdLowNWithPublicImpact: holdList.filter((h) => h.action === "hold_low_n" && h.publicRecipesAffected.length).sort((a, b) => b.impactGbpPerServingSum - a.impactGbpPerServingSum),
+      guard3LenientKept: { totalListings: lenientTotal, note: "kept/ambiguous listings whose title lacks some word of the full canonical_name; top 30 by doc impact, max 3 per doc", top30: lenientKept.slice(0, 30) },
+      stockGroups,
       stockRecipes: [...stockRecipes.values()],
       docs: results,
     };

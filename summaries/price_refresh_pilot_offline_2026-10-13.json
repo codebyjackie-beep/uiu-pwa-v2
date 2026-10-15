@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-13T22:55:17.989Z",
+ "generatedAt": "2026-10-15T22:25:27.873Z",
  "script": "apps/api/scripts/price_refresh.cjs",
  "mode": "DRY-RUN offline (cached listings re-processed, no Serper)",
  "selection": {
@@ -10,7 +10,7 @@
   "calls": 0,
   "creditsReported": 0,
   "callsWithoutCredits": 0,
-  "startedAt": "2026-10-13T22:55:13.523Z",
+  "startedAt": "2026-10-15T22:25:24.452Z",
   "note": "creditsReported = sum of `credits` field in Serper responses; callsWithoutCredits = responses lacking that field"
  },
  "protectedCount": 29,
@@ -18,9 +18,8 @@
   "total": 37,
   "actionCounts": {
    "update": 22,
-   "nominal_stock": 6,
-   "hold_low_n": 3,
-   "hold_stock": 6
+   "nominal_stock": 12,
+   "hold_low_n": 3
   },
   "sumCheck": true
  },
@@ -96,6 +95,7 @@
      "store": "Iceland",
      "price": 2.75,
      "reason": "title_no_match",
+     "status": "dropped",
      "baselinePack": {
       "qty": 4,
       "unit": "each"
@@ -109,6 +109,7 @@
      "store": "Morrisons.com",
      "price": 16.2,
      "reason": "title_no_match",
+     "status": "dropped",
      "baselinePack": null,
      "guardedPack": null,
      "per_unit_old": null,
@@ -128,6 +129,7 @@
      "store": "sainsburys.co.uk",
      "price": 2.64,
      "reason": "outlier_3x(median 0.01995)",
+     "status": "dropped",
      "baselinePack": {
       "qty": 400,
       "unit": "g_or_ml"
@@ -144,6 +146,7 @@
      "store": "Ocado",
      "price": 14.18,
      "reason": "outlier_3x(median 0.01)",
+     "status": "dropped",
      "baselinePack": {
       "qty": 350,
       "unit": "g_or_ml"
@@ -160,6 +163,7 @@
      "store": "sainsburys.co.uk",
      "price": 2.64,
      "reason": "outlier_3x(median 0.02)",
+     "status": "dropped",
      "baselinePack": {
       "qty": 400,
       "unit": "g_or_ml"
@@ -176,6 +180,7 @@
      "store": "Ocado",
      "price": 6.95,
      "reason": "outlier_3x(median 0.0226)",
+     "status": "dropped",
      "baselinePack": {
       "qty": 100,
       "unit": "g_or_ml"
@@ -192,6 +197,7 @@
      "store": "sainsburys.co.uk",
      "price": 2.64,
      "reason": "outlier_3x(median 0.02)",
+     "status": "dropped",
      "baselinePack": {
       "qty": 400,
       "unit": "g_or_ml"
@@ -216,6 +222,10 @@
   "ambiguous_pack": {
    "listings": 0,
    "examples": []
+  },
+  "rule10_rescued_by_exemption": {
+   "listings": 0,
+   "examples": []
   }
  },
  "perServing": {
@@ -229,23 +239,41 @@
    "unavailable": 0
   },
   "distributionWithProposed": {
-   "<£1": 77,
-   "£1-3": 186,
-   "£3-5": 54,
-   "£5-8": 7,
-   ">£8": 4,
+   "<£1": 78,
+   "£1-3": 185,
+   "£3-5": 57,
+   "£5-8": 6,
+   ">£8": 2,
    "unavailable": 0
   },
-  "recipesChanged": 93,
+  "recipesChanged": 107,
   "top15Changes": [
    {
     "id": "69d1933f0ce7d5269f695274",
     "title": "Creamy Prawn Risotto",
     "servings": 2,
     "oldPerServing": 23.3484,
-    "newPerServing": 3.9821,
-    "delta": -19.3662,
-    "pct": -82.9
+    "newPerServing": 3.8778,
+    "delta": -19.4706,
+    "pct": -83.4
+   },
+   {
+    "id": "69d1933f0ce7d5269f695272",
+    "title": "Quick Prawn and Chorizo Paella",
+    "servings": 2,
+    "oldPerServing": 11.9405,
+    "newPerServing": 4.8903,
+    "delta": -7.0503,
+    "pct": -59
+   },
+   {
+    "id": "69d1933f0ce7d5269f695270",
+    "title": "Cajun King Prawns with Dirty Rice",
+    "servings": 2,
+    "oldPerServing": 8.4167,
+    "newPerServing": 3.4843,
+    "delta": -4.9324,
+    "pct": -58.6
    },
    {
     "id": "69c473017393a7f0235b89b4",
@@ -270,18 +298,18 @@
     "title": "Red Lentil Soup with Chicken and Turnips",
     "servings": 8,
     "oldPerServing": 3.3369,
-    "newPerServing": 0.8359,
-    "delta": -2.501,
-    "pct": -75
+    "newPerServing": 0.8534,
+    "delta": -2.4835,
+    "pct": -74.4
    },
    {
     "id": "69d5776887d5d72710ae8ec8",
     "title": "Rustic Vegetable & Dumpling Stew with Soda-Glazed Tomatoes & Herb Salad",
     "servings": 2,
     "oldPerServing": 3.7352,
-    "newPerServing": 1.5136,
-    "delta": -2.2216,
-    "pct": -59.5
+    "newPerServing": 1.5399,
+    "delta": -2.1953,
+    "pct": -58.8
    },
    {
     "id": "69b5c9a95ee86d48cd96c675",
@@ -297,81 +325,63 @@
     "title": "Azteca Soup",
     "servings": 6,
     "oldPerServing": 2.4652,
-    "newPerServing": 0.7978,
-    "delta": -1.6674,
-    "pct": -67.6
+    "newPerServing": 0.8095,
+    "delta": -1.6557,
+    "pct": -67.2
    },
    {
     "id": "69b1db93974afef25b93a455",
     "title": "Quick and Easy Southwestern Corn Chowder",
     "servings": 6,
     "oldPerServing": 2.0215,
-    "newPerServing": 0.3542,
-    "delta": -1.6674,
-    "pct": -82.5
+    "newPerServing": 0.3659,
+    "delta": -1.6557,
+    "pct": -81.9
    },
    {
     "id": "69d04b0f26a6c4c3877dfcd3",
     "title": "Red Curry Stew & Vegetable Noodles",
     "servings": 6,
     "oldPerServing": 3.2273,
-    "newPerServing": 1.5808,
-    "delta": -1.6465,
-    "pct": -51
+    "newPerServing": 1.5923,
+    "delta": -1.635,
+    "pct": -50.7
    },
    {
     "id": "69c31dd4b17f27d65b4f4ec4",
     "title": "Vegan Colcannon Soup",
     "servings": 8,
     "oldPerServing": 2.0903,
-    "newPerServing": 0.6093,
-    "delta": -1.481,
-    "pct": -70.9
+    "newPerServing": 0.6268,
+    "delta": -1.4635,
+    "pct": -70
    },
    {
     "id": "69d04b0f26a6c4c3877dfcd2",
     "title": "Red quinoa cranberry arugula soup",
     "servings": 4,
     "oldPerServing": 2.4321,
-    "newPerServing": 0.951,
-    "delta": -1.481,
-    "pct": -60.9
+    "newPerServing": 0.9686,
+    "delta": -1.4635,
+    "pct": -60.2
    },
    {
     "id": "6ac80e0cb0ca951a2fbf7664",
     "title": "Smoky Butternut Black Bean Chili with Bulgur",
     "servings": 4,
     "oldPerServing": 2.6636,
-    "newPerServing": 1.1826,
-    "delta": -1.481,
-    "pct": -55.6
+    "newPerServing": 1.2001,
+    "delta": -1.4635,
+    "pct": -54.9
    },
    {
-    "id": "69b1db93974afef25b93a473",
-    "title": "Red Kidney Bean Jambalaya",
-    "servings": 6,
-    "oldPerServing": 2.1006,
-    "newPerServing": 0.8501,
-    "delta": -1.2505,
-    "pct": -59.5
-   },
-   {
-    "id": "6ac80d59b0ca951a2fbf73ee",
-    "title": "Thai Coconut Beetroot Soup with Lime, Ginger, and Tofu",
+    "id": "69c31de2b17f27d65b4f4ece",
+    "title": "Aspic Jelly",
     "servings": 4,
-    "oldPerServing": 2.925,
-    "newPerServing": 1.8142,
-    "delta": -1.1108,
-    "pct": -38
-   },
-   {
-    "id": "69c31de2b17f27d65b4f4eca",
-    "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
-    "servings": 7,
-    "oldPerServing": 1.8358,
-    "newPerServing": 0.778,
-    "delta": -1.0579,
-    "pct": -57.6
+    "oldPerServing": 5.6417,
+    "newPerServing": 4.2823,
+    "delta": -1.3594,
+    "pct": -24.1
    }
   ],
   "note": "proposed = action update + nominal_stock docs in THIS run only; everything else keeps live values"
@@ -461,7 +471,7 @@
      "id": "6ac80e29b0ca951a2fbf76c8",
      "title": "Mango-Glazed Pork Shoulder Sandwiches",
      "oldPerServing": 2.2867,
-     "newPerServing": 2.2867
+     "newPerServing": 2.0939
     }
    ]
   },
@@ -507,7 +517,7 @@
      "id": "69c31dd4b17f27d65b4f4ec3",
      "title": "Spicy lentil and black rice soup with kale, spinach and leek",
      "oldPerServing": 1.162,
-     "newPerServing": 0.6683
+     "newPerServing": 0.6742
     },
     {
      "id": "69b4aeaee736bc836fd51337",
@@ -519,7 +529,7 @@
      "id": "69c31de2b17f27d65b4f4eca",
      "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
      "oldPerServing": 1.8358,
-     "newPerServing": 0.778
+     "newPerServing": 0.7905
     },
     {
      "id": "69b5c9a95ee86d48cd96c676",
@@ -531,7 +541,7 @@
      "id": "69b1db92974afef25b93a44e",
      "title": "Chicken Piccata With Angel Hair Pasta",
      "oldPerServing": 3.6271,
-     "newPerServing": 3.6271
+     "newPerServing": 3.0486
     },
     {
      "id": "69d1933f0ce7d5269f69526a",
@@ -573,19 +583,19 @@
      "id": "69d1933f0ce7d5269f695270",
      "title": "Cajun King Prawns with Dirty Rice",
      "oldPerServing": 8.4167,
-     "newPerServing": 8.423
+     "newPerServing": 3.4843
     },
     {
      "id": "69d1933f0ce7d5269f695274",
      "title": "Creamy Prawn Risotto",
      "oldPerServing": 23.3484,
-     "newPerServing": 3.9821
+     "newPerServing": 3.8778
     },
     {
      "id": "69d5710287d5d72710ae8eb3",
      "title": "Dan Dan Noodles",
      "oldPerServing": 2.6043,
-     "newPerServing": 2.6043
+     "newPerServing": 2.3873
     },
     {
      "id": "69c5c81c64ee1f17b0563dd3",
@@ -627,7 +637,7 @@
      "id": "69d1933f0ce7d5269f695272",
      "title": "Quick Prawn and Chorizo Paella",
      "oldPerServing": 11.9405,
-     "newPerServing": 11.9455
+     "newPerServing": 4.8903
     },
     {
      "id": "69d1933f0ce7d5269f695275",
@@ -687,7 +697,7 @@
      "id": "6ac80deeb0ca951a2fbf75f8",
      "title": "Roasted Vegetable Lasagna Spirals with Peppery Pecorino Marinara",
      "oldPerServing": 2.9379,
-     "newPerServing": 2.5677
+     "newPerServing": 2.572
     },
     {
      "id": "6ac80df2b0ca951a2fbf7606",
@@ -723,39 +733,13 @@
      "id": "6ac80e29b0ca951a2fbf76c8",
      "title": "Mango-Glazed Pork Shoulder Sandwiches",
      "oldPerServing": 2.2867,
-     "newPerServing": 2.2867
+     "newPerServing": 2.0939
     },
     {
      "id": "6ac80e2eb0ca951a2fbf76da",
      "title": "Mediterranean Lemon-Olive Baked Hake",
      "oldPerServing": 2.4055,
      "newPerServing": 2.4055
-    }
-   ]
-  },
-  {
-   "canonical_name": "chicken or fish broth",
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
-   "impactGbpPerServingSum": 12.24,
-   "current": {
-    "perL": 28.8
-   },
-   "proposedNotWritten": {
-    "perL": null
-   },
-   "publicRecipesAffected": [
-    {
-     "id": "69d1933f0ce7d5269f695270",
-     "title": "Cajun King Prawns with Dirty Rice",
-     "oldPerServing": 8.4167,
-     "newPerServing": 8.423
-    },
-    {
-     "id": "69d1933f0ce7d5269f695272",
-     "title": "Quick Prawn and Chorizo Paella",
-     "oldPerServing": 11.9405,
-     "newPerServing": 11.9455
     }
    ]
   },
@@ -798,178 +782,2076 @@
      "newPerServing": 2.7731
     }
    ]
-  },
+  }
+ ],
+ "holdLowNWithPublicImpact": [
   {
-   "canonical_name": "chicken broth",
-   "action": "hold_stock",
-   "reason": "stock_out_of_range",
-   "impactGbpPerServingSum": 4.0933,
+   "canonical_name": "mango",
+   "action": "hold_low_n",
+   "reason": "only_1_valid_listing",
+   "impactGbpPerServingSum": 17.27,
    "current": {
-    "perL": 5.4
+    "metric_per_kg_or_L": 10,
+    "count_each": null
    },
    "proposedNotWritten": {
-    "perL": 2.2368
+    "metric_per_kg_or_L": 10,
+    "count_each": null
    },
    "publicRecipesAffected": [
     {
-     "id": "69b277e5f9069a06b5536b5a",
-     "title": "Steamy Creamy Mushroom Risotto",
-     "oldPerServing": 2.3569,
-     "newPerServing": 2.3569
+     "id": "69b1db92974afef25b93a44a",
+     "title": "Chicken and Mango Skewer",
+     "oldPerServing": 7.9215,
+     "newPerServing": 7.9045
     },
     {
-     "id": "69c31df4b17f27d65b4f4ed3",
-     "title": "The Best Quinoa Minestrone",
-     "oldPerServing": 2.6251,
-     "newPerServing": 2.6251
+     "id": "69c473017393a7f0235b89b8",
+     "title": "Thai Sweet Coconut Sticky Rice With Fresh Mango",
+     "oldPerServing": 2.2575,
+     "newPerServing": 2.2575
     },
     {
-     "id": "69c31de2b17f27d65b4f4ec7",
-     "title": "Celery Apple Risotto With Crispy Pancetta",
-     "oldPerServing": 1.1737,
-     "newPerServing": 1.1737
+     "id": "69c473017393a7f0235b89b6",
+     "title": "Thai Green Mango Salad",
+     "oldPerServing": 1.2124,
+     "newPerServing": 1.2124
     },
     {
-     "id": "69b1db92974afef25b93a44e",
-     "title": "Chicken Piccata With Angel Hair Pasta",
-     "oldPerServing": 3.6271,
-     "newPerServing": 3.6271
+     "id": "69c7275f754babcc25875c86",
+     "title": "Strawberry-Mango Quinoa Salad",
+     "oldPerServing": 1.2018,
+     "newPerServing": 1.2018
     },
     {
-     "id": "69b5c9a95ee86d48cd96c677",
-     "title": "Vegetable Fried Wontons",
-     "oldPerServing": 0.1056,
-     "newPerServing": 0.1056
+     "id": "69c5c81c64ee1f17b0563dd4",
+     "title": "Baked Indian Samosas",
+     "oldPerServing": 1.4435,
+     "newPerServing": 1.4419
     },
     {
-     "id": "69d5710287d5d72710ae8eb3",
-     "title": "Dan Dan Noodles",
-     "oldPerServing": 2.6043,
-     "newPerServing": 2.6043
+     "id": "6a7792246d22c1d009304b0c",
+     "title": "Charred Mango Guacamole with Corn and Jalapeño",
+     "oldPerServing": 2.385,
+     "newPerServing": 2.385
     },
     {
-     "id": "69d5710287d5d72710ae8eaf",
-     "title": "Chicken Lo Mein",
-     "oldPerServing": 2.1644,
-     "newPerServing": 2.1538
+     "id": "6ac80d81b0ca951a2fbf747a",
+     "title": "Sunrise Mango-Berry Swirl Breakfast Smoothie Bowl",
+     "oldPerServing": 4.5498,
+     "newPerServing": 4.5498
     },
     {
-     "id": "69d5710287d5d72710ae8eb1",
-     "title": "Chili-Garlic Stir Fry",
-     "oldPerServing": 2.2653,
-     "newPerServing": 2.2568
+     "id": "6ac80d9cb0ca951a2fbf74da",
+     "title": "Coconut Bliss Sunrise Smoothie Bowl",
+     "oldPerServing": 2.1667,
+     "newPerServing": 2.1667
     },
     {
-     "id": "6ac80e16b0ca951a2fbf7688",
-     "title": "Tuscan Shrimp, Cod, and Olive Stew",
-     "oldPerServing": 6.1208,
-     "newPerServing": 6.1208
+     "id": "6ac80de9b0ca951a2fbf75e8",
+     "title": "Sunrise Mango-Banana Coconut Breakfast Quinoa",
+     "oldPerServing": 2.3531,
+     "newPerServing": 2.3531
     },
     {
-     "id": "6ac80e18b0ca951a2fbf768c",
-     "title": "Japanese Curry Puff Pockets with Chicken and Peas",
-     "oldPerServing": 0.9649,
-     "newPerServing": 0.9649
+     "id": "6ac80dedb0ca951a2fbf75f6",
+     "title": "Sunrise Mango-Banana Coconut Breakfast Cream",
+     "oldPerServing": 1.6611,
+     "newPerServing": 1.6611
+    },
+    {
+     "id": "6ac80e19b0ca951a2fbf7692",
+     "title": "Mango-Glazed Pulled Chicken Sandwiches",
+     "oldPerServing": 2.9914,
+     "newPerServing": 2.9914
     },
     {
      "id": "6ac80e29b0ca951a2fbf76c8",
      "title": "Mango-Glazed Pork Shoulder Sandwiches",
      "oldPerServing": 2.2867,
-     "newPerServing": 2.2867
+     "newPerServing": 2.0939
     }
    ]
   },
   {
-   "canonical_name": "beef broth",
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
-   "impactGbpPerServingSum": 1.3667,
+   "canonical_name": "garlic clove",
+   "action": "hold_low_n",
+   "reason": "only_1_valid_listing",
+   "impactGbpPerServingSum": 12.561,
    "current": {
-    "perL": 7.25
+    "metric_per_kg_or_L": null,
+    "count_each": 0.3333
    },
    "proposedNotWritten": {
-    "perL": null
+    "metric_per_kg_or_L": null,
+    "count_each": 0.3333
    },
    "publicRecipesAffected": [
     {
-     "id": "69b4aeaee736bc836fd5132f",
-     "title": "Slow Cooker Beef Stew",
-     "oldPerServing": 2.8471,
-     "newPerServing": 2.8471
+     "id": "69b1db92974afef25b93a44d",
+     "title": "Chicken and Roasted Broccoli Salad With Goat Cheese",
+     "oldPerServing": 1.3541,
+     "newPerServing": 1.3541
     },
     {
-     "id": "6ac80dcbb0ca951a2fbf757e",
-     "title": "Slow-Cooked Beef Chili with Tomato, Beans, and Warm Spice",
-     "oldPerServing": 4.7349,
-     "newPerServing": 4.7349
+     "id": "69c31de2b17f27d65b4f4ec8",
+     "title": "Caponata Style Celery Spaghetti",
+     "oldPerServing": 0.4558,
+     "newPerServing": 0.4558
+    },
+    {
+     "id": "69b1db93974afef25b93a465",
+     "title": "Pasta with Butternut Squash, Sausage and Sage Pesto",
+     "oldPerServing": 0.6934,
+     "newPerServing": 0.6934
+    },
+    {
+     "id": "69b4aeaee736bc836fd51332",
+     "title": "Coffee-braised Short Ribs",
+     "oldPerServing": 2.1081,
+     "newPerServing": 2.1081
+    },
+    {
+     "id": "69c31dd4b17f27d65b4f4ec3",
+     "title": "Spicy lentil and black rice soup with kale, spinach and leek",
+     "oldPerServing": 1.162,
+     "newPerServing": 0.6742
+    },
+    {
+     "id": "69b4aeaee736bc836fd51337",
+     "title": "Chimichurri Skirt Steak with Grilled Asparagus",
+     "oldPerServing": 2.7217,
+     "newPerServing": 2.7217
+    },
+    {
+     "id": "69c31de2b17f27d65b4f4eca",
+     "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
+     "oldPerServing": 1.8358,
+     "newPerServing": 0.7905
+    },
+    {
+     "id": "69b5c9a95ee86d48cd96c676",
+     "title": "Chicken Spring Rolls",
+     "oldPerServing": 1.8785,
+     "newPerServing": 1.8785
+    },
+    {
+     "id": "69b1db92974afef25b93a44e",
+     "title": "Chicken Piccata With Angel Hair Pasta",
+     "oldPerServing": 3.6271,
+     "newPerServing": 3.0486
+    },
+    {
+     "id": "69d1933f0ce7d5269f69526a",
+     "title": "Prawn Scampi with Linguine",
+     "oldPerServing": 4.071,
+     "newPerServing": 4.0772
+    },
+    {
+     "id": "69d1933f0ce7d5269f69526d",
+     "title": "Lemon Herb King Prawns with Roasted Asparagus & Cherry Tomatoes",
+     "oldPerServing": 5.1579,
+     "newPerServing": 5.1642
+    },
+    {
+     "id": "69d1933f0ce7d5269f69526e",
+     "title": "Prawn and Vegetable Stir-fry with Egg Noodles",
+     "oldPerServing": 4.0889,
+     "newPerServing": 4.0952
+    },
+    {
+     "id": "69c5c81c64ee1f17b0563dce",
+     "title": "Trinidadian Chicken Potato Curry",
+     "oldPerServing": 2.4346,
+     "newPerServing": 2.4346
+    },
+    {
+     "id": "69c4766a7393a7f0235b89cf",
+     "title": "Julia Child's Coq au Vin",
+     "oldPerServing": 3.1055,
+     "newPerServing": 2.6398
+    },
+    {
+     "id": "69d5710287d5d72710ae8eb2",
+     "title": "Chinese Hot Pots Gluten-Free and Low-Carb",
+     "oldPerServing": 2.4559,
+     "newPerServing": 1.4081
+    },
+    {
+     "id": "69d1933f0ce7d5269f695270",
+     "title": "Cajun King Prawns with Dirty Rice",
+     "oldPerServing": 8.4167,
+     "newPerServing": 3.4843
+    },
+    {
+     "id": "69d1933f0ce7d5269f695274",
+     "title": "Creamy Prawn Risotto",
+     "oldPerServing": 23.3484,
+     "newPerServing": 3.8778
+    },
+    {
+     "id": "69d5710287d5d72710ae8eb3",
+     "title": "Dan Dan Noodles",
+     "oldPerServing": 2.6043,
+     "newPerServing": 2.3873
+    },
+    {
+     "id": "69c5c81c64ee1f17b0563dd3",
+     "title": "Easy Fish Molee (South Indian-Style Fish Stew With Coconut)",
+     "oldPerServing": 3.2675,
+     "newPerServing": 3.2675
+    },
+    {
+     "id": "69d04b0f26a6c4c3877dfcd1",
+     "title": "Red Wine Braised Beef Brisket",
+     "oldPerServing": 5.2275,
+     "newPerServing": 5.2275
+    },
+    {
+     "id": "69d1933f0ce7d5269f695271",
+     "title": "Grilled Prawn & Halloumi Skewers with Zucchini",
+     "oldPerServing": 4.0906,
+     "newPerServing": 4.0956
+    },
+    {
+     "id": "69d1933f0ce7d5269f695276",
+     "title": "Spicy Honey-Garlic King Prawns",
+     "oldPerServing": 3.4647,
+     "newPerServing": 3.471
+    },
+    {
+     "id": "69d1933f0ce7d5269f695269",
+     "title": "Garlic Butter King Prawns with Crusty Bread",
+     "oldPerServing": 4.6824,
+     "newPerServing": 4.6887
+    },
+    {
+     "id": "69d1933f0ce7d5269f69526f",
+     "title": "Creamy Tomato King Prawn Pasta",
+     "oldPerServing": 3.7654,
+     "newPerServing": 3.7716
+    },
+    {
+     "id": "69d1933f0ce7d5269f695272",
+     "title": "Quick Prawn and Chorizo Paella",
+     "oldPerServing": 11.9405,
+     "newPerServing": 4.8903
+    },
+    {
+     "id": "69d1933f0ce7d5269f695275",
+     "title": "Coconut Lime King Prawns with Coriander Rice",
+     "oldPerServing": 3.48,
+     "newPerServing": 3.4863
+    },
+    {
+     "id": "6a5ffd1ca91e3f027a2961f9",
+     "title": "Pad Se Ew Tofu With Vegetable Noodles",
+     "oldPerServing": 0.9817,
+     "newPerServing": 0.9817
+    },
+    {
+     "id": "6a6cfaa5901ee72fdac214a5",
+     "title": "Spring Meadow Keto Frittata",
+     "oldPerServing": 1.811,
+     "newPerServing": 1.811
+    },
+    {
+     "id": "6ac80d60b0ca951a2fbf7406",
+     "title": "Garden Sunrise Keto Frittata",
+     "oldPerServing": 1.6828,
+     "newPerServing": 1.6828
+    },
+    {
+     "id": "6ac80d6eb0ca951a2fbf7438",
+     "title": "Smoky Citrus Guacamole with Crunchy Tomatoe Relish",
+     "oldPerServing": 1.5142,
+     "newPerServing": 1.5142
+    },
+    {
+     "id": "6ac80d8bb0ca951a2fbf749e",
+     "title": "Romesco Roasted Vegetables with Crispy Chickpeas and Goat Cheese Toast",
+     "oldPerServing": 3.4136,
+     "newPerServing": 3.4464
+    },
+    {
+     "id": "6ac80da4b0ca951a2fbf74f6",
+     "title": "Spiced Lamb Meatball Lettuce Cups with Tahini-Lime Drizzle",
+     "oldPerServing": 2.0208,
+     "newPerServing": 2.0208
+    },
+    {
+     "id": "6ac80dd0b0ca951a2fbf7590",
+     "title": "Spinach, Asparagus, and Mushroom Breakfast Skillet Frittata",
+     "oldPerServing": 1.8964,
+     "newPerServing": 1.8964
+    },
+    {
+     "id": "6ac80dd5b0ca951a2fbf75a2",
+     "title": "Sweet Potato Turkey Sloppy Joes with Smoky Tomato Glaze",
+     "oldPerServing": 2.4533,
+     "newPerServing": 2.2787
+    },
+    {
+     "id": "6ac80deeb0ca951a2fbf75f8",
+     "title": "Roasted Vegetable Lasagna Spirals with Peppery Pecorino Marinara",
+     "oldPerServing": 2.9379,
+     "newPerServing": 2.572
+    },
+    {
+     "id": "6ac80df2b0ca951a2fbf7606",
+     "title": "Crisp Ginger Chicken and Napa-Style Slaw Salad",
+     "oldPerServing": 3.1784,
+     "newPerServing": 3.1529
+    },
+    {
+     "id": "6ac80df3b0ca951a2fbf760a",
+     "title": "Light Korean Japchae with Chicken and Crisp Vegetables",
+     "oldPerServing": 2.2642,
+     "newPerServing": 2.2642
+    },
+    {
+     "id": "6ac80df5b0ca951a2fbf7612",
+     "title": "Fragrant Prawn Basmati Rice with Saffron, Curry Leaves, and Golden Onions",
+     "oldPerServing": 4.0061,
+     "newPerServing": 4.0061
+    },
+    {
+     "id": "6ac80dfcb0ca951a2fbf762a",
+     "title": "Greek Baked Fish with Tomato, Lemon, and Feta",
+     "oldPerServing": 3.7717,
+     "newPerServing": 3.7717
+    },
+    {
+     "id": "6ac80e15b0ca951a2fbf7682",
+     "title": "Gochu-Lime Salmon with Crunchy Cabbage Slaw",
+     "oldPerServing": 3.7017,
+     "newPerServing": 3.7017
+    },
+    {
+     "id": "6ac80e29b0ca951a2fbf76c8",
+     "title": "Mango-Glazed Pork Shoulder Sandwiches",
+     "oldPerServing": 2.2867,
+     "newPerServing": 2.0939
+    },
+    {
+     "id": "6ac80e2eb0ca951a2fbf76da",
+     "title": "Mediterranean Lemon-Olive Baked Hake",
+     "oldPerServing": 2.4055,
+     "newPerServing": 2.4055
     }
    ]
   },
   {
-   "canonical_name": "stock",
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
-   "impactGbpPerServingSum": 2.5376,
+   "canonical_name": "flank steak",
+   "action": "hold_low_n",
+   "reason": "only_1_valid_listing",
+   "impactGbpPerServingSum": 8.0798,
    "current": {
-    "perL": 6.4
+    "metric_per_kg_or_L": 15,
+    "count_each": 0.6875
    },
    "proposedNotWritten": {
-    "perL": null
+    "metric_per_kg_or_L": 15,
+    "count_each": null
    },
    "publicRecipesAffected": [
     {
-     "id": "69c31de2b17f27d65b4f4ece",
-     "title": "Aspic Jelly",
-     "oldPerServing": 5.6417,
-     "newPerServing": 5.6417
+     "id": "69c473017393a7f0235b89ba",
+     "title": "Green Thai Curry with Beef",
+     "oldPerServing": 3.9306,
+     "newPerServing": 3.9306
     },
     {
-     "id": "6a724c34839c335789cfe29d",
-     "title": "Miso Noodle Soup with Mushrooms and Greens",
-     "oldPerServing": 1.9867,
-     "newPerServing": 1.9867
+     "id": "69b4aeaee736bc836fd51333",
+     "title": "Spinach and Gorgonzola Stuffed Flank Steak",
+     "oldPerServing": 3.6878,
+     "newPerServing": 3.6878
     },
     {
-     "id": "6ac80da6b0ca951a2fbf74fc",
-     "title": "Slow-Simmered Beef Chili with Coffee and Beer",
-     "oldPerServing": 2.8,
-     "newPerServing": 2.8
+     "id": "6a42e05cd33617bebef22d84",
+     "title": "Flank Steak With Garlicky Mediterranean Salad",
+     "oldPerServing": 4.1869,
+     "newPerServing": 4.1869
+    },
+    {
+     "id": "6ac80de4b0ca951a2fbf75d6",
+     "title": "Light Korean Beef and Vegetable Rice Bowl",
+     "oldPerServing": 2.7731,
+     "newPerServing": 2.7731
     }
    ]
-  },
-  {
-   "canonical_name": "brown stock",
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
-   "impactGbpPerServingSum": 0,
-   "current": {
-    "perL": null
-   },
-   "proposedNotWritten": {
-    "perL": null
-   },
-   "publicRecipesAffected": []
-  },
-  {
-   "canonical_name": "condensed beef broth or consommé",
-   "action": "hold_stock",
-   "reason": "stock_out_of_range",
-   "impactGbpPerServingSum": 0,
-   "current": {
-    "perL": 5.95
-   },
-   "proposedNotWritten": {
-    "perL": 1.9079
-   },
-   "publicRecipesAffected": []
   }
  ],
+ "guard3LenientKept": {
+  "totalListings": 165,
+  "note": "kept/ambiguous listings whose title lacks some word of the full canonical_name; top 30 by doc impact, max 3 per doc",
+  "top30": [
+   {
+    "canonical_name": "king prawns, peeled and deveined",
+    "impactRank": 1,
+    "impactGbpPerServingSum": 33.4163,
+    "store": "sainsburys.co.uk",
+    "title": "Sainsbury's Frozen Large Raw Peeled King Prawns ASC 180g",
+    "price": 2.64,
+    "status": "kept",
+    "per_unit_guarded": 0.0147,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "king prawns, peeled and deveined",
+    "impactRank": 1,
+    "impactGbpPerServingSum": 33.4163,
+    "store": "Waitrose & Partners",
+    "title": "Waitrose & Partners Raw Jumbo King Prawns",
+    "price": 4.2,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "king prawns, peeled and deveined",
+    "impactRank": 1,
+    "impactGbpPerServingSum": 33.4163,
+    "store": "Iceland",
+    "title": "Iceland Peeled Raw Large King Prawns",
+    "price": 5.5,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "olive oil",
+    "impactRank": 7,
+    "impactGbpPerServingSum": 18.4249,
+    "store": "Tesco",
+    "title": "Olivio Oil",
+    "price": 3.5,
+    "status": "kept",
+    "per_unit_guarded": 0.007,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "salmon fillet",
+    "impactRank": 10,
+    "impactGbpPerServingSum": 14.3214,
+    "store": "sainsburys.co.uk",
+    "title": "Sainsbury's Sweet Chilli ASC Scottish Salmon Portions",
+    "price": 5.95,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "garlic clove",
+    "impactRank": 13,
+    "impactGbpPerServingSum": 12.561,
+    "store": "Ocado",
+    "title": "Curious Brewery Fresh Fruit & Veg Peeled Garlic",
+    "price": 2,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "hold_low_n"
+   },
+   {
+    "canonical_name": "garlic clove",
+    "impactRank": 13,
+    "impactGbpPerServingSum": 12.561,
+    "store": "Asda Groceries",
+    "title": "ASDA Garlic",
+    "price": 0.47,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "hold_low_n"
+   },
+   {
+    "canonical_name": "garlic clove",
+    "impactRank": 13,
+    "impactGbpPerServingSum": 12.561,
+    "store": "Tesco",
+    "title": "Tesco Organic Garlic 3 Pack",
+    "price": 1,
+    "status": "kept",
+    "per_unit_guarded": 0.3333,
+    "docAction": "hold_low_n"
+   },
+   {
+    "canonical_name": "shrimp",
+    "impactRank": 17,
+    "impactGbpPerServingSum": 10.686,
+    "store": "Tesco",
+    "title": "Tesco Raw King Prawns 170G",
+    "price": 3.4,
+    "status": "kept",
+    "per_unit_guarded": 0.02,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "shrimp",
+    "impactRank": 17,
+    "impactGbpPerServingSum": 10.686,
+    "store": "Tesco",
+    "title": "Tesco Cooked & Peeled King Prawns",
+    "price": 3.5,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "shrimp",
+    "impactRank": 17,
+    "impactGbpPerServingSum": 10.686,
+    "store": "sainsburys.co.uk",
+    "title": "Sainsbury's Frozen Large Raw Peeled King Prawns ASC 180g",
+    "price": 2.64,
+    "status": "kept",
+    "per_unit_guarded": 0.0147,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "sirloin beef tips",
+    "impactRank": 23,
+    "impactGbpPerServingSum": 8.2782,
+    "store": "Asda Groceries",
+    "title": "ASDA Sirloin Beef Steak 227g",
+    "price": 5.43,
+    "status": "kept",
+    "per_unit_guarded": 0.0239,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "sirloin beef tips",
+    "impactRank": 23,
+    "impactGbpPerServingSum": 8.2782,
+    "store": "Waitrose & Partners",
+    "title": "Waitrose & Partners British Beef Sirloin Steak",
+    "price": 8,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "sirloin beef tips",
+    "impactRank": 23,
+    "impactGbpPerServingSum": 8.2782,
+    "store": "Morrisons.com",
+    "title": "Morrisons Market Street British Beef Sirloin Steak",
+    "price": 4,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "flank steak",
+    "impactRank": 24,
+    "impactGbpPerServingSum": 8.0798,
+    "store": "Ocado",
+    "title": "M&S Sizzle Steaks, 340g",
+    "price": 5.1,
+    "status": "kept",
+    "per_unit_guarded": 0.015,
+    "docAction": "hold_low_n"
+   },
+   {
+    "canonical_name": "flank steak",
+    "impactRank": 24,
+    "impactGbpPerServingSum": 8.0798,
+    "store": "Iceland",
+    "title": "Stateside Diner Steak Canadian Slices",
+    "price": 2,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "hold_low_n"
+   },
+   {
+    "canonical_name": "flank steak",
+    "impactRank": 24,
+    "impactGbpPerServingSum": 8.0798,
+    "store": "Ocado",
+    "title": "Canvin and Gunner British Beef Flat Iron Steak",
+    "price": 6.95,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "hold_low_n"
+   },
+   {
+    "canonical_name": "lump crab meat",
+    "impactRank": 25,
+    "impactGbpPerServingSum": 7.938,
+    "store": "Tesco",
+    "title": "Seafood & Eat It White Crab",
+    "price": 7.2,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "lump crab meat",
+    "impactRank": 25,
+    "impactGbpPerServingSum": 7.938,
+    "store": "sainsburys.co.uk",
+    "title": "Ocean Isle Premium Crab Meat",
+    "price": 4.95,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "lump crab meat",
+    "impactRank": 25,
+    "impactGbpPerServingSum": 7.938,
+    "store": "sainsburys.co.uk",
+    "title": "Ocean Isle Select Super Premium White Crab Meat",
+    "price": 5.95,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "ground beef",
+    "impactRank": 26,
+    "impactGbpPerServingSum": 7.1064,
+    "store": "sainsburys.co.uk",
+    "title": "Sainsbury's British or Irish Fat Beef Mince",
+    "price": 4.75,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "ground beef",
+    "impactRank": 26,
+    "impactGbpPerServingSum": 7.1064,
+    "store": "Tesco",
+    "title": "Tesco Lean Beef Steak Mince",
+    "price": 5.19,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "ground beef",
+    "impactRank": 26,
+    "impactGbpPerServingSum": 7.1064,
+    "store": "Asda Groceries",
+    "title": "Just Essentials Beef Mince",
+    "price": 3.09,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "white fish fillets (cod, tilapia)",
+    "impactRank": 28,
+    "impactGbpPerServingSum": 6.8975,
+    "store": "Asda Groceries",
+    "title": "ASDA Cod Fillets by 320g",
+    "price": 6.27,
+    "status": "kept",
+    "per_unit_guarded": 0.0196,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "white fish fillets (cod, tilapia)",
+    "impactRank": 28,
+    "impactGbpPerServingSum": 6.8975,
+    "store": "sainsburys.co.uk",
+    "title": "Sainsbury's Skinless & Boneless Cod Fillets",
+    "price": 7.75,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "white fish fillets (cod, tilapia)",
+    "impactRank": 28,
+    "impactGbpPerServingSum": 6.8975,
+    "store": "Iceland",
+    "title": "Young's Chip Shop Cod Fillets 400g",
+    "price": 5,
+    "status": "kept",
+    "per_unit_guarded": 0.0125,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "chickpeas",
+    "impactRank": 29,
+    "impactGbpPerServingSum": 6.0554,
+    "store": "Tesco",
+    "title": "Natco Chick Peas",
+    "price": 3.85,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "chickpeas",
+    "impactRank": 29,
+    "impactGbpPerServingSum": 6.0554,
+    "store": "Waitrose & Partners",
+    "title": "Waitrose Love Life Chick Peas",
+    "price": 2.4,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "chickpeas",
+    "impactRank": 29,
+    "impactGbpPerServingSum": 6.0554,
+    "store": "Asda Groceries",
+    "title": "Laila Kala Chana",
+    "price": 3,
+    "status": "kept",
+    "per_unit_guarded": null,
+    "docAction": "update"
+   },
+   {
+    "canonical_name": "canned tomatoes",
+    "impactRank": 30,
+    "impactGbpPerServingSum": 5.9271,
+    "store": "Tesco",
+    "title": "Tesco Italian Chopped Tomatoes 400G",
+    "price": 0.47,
+    "status": "kept",
+    "per_unit_guarded": 0.0012,
+    "docAction": "update"
+   }
+  ]
+ },
+ "stockGroups": {
+  "chicken": {
+   "type": "chicken",
+   "appliedTo": [
+    "chicken broth",
+    "chicken stock",
+    "chicken or fish broth"
+   ],
+   "contributingCanonicals": [
+    "chicken broth",
+    "chicken stock"
+   ],
+   "serper": null,
+   "listingsUsed": [
+    {
+     "store": "Tesco",
+     "title": "Tesco Chicken Stock Pots 4 Pack 112g",
+     "price": 1.7,
+     "count": 4,
+     "count_rule": "N_pack",
+     "ml": 500,
+     "ml_source": "stock_pot_500ml_any_brand",
+     "per_cube": 0.425,
+     "per_l": 0.85,
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Tesco Chicken Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "count": 10,
+     "count_rule": "N_pack",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.11,
+     "per_l": 0.5789,
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "ASDA Chicken Stock Cubes 12 x 10g",
+     "price": 1.08,
+     "count": 12,
+     "count_rule": "NxMg",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.09,
+     "per_l": 0.4737,
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Stock Cubes Chicken 10x10g",
+     "price": 1.1,
+     "count": 10,
+     "count_rule": "NxMg",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.11,
+     "per_l": 0.5789,
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    }
+   ],
+   "listingsDropped": [
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Chicken & Vegetable Broth 600g",
+     "price": 1.49,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "Morrisons.com",
+     "title": "Morrisons Chicken & Vegetable Broth",
+     "price": 1.85,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "chicken broth"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Tesco Finest Chicken Stock",
+     "price": 2.6,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock",
+      "chicken or fish broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Kallo Organic Chicken Stock Cubes",
+     "price": 1.4,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock",
+      "chicken or fish broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Potts Chicken Stock Can",
+     "price": 2.4,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "ASDA Extra Special Roast Chicken Stock",
+     "price": 2.6,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Itsu Sesame Chicken Broth for Noodles",
+     "price": 4.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken or fish broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "M&S Chicken Bone Broth Frozen, 200g",
+     "price": 5.75,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken or fish broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Oxo Chicken Bone Broth",
+     "price": 3.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken or fish broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Daylesford Organic Thai Chicken Broth",
+     "price": 7.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "TRUE Foods Chicken Stock",
+     "price": 3.8,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Knorr Chicken Stock Pot",
+     "price": 2.8,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose Chicken & Vegetable Broth 600g",
+     "price": 3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Chicken Stock Inspired to Cook 500ml",
+     "price": 2.9,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Freja Chicken Cooking Bone Broth",
+     "price": 3.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Potts Chicken Stock Can",
+     "price": 2.3,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Chicken Stock Cubes",
+     "price": 2,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Iceland",
+     "title": "Knorr Chicken Stock Pot",
+     "price": 1.9,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Marks and Spencer Chicken Stock",
+     "price": 1.7,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Morrisons.com",
+     "title": "Morrisons The Best Chicken Stock",
+     "price": 2.6,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Epicure Meat Stock 680ml",
+     "price": 5.3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Oxo Chicken Stock Cubes",
+     "price": 3.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Organic Chicken Stock Pot",
+     "price": 2.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "M&S Chicken Stock, 500ml",
+     "price": 3.2,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Oxo Signature Succulent Chicken Stock",
+     "price": 2.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Kucharek Chicken Stock Cube, 120g",
+     "price": 1.1,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Baxters Favourites Highlander Broth Soup 400G",
+     "price": 2.05,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Kallo Organic Chicken Bone Broth",
+     "price": 3,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken or fish broth"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Marigold Organic Bouillon Powder",
+     "price": 8.36,
+     "reason": "stock_granules",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Itsu Miso Ramen Brilliant Broth",
+     "price": 2.7,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable or fish broth, hot"
+     ]
+    }
+   ],
+   "droppedReasonCounts": {
+    "stock_ready_made": 7,
+    "stock_no_form": 15,
+    "stock_no_count": 7,
+    "stock_granules": 1
+   },
+   "nUsed": 4,
+   "medianPerMl": 0.000579,
+   "medianPerL": 0.5789,
+   "nearest": {
+    "store": "Tesco",
+    "title": "Tesco Chicken Stock Cubes 10 Pack 100g",
+    "per_cube": 0.11,
+    "ml": 190,
+    "per_l": 0.5789
+   },
+   "result": "ok"
+  },
+  "beef": {
+   "type": "beef",
+   "appliedTo": [
+    "beef bouillon",
+    "beef broth",
+    "beef bouillon cubes",
+    "brown stock",
+    "condensed beef broth or consommé"
+   ],
+   "contributingCanonicals": [
+    "beef bouillon",
+    "beef bouillon cubes",
+    "condensed beef broth or consommé"
+   ],
+   "serper": null,
+   "listingsUsed": [
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Stock Cubes Beef 10x10g",
+     "price": 1.1,
+     "count": 10,
+     "count_rule": "NxMg",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.11,
+     "per_l": 0.5789,
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Tesco Beef Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "count": 10,
+     "count_rule": "N_pack",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.11,
+     "per_l": 0.5789,
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "ASDA Beef Stock Cubes 12 x 10g",
+     "price": 1.08,
+     "count": 12,
+     "count_rule": "NxMg",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.09,
+     "per_l": 0.4737,
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Beef Stock Pots x4 112g",
+     "price": 1.45,
+     "count": 4,
+     "count_rule": "xN",
+     "ml": 500,
+     "ml_source": "stock_pot_500ml_any_brand",
+     "per_cube": 0.3625,
+     "per_l": 0.725,
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    }
+   ],
+   "listingsDropped": [
+    {
+     "store": "Ocado",
+     "title": "Epicure Meat Stock 680ml",
+     "price": 5.3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Beef Flavour Bouillon Cubes",
+     "price": 1.85,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Knorr Beef Stock Cubes",
+     "price": 1.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "OXO Beef Stock Cubes",
+     "price": 2.65,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Rich Beef Stock Pot",
+     "price": 1.9,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Iceland",
+     "title": "Oxo Beef Stock Cubes",
+     "price": 7.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "TRUEfoods Beef Stock",
+     "price": 3.8,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "beef broth",
+      "stock",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Kallo Organic Beef Stock Cubes",
+     "price": 1.4,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon",
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Oxo Beef Nourishing Bone Broth 500ml",
+     "price": 3.5,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Borough Broth Company Organic Beef Bone Broth",
+     "price": 5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Potts Beef Stock Can",
+     "price": 2.3,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Borough Broth Grass Fed Organic Beef Bone Broth",
+     "price": 11.25,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Heinz Beef Broth Soup 400g",
+     "price": 1.7,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Kallo Organic Beef Broth",
+     "price": 3,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Baxters Favourites Highlander Broth Soup 400G",
+     "price": 2.05,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "M&S Beef Bone Broth Frozen, 200g",
+     "price": 5.75,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Itsu Beef Pho Broth for Noodles",
+     "price": 4.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "OXO Beef Bone Broth",
+     "price": 3.9,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Beef Stock Cubes",
+     "price": 2,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Heinz Beef Broth Chunky Big Soup",
+     "price": 2.2,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Beef Stock Inspired to Cook 500ml",
+     "price": 2.9,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "stock"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "ASDA Beef Stock Pots",
+     "price": 1.7,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Oxo Beef Bone Broth, 500ml",
+     "price": 3.75,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Borough Broth Organic Frozen Beef Bone Broth Cubes",
+     "price": 6,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Bay's Kitchen Concentrated Beef Stock 200g",
+     "price": 4.3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Hunter & Gather Bone Broth Classic Beef 400g",
+     "price": 30,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Freja Rich Beef Cooking Bone Broth",
+     "price": 3.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Organic Beef Bone Broth with Greens & Herbs",
+     "price": 7.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Knorr Beef Stock Cubes",
+     "price": 2,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Bovril Stock Cubes Box Beef, 120g",
+     "price": 1.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef bouillon cubes"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Marigold Organic Bouillon Powder",
+     "price": 8.36,
+     "reason": "stock_granules",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Potts Beef Stock Can",
+     "price": 2.4,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "stock",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Oxo Signature Ready to Use Rich Beef Stock",
+     "price": 2.6,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "M&S Fresh Beef Stock, 500ml",
+     "price": 3.5,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Itsu Miso Ramen Brilliant Broth",
+     "price": 2.7,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable or fish broth, hot"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose & Partners Beef Consommé Soup 400g",
+     "price": 1.6,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Baxters Chef Selections Beef Consomme 400g",
+     "price": 2.7,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Cook With M&S Concentrated Beef Stock, 240g",
+     "price": 3.75,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Oxo Signature Ready to Use Rich Beef Stock",
+     "price": 2.5,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Knorr Stock Pot Beef",
+     "price": 1.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Freja Rich Beef Cooking Bone Broth",
+     "price": 3.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "condensed beef broth or consommé"
+     ]
+    }
+   ],
+   "droppedReasonCounts": {
+    "stock_ready_made": 15,
+    "stock_no_count": 12,
+    "stock_no_form": 13,
+    "stock_granules": 1
+   },
+   "nUsed": 4,
+   "medianPerMl": 0.000579,
+   "medianPerL": 0.5789,
+   "nearest": {
+    "store": "sainsburys.co.uk",
+    "title": "Sainsbury's Stock Cubes Beef 10x10g",
+    "per_cube": 0.11,
+    "ml": 190,
+    "per_l": 0.5789
+   },
+   "result": "ok"
+  },
+  "fish": {
+   "type": "fish",
+   "appliedTo": [],
+   "contributingCanonicals": [],
+   "serper": null,
+   "result": "no_canonical_of_this_type"
+  },
+  "vegetable": {
+   "type": "vegetable",
+   "appliedTo": [
+    "vegetable broth",
+    "vegetable stock",
+    "stock",
+    "vegetable or fish broth, hot"
+   ],
+   "contributingCanonicals": [
+    "vegetable broth",
+    "vegetable stock",
+    "vegetable or fish broth, hot"
+   ],
+   "serper": null,
+   "listingsUsed": [
+    {
+     "store": "Tesco",
+     "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
+     "price": 1.1,
+     "count": 10,
+     "count_rule": "N_pack",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.11,
+     "per_l": 0.5789,
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Knorr 4 Vegetable Stock Pot",
+     "price": 1.5,
+     "count": 4,
+     "count_rule": "N_cubes_or_pots",
+     "ml": 500,
+     "ml_source": "stock_pot_500ml_any_brand",
+     "per_cube": 0.375,
+     "per_l": 0.75,
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Vegetable Stock Cubes 10 x 10g",
+     "price": 1.1,
+     "count": 10,
+     "count_rule": "NxMg",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.11,
+     "per_l": 0.5789,
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Iceland",
+     "title": "Knorr 4 Vegetable Stock Pot",
+     "price": 1.9,
+     "count": 4,
+     "count_rule": "N_cubes_or_pots",
+     "ml": 500,
+     "ml_source": "stock_pot_500ml_any_brand",
+     "per_cube": 0.475,
+     "per_l": 0.95,
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock",
+      "vegetable or fish broth, hot"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "ASDA Vegetable Stock Cubes 12 x 10g",
+     "price": 1.08,
+     "count": 12,
+     "count_rule": "NxMg",
+     "ml": 190,
+     "ml_source": "other_or_own_brand_190ml",
+     "per_cube": 0.09,
+     "per_l": 0.4737,
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Veg Stock Pots x4 112g",
+     "price": 1.45,
+     "count": 4,
+     "count_rule": "xN",
+     "ml": 500,
+     "ml_source": "stock_pot_500ml_any_brand",
+     "per_cube": 0.3625,
+     "per_l": 0.725,
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    }
+   ],
+   "listingsDropped": [
+    {
+     "store": "Ocado",
+     "title": "Kallo Organic Vegetable Broth",
+     "price": 3,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock",
+      "vegetable or fish broth, hot"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Potts Vegetable Stock",
+     "price": 2.3,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Marigold Swiss Vegetable Bouillon",
+     "price": 2.45,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Chicken & Vegetable Broth 600g",
+     "price": 1.49,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "OXO Vegetable Stock Cubes",
+     "price": 3.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Vegetable Stock Pot",
+     "price": 2.8,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Kallo Organic Vegetable Stock Cubes",
+     "price": 1.4,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Marks and Spencer Vegetable Stock",
+     "price": 3.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "Morrisons.com",
+     "title": "Morrisons Chicken & Vegetable Broth",
+     "price": 1.85,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "chicken broth"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Sainsbury's Vegetable Stock Inspired to Cook",
+     "price": 2.9,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Bay's Kitchen Concentrated Vegetable Stock 200g",
+     "price": 4.3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth",
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Kallo Vegetable Stock Cubes",
+     "price": 1,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Yorkshire Provender Rustic Vegetable Broth",
+     "price": 3.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable broth"
+     ]
+    },
+    {
+     "store": "Waitrose & Partners",
+     "title": "Waitrose Chicken & Vegetable Broth 600g",
+     "price": 3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken broth",
+      "chicken stock"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Epicure Meat Stock 680ml",
+     "price": 5.3,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "chicken stock",
+      "stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Baxters Favourites Highlander Broth Soup 400G",
+     "price": 2.05,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "beef broth",
+      "condensed beef broth or consommé"
+     ]
+    },
+    {
+     "store": "Asda Groceries",
+     "title": "Knorr Vegetable Stock Pot",
+     "price": 2.8,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Kallo Organic Vegetable Stock Cubes",
+     "price": 1.9,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Oxo Signature Vegetable Stock",
+     "price": 2.5,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Marigold Organic Bouillon Powder",
+     "price": 8.36,
+     "reason": "stock_granules",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "Tesco",
+     "title": "Knorr Organic Vegetable Stock Pot",
+     "price": 2.5,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable stock"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Itsu Miso Ramen Brilliant Broth",
+     "price": 2.7,
+     "reason": "stock_no_form",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable or fish broth, hot"
+     ]
+    },
+    {
+     "store": "sainsburys.co.uk",
+     "title": "Knorr Vegetable Stock Pot",
+     "price": 2.8,
+     "reason": "stock_no_count",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable or fish broth, hot"
+     ]
+    },
+    {
+     "store": "Ocado",
+     "title": "Soup Broth Pack-Vegetable 150 g",
+     "price": 8.45,
+     "reason": "stock_ready_made",
+     "origin": "cache",
+     "fromCanonicals": [
+      "vegetable or fish broth, hot"
+     ]
+    }
+   ],
+   "droppedReasonCounts": {
+    "stock_no_form": 9,
+    "stock_ready_made": 6,
+    "stock_no_count": 8,
+    "stock_granules": 1
+   },
+   "nUsed": 6,
+   "medianPerMl": 0.000652,
+   "medianPerL": 0.652,
+   "nearest": {
+    "store": "Tesco",
+    "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
+    "per_cube": 0.11,
+    "ml": 190,
+    "per_l": 0.5789
+   },
+   "result": "ok"
+  }
+ },
  "stockRecipes": [
   {
    "id": "69d1933f0ce7d5269f695274",
    "title": "Creamy Prawn Risotto",
    "oldPerServing": 23.3484,
-   "newPerServing": 3.9821,
+   "newPerServing": 3.8778,
    "via": [
     "vegetable or fish broth, hot"
    ]
@@ -978,7 +2860,7 @@
    "id": "69c31de2b17f27d65b4f4ec9",
    "title": "Creamy Broccoli & Celery Soup",
    "oldPerServing": 1.0962,
-   "newPerServing": 0.3557,
+   "newPerServing": 0.3644,
    "via": [
     "vegetable broth"
    ]
@@ -987,7 +2869,7 @@
    "id": "69c31dd4b17f27d65b4f4ec4",
    "title": "Vegan Colcannon Soup",
    "oldPerServing": 2.0903,
-   "newPerServing": 0.6093,
+   "newPerServing": 0.6268,
    "via": [
     "vegetable broth"
    ]
@@ -996,7 +2878,7 @@
    "id": "69c31dd4b17f27d65b4f4ec3",
    "title": "Spicy lentil and black rice soup with kale, spinach and leek",
    "oldPerServing": 1.162,
-   "newPerServing": 0.6683,
+   "newPerServing": 0.6742,
    "via": [
     "vegetable broth"
    ]
@@ -1005,7 +2887,7 @@
    "id": "69c31de2b17f27d65b4f4eca",
    "title": "Savoy Cabbage and Celery Root Soup with Leek Confit",
    "oldPerServing": 1.8358,
-   "newPerServing": 0.778,
+   "newPerServing": 0.7905,
    "via": [
     "vegetable broth"
    ]
@@ -1014,7 +2896,7 @@
    "id": "69d5776887d5d72710ae8ec8",
    "title": "Rustic Vegetable & Dumpling Stew with Soda-Glazed Tomatoes & Herb Salad",
    "oldPerServing": 3.7352,
-   "newPerServing": 1.5136,
+   "newPerServing": 1.5399,
    "via": [
     "vegetable broth"
    ]
@@ -1023,7 +2905,7 @@
    "id": "69d04b0f26a6c4c3877dfcd2",
    "title": "Red quinoa cranberry arugula soup",
    "oldPerServing": 2.4321,
-   "newPerServing": 0.951,
+   "newPerServing": 0.9686,
    "via": [
     "vegetable broth"
    ]
@@ -1032,7 +2914,7 @@
    "id": "6a6cfa88901ee72fdac2149f",
    "title": "Tuscan Broccolini Quinoa Pilaf with Lemon, Herbs, and Goat Cheese",
    "oldPerServing": 2.5378,
-   "newPerServing": 1.7973,
+   "newPerServing": 1.8061,
    "via": [
     "vegetable broth"
    ]
@@ -1041,7 +2923,7 @@
    "id": "6ac80d59b0ca951a2fbf73ee",
    "title": "Thai Coconut Beetroot Soup with Lime, Ginger, and Tofu",
    "oldPerServing": 2.925,
-   "newPerServing": 1.8142,
+   "newPerServing": 1.8273,
    "via": [
     "vegetable broth"
    ]
@@ -1050,7 +2932,7 @@
    "id": "6ac80d5cb0ca951a2fbf73f8",
    "title": "Lemon-Kissed Lebanese Lentil Soup",
    "oldPerServing": 1.8832,
-   "newPerServing": 1.1427,
+   "newPerServing": 1.1515,
    "via": [
     "vegetable broth"
    ]
@@ -1059,7 +2941,7 @@
    "id": "6ac80d63b0ca951a2fbf7410",
    "title": "Smoky Rainbow Skillet Chili",
    "oldPerServing": 2.1195,
-   "newPerServing": 1.6258,
+   "newPerServing": 1.6317,
    "via": [
     "vegetable broth"
    ]
@@ -1068,7 +2950,7 @@
    "id": "6ac80d9eb0ca951a2fbf74e0",
    "title": "Sesame Veggie Noodle Bowl with Ginger-Soy Glaze",
    "oldPerServing": 1.6309,
-   "newPerServing": 0.8904,
+   "newPerServing": 0.8991,
    "via": [
     "vegetable broth"
    ]
@@ -1077,7 +2959,7 @@
    "id": "6ac80da1b0ca951a2fbf74ea",
    "title": "Lemon-Herb Sweet Potato Gnocchi with Tomato and Olive Ragout",
    "oldPerServing": 2.196,
-   "newPerServing": 1.9183,
+   "newPerServing": 1.9215,
    "via": [
     "vegetable broth"
    ]
@@ -1086,7 +2968,7 @@
    "id": "6ac80db6b0ca951a2fbf7532",
    "title": "Buckwheat Crêpes with Mushroom-Shallot Cream and Herb Salad",
    "oldPerServing": 2.1681,
-   "newPerServing": 1.983,
+   "newPerServing": 1.9852,
    "via": [
     "vegetable broth"
    ]
@@ -1095,7 +2977,7 @@
    "id": "6ac80dc2b0ca951a2fbf755c",
    "title": "Buckwheat Crepes with Wild Mushroom, White Wine, and Herb Sauce",
    "oldPerServing": 1.8601,
-   "newPerServing": 1.5824,
+   "newPerServing": 1.5857,
    "via": [
     "vegetable broth"
    ]
@@ -1104,7 +2986,7 @@
    "id": "6ac80dc7b0ca951a2fbf7570",
    "title": "Mushroom and Lentil Shepherd's Pie with Cheddar Potato Topping",
    "oldPerServing": 1.867,
-   "newPerServing": 1.507,
+   "newPerServing": 1.5113,
    "via": [
     "vegetable broth"
    ]
@@ -1113,7 +2995,7 @@
    "id": "6ac80deeb0ca951a2fbf75f8",
    "title": "Roasted Vegetable Lasagna Spirals with Peppery Pecorino Marinara",
    "oldPerServing": 2.9379,
-   "newPerServing": 2.5677,
+   "newPerServing": 2.572,
    "via": [
     "vegetable broth"
    ]
@@ -1122,7 +3004,7 @@
    "id": "6ac80e04b0ca951a2fbf7646",
    "title": "Velvety Spinach-Paneer Style Skillet",
    "oldPerServing": 2.0756,
-   "newPerServing": 1.7054,
+   "newPerServing": 1.7098,
    "via": [
     "vegetable broth"
    ]
@@ -1131,7 +3013,7 @@
    "id": "6ac80e0bb0ca951a2fbf7660",
    "title": "Tuscan-Style Seafood Stew with Lemon and Herbs",
    "oldPerServing": 6.0807,
-   "newPerServing": 5.3402,
+   "newPerServing": 5.349,
    "via": [
     "vegetable broth"
    ]
@@ -1140,7 +3022,7 @@
    "id": "6ac80e0cb0ca951a2fbf7664",
    "title": "Smoky Butternut Black Bean Chili with Bulgur",
    "oldPerServing": 2.6636,
-   "newPerServing": 1.1826,
+   "newPerServing": 1.2001,
    "via": [
     "vegetable broth"
    ]
@@ -1149,7 +3031,7 @@
    "id": "6ac80e17b0ca951a2fbf768a",
    "title": "Silky Spinach Paneer-Style Skillet",
    "oldPerServing": 2.3539,
-   "newPerServing": 1.9837,
+   "newPerServing": 1.9881,
    "via": [
     "vegetable broth"
    ]
@@ -1158,7 +3040,7 @@
    "id": "6ac80e31b0ca951a2fbf76e6",
    "title": "Lemon Herb Chickpea Gnocchi Skillet",
    "oldPerServing": 1.7377,
-   "newPerServing": 1.4002,
+   "newPerServing": 1.4046,
    "via": [
     "vegetable broth"
    ]
@@ -1167,7 +3049,7 @@
    "id": "69d1933f0ce7d5269f695270",
    "title": "Cajun King Prawns with Dirty Rice",
    "oldPerServing": 8.4167,
-   "newPerServing": 8.423,
+   "newPerServing": 3.4843,
    "via": [
     "chicken or fish broth"
    ]
@@ -1176,7 +3058,7 @@
    "id": "69d1933f0ce7d5269f695272",
    "title": "Quick Prawn and Chorizo Paella",
    "oldPerServing": 11.9405,
-   "newPerServing": 11.9455,
+   "newPerServing": 4.8903,
    "via": [
     "chicken or fish broth"
    ]
@@ -1266,7 +3148,7 @@
    "id": "69b1db93974afef25b93a473",
    "title": "Red Kidney Bean Jambalaya",
    "oldPerServing": 2.1006,
-   "newPerServing": 0.8501,
+   "newPerServing": 0.8588,
    "via": [
     "vegetable stock"
    ]
@@ -1275,7 +3157,7 @@
    "id": "69c31de2b17f27d65b4f4ecf",
    "title": "Azteca Soup",
    "oldPerServing": 2.4652,
-   "newPerServing": 0.7978,
+   "newPerServing": 0.8095,
    "via": [
     "vegetable stock"
    ]
@@ -1284,7 +3166,7 @@
    "id": "69b1db93974afef25b93a455",
    "title": "Quick and Easy Southwestern Corn Chowder",
    "oldPerServing": 2.0215,
-   "newPerServing": 0.3542,
+   "newPerServing": 0.3659,
    "via": [
     "vegetable stock"
    ]
@@ -1293,7 +3175,7 @@
    "id": "69b1db92974afef25b93a449",
    "title": "Red Lentil Soup with Chicken and Turnips",
    "oldPerServing": 3.3369,
-   "newPerServing": 0.8359,
+   "newPerServing": 0.8534,
    "via": [
     "vegetable stock"
    ]
@@ -1302,7 +3184,7 @@
    "id": "69c31de2b17f27d65b4f4ecb",
    "title": "Chilled Green Pea & Onion Soup",
    "oldPerServing": 0.9907,
-   "newPerServing": 0.6781,
+   "newPerServing": 0.6802,
    "via": [
     "vegetable stock"
    ]
@@ -1311,7 +3193,7 @@
    "id": "69d04b0f26a6c4c3877dfcd3",
    "title": "Red Curry Stew & Vegetable Noodles",
    "oldPerServing": 3.2273,
-   "newPerServing": 1.5808,
+   "newPerServing": 1.5923,
    "via": [
     "vegetable stock"
    ]
@@ -1320,7 +3202,7 @@
    "id": "69b277e5f9069a06b5536b5a",
    "title": "Steamy Creamy Mushroom Risotto",
    "oldPerServing": 2.3569,
-   "newPerServing": 2.3569,
+   "newPerServing": 2.3328,
    "via": [
     "chicken broth"
    ]
@@ -1329,7 +3211,7 @@
    "id": "69c31df4b17f27d65b4f4ed3",
    "title": "The Best Quinoa Minestrone",
    "oldPerServing": 2.6251,
-   "newPerServing": 2.6251,
+   "newPerServing": 1.468,
    "via": [
     "chicken broth"
    ]
@@ -1338,7 +3220,7 @@
    "id": "69c31de2b17f27d65b4f4ec7",
    "title": "Celery Apple Risotto With Crispy Pancetta",
    "oldPerServing": 1.1737,
-   "newPerServing": 1.1737,
+   "newPerServing": 0.8547,
    "via": [
     "chicken broth"
    ]
@@ -1347,7 +3229,7 @@
    "id": "69b1db92974afef25b93a44e",
    "title": "Chicken Piccata With Angel Hair Pasta",
    "oldPerServing": 3.6271,
-   "newPerServing": 3.6271,
+   "newPerServing": 3.0486,
    "via": [
     "chicken broth"
    ]
@@ -1356,7 +3238,7 @@
    "id": "69b5c9a95ee86d48cd96c677",
    "title": "Vegetable Fried Wontons",
    "oldPerServing": 0.1056,
-   "newPerServing": 0.1056,
+   "newPerServing": 0.0966,
    "via": [
     "chicken broth"
    ]
@@ -1365,7 +3247,7 @@
    "id": "69d5710287d5d72710ae8eb3",
    "title": "Dan Dan Noodles",
    "oldPerServing": 2.6043,
-   "newPerServing": 2.6043,
+   "newPerServing": 2.3873,
    "via": [
     "chicken broth"
    ]
@@ -1374,7 +3256,7 @@
    "id": "69d5710287d5d72710ae8eaf",
    "title": "Chicken Lo Mein",
    "oldPerServing": 2.1644,
-   "newPerServing": 2.1538,
+   "newPerServing": 1.8645,
    "via": [
     "chicken broth"
    ]
@@ -1383,7 +3265,7 @@
    "id": "69d5710287d5d72710ae8eb1",
    "title": "Chili-Garlic Stir Fry",
    "oldPerServing": 2.2653,
-   "newPerServing": 2.2568,
+   "newPerServing": 2.1122,
    "via": [
     "chicken broth"
    ]
@@ -1392,7 +3274,7 @@
    "id": "6ac80e16b0ca951a2fbf7688",
    "title": "Tuscan Shrimp, Cod, and Olive Stew",
    "oldPerServing": 6.1208,
-   "newPerServing": 6.1208,
+   "newPerServing": 5.5423,
    "via": [
     "chicken broth"
    ]
@@ -1401,7 +3283,7 @@
    "id": "6ac80e18b0ca951a2fbf768c",
    "title": "Japanese Curry Puff Pockets with Chicken and Peas",
    "oldPerServing": 0.9649,
-   "newPerServing": 0.9649,
+   "newPerServing": 0.8202,
    "via": [
     "chicken broth"
    ]
@@ -1410,7 +3292,7 @@
    "id": "6ac80e29b0ca951a2fbf76c8",
    "title": "Mango-Glazed Pork Shoulder Sandwiches",
    "oldPerServing": 2.2867,
-   "newPerServing": 2.2867,
+   "newPerServing": 2.0939,
    "via": [
     "chicken broth"
    ]
@@ -1419,7 +3301,7 @@
    "id": "69b4aeaee736bc836fd5132f",
    "title": "Slow Cooker Beef Stew",
    "oldPerServing": 2.8471,
-   "newPerServing": 2.8471,
+   "newPerServing": 2.3901,
    "via": [
     "beef broth"
    ]
@@ -1428,7 +3310,7 @@
    "id": "6ac80dcbb0ca951a2fbf757e",
    "title": "Slow-Cooked Beef Chili with Tomato, Beans, and Warm Spice",
    "oldPerServing": 4.7349,
-   "newPerServing": 4.7349,
+   "newPerServing": 3.9344,
    "via": [
     "beef broth"
    ]
@@ -1437,7 +3319,7 @@
    "id": "69c31de2b17f27d65b4f4ece",
    "title": "Aspic Jelly",
    "oldPerServing": 5.6417,
-   "newPerServing": 5.6417,
+   "newPerServing": 4.2823,
    "via": [
     "stock"
    ]
@@ -1446,7 +3328,7 @@
    "id": "6a724c34839c335789cfe29d",
    "title": "Miso Noodle Soup with Mushrooms and Greens",
    "oldPerServing": 1.9867,
-   "newPerServing": 1.9867,
+   "newPerServing": 1.297,
    "via": [
     "stock"
    ]
@@ -1455,7 +3337,7 @@
    "id": "6ac80da6b0ca951a2fbf74fc",
    "title": "Slow-Simmered Beef Chili with Coffee and Beer",
    "oldPerServing": 2.8,
-   "newPerServing": 2.8,
+   "newPerServing": 2.5701,
    "via": [
     "stock"
    ]
@@ -3958,6 +5840,7 @@
     "type": "vegetable",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "vegetable",
    "current": {
     "metric": {
      "value": 0.0563,
@@ -3984,90 +5867,42 @@
      "price": 1.5,
      "title": "Knorr Fish Stock Pot Gluten-Free to Add a Rich Fish Flavour"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Ocado",
-     "title": "Kallo Organic Vegetable Broth",
-     "price": 3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Knorr Fish Stock Pot Gluten-Free to Add a Rich Fish Flavour",
-     "price": 1.5,
-     "used": false,
-     "reason": "stock_type_mismatch(title:fish,need:vegetable)",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Itsu Miso Ramen Brilliant Broth",
-     "price": 2.7,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Knorr Vegetable Stock Pot",
-     "price": 2.8,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Iceland",
-     "title": "Knorr 4 Vegetable Stock Pot",
-     "price": 1.9,
-     "used": true,
-     "count": 4,
-     "count_rule": "N_cubes_or_pots",
-     "ml": 500,
-     "ml_source": "knorr_stock_pot_500ml",
-     "per_cube": 0.475,
-     "per_ml": 0.00095,
-     "per_l": 0.95,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Soup Broth Pack-Vegetable 150 g",
-     "price": 8.45,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 6,
+    "usableForGroup": 1,
+    "dropped": {
+     "stock_no_form": 2,
+     "stock_type_mismatch": 1,
+     "stock_no_count": 1,
+     "stock_ready_made": 1
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 2,
-    "stock_type_mismatch": 1,
-    "stock_no_count": 1,
-    "stock_ready_made": 1
+   },
+   "group": {
+    "type": "vegetable",
+    "result": "ok",
+    "nUsed": 6,
+    "medianPerL": 0.652,
+    "serper": null
    },
    "oldPerL": 56.3,
-   "newPerL": 0.95,
-   "newPerMl": 0.00095,
-   "n_used": 1,
-   "flags": [
-    "n_used_1"
-   ],
+   "newPerL": 0.652,
+   "newPerMl": 0.000652,
+   "n_used": 6,
+   "flags": [],
    "action": "nominal_stock",
    "reason": "ok",
    "proposed": {
     "set": {
      "per_unit_metric": {
-      "value": 0.00095,
+      "value": 0.000652,
       "unit": "g_or_ml",
-      "n": 1
+      "n": 6
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.475 per cube ÷ 500 ml = £0.95/L, source Iceland Knorr 4 Vegetable Stock Pot"
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Vegetable Stock Cubes 10 Pack 100g; vegetable group median of 6 listings = £0.65/L"
     },
     "protectAfterWrite": true
    }
@@ -6642,6 +8477,7 @@
     "type": "vegetable",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "vegetable",
    "current": {
     "metric": {
      "value": 0.00675,
@@ -6669,179 +8505,41 @@
      "price": 1,
      "title": "Kallo Vegetable Stock Cubes"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Ocado",
-     "title": "Kallo Organic Vegetable Broth",
-     "price": 3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Potts Vegetable Stock",
-     "price": 2.3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "N_pack",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Marigold Swiss Vegetable Bouillon",
-     "price": 2.45,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Chicken & Vegetable Broth 600g",
-     "price": 1.49,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "OXO Vegetable Stock Cubes",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Vegetable Stock Pot",
-     "price": 2.8,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Organic Vegetable Stock Cubes",
-     "price": 1.4,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Marks and Spencer Vegetable Stock",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Knorr 4 Vegetable Stock Pot",
-     "price": 1.5,
-     "used": true,
-     "count": 4,
-     "count_rule": "N_cubes_or_pots",
-     "ml": 500,
-     "ml_source": "knorr_stock_pot_500ml",
-     "per_cube": 0.375,
-     "per_ml": 0.00075,
-     "per_l": 0.75,
-     "origin": "cache"
-    },
-    {
-     "store": "Morrisons.com",
-     "title": "Morrisons Chicken & Vegetable Broth",
-     "price": 1.85,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Vegetable Stock Inspired to Cook",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Bay's Kitchen Concentrated Vegetable Stock 200g",
-     "price": 4.3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Vegetable Stock Cubes",
-     "price": 1,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Yorkshire Provender Rustic Vegetable Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Vegetable Stock Cubes 10 x 10g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 16,
+    "usableForGroup": 3,
+    "dropped": {
+     "stock_no_form": 7,
+     "stock_ready_made": 2,
+     "stock_no_count": 4
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 7,
-    "stock_ready_made": 2,
-    "stock_no_count": 4
+   },
+   "group": {
+    "type": "vegetable",
+    "result": "ok",
+    "nUsed": 6,
+    "medianPerL": 0.652,
+    "serper": null
    },
    "oldPerL": 6.75,
-   "newPerL": 0.5789,
-   "newPerMl": 0.000579,
-   "n_used": 3,
+   "newPerL": 0.652,
+   "newPerMl": 0.000652,
+   "n_used": 6,
    "flags": [],
    "action": "nominal_stock",
    "reason": "ok",
    "proposed": {
     "set": {
      "per_unit_metric": {
-      "value": 0.000579,
+      "value": 0.000652,
       "unit": "g_or_ml",
-      "n": 3
+      "n": 6
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Vegetable Stock Cubes 10 Pack 100g"
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Vegetable Stock Cubes 10 Pack 100g; vegetable group median of 6 listings = £0.65/L"
     },
     "protectAfterWrite": true
    }
@@ -10059,6 +11757,7 @@
     "type": "chicken",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "chicken",
    "current": {
     "metric": {
      "value": 0.0288,
@@ -10085,85 +11784,45 @@
      "price": 1.4,
      "title": "Kallo Organic Chicken Stock Cubes"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Tesco",
-     "title": "Tesco Finest Chicken Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Borough Broth Sustainably Caught Wild Fish Bone Broth",
-     "price": 5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Kallo Organic Chicken Bone Broth",
-     "price": 3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Itsu Sesame Chicken Broth for Noodles",
-     "price": 4.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Knorr Fish Stock Pot Gluten-Free to Add a Rich Fish Flavour",
-     "price": 1.5,
-     "used": false,
-     "reason": "stock_type_mismatch(title:fish,need:chicken)",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Oxo Chicken Bone Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "M&S Chicken Bone Broth Frozen, 200g",
-     "price": 5.75,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Organic Chicken Stock Cubes",
-     "price": 1.4,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 8,
+    "usableForGroup": 0,
+    "dropped": {
+     "stock_no_form": 5,
+     "stock_type_mismatch": 1,
+     "stock_ready_made": 1,
+     "stock_no_count": 1
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 5,
-    "stock_type_mismatch": 1,
-    "stock_ready_made": 1,
-    "stock_no_count": 1
    },
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
+   "group": {
+    "type": "chicken",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
+   },
    "oldPerL": 28.8,
-   "newPerL": null
+   "newPerL": 0.5789,
+   "newPerMl": 0.000579,
+   "n_used": 4,
+   "flags": [],
+   "action": "nominal_stock",
+   "reason": "ok",
+   "proposed": {
+    "set": {
+     "per_unit_metric": {
+      "value": 0.000579,
+      "unit": "g_or_ml",
+      "n": 4
+     },
+     "confidence": "manual_nominal",
+     "price_basis": "stock_cube_made_up",
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Chicken Stock Cubes 10 Pack 100g; chicken group median of 4 listings = £0.58/L"
+    },
+    "protectAfterWrite": true
+   }
   },
   {
    "canonical_name": "salmon",
@@ -11181,6 +12840,7 @@
     "type": "chicken",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "chicken",
    "current": {
     "metric": {
      "value": 0.0064,
@@ -11208,215 +12868,23 @@
      "price": 1.08,
      "title": "ASDA Chicken Stock Cubes 12 x 10g"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Potts Chicken Stock Can",
-     "price": 2.3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Finest Chicken Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUE Foods Chicken Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Chicken Stock Cubes",
-     "price": 2,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Organic Chicken Stock Cubes",
-     "price": 1.4,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "ASDA Extra Special Roast Chicken Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Chicken Stock Cubes 10 Pack 100g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "N_pack",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "Iceland",
-     "title": "Knorr Chicken Stock Pot",
-     "price": 1.9,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Chicken Stock Inspired to Cook 500ml",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Marks and Spencer Chicken Stock",
-     "price": 1.7,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Chicken Stock Pots 4 Pack 112g",
-     "price": 1.7,
-     "used": true,
-     "count": 4,
-     "count_rule": "N_pack",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.425,
-     "per_ml": 0.002237,
-     "per_l": 2.2368,
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "ASDA Chicken Stock Cubes 12 x 10g",
-     "price": 1.08,
-     "used": true,
-     "count": 12,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.09,
-     "per_ml": 0.000474,
-     "per_l": 0.4737,
-     "origin": "cache"
-    },
-    {
-     "store": "Morrisons.com",
-     "title": "Morrisons The Best Chicken Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Epicure Meat Stock 680ml",
-     "price": 5.3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Oxo Chicken Stock Cubes",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Stock Cubes Chicken 10x10g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Freja Chicken Cooking Bone Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Organic Chicken Stock Pot",
-     "price": 2.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Waitrose Chicken & Vegetable Broth 600g",
-     "price": 3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "M&S Chicken Stock, 500ml",
-     "price": 3.2,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Oxo Signature Succulent Chicken Stock",
-     "price": 2.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Kucharek Chicken Stock Cube, 120g",
-     "price": 1.1,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 22,
+    "usableForGroup": 4,
+    "dropped": {
+     "stock_no_form": 8,
+     "stock_no_count": 6,
+     "stock_ready_made": 4
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 8,
-    "stock_no_count": 6,
-    "stock_ready_made": 4
+   },
+   "group": {
+    "type": "chicken",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
    },
    "oldPerL": 6.4,
    "newPerL": 0.5789,
@@ -11434,7 +12902,7 @@
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Chicken Stock Cubes 10 Pack 100g"
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Chicken Stock Cubes 10 Pack 100g; chicken group median of 4 listings = £0.58/L"
     },
     "protectAfterWrite": true
    }
@@ -13957,6 +15425,7 @@
     "type": "vegetable",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "vegetable",
    "current": {
     "metric": {
      "value": 0.011,
@@ -13984,192 +15453,42 @@
      "price": 1.08,
      "title": "ASDA Vegetable Stock Cubes 12 x 10g"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Potts Vegetable Stock",
-     "price": 2.3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Vegetable Stock Cubes 10 Pack 100g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "N_pack",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Kallo Organic Vegetable Broth",
-     "price": 3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "Knorr Vegetable Stock Pot",
-     "price": 2.8,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Kallo Organic Vegetable Stock Cubes",
-     "price": 1.9,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Vegetable Stock Cubes 10 x 10g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "OXO Vegetable Stock Cubes",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Iceland",
-     "title": "Knorr 4 Vegetable Stock Pot",
-     "price": 1.9,
-     "used": true,
-     "count": 4,
-     "count_rule": "N_cubes_or_pots",
-     "ml": 500,
-     "ml_source": "knorr_stock_pot_500ml",
-     "per_cube": 0.475,
-     "per_ml": 0.00095,
-     "per_l": 0.95,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Marks and Spencer Vegetable Stock",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Oxo Signature Vegetable Stock",
-     "price": 2.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "ASDA Vegetable Stock Cubes 12 x 10g",
-     "price": 1.08,
-     "used": true,
-     "count": 12,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.09,
-     "per_ml": 0.000474,
-     "per_l": 0.4737,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Bay's Kitchen Concentrated Vegetable Stock 200g",
-     "price": 4.3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Vegetable Stock Inspired to Cook",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Marigold Organic Bouillon Powder",
-     "price": 8.36,
-     "used": false,
-     "reason": "stock_granules",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Organic Vegetable Stock Pot",
-     "price": 2.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Veg Stock Pots x4 112g",
-     "price": 1.45,
-     "used": true,
-     "count": 4,
-     "count_rule": "xN",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.3625,
-     "per_ml": 0.001908,
-     "per_l": 1.9079,
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 16,
+    "usableForGroup": 5,
+    "dropped": {
+     "stock_no_form": 5,
+     "stock_no_count": 4,
+     "stock_ready_made": 1,
+     "stock_granules": 1
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 5,
-    "stock_no_count": 4,
-    "stock_ready_made": 1,
-    "stock_granules": 1
+   },
+   "group": {
+    "type": "vegetable",
+    "result": "ok",
+    "nUsed": 6,
+    "medianPerL": 0.652,
+    "serper": null
    },
    "oldPerL": 11,
-   "newPerL": 0.5789,
-   "newPerMl": 0.000579,
-   "n_used": 5,
+   "newPerL": 0.652,
+   "newPerMl": 0.000652,
+   "n_used": 6,
    "flags": [],
    "action": "nominal_stock",
    "reason": "ok",
    "proposed": {
     "set": {
      "per_unit_metric": {
-      "value": 0.000579,
+      "value": 0.000652,
       "unit": "g_or_ml",
-      "n": 5
+      "n": 6
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Vegetable Stock Cubes 10 Pack 100g"
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Vegetable Stock Cubes 10 Pack 100g; vegetable group median of 6 listings = £0.65/L"
     },
     "protectAfterWrite": true
    }
@@ -20524,6 +21843,7 @@
     "type": "chicken",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "chicken",
    "current": {
     "metric": {
      "value": 0.0054,
@@ -20551,162 +21871,43 @@
      "price": 1.4,
      "title": "Kallo Organic Chicken Stock Cubes"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Tesco",
-     "title": "Tesco Finest Chicken Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Organic Chicken Stock Cubes",
-     "price": 1.4,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Potts Chicken Stock Can",
-     "price": 2.4,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "ASDA Extra Special Roast Chicken Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Itsu Sesame Chicken Broth for Noodles",
-     "price": 4.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "M&S Chicken Bone Broth Frozen, 200g",
-     "price": 5.75,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Oxo Chicken Bone Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Daylesford Organic Thai Chicken Broth",
-     "price": 7.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUE Foods Chicken Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Chicken Stock Pots 4 Pack 112g",
-     "price": 1.7,
-     "used": true,
-     "count": 4,
-     "count_rule": "N_pack",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.425,
-     "per_ml": 0.002237,
-     "per_l": 2.2368,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Knorr Chicken Stock Pot",
-     "price": 2.8,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Morrisons.com",
-     "title": "Morrisons Chicken & Vegetable Broth",
-     "price": 1.85,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Waitrose Chicken & Vegetable Broth 600g",
-     "price": 3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Chicken Stock Inspired to Cook 500ml",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Freja Chicken Cooking Bone Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 15,
+    "usableForGroup": 1,
+    "dropped": {
+     "stock_no_form": 9,
+     "stock_no_count": 2,
+     "stock_ready_made": 3
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 9,
-    "stock_no_count": 2,
-    "stock_ready_made": 3
+   },
+   "group": {
+    "type": "chicken",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
    },
    "oldPerL": 5.4,
-   "newPerL": 2.2368,
-   "newPerMl": 0.002237,
-   "n_used": 1,
-   "flags": [
-    "stock_out_of_range"
-   ],
-   "action": "hold_stock",
-   "reason": "stock_out_of_range",
+   "newPerL": 0.5789,
+   "newPerMl": 0.000579,
+   "n_used": 4,
+   "flags": [],
+   "action": "nominal_stock",
+   "reason": "ok",
    "proposed": {
     "set": {
      "per_unit_metric": {
-      "value": 0.002237,
+      "value": 0.000579,
       "unit": "g_or_ml",
-      "n": 1
+      "n": 4
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.425 per cube ÷ 190 ml = £2.24/L, source Tesco Tesco Chicken Stock Pots 4 Pack 112g"
-    }
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Chicken Stock Cubes 10 Pack 100g; chicken group median of 4 listings = £0.58/L"
+    },
+    "protectAfterWrite": true
    }
   },
   {
@@ -20719,6 +21920,7 @@
     "type": "beef",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "beef",
    "current": {
     "metric": {
      "value": 0.11,
@@ -20746,92 +21948,28 @@
      "price": 1.1,
      "title": "Sainsbury's Stock Cubes Beef 10x10g"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Tesco",
-     "title": "Knorr Beef Flavour Bouillon Cubes",
-     "price": 1.85,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Knorr Beef Stock Cubes",
-     "price": 1.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "OXO Beef Stock Cubes",
-     "price": 2.65,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Rich Beef Stock Pot",
-     "price": 1.9,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Iceland",
-     "title": "Oxo Beef Stock Cubes",
-     "price": 7.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUEfoods Beef Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Stock Cubes Beef 10x10g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Organic Beef Stock Cubes",
-     "price": 1.4,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 8,
+    "usableForGroup": 1,
+    "dropped": {
+     "stock_no_count": 6,
+     "stock_no_form": 1
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_count": 6,
-    "stock_no_form": 1
+   },
+   "group": {
+    "type": "beef",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
    },
    "oldPerL": 110,
    "newPerL": 0.5789,
    "newPerMl": 0.000579,
-   "n_used": 1,
-   "flags": [
-    "n_used_1"
-   ],
+   "n_used": 4,
+   "flags": [],
    "action": "nominal_stock",
    "reason": "ok",
    "proposed": {
@@ -20839,11 +21977,11 @@
      "per_unit_metric": {
       "value": 0.000579,
       "unit": "g_or_ml",
-      "n": 1
+      "n": 4
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source sainsburys.co.uk Sainsbury's Stock Cubes Beef 10x10g"
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source sainsburys.co.uk Sainsbury's Stock Cubes Beef 10x10g; beef group median of 4 listings = £0.58/L"
     },
     "protectAfterWrite": true
    }
@@ -20858,6 +21996,7 @@
     "type": "beef",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "beef",
    "current": {
     "metric": {
      "value": 0.0072499999999999995,
@@ -20885,196 +22024,44 @@
      "price": 1.7,
      "title": "Heinz Beef Broth Soup 400g"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Oxo Beef Nourishing Bone Broth 500ml",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Borough Broth Company Organic Beef Bone Broth",
-     "price": 5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Potts Beef Stock Can",
-     "price": 2.3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Borough Broth Grass Fed Organic Beef Bone Broth",
-     "price": 11.25,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Heinz Beef Broth Soup 400g",
-     "price": 1.7,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Kallo Organic Beef Broth",
-     "price": 3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Baxters Favourites Highlander Broth Soup 400G",
-     "price": 2.05,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUEfoods Beef Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "M&S Beef Bone Broth Frozen, 200g",
-     "price": 5.75,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Itsu Beef Pho Broth for Noodles",
-     "price": 4.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "OXO Beef Bone Broth",
-     "price": 3.9,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Beef Stock Cubes",
-     "price": 2,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Heinz Beef Broth Chunky Big Soup",
-     "price": 2.2,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Beef Stock Inspired to Cook 500ml",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "ASDA Beef Stock Pots",
-     "price": 1.7,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Oxo Beef Bone Broth, 500ml",
-     "price": 3.75,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Knorr Rich Beef Stock Pot",
-     "price": 1.9,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Borough Broth Organic Frozen Beef Bone Broth Cubes",
-     "price": 6,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Bay's Kitchen Concentrated Beef Stock 200g",
-     "price": 4.3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Hunter & Gather Bone Broth Classic Beef 400g",
-     "price": 30,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Freja Rich Beef Cooking Bone Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Organic Beef Bone Broth with Greens & Herbs",
-     "price": 7.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 22,
+    "usableForGroup": 0,
+    "dropped": {
+     "stock_ready_made": 8,
+     "stock_no_form": 10,
+     "stock_no_count": 4
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_ready_made": 8,
-    "stock_no_form": 10,
-    "stock_no_count": 4
    },
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
+   "group": {
+    "type": "beef",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
+   },
    "oldPerL": 7.25,
-   "newPerL": null
+   "newPerL": 0.5789,
+   "newPerMl": 0.000579,
+   "n_used": 4,
+   "flags": [],
+   "action": "nominal_stock",
+   "reason": "ok",
+   "proposed": {
+    "set": {
+     "per_unit_metric": {
+      "value": 0.000579,
+      "unit": "g_or_ml",
+      "n": 4
+     },
+     "confidence": "manual_nominal",
+     "price_basis": "stock_cube_made_up",
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source sainsburys.co.uk Sainsbury's Stock Cubes Beef 10x10g; beef group median of 4 listings = £0.58/L"
+    },
+    "protectAfterWrite": true
+   }
   },
   {
    "canonical_name": "beef bouillon cubes",
@@ -21086,6 +22073,7 @@
     "type": "beef",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "beef",
    "current": {
     "metric": {
      "value": 0.01075,
@@ -21113,100 +22101,26 @@
      "price": 1.08,
      "title": "ASDA Beef Stock Cubes 12 x 10g"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Tesco",
-     "title": "Knorr Beef Flavour Bouillon Cubes",
-     "price": 1.85,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Tesco Beef Stock Cubes 10 Pack 100g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "N_pack",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "OXO Beef Stock Cubes",
-     "price": 2.65,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "Asda Groceries",
-     "title": "ASDA Beef Stock Cubes 12 x 10g",
-     "price": 1.08,
-     "used": true,
-     "count": 12,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.09,
-     "per_ml": 0.000474,
-     "per_l": 0.4737,
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Knorr Beef Stock Cubes",
-     "price": 2,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Kallo Organic Beef Stock Cubes",
-     "price": 1.4,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Stock Cubes Beef 10x10g",
-     "price": 1.1,
-     "used": true,
-     "count": 10,
-     "count_rule": "NxMg",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.11,
-     "per_ml": 0.000579,
-     "per_l": 0.5789,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Bovril Stock Cubes Box Beef, 120g",
-     "price": 1.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 8,
+    "usableForGroup": 3,
+    "dropped": {
+     "stock_no_count": 5
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_count": 5
+   },
+   "group": {
+    "type": "beef",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
    },
    "oldPerL": 10.75,
    "newPerL": 0.5789,
    "newPerMl": 0.000579,
-   "n_used": 3,
+   "n_used": 4,
    "flags": [],
    "action": "nominal_stock",
    "reason": "ok",
@@ -21215,11 +22129,11 @@
      "per_unit_metric": {
       "value": 0.000579,
       "unit": "g_or_ml",
-      "n": 3
+      "n": 4
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Beef Stock Cubes 10 Pack 100g"
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source sainsburys.co.uk Sainsbury's Stock Cubes Beef 10x10g; beef group median of 4 listings = £0.58/L"
     },
     "protectAfterWrite": true
    }
@@ -21234,6 +22148,7 @@
     "type": "vegetable",
     "typeSource": "default_vegetable_no_type_word"
    },
+   "stockGroup": "vegetable",
    "current": {
     "metric": {
      "value": 0.0063999999999999994,
@@ -21261,108 +22176,44 @@
      "price": 1.5,
      "title": "Knorr Beef Stock Cubes"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUEfoods Beef Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Potts Chicken Stock Can",
-     "price": 2.3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Potts Beef Stock Can",
-     "price": 2.4,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Marks and Spencer Vegetable Stock",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUE Foods Chicken Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Beef Stock Inspired to Cook 500ml",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Oxo Signature Ready to Use Rich Beef Stock",
-     "price": 2.6,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "M&S Fresh Beef Stock, 500ml",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Knorr Beef Stock Cubes",
-     "price": 1.5,
-     "used": false,
-     "reason": "stock_type_mismatch(title:beef,need:vegetable)",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Chicken Stock Inspired to Cook 500ml",
-     "price": 2.9,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Epicure Meat Stock 680ml",
-     "price": 5.3,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 11,
+    "usableForGroup": 0,
+    "dropped": {
+     "stock_no_form": 5,
+     "stock_ready_made": 5,
+     "stock_type_mismatch": 1
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 5,
-    "stock_ready_made": 5,
-    "stock_type_mismatch": 1
    },
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
+   "group": {
+    "type": "vegetable",
+    "result": "ok",
+    "nUsed": 6,
+    "medianPerL": 0.652,
+    "serper": null
+   },
    "oldPerL": 6.4,
-   "newPerL": null
+   "newPerL": 0.652,
+   "newPerMl": 0.000652,
+   "n_used": 6,
+   "flags": [],
+   "action": "nominal_stock",
+   "reason": "ok",
+   "proposed": {
+    "set": {
+     "per_unit_metric": {
+      "value": 0.000652,
+      "unit": "g_or_ml",
+      "n": 6
+     },
+     "confidence": "manual_nominal",
+     "price_basis": "stock_cube_made_up",
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source Tesco Tesco Vegetable Stock Cubes 10 Pack 100g; vegetable group median of 6 listings = £0.65/L"
+    },
+    "protectAfterWrite": true
+   }
   },
   {
    "canonical_name": "brown stock",
@@ -21371,9 +22222,10 @@
    "publicRecipes": 0,
    "family": "stock",
    "stock": {
-    "type": "vegetable",
-    "typeSource": "default_vegetable_no_type_word"
+    "type": "beef",
+    "typeSource": "brown_stock_is_beef_group"
    },
+   "stockGroup": "beef",
    "current": {
     "metric": null,
     "count": null,
@@ -21386,15 +22238,40 @@
     "per_unit_metric": null,
     "per_unit_count": null,
     "cheapest": null,
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [],
-   "dropped_reason_counts": {},
-   "action": "hold_stock",
-   "reason": "no_usable_cube_or_pot_listing_with_count",
+   "ownCachedListings": {
+    "total": 0,
+    "usableForGroup": 0,
+    "dropped": {}
+   },
+   "group": {
+    "type": "beef",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
+   },
    "oldPerL": null,
-   "newPerL": null
+   "newPerL": 0.5789,
+   "newPerMl": 0.000579,
+   "n_used": 4,
+   "flags": [],
+   "action": "nominal_stock",
+   "reason": "ok",
+   "proposed": {
+    "set": {
+     "per_unit_metric": {
+      "value": 0.000579,
+      "unit": "g_or_ml",
+      "n": 4
+     },
+     "confidence": "manual_nominal",
+     "price_basis": "stock_cube_made_up",
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source sainsburys.co.uk Sainsbury's Stock Cubes Beef 10x10g; beef group median of 4 listings = £0.58/L"
+    },
+    "protectAfterWrite": true
+   }
   },
   {
    "canonical_name": "condensed beef broth or consommé",
@@ -21406,6 +22283,7 @@
     "type": "beef",
     "typeSource": "name_first_type_word"
    },
+   "stockGroup": "beef",
    "current": {
     "metric": {
      "value": 0.00595,
@@ -21432,162 +22310,43 @@
      "price": 1.45,
      "title": "Sainsbury's Beef Stock Pots x4 112g"
     },
-    "basis": "old computePerUnit() over cached listings (no Serper for stock docs)"
+    "basis": "old computePerUnit() over this doc's cached listings"
    },
-   "serper": null,
-   "listings": [
-    {
-     "store": "Waitrose & Partners",
-     "title": "Kallo Organic Beef Broth",
-     "price": 3,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Waitrose & Partners Beef Consommé Soup 400g",
-     "price": 1.6,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Heinz Beef Broth Chunky Big Soup",
-     "price": 2.2,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Tesco",
-     "title": "Baxters Chef Selections Beef Consomme 400g",
-     "price": 2.7,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Heinz Beef Broth Soup 400g",
-     "price": 1.7,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Itsu Beef Pho Broth for Noodles",
-     "price": 4.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Cook With M&S Concentrated Beef Stock, 240g",
-     "price": 3.75,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Baxters Favourites Highlander Broth Soup 400G",
-     "price": 2.05,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Potts Beef Stock Can",
-     "price": 2.4,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Borough Broth Company Organic Beef Bone Broth",
-     "price": 5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "TRUEfoods Beef Stock",
-     "price": 3.8,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Oxo Signature Ready to Use Rich Beef Stock",
-     "price": 2.5,
-     "used": false,
-     "reason": "stock_ready_made",
-     "origin": "cache"
-    },
-    {
-     "store": "Waitrose & Partners",
-     "title": "Knorr Stock Pot Beef",
-     "price": 1.5,
-     "used": false,
-     "reason": "stock_no_count",
-     "origin": "cache"
-    },
-    {
-     "store": "sainsburys.co.uk",
-     "title": "Sainsbury's Beef Stock Pots x4 112g",
-     "price": 1.45,
-     "used": true,
-     "count": 4,
-     "count_rule": "xN",
-     "ml": 190,
-     "ml_source": "other_or_own_brand_190ml",
-     "per_cube": 0.3625,
-     "per_ml": 0.001908,
-     "per_l": 1.9079,
-     "origin": "cache"
-    },
-    {
-     "store": "Ocado",
-     "title": "Freja Rich Beef Cooking Bone Broth",
-     "price": 3.5,
-     "used": false,
-     "reason": "stock_no_form",
-     "origin": "cache"
+   "ownCachedListings": {
+    "total": 15,
+    "usableForGroup": 1,
+    "dropped": {
+     "stock_no_form": 7,
+     "stock_ready_made": 6,
+     "stock_no_count": 1
     }
-   ],
-   "dropped_reason_counts": {
-    "stock_no_form": 7,
-    "stock_ready_made": 6,
-    "stock_no_count": 1
+   },
+   "group": {
+    "type": "beef",
+    "result": "ok",
+    "nUsed": 4,
+    "medianPerL": 0.5789,
+    "serper": null
    },
    "oldPerL": 5.95,
-   "newPerL": 1.9079,
-   "newPerMl": 0.001908,
-   "n_used": 1,
-   "flags": [
-    "stock_out_of_range"
-   ],
-   "action": "hold_stock",
-   "reason": "stock_out_of_range",
+   "newPerL": 0.5789,
+   "newPerMl": 0.000579,
+   "n_used": 4,
+   "flags": [],
+   "action": "nominal_stock",
+   "reason": "ok",
    "proposed": {
     "set": {
      "per_unit_metric": {
-      "value": 0.001908,
+      "value": 0.000579,
       "unit": "g_or_ml",
-      "n": 1
+      "n": 4
      },
      "confidence": "manual_nominal",
      "price_basis": "stock_cube_made_up",
-     "curation_note": "Stock cube made up: £0.3625 per cube ÷ 190 ml = £1.91/L, source sainsburys.co.uk Sainsbury's Beef Stock Pots x4 112g"
-    }
+     "curation_note": "Stock cube made up: £0.11 per cube ÷ 190 ml = £0.58/L, source sainsburys.co.uk Sainsbury's Stock Cubes Beef 10x10g; beef group median of 4 listings = £0.58/L"
+    },
+    "protectAfterWrite": true
    }
   }
  ]
