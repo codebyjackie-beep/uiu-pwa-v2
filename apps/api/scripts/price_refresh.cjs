@@ -29,7 +29,7 @@ function parseArgs(argv) {
     const t = argv[i];
     if (!t.startsWith("--")) continue;
     const k = t.slice(2);
-    if (["only", "from", "batch", "out"].includes(k)) a.kv[k] = argv[++i];
+    if (["only", "from", "batch", "out", "from-listings"].includes(k)) a.kv[k] = argv[++i];
     else a.flags.add(k);
   }
   return a;
@@ -194,6 +194,7 @@ function makeTitleMatcher(canon, priceDoc) {
   for (const p of phrases) for (const h of tokenStems(p)) tokens.add(h);
   const nameLower = String(name || "").toLowerCase();
   const aliasLower = aliasList.join(" | ").toLowerCase();
+  const nameAliasLower = `${nameLower} | ${aliasLower}`;
   const isGround = /^ground\b/.test(nameLower);
   const wordIn = (label, s) => new RegExp(`\\b${label}`, "i").test(s);
   // pre-rule-10 behaviour: only the canonical name itself exempts the word
@@ -214,12 +215,39 @@ function makeTitleMatcher(canon, priceDoc) {
       if (!newExempt(label)) return { ok: false, reason: `excluded_word:${label}` };
       if (!oldExempt(label)) rescued.push(label);
     }
-    if (!tokens.size) return { ok: true, rescued };
+    // cloud rule 16: processed / different-form products. A phrase is exempt when the canonical name or an alias itself contains it.
+    const pfRescued = [];
+    for (const [label, re, scope] of PROCESSED_FORM) {
+      if (!re.test(t)) continue;
+      if (scope === "protein" && !PROTEIN_NAME_RE.test(nameLower)) continue;
+      if (scope === "fruit" && !FRUIT_NAME_RE.test(nameLower)) continue;
+      if (re.test(nameAliasLower)) { pfRescued.push(label); continue; }
+      return { ok: false, reason: `processed_form:${label}` };
+    }
+    if (!tokens.size) return { ok: true, rescued, pfRescued };
     const tStems = [...tokenStems(normChilli(t))];
     const hit = [...tokens].some((tok) => tStems.some((ts) => ts === tok || (ts.length >= 4 && tok.length >= 4 && (ts.startsWith(tok) || tok.startsWith(ts)))));
-    return hit ? { ok: true, rescued } : { ok: false, reason: "title_no_match" };
+    return hit ? { ok: true, rescued, pfRescued } : { ok: false, reason: "title_no_match" };
   };
 }
+// Rule 16 (cloud 10-15): processed / different-form listings are not the plain ingredient. Guarded only.
+const PROCESSED_FORM = [
+  ["battered", /\bbattered\b/i], ["breaded", /\bbreaded\b/i], ["dusted", /\bdusted\b/i], ["chip shop", /\bchip shop\b/i],
+  ["in butter", /\bin (?:a )?butter\b/i], ["butter", /\bbutter\b/i, "protein"],
+  ["in sauce", /\bin (?:\w+ )?sauce\b/i], ["with sauce", /\bwith (?:\w+ )?sauce\b/i], ["marinated", /\bmarinated\b/i],
+  ["garlic & herb", /\bgarlic\s?(?:&|and)\s?herbs?\b/i], ["in juice", /\bin (?:\w+ )?juice\b/i, "fruit"], ["in syrup", /\bin (?:\w+ )?syrup\b/i, "fruit"], // fruit-only: canned tomatoes in tomato juice stay valid
+  ["chunks", /\bchunks?\b/i, "fruit"], ["dried", /\bdried\b/i], ["smoked", /\bsmoked\b/i],
+];
+// no `category` field exists on canonical_ingredients, so "seafood / meat / fish" and "fruit" are name keyword lists
+// Cloud decisions on individual holds (rule 15). `from` = the action the reviewed run produced.
+const CLOUD_OVERRIDES = {
+  tomato: { from: "hold", decision: "update", note: "write count £0.166 each (Tesco/Ocado 6 Pack ÷ 6, real price; old £0.518 ~3x too high) + metric as guarded; count ratio 0.32 accepted" },
+  egg: { from: "hold_low_n", decision: "keep_old", note: "keep old £0.265 each; only 1 listing, £0.70 each not plausible" },
+  "flank steak": { from: "hold", decision: "keep_old", note: "keep old £15/kg; £56/kg not plausible" },
+  "lump crab meat": { from: "hold_low_n", decision: "keep_old", note: "keep old value" },
+};
+const PROTEIN_NAME_RE =/\b(prawns?|shrimps?|fish|cod|haddock|salmon|tuna|trout|mackerel|sea ?bass|bream|tilapia|pollock|plaice|crab|lobster|scallops?|mussels?|squid|calamari|oysters?|clams?|seafood|steaks?|chicken|beef|pork|lamb|turkey|duck|bacon|ham|sausages?|mince|fillets?|brisket|ribs?|gammon|veal|venison|cutlets?|chops?)\b/i;
+const FRUIT_NAME_RE = /\b(mango(?:es)?|pineapples?|peach(?:es)?|pears?|apples?|melons?|papayas?|apricots?|cherr(?:y|ies)|oranges?|bananas?|coconuts?|grapefruits?|plums?|kiwis?|lychees?|figs?|guavas?|fruits?|berr(?:y|ies)|grapes?|lemons?|limes?|mandarins?|clementines?|nectarines?|passion ?fruit|pomegranates?)\b/i;
 // Does the title contain every content word of the full canonical name? (rule 11 audit of the lenient Guard 3)
 function titleHasFullName(title, name) {
   const words = String(name || "").toLowerCase().split(/[^a-zà-ÿ]+/).filter((w) => w.length >= 2 && !["of", "and", "or", "with", "the", "in", "a"].includes(w)).map(stem);
@@ -269,6 +297,7 @@ function guardedEvaluate(rawListings, ctx, ambiguousMode) {
     const m = ctx.matcher(s.title);
     if (!m.ok) { row.status = "dropped"; row.reason = m.reason; return row; }
     if (m.rescued && m.rescued.length) row.rule10Rescued = m.rescued;
+    if (m.pfRescued && m.pfRescued.length) row.processedFormExempt = m.pfRescued;
     const p = parsePackGuarded(s.title, ctx.referencePack);
     row.flags = p.flags;
     row.source_of_pack = p.source;
@@ -626,6 +655,19 @@ async function runWrite(args, env) {
     }
     const eligibleSet = new Set(eligibleDocs.map((d) => d.canonical_name));
     const creditLog = { calls: 0, creditsReported: 0, callsWithoutCredits: 0 };
+    // --from-listings <json>: reuse listings already fetched by an earlier dry-run (0 credits for those docs)
+    const reuseMap = new Map();
+    let reuseSourceName = null;
+    if (args.kv["from-listings"]) {
+      const rp = path.resolve(args.kv["from-listings"]);
+      reuseSourceName = path.basename(rp);
+      const src = JSON.parse(fs.readFileSync(rp, "utf8"));
+      for (const d of src.docs || []) {
+        if (d.family !== "normal" || d.fetch?.mode !== "serper" || !Array.isArray(d.listings)) continue;
+        reuseMap.set(d.canonical_name, { listings: d.listings.map((l) => ({ store: l.store, title: l.title, price: l.price })), calls: d.fetch.calls, serperResultsLastCall: d.fetch.serperResultsLastCall, blocklistedLastCall: d.fetch.blocklistedLastCall });
+      }
+      creditLog.reusedFrom = { file: reuseSourceName, docs: reuseMap.size, priorCredits: src.credits ? { calls: src.credits.calls, creditsReported: src.credits.creditsReported } : null };
+    }
 
     // ---- per doc --------------------------------------------------------------------------------
     // ---- stock groups (cloud rule 9): pool usable cube/pot listings of ALL non-protected stock-family canonicals by type ----
@@ -709,7 +751,11 @@ async function runWrite(args, env) {
       // ---------------- normal path ----------------
       let rawListings;
       let fetchInfo;
-      if (offline) {
+      if (reuseMap.has(name)) {
+        const re = reuseMap.get(name);
+        rawListings = re.listings;
+        fetchInfo = { mode: "reused_listings", source: reuseSourceName, calls: re.calls, whitelisted: rawListings.length, serperResultsLastCall: re.serperResultsLastCall, blocklistedLastCall: re.blocklistedLastCall };
+      } else if (offline) {
         rawListings = (doc.listings || []).map((l) => ({ store: l.store, title: l.title, price: l.price }));
         fetchInfo = { mode: "offline_cache_listings", whitelisted: rawListings.length };
       } else {
@@ -743,7 +789,16 @@ async function runWrite(args, env) {
           ambiguityFallback = { chosen, reason: "0 valid listing after excluding ambiguous_pack; both readings computed, closer to current value chosen", total: { metric: tot.per_unit_metric, count: tot.per_unit_count }, each: { metric: each.per_unit_metric, count: each.per_unit_count }, current: { metric: cur.metric, count: cur.count } };
         } else ambiguityFallback = { chosen: null, reason: "no current value to compare; ambiguous listings stay excluded", total: { metric: tot.per_unit_metric, count: tot.per_unit_count }, each: { metric: each.per_unit_metric, count: each.per_unit_count } };
       }
-      const decision = decide({ per_unit_metric: cur.metric, per_unit_count: cur.count }, g, rawListings.length);
+      let decision = decide({ per_unit_metric: cur.metric, per_unit_count: cur.count }, g, rawListings.length);
+      // cloud per-canonical decisions (Part 2 live pilot review, rule 15). Applied only if the computed action is the one the review saw.
+      let override = null;
+      const ov = CLOUD_OVERRIDES[name];
+      if (ov) {
+        if (decision.action === ov.from) {
+          override = { by: "cloud", date: "2026-10-15", ref: "Part 2 live pilot decision 15", decision: ov.decision, originalAction: decision.action, originalReason: decision.reason, note: ov.note };
+          if (ov.decision === "update" && decision.supported && decision.supported.length) decision = { ...decision, action: "update", reason: `cloud_override(${decision.reason})`, fields: decision.supported };
+        } else override = { by: "cloud", skipped: true, expectedAction: ov.from, actualAction: decision.action, note: "override NOT applied: computed action differs from the one cloud reviewed" };
+      }
       const listingsOut = g.rows.map((r) => {
         const old = baseline.listings.find((b) => b.title === r.title && b.store === r.store && b.price === r.price);
         return {
@@ -752,6 +807,7 @@ async function runWrite(args, env) {
           guarded: { pack: r.pack, source_of_pack: r.source_of_pack, per_unit: r.per_unit },
           ambiguous: r.ambiguous,
           ...(r.rule10Rescued ? { rule10Rescued: r.rule10Rescued } : {}),
+          ...(r.processedFormExempt ? { processedFormExempt: r.processedFormExempt } : {}),
         };
       });
       const proposedSet = {};
@@ -776,6 +832,7 @@ async function runWrite(args, env) {
         baseline: { per_unit_metric: baseline.per_unit_metric, per_unit_count: baseline.per_unit_count, cheapest: baseline.cheapest, confidence: baseline.confidence, n_supermarkets: baseline.n_supermarkets },
         guarded: { per_unit_metric: g.per_unit_metric, per_unit_count: g.per_unit_count, cheapest: g.cheapest, confidence: g.confidence, n_supermarkets: g.n_supermarkets, outlierMedians: g.dims },
         ratio: { guardedVsCurrent: { metric: ratioMetric, count: ratioCount }, baselineVsCurrent: { metric: baseline.per_unit_metric && cur.metric?.value > 0 ? Math.round((baseline.per_unit_metric.value / cur.metric.value) * 1000) / 1000 : null, count: baseline.per_unit_count && cur.count?.value > 0 ? Math.round((baseline.per_unit_count.value / cur.count.value) * 1000) / 1000 : null } },
+        override, keepOldByCloud: !!(override && !override.skipped && override.decision === "keep_old"),
         ambiguityFallback, decisionDetail: decision.detail ?? null, listings: listingsOut, proposed,
         fieldsToWrite: decision.fields,
       };
@@ -815,6 +872,33 @@ async function runWrite(args, env) {
     }
     changes.sort((a, b) => Math.abs(b.delta ?? 99) - Math.abs(a.delta ?? 99));
 
+    // ---- rule 17: bucket moves + what is still > £8 -------------------------------------------------
+    const lineMap = (c, servings) => {
+      const m = new Map();
+      for (const l of c.lines || []) if (l.canonical_name && l.lineCost > 0) m.set(l.canonical_name, (m.get(l.canonical_name) || 0) + l.lineCost / servings);
+      return m;
+    };
+    const actionOf = new Map(results.map((r) => [r.canonical_name, r.keepOldByCloud ? `${r.action}(cloud keep_old)` : r.action]));
+    const newCostById = new Map(newCosts.map(({ r, c }) => [String(r._id), c]));
+    const bucketMoves = [];
+    const stillOver8 = [];
+    for (const { r, c } of baseCosts) {
+      const id = String(r._id);
+      const servings = r.servings > 0 ? r.servings : 1;
+      const ops = baseServingById.get(id);
+      const nps = newServingById.get(id);
+      const ob = bucketOf(ops);
+      const nb = bucketOf(nps);
+      const oldL = lineMap(c, servings);
+      const newL = lineMap(newCostById.get(id), servings);
+      const deltas = [...new Set([...oldL.keys(), ...newL.keys()])].map((k) => ({ canonical_name: k, oldPerServing: r4(oldL.get(k) ?? 0), newPerServing: r4(newL.get(k) ?? 0), delta: r4((newL.get(k) ?? 0) - (oldL.get(k) ?? 0)), action: actionOf.get(k) ?? "not_in_this_run" }));
+      const reasons = deltas.filter((d) => Math.abs(d.delta) > 1e-9).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 3);
+      if (ob !== nb) bucketMoves.push({ id, title: r.title, servings: r.servings ?? null, fromBucket: ob, toBucket: nb, oldPerServing: r4(ops), newPerServing: r4(nps), mainReasonCanonicals: reasons });
+      if (nb === ">£8") stillOver8.push({ id, title: r.title, servings: r.servings ?? null, oldPerServing: r4(ops), newPerServing: r4(nps), topLines: deltas.sort((a, b) => b.newPerServing - a.newPerServing).slice(0, 3) });
+    }
+    bucketMoves.sort((a, b) => Math.abs((b.newPerServing ?? 0) - (b.oldPerServing ?? 0)) - Math.abs((a.newPerServing ?? 0) - (a.oldPerServing ?? 0)));
+    const bucketMoveMatrix = countBy(bucketMoves, (m) => `${m.fromBucket} -> ${m.toBucket}`);
+
     // ---- aggregates -------------------------------------------------------------------------------
     const actionCounts = countBy(results, (r) => r.action);
     const normalDocs = results.filter((r) => r.family === "normal");
@@ -827,7 +911,11 @@ async function runWrite(args, env) {
       pack_of_n_each: allListings.filter((l) => l.flags.includes("pack_of_n_each") && (l.baseline?.pack?.qty ?? null) !== (l.guarded.pack?.qty ?? null)),
       ambiguous_pack: allListings.filter((l) => l.status === "ambiguous" || (l.flags || []).includes("ambiguous_pack")),
       rule10_rescued_by_exemption: allListings.filter((l) => Array.isArray(l.rule10Rescued) && l.rule10Rescued.length),
+      processed_form_excluded: allListings.filter((l) => String(l.reason).startsWith("processed_form")),
+      processed_form_exempt_by_name_or_alias: allListings.filter((l) => Array.isArray(l.processedFormExempt) && l.processedFormExempt.length),
     };
+    const pfByCanon = normalDocs.map((d) => ({ canonical_name: d.canonical_name, impactGbpPerServingSum: d.impactGbpPerServingSum, action: d.action, excluded: (d.listings || []).filter((l) => String(l.reason).startsWith("processed_form")).map((l) => ({ title: l.title, store: l.store, price: l.price, reason: l.reason })) })).filter((x) => x.excluded.length).sort((a, b) => b.impactGbpPerServingSum - a.impactGbpPerServingSum);
+    const pfLabelCounts = countBy(ruleEffect.processed_form_excluded, (l) => String(l.reason).replace(/^processed_form:/, ""));
     const ruleEffectSummary = Object.fromEntries(Object.entries(ruleEffect).map(([k, v]) => [k, { listings: v.length, examples: v.slice(0, 5).map((l) => ({ title: l.title, store: l.store, price: l.price, reason: l.reason, status: l.status, rule10Rescued: l.rule10Rescued, baselinePack: l.baseline?.pack ?? null, guardedPack: l.guarded?.pack ?? null, per_unit_old: l.baseline?.per_unit ?? null, per_unit_new: l.guarded?.per_unit ?? null })) }]));
     // rule 11: listings kept by the lenient Guard 3 although the title lacks the full canonical name; by doc impact, max 3 per doc
     const lenientKept = [];
@@ -839,7 +927,7 @@ async function runWrite(args, env) {
     const lenientTotal = normalDocs.reduce((s, d) => s + (d.listings || []).filter((l) => (l.status === "kept" || l.status === "ambiguous") && !titleHasFullName(l.title, d.canonical_name)).length, 0);
     const recipeRows = (name) => [...(recipesByCanon.get(name) || [])].map((id) => ({ id, title: recipeById.get(id)?.title, oldPerServing: r4(baseServingById.get(id)), newPerServing: r4(newServingById.get(id)) }));
     const holdList = results.filter((r) => ["hold", "hold_low_n", "hold_stock"].includes(r.action)).map((r) => ({
-      canonical_name: r.canonical_name, action: r.action, reason: r.reason, impactGbpPerServingSum: r.impactGbpPerServingSum,
+      canonical_name: r.canonical_name, action: r.action, reason: r.reason, impactGbpPerServingSum: r.impactGbpPerServingSum, override: r.override ?? null, keepOldByCloud: !!r.keepOldByCloud,
       current: r.family === "stock" ? { perL: r.oldPerL } : { metric_per_kg_or_L: r.current?.metric ? r4(r.current.metric.value * 1000) : null, count_each: r.current?.count ? r4(r.current.count.value) : null },
       proposedNotWritten: r.family === "stock" ? { perL: r.newPerL } : { metric_per_kg_or_L: r.guarded?.per_unit_metric ? r4(r.guarded.per_unit_metric.value * 1000) : null, count_each: r.guarded?.per_unit_count ? r4(r.guarded.per_unit_count.value) : null },
       publicRecipesAffected: recipeRows(r.canonical_name),
@@ -866,6 +954,10 @@ async function runWrite(args, env) {
         note: "proposed = action update + nominal_stock docs in THIS run only; everything else keeps live values",
       },
       holds: holdList,
+      processedForm: { excludedListings: ruleEffect.processed_form_excluded.length, byLabel: pfLabelCounts, exemptByNameOrAlias: ruleEffect.processed_form_exempt_by_name_or_alias.length, canonicalsAffectedTop40ByImpact: pfByCanon.slice(0, 40), canonicalsAffected: pfByCanon.length },
+      bucketMoves: { count: bucketMoves.length, matrix: bucketMoveMatrix, moves: bucketMoves },
+      stillOver8,
+      overrides: results.filter((r) => r.override).map((r) => ({ canonical_name: r.canonical_name, ...r.override, resultingAction: r.action })),
       holdLowNWithPublicImpact: holdList.filter((h) => h.action === "hold_low_n" && h.publicRecipesAffected.length).sort((a, b) => b.impactGbpPerServingSum - a.impactGbpPerServingSum),
       guard3LenientKept: { totalListings: lenientTotal, note: "kept/ambiguous listings whose title lacks some word of the full canonical_name; top 30 by doc impact, max 3 per doc", top30: lenientKept.slice(0, 30) },
       stockGroups,
