@@ -19,7 +19,8 @@ const WRITE = process.argv.includes("--write");
 const argAfter = (k) => { const i = process.argv.indexOf(k); return i > -1 ? process.argv[i + 1] : null; };
 const FROM = argAfter("--from");
 const TODAY = "2026-10-12";
-const OUT_DRYRUN = path.join(SUMMARIES, `recipe_cost_recompute_dryrun_${TODAY}.json`);
+// --out <file> keeps an earlier committed dry-run from being overwritten (default stays the 2026-10-12 name)
+const OUT_DRYRUN = argAfter("--out") ? path.resolve(process.cwd(), argAfter("--out")) : path.join(SUMMARIES, `recipe_cost_recompute_dryrun_${TODAY}.json`);
 
 // mirrors packages/shared costDisplayTier + apps/web/app/lib/recipeFilters PRICE_BUCKETS
 const FULL_PCT = 80;
