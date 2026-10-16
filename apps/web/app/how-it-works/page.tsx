@@ -19,7 +19,7 @@ const HERO_ID = "how-it-works-hero";
 const FEATURES = [
   {
     key: "recipes",
-    title: "Recipes with real UK prices",
+    title: "Recipes with UK supermarket prices",
     subtitle: "See what every dish costs per serving before you shop",
     image: { src: "/images/how-it-works/recipes.webp", width: 750, height: 1226 },
     alt: "Recipes list filtered to breakfast, each smoothie recipe showing its price per serving",
@@ -57,7 +57,7 @@ export default async function HowItWorksPage() {
           <p className="hiw-hero__wordmark">UseItUp</p>
           <h1 className="hiw-hero__title">Everything you need to eat well, in one app</h1>
           <p className="hiw-hero__subtitle">
-            Real UK prices, a fridge that knows what you&apos;ve got, and a shopping list that
+            UK supermarket prices, a fridge that knows what you&apos;ve got, and a shopping list that
             fits your budget.
           </p>
           <div className="hiw-hero__actions">

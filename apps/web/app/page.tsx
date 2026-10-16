@@ -44,8 +44,8 @@ export default async function Home() {
   ]);
   // No hard-coded fallback number: if the total can't be fetched, drop the count entirely.
   const recipesHint = recipeCountRes.ok
-    ? `${recipeCountRes.data.total} recipes with real UK prices`
-    : "Recipes with real UK prices";
+    ? `${recipeCountRes.data.total} recipes with UK supermarket prices`
+    : "Recipes with UK supermarket prices";
   const activeSummary = setsRes.ok ? setsRes.data.find((s) => s.isActive) : undefined;
 
   const detailRes = activeSummary

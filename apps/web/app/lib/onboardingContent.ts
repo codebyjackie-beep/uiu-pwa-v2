@@ -4,7 +4,7 @@
  * without crossing the client/server boundary that OnboardingOverlay.tsx sits on. */
 
 export const FEATURE_CARDS = [
-  { icon: "🍳", label: "Browse Recipes", hint: "Real UK prices" },
+  { icon: "🍳", label: "Browse Recipes", hint: "UK supermarket prices" },
   { icon: "🧊", label: "Scan Fridge", hint: "Track what you've got" },
   { icon: "🛒", label: "Compare Prices", hint: "Shop smarter" },
   { icon: "❤️", label: "Track Health", hint: "Macros & BMI" },
