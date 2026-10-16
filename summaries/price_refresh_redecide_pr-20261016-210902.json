@@ -1,0 +1,250 @@
+{
+ "generatedAt": "2026-10-16T21:17:28.297Z",
+ "runId": "pr-20261016-210902",
+ "note": "re-decided from stored listings with current code (hold_drop on), 0 credits, nothing written",
+ "docsTotal": 534,
+ "originalActions": {
+  "update": 262,
+  "hold_low_n": 163,
+  "hold": 8,
+  "keep_old": 26,
+  "hold_rise": 74,
+  "fetch_error": 1
+ },
+ "actions": {
+  "update": 248,
+  "hold_low_n": 163,
+  "hold": 8,
+  "keep_old": 26,
+  "hold_rise": 74,
+  "hold_drop": 14,
+  "fetch_error": 1
+ },
+ "updatePct": 0.464,
+ "transitions": {
+  "update -> hold_drop": 14
+ },
+ "holdDropCount": 14,
+ "holdDrop": [
+  {
+   "canonical_name": "brussels sprouts",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.545
+   },
+   "liveMetric": 0.0055,
+   "liveCount": null,
+   "newMetric": 0.003,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "chicken thighs",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.741
+   },
+   "liveMetric": 0.00695,
+   "liveCount": null,
+   "newMetric": 0.00515,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "chipotle sauce",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.635
+   },
+   "liveMetric": 0.014249999999999999,
+   "liveCount": null,
+   "newMetric": 0.009049999999999999,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "coarsely bread",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.69
+   },
+   "liveMetric": 0.0021,
+   "liveCount": null,
+   "newMetric": 0.00145,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "cola (regular)",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.394
+   },
+   "liveMetric": 0.0033,
+   "liveCount": null,
+   "newMetric": 0.0013,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "drizzle of lemon juice",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.655
+   },
+   "liveMetric": 0.0103,
+   "liveCount": null,
+   "newMetric": 0.00675,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "feta",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.693
+   },
+   "liveMetric": 0.0163,
+   "liveCount": null,
+   "newMetric": 0.0113,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "hardboiled eggs",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.767,
+    "per_unit_count": 1
+   },
+   "liveMetric": 0.01265,
+   "liveCount": 0.5583499999999999,
+   "newMetric": 0.0097,
+   "newCount": 0.5583499999999999,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "kidney beans",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.588
+   },
+   "liveMetric": 0.0017,
+   "liveCount": null,
+   "newMetric": 0.001,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "mozzarella",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.65
+   },
+   "liveMetric": 0.01,
+   "liveCount": null,
+   "newMetric": 0.0065,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "okra",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.496
+   },
+   "liveMetric": 0.00665,
+   "liveCount": null,
+   "newMetric": 0.0033,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "red bell pepper, sliced",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.563
+   },
+   "liveMetric": 0.0048,
+   "liveCount": null,
+   "newMetric": 0.0027,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "rice noodles",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.766
+   },
+   "liveMetric": 0.0064,
+   "liveCount": null,
+   "newMetric": 0.0049,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  },
+  {
+   "canonical_name": "tomato paste",
+   "refreshBatch": "refresh-20261016",
+   "ratios": {
+    "per_unit_metric": 0.596
+   },
+   "liveMetric": 0.00545,
+   "liveCount": null,
+   "newMetric": 0.0032500000000000003,
+   "newCount": null,
+   "previousDecision": "update (ok)"
+  }
+ ],
+ "sensitivity": {
+  "oldUpdatesWithRatioUnder_0_77": 14,
+  "floor": 0.7692307692307692
+ },
+ "docsWithRefreshBatch": 282,
+ "recipeCost": {
+  "anomalies": [],
+  "publicRecipes": 328,
+  "publicChanged": 301,
+  "before": {
+   "tiers": {
+    "full": 251,
+    "partial": 65,
+    "unavailable": 12
+   },
+   "perServing": {
+    "under1_5": 143,
+    "1_5to3": 112,
+    "3plus": 61,
+    "excluded": 12
+   },
+   "weeklyPlan6": [
+    {
+     "name": "Weekly Plan 6",
+     "total": 34.33,
+     "entriesWithoutPrice": 0
+    }
+   ]
+  },
+  "after": {
+   "tiers": {
+    "full": 251,
+    "partial": 65,
+    "unavailable": 12
+   },
+   "perServing": {
+    "under1_5": 143,
+    "1_5to3": 113,
+    "3plus": 60,
+    "excluded": 12
+   },
+   "weeklyPlan6": [
+    {
+     "name": "Weekly Plan 6",
+     "total": 34.05,
+     "entriesWithoutPrice": 0
+    }
+   ]
+  },
+  "lineWeightedAdjustedPct": 67.60535382984362
+ }
+}

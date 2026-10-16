@@ -340,8 +340,13 @@ export function computeGuarded(rawListings: RawListing[], ctx: GuardCtx, ambiguo
 // ------------------------------------------------------------------------------------------------
 // rule 21 (cloud 10-15 night): food inflation is ~1.7%/yr, so a >1.3x rise is almost surely a listing-mix change, not a real price rise. Rises only; falls stay.
 export const RISE_CAP = 1.3;
+// hold_drop (cloud decision 40, 2026-10-16): a doc a previous refresh already wrote (`refreshBatch` set) holds a freshly reviewed price,
+// so a drop of more than 1 - 1/1.3 (= 23%) within one cycle is almost surely a Serper listing-mix change — symmetric with RISE_CAP.
+// Docs that still hold their original (July) value are NOT subject to it: they may really need a correction.
+export const DROP_FLOOR = 1 / RISE_CAP;
 export type Decision = { action: string; reason: string; fields: string[]; detail?: any; supported?: string[]; ratios?: Record<string, number> };
-export function decideAction(cur: { per_unit_metric: any; per_unit_count: any }, g: any, rawCount: number): Decision {
+/** @param refreshed - the live doc already carries a `refreshBatch` (written by an earlier refresh run). Default false = old behaviour. */
+export function decideAction(cur: { per_unit_metric: any; per_unit_count: any }, g: any, rawCount: number, refreshed = false): Decision {
   if (rawCount === 0) return { action: "keep_old", reason: "no_whitelisted_listings_after_retry", fields: [] };
   const nM = g.per_unit_metric?.n || 0;
   const nC = g.per_unit_count?.n || 0;
@@ -367,6 +372,10 @@ export function decideAction(cur: { per_unit_metric: any; per_unit_count: any },
   if (breach) return { action: "hold", reason: `ratio_out_of_range:${breach}=${ratios[breach]}`, fields: [], supported, ratios };
   const rise = supported.filter((d) => (ratios[d] ?? 0) > RISE_CAP);
   if (rise.length) return { action: "hold_rise", reason: `rise_over_${RISE_CAP}x:${rise.map((d) => `${d}=${ratios[d]}`).join(",")}`, fields: [], supported, ratios };
+  if (refreshed) {
+    const drop = supported.filter((d) => ratios[d] != null && (ratios[d] as number) < DROP_FLOOR);
+    if (drop.length) return { action: "hold_drop", reason: `drop_under_${r4(DROP_FLOOR)}x_of_refreshed:${drop.map((d) => `${d}=${ratios[d]}`).join(",")}`, fields: [], supported, ratios };
+  }
   return { action: "update", reason: "ok", fields: supported, supported, ratios };
 }
 
@@ -375,7 +384,7 @@ export function decideAction(cur: { per_unit_metric: any; per_unit_count: any },
  * listings exist, evaluate both readings and keep the one closer to the current value) + Guard 6 decision.
  * `cur` is curSnapshot(doc). Overrides are NOT applied here (they live in the script / the price_refresh_overrides collection).
  */
-export function evaluateListings(rawListings: RawListing[], cur: CurSnapshot, ctx: GuardCtx): { g: any; decision: Decision; ambiguityFallback: any } {
+export function evaluateListings(rawListings: RawListing[], cur: CurSnapshot, ctx: GuardCtx, refreshed = false): { g: any; decision: Decision; ambiguityFallback: any } {
   let g = computeGuarded(rawListings, ctx, "exclude");
   let ambiguityFallback: any = null;
   const nAny = (g.per_unit_metric?.n || 0) + (g.per_unit_count?.n || 0);
@@ -396,7 +405,7 @@ export function evaluateListings(rawListings: RawListing[], cur: CurSnapshot, ct
       ambiguityFallback = { chosen, reason: "0 valid listing after excluding ambiguous_pack; both readings computed, closer to current value chosen", total: { metric: tot.per_unit_metric, count: tot.per_unit_count }, each: { metric: each.per_unit_metric, count: each.per_unit_count }, current: { metric: cur.metric, count: cur.count } };
     } else ambiguityFallback = { chosen: null, reason: "no current value to compare; ambiguous listings stay excluded", total: { metric: tot.per_unit_metric, count: tot.per_unit_count }, each: { metric: each.per_unit_metric, count: each.per_unit_count } };
   }
-  const decision = decideAction({ per_unit_metric: cur.metric, per_unit_count: cur.count }, g, rawListings.length);
+  const decision = decideAction({ per_unit_metric: cur.metric, per_unit_count: cur.count }, g, rawListings.length, refreshed);
   return { g, decision, ambiguityFallback };
 }
 

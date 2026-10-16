@@ -10,7 +10,7 @@
  *
  * Fetch ALL docs first (Serper), THEN decide, THEN write — nothing is written while fetching. Only guard `update` actions are
  * written (`$set` + old values in `refreshPrev` + `refreshBatch = refresh-auto-YYYYMMDD`, so scripts/price_refresh_rollback.cjs
- * works). hold / hold_rise / hold_low_n / keep_old / fetch_error are never written.
+ * works). hold / hold_rise / hold_drop / hold_low_n / keep_old / fetch_error are never written.
  *
  * Safety: PRICE_REFRESH_AUTO_WRITE must be "true" for ANY write (default "false" => every run is a dry-run). Run-level aborts write
  * nothing: update share > 70% or < 20% of the fetched docs, fetch errors > 10%, credits > 1,500. After a write, public recipe_cost is
@@ -460,13 +460,13 @@ export async function processPriceRefresh(env: PriceRefreshEnv): Promise<Process
 // ------------------------------------------------------------------------------------------------
 const countActions = (rows: ResultRow[]) => G.countBy(rows, (r) => r.action ?? "unknown");
 
-async function decide(env: PriceRefreshEnv, db: Db, run: RunDoc): Promise<void> {
-  const runs = db.collection<RunDoc>(RUNS);
-  const names = run.results.map((r) => r.name);
-  const priceMap = new Map((await db.collection<Document>("canonical_price_cache").find({ canonical_name: { $in: names } }).toArray()).map((d) => [String(d.canonical_name), d]));
-  const canonMap = new Map((await db.collection<Document>("canonical_ingredients").find({ canonical_name: { $in: names } }).toArray()).map((d) => [String(d.canonical_name), d]));
-
-  const rows: ResultRow[] = run.results.map((fr): ResultRow => {
+/**
+ * Fetched rows -> guard decisions, against the price/canonical docs as they are NOW. Pure (no I/O) so scripts/price_refresh_redecide.cjs
+ * can re-decide a finished run from its stored listings (0 credits) with exactly the code the Worker runs.
+ * `refreshed` (doc.refreshBatch set = an earlier refresh already wrote it) switches on the hold_drop guard (cloud decision 40).
+ */
+export function buildDecisionRows(fetched: ResultRow[], priceMap: Map<string, Document>, canonMap: Map<string, Document>): ResultRow[] {
+  return fetched.map((fr): ResultRow => {
     const name = fr.name;
     const base: ResultRow = { name, calls: fr.calls, whitelisted: fr.listings?.length ?? 0, listings: fr.listings };
     const doc = priceMap.get(name);
@@ -478,7 +478,7 @@ async function decide(env: PriceRefreshEnv, db: Db, run: RunDoc): Promise<void> 
     if (fr.error) return { ...base, action: "fetch_error", reason: fr.error, cur };
     const listings = fr.listings ?? [];
     const ctx = { matcher: G.makeTitleMatcher(canon, doc), referencePack: (canon.reference_pack as G.Pack | undefined) ?? null };
-    const { g, decision } = G.evaluateListings(listings, cur, ctx);
+    const { g, decision } = G.evaluateListings(listings, cur, ctx, Boolean(doc.refreshBatch));
     const row: ResultRow = {
       ...base,
       action: decision.action,
@@ -491,6 +491,15 @@ async function decide(env: PriceRefreshEnv, db: Db, run: RunDoc): Promise<void> 
     if (decision.action === "update") row.set = G.buildUpdateSet(name, g, decision, listings.length, fr.calls?.length ?? null);
     return row;
   });
+}
+
+async function decide(env: PriceRefreshEnv, db: Db, run: RunDoc): Promise<void> {
+  const runs = db.collection<RunDoc>(RUNS);
+  const names = run.results.map((r) => r.name);
+  const priceMap = new Map((await db.collection<Document>("canonical_price_cache").find({ canonical_name: { $in: names } }).toArray()).map((d) => [String(d.canonical_name), d]));
+  const canonMap = new Map((await db.collection<Document>("canonical_ingredients").find({ canonical_name: { $in: names } }).toArray()).map((d) => [String(d.canonical_name), d]));
+
+  const rows = buildDecisionRows(run.results, priceMap, canonMap);
 
   const actions = countActions(rows);
   const updates = actions.update ?? 0;
@@ -538,7 +547,7 @@ async function decide(env: PriceRefreshEnv, db: Db, run: RunDoc): Promise<void> 
 }
 
 /** apply a `$set` document (dotted keys allowed) to a copy of a Mongo doc — dry-run projection only */
-function applySet(doc: Document, set: Record<string, unknown>): Document {
+export function applySet(doc: Document, set: Record<string, unknown>): Document {
   const out: Document = { ...doc };
   for (const [k, v] of Object.entries(set)) {
     if (k.includes(".")) {
@@ -620,6 +629,7 @@ function summaryText(run: RunDoc, rows: ResultRow[], headline: string): string {
     `Run \`${run.runId}\` (${run.trigger}, ${run.schedule})${run.dryRunReason ? ` — ${md(run.dryRunReason)}` : ""}`,
     `Docs fetched ${run.docsTotal} (skipped: ${Object.entries(run.skipped).map(([k, v]) => `${md(k)} ${v}`).join(", ")})`,
     `Actions: ${Object.entries(actions).map(([k, v]) => `${md(k)} ${v}`).join(" · ")}`,
+    `hold\\_drop (already-refreshed docs, drop >23%, not written): ${actions.hold_drop ?? 0}`,
     `Credits ${run.creditsUsed} (${run.serperCalls} calls), fetch errors ${run.fetchErrors}`,
   ];
   const wouldAbort = (run.checks?.wouldAbort as string[] | undefined) ?? [];
