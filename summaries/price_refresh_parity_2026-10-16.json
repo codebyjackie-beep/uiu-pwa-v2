@@ -1,0 +1,47 @@
+{
+ "generatedAt": "2026-10-16T20:38:19.074Z",
+ "total": 600,
+ "actionCountsExpected": {
+  "update": 283,
+  "protected_skip": 27,
+  "hold_low_n": 165,
+  "hold": 24,
+  "nominal_stock": 12,
+  "hold_rise": 68,
+  "keep_old": 21
+ },
+ "tally": {
+  "normal": 561,
+  "normalOk": 561,
+  "normalOverride": 29,
+  "stock": 12,
+  "stockOk": 12,
+  "protected": 27,
+  "protectedOk": 26,
+  "other": 0
+ },
+ "identical": 599,
+ "mismatchCount": 0,
+ "mismatches": [],
+ "protectedNotes": [
+  {
+   "canonical_name": "sugar",
+   "nowReasons": "(not protected by rule now)",
+   "reviewedReason": "in reviewed Part 0 protected list"
+  }
+ ],
+ "newlyProtectedSinceReview": [
+  "vegetable broth[nominal_stock]",
+  "chicken broth[nominal_stock]",
+  "chicken stock[nominal_stock]",
+  "beef bouillon[nominal_stock]",
+  "beef broth[nominal_stock]",
+  "beef bouillon cubes[nominal_stock]",
+  "chicken or fish broth[nominal_stock]",
+  "vegetable stock[nominal_stock]",
+  "stock[nominal_stock]",
+  "brown stock[nominal_stock]",
+  "vegetable or fish broth, hot[nominal_stock]",
+  "condensed beef broth or consommé[nominal_stock]"
+ ]
+}
