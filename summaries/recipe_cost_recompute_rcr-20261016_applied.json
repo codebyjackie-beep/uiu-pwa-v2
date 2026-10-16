@@ -1,0 +1,68 @@
+{
+ "batch": "rcr-20261016",
+ "appliedAt": "2026-10-16T20:24:08.673Z",
+ "source": "recipe_cost_recompute_dryrun_2026-10-16.json",
+ "recipeCostModified": 322,
+ "expected": 322,
+ "gateAllowlist": {
+  "waivedIds": [
+   "69c31de2b17f27d65b4f4ecf",
+   "69d1933f0ce7d5269f695270",
+   "69b5c9a95ee86d48cd96c675",
+   "69b9587c7d3db8c999c7df81",
+   "69c31de2b17f27d65b4f4ec9",
+   "69d1933f0ce7d5269f695274",
+   "69b1db93974afef25b93a452",
+   "69b1db93974afef25b93a455",
+   "69d1933f0ce7d5269f695272",
+   "69d04b0f26a6c4c3877dfcd3",
+   "69b1db93974afef25b93a473",
+   "69b1db92974afef25b93a449",
+   "69d04b0f26a6c4c3877dfcd2",
+   "69d5776887d5d72710ae8ec8",
+   "69c31de2b17f27d65b4f4eca",
+   "6ac80e0cb0ca951a2fbf7664",
+   "69c473017393a7f0235b89b4",
+   "69c31dd4b17f27d65b4f4ec4"
+  ],
+  "allowlistSize": 18,
+  "ref": "cloud Part 4 decision 29"
+ },
+ "requery": {
+  "rowMismatch": 0,
+  "tiers": {
+   "full": 251,
+   "partial": 65,
+   "unavailable": 12
+  },
+  "tiersMatchDryRunAfter": true,
+  "priceBuckets": {
+   "under1_5": 143,
+   "1_5to3": 112,
+   "3plus": 61,
+   "excluded_no_price_or_unavailable": 12
+  },
+  "bucketsMatchDryRunAfter": true,
+  "plans": [
+   {
+    "name": "Weekly Plan 6",
+    "id": "6ab52b2f9b0819afa3920923",
+    "isActive": true,
+    "entries": 21,
+    "entriesWithoutPrice": 0,
+    "total": 34.33,
+    "byDay": {
+     "1": 4.71,
+     "2": 5.49,
+     "3": 3.91,
+     "4": 5.73,
+     "5": 4.23,
+     "6": 4.98,
+     "7": 5.27
+    }
+   }
+  ],
+  "plansMatchDryRunAfter": true,
+  "publicAbove8": 1
+ }
+}

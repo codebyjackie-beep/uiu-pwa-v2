@@ -34,6 +34,28 @@ const BUCKETS = [
 const PER_SERVING_MAX = 8;
 const DROP_MAX = 0.5;
 const PLAN_NAME_RE = /weekly plan 6/i;
+// Cloud Part 4 decision 29 (2026-10-16, ba6595e): the anomaly gate is waived ONLY for these 18 recipes (16 stock-line drops,
+// Caprese Salad tomato/mozzarella corrections, Crab Cakes Eggs Benedict unchanged > £8). Any other recipe tripping the gate aborts.
+const GATE_ALLOWLIST = {
+  "69c31de2b17f27d65b4f4ecf": "Azteca Soup",
+  "69d1933f0ce7d5269f695270": "Cajun King Prawns with Dirty Rice",
+  "69b5c9a95ee86d48cd96c675": "Chicken Porridge",
+  "69b9587c7d3db8c999c7df81": "Crab Cakes Eggs Benedict",
+  "69c31de2b17f27d65b4f4ec9": "Creamy Broccoli & Celery Soup",
+  "69d1933f0ce7d5269f695274": "Creamy Prawn Risotto",
+  "69b1db93974afef25b93a452": "Quick and Easy Caprese Salad",
+  "69b1db93974afef25b93a455": "Quick and Easy Southwestern Corn Chowder",
+  "69d1933f0ce7d5269f695272": "Quick Prawn and Chorizo Paella",
+  "69d04b0f26a6c4c3877dfcd3": "Red Curry Stew & Vegetable Noodles",
+  "69b1db93974afef25b93a473": "Red Kidney Bean Jambalaya",
+  "69b1db92974afef25b93a449": "Red Lentil Soup with Chicken and Turnips",
+  "69d04b0f26a6c4c3877dfcd2": "Red quinoa cranberry arugula soup",
+  "69d5776887d5d72710ae8ec8": "Rustic Vegetable & Dumpling Stew with Soda-Glazed Tomatoes & Herb Salad",
+  "69c31de2b17f27d65b4f4eca": "Savoy Cabbage and Celery Root Soup with Leek Confit",
+  "6ac80e0cb0ca951a2fbf7664": "Smoky Butternut Black Bean Chili with Bulgur",
+  "69c473017393a7f0235b89b4": "Thai Shrimp",
+  "69c31dd4b17f27d65b4f4ec4": "Vegan Colcannon Soup",
+};
 
 const r4 = (v) => Math.round(v * 1e4) / 1e4;
 const r2 = (v) => Math.round(v * 100) / 100;
@@ -259,8 +281,11 @@ function stats(publicIds, costById, planSets, planEntries, titleById) {
     if (!FROM) throw new Error("--write needs --from <reviewed dry-run json>");
     const reviewed = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), FROM), "utf8"));
     const bad = [];
-    if (anomalies.length) bad.push(`anomaly gate tripped: ${anomalies.length} anomalies (see dry-run)`);
-    if (reviewed.gate.anomalyCount !== 0) bad.push(`reviewed file has ${reviewed.gate.anomalyCount} anomalies — not an approved file`);
+    // the gate stays ON; only the ids cloud reviewed one by one (GATE_ALLOWLIST) may trip it
+    const unlisted = anomalies.filter((a) => !GATE_ALLOWLIST[a.id]);
+    if (unlisted.length) bad.push(`anomaly gate tripped for ${unlisted.length} recipe(s) not in GATE_ALLOWLIST: ${unlisted.slice(0, 10).map((a) => `${a.title} (${a.rule})`).join("; ")}`);
+    const revUnlisted = (reviewed.gate.anomalies || []).filter((a) => !GATE_ALLOWLIST[a.id]);
+    if (revUnlisted.length) bad.push(`reviewed file has ${revUnlisted.length} anomalies outside GATE_ALLOWLIST — not an approved file`);
     if (reviewed.priceCacheStamp !== priceCacheStamp) bad.push(`priceCacheStamp ${priceCacheStamp} != reviewed ${reviewed.priceCacheStamp} (price cache refreshed since review)`);
     const revById = new Map(reviewed.changed.map((c) => [c.id, c]));
     if (revById.size !== changed.length) bad.push(`changed count ${changed.length} != reviewed ${revById.size}`);
@@ -305,6 +330,7 @@ function stats(publicIds, costById, planSets, planEntries, titleById) {
     const evidence = {
       batch, appliedAt: at.toISOString(), source: path.basename(path.resolve(process.cwd(), FROM)),
       recipeCostModified: modified, expected: changed.length,
+      gateAllowlist: { waivedIds: anomalies.map((a) => a.id), allowlistSize: Object.keys(GATE_ALLOWLIST).length, ref: "cloud Part 4 decision 29" },
       requery: {
         rowMismatch,
         tiers: sNow.tiers, tiersMatchDryRunAfter: same(sNow.tiers, reviewed.tiersAfter),
