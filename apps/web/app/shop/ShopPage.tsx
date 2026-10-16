@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { AffiliateProduct, ApiResponse, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
+import { isStockLikeName, STOCK_PRICED_LABEL } from "@uiu/shared";
+import type { AffiliateProduct, ApiResponse, ShopPricesStamp, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
+import { PricesChecked } from "../components/PricesChecked";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -28,11 +30,13 @@ export function ShopPage() {
   const [toast, setToast] = useState<string | null>(null);
 
   const [kitchenPicks, setKitchenPicks] = useState<AffiliateProduct[]>([]);
+  const [pricesStamp, setPricesStamp] = useState<number | null>(null);
 
   useEffect(() => {
     void loadRestock();
     void loadManual();
     void loadKitchenPicks();
+    void loadPricesStamp();
   }, []);
 
   useEffect(() => {
@@ -59,6 +63,12 @@ export function ShopPage() {
     const { parsed } = await fetchJson<ShoppingListItem[]>("/api/shopping-list");
     if (parsed && parsed.ok) setManualItems(parsed.data);
     setManualLoading(false);
+  }
+
+  async function loadPricesStamp() {
+    // Display-only note — a failure just leaves the date out.
+    const { parsed } = await fetchJson<ShopPricesStamp>("/api/shop/prices-stamp");
+    if (parsed && parsed.ok) setPricesStamp(parsed.data.priceCacheStamp);
   }
 
   async function loadKitchenPicks() {
@@ -133,6 +143,8 @@ export function ShopPage() {
           restock flag — use Scan Receipt or Scan Fridge in the Fridge tab to actually add stock back in.
         </p>
 
+        <PricesChecked stamp={pricesStamp} />
+
         {restockError ? <p className="admin-drafts-error">{restockError}</p> : null}
         {restockLoading ? <p className="admin-drafts-page__sub">Loading…</p> : null}
         {!restockLoading && restockItems.length === 0 && !restockError ? (
@@ -154,6 +166,9 @@ export function ShopPage() {
                 ) : (
                   <span className="shop-card__price shop-card__price--pending">no price yet</span>
                 )}
+                {item.cheapest && isStockLikeName(item.canonicalName ?? item.ingredientName) ? (
+                  <span className="shop-card__stock">{STOCK_PRICED_LABEL}</span>
+                ) : null}
               </div>
               <button
                 type="button"

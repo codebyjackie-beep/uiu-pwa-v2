@@ -1532,6 +1532,12 @@ a {
   font-style: italic;
 }
 
+.recipe-detail__ingredient-stock {
+  font-size: 12px;
+  color: var(--uiu-muted);
+  font-style: italic;
+}
+
 .recipe-detail__ingredient-price {
   font-size: 12px;
   color: var(--accent);
@@ -3582,6 +3588,41 @@ a {
 .shop-card__price--pending {
   color: var(--uiu-muted);
   font-weight: 400;
+}
+
+.shop-card__stock {
+  font-size: 12px;
+  color: var(--uiu-muted);
+  font-style: italic;
+}
+
+/* "Prices checked Oct 2026 ⓘ" — small print under the price; ⓘ expands the stock/broth note. */
+.prices-checked {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+
+.prices-checked summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.prices-checked summary::-webkit-details-marker {
+  display: none;
+}
+
+.prices-checked__info {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.prices-checked__note {
+  margin: 6px 0 0;
+  font-size: 12px;
 }
 
 .shop-add-form {

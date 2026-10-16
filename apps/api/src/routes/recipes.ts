@@ -53,6 +53,7 @@ function toDetailCost(costDoc: Document | null): RecipeDetailCost | null {
     perServing: costDoc.perServing as number,
     adjustedCoveragePct: costDoc.adjustedCoveragePct as number,
     lines,
+    priceCacheStamp: typeof costDoc.priceCacheStamp === "number" ? costDoc.priceCacheStamp : 0,
   };
 }
 

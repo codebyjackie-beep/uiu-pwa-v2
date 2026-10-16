@@ -171,6 +171,29 @@ export function formatCostWithCoverage(value: number, coveragePct: number | null
 }
 
 /**
+ * "Prices checked Oct 2026" — month + year of `recipe_cost.priceCacheStamp` (epoch ms = newest
+ * canonical_price_cache fetched_at). Null for 0 / missing / non-finite so the caller shows nothing.
+ * Always en-GB / Europe/London so the server render and the browser agree.
+ */
+export function formatPricesChecked(stamp: number | null | undefined): string | null {
+  if (typeof stamp !== "number" || !Number.isFinite(stamp) || stamp <= 0) return null;
+  const month = new Intl.DateTimeFormat("en-GB", { month: "short", year: "numeric", timeZone: "Europe/London" }).format(new Date(stamp));
+  return `Prices checked ${month}`;
+}
+
+/**
+ * Broth / stock canonicals are priced as stock cubes made up with water (price_basis "stock_cube_made_up").
+ * Same match as the price-refresh stock family. Display-only — never feeds costRecipe().
+ */
+export const STOCK_NAME_RE = /broth|stock|bouillon/i;
+export const STOCK_PRICED_LABEL = "Priced as stock cube, made up";
+export const STOCK_PRICE_NOTE = "Stock and broth are priced as stock cubes made up with water.";
+
+export function isStockLikeName(canonicalName: string | null | undefined): boolean {
+  return !!canonicalName && STOCK_NAME_RE.test(canonicalName);
+}
+
+/**
  * Price of ONE serving from a recipe_cost summary, or null when it can't be trusted
  * (missing cost, non-finite / non-positive perServing). Lists and price filters use this so a
  * recipe card, the price buckets and the detail page ("Cost per serving") always show the same number.
@@ -240,6 +263,8 @@ export interface RecipeDetailCostLine {
 
 export interface RecipeDetailCost extends RecipeListItemCost {
   lines: RecipeDetailCostLine[];
+  /** recipe_cost.priceCacheStamp (epoch ms) — drives "Prices checked <Mon YYYY>". 0/absent → not shown. */
+  priceCacheStamp?: number;
 }
 
 export interface RecipeDetail extends Recipe {
@@ -889,6 +914,13 @@ export interface ShopRestockItem {
   quantity: number;
   unit: string;
   cheapest: { store: string; price: number } | null;
+  /** Resolved canonical name when known — display-only (stock label), not used for pricing. */
+  canonicalName?: string;
+}
+
+/** GET /api/shop/prices-stamp — newest recipe_cost.priceCacheStamp (epoch ms), 0 when none. */
+export interface ShopPricesStamp {
+  priceCacheStamp: number;
 }
 
 /** Manual, non-canonical shopping list item (collection: shopping_list_items) — e.g. toilet roll,

@@ -1,6 +1,13 @@
 import Link from "next/link";
-import { formatCostWithCoverage, type RecipeDetail, type RecipeDetailCostLine } from "@uiu/shared";
+import {
+  formatCostWithCoverage,
+  isStockLikeName,
+  STOCK_PRICED_LABEL,
+  type RecipeDetail,
+  type RecipeDetailCostLine,
+} from "@uiu/shared";
 import { apiGet } from "../../lib/api";
+import { PricesChecked } from "../../components/PricesChecked";
 import {
   costPendingLabel,
   dietaryBadges,
@@ -75,6 +82,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
               {costDisplay!.text}
             </p>
             {costDisplay!.note ? <p className="cost-hero__note">{costDisplay!.note}</p> : null}
+            <PricesChecked stamp={recipe.cost!.priceCacheStamp} />
           </>
         ) : (
           <p className="cost-hero__price cost-hero__price--pending">
@@ -147,6 +155,11 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
                 </span>
                 {storeLine.price && <span className="recipe-detail__ingredient-price">{storeLine.price}</span>}
               </div>
+              {!storeLine.unpriceable && isStockLikeName(line?.canonicalName) ? (
+                <div className="recipe-detail__ingredient-row">
+                  <span className="recipe-detail__ingredient-stock">{STOCK_PRICED_LABEL}</span>
+                </div>
+              ) : null}
             </li>
           );
         })}

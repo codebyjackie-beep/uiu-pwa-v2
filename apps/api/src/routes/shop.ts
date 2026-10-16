@@ -5,7 +5,7 @@
  */
 import { Hono } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, ShopRestockItem } from "@uiu/shared";
+import type { ApiResponse, ShopPricesStamp, ShopRestockItem } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 
 export const shopRouter = new Hono<{ Bindings: DbEnv }>();
@@ -44,6 +44,7 @@ shopRouter.get("/restock-list", async (c) => {
           quantity: doc.quantity as number,
           unit: doc.unit as string,
           cheapest: cheapest ? { store: cheapest.store, price: cheapest.price } : null,
+          ...(canonicalName ? { canonicalName } : {}),
         };
       });
     });
@@ -53,6 +54,28 @@ shopRouter.get("/restock-list", async (c) => {
   } catch (err) {
     console.error("[uiu-api] shop restock-list error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to fetch restock list" } };
+    return c.json(body, 502);
+  }
+});
+
+/** Newest recipe_cost.priceCacheStamp — the Shop tab's "Prices checked <Mon YYYY>" note. Read-only, display only. */
+shopRouter.get("/prices-stamp", async (c) => {
+  try {
+    const stamp = await withDb(c.env, async (db) => {
+      const latest = await db
+        .collection("recipe_cost")
+        .find({}, { projection: { priceCacheStamp: 1 } })
+        .sort({ priceCacheStamp: -1 })
+        .limit(1)
+        .toArray();
+      const v = latest[0]?.priceCacheStamp;
+      return typeof v === "number" && Number.isFinite(v) ? v : 0;
+    });
+    const body: ApiResponse<ShopPricesStamp> = { ok: true, data: { priceCacheStamp: stamp } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] shop prices-stamp error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to fetch price date" } };
     return c.json(body, 502);
   }
 });
