@@ -135,6 +135,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         {recipe.ingredients.map((ing, i) => {
           const line = lineFor(recipe, ing);
           const storeLine = formatIngredientStorePrice(line);
+          // Stock/broth lines show only the "priced as stock cube" note — the stored cheapest store is for a different product.
+          const isStock = !storeLine.unpriceable && isStockLikeName(line?.canonicalName);
           return (
             <li key={i}>
               <div className="recipe-detail__ingredient-row">
@@ -151,15 +153,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
                       : "recipe-detail__ingredient-store"
                   }
                 >
-                  {storeLine.label}
+                  {isStock ? STOCK_PRICED_LABEL : storeLine.label}
                 </span>
                 {storeLine.price && <span className="recipe-detail__ingredient-price">{storeLine.price}</span>}
               </div>
-              {!storeLine.unpriceable && isStockLikeName(line?.canonicalName) ? (
-                <div className="recipe-detail__ingredient-row">
-                  <span className="recipe-detail__ingredient-stock">{STOCK_PRICED_LABEL}</span>
-                </div>
-              ) : null}
             </li>
           );
         })}

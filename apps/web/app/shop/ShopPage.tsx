@@ -161,7 +161,7 @@ export function ShopPage() {
                 </span>
                 {item.cheapest ? (
                   <span className="shop-card__price">
-                    {formatCost(item.cheapest.price)} · {item.cheapest.store}
+                    {formatCost(item.cheapest.price)}{isStockLikeName(item.canonicalName) ? "" : ` · ${item.cheapest.store}`}
                   </span>
                 ) : (
                   <span className="shop-card__price shop-card__price--pending">no price yet</span>
