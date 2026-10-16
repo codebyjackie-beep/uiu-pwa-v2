@@ -182,15 +182,30 @@ export function formatPricesChecked(stamp: number | null | undefined): string | 
 }
 
 /**
- * Broth / stock canonicals are priced as stock cubes made up with water (price_basis "stock_cube_made_up").
- * Same match as the price-refresh stock family. Display-only — never feeds costRecipe().
+ * The 12 canonicals whose price_basis is "stock_cube_made_up" (broth / stock / bouillon priced as stock cubes
+ * made up with water). An explicit list, NOT a name regex: "water or vegetable broth" and "milk or chicken
+ * broth" match /broth/ but are not priced that way. Display-only — never feeds costRecipe(). If price_basis
+ * is ever set on another canonical, add it here.
  */
-export const STOCK_NAME_RE = /broth|stock|bouillon/i;
+export const STOCK_CUBE_MADE_UP_CANONICALS: ReadonlySet<string> = new Set([
+  "beef bouillon",
+  "beef bouillon cubes",
+  "beef broth",
+  "brown stock",
+  "chicken broth",
+  "chicken or fish broth",
+  "chicken stock",
+  "condensed beef broth or consommé",
+  "stock",
+  "vegetable broth",
+  "vegetable or fish broth, hot",
+  "vegetable stock",
+]);
 export const STOCK_PRICED_LABEL = "Priced as stock cube, made up";
 export const STOCK_PRICE_NOTE = "Stock and broth are priced as stock cubes made up with water.";
 
 export function isStockLikeName(canonicalName: string | null | undefined): boolean {
-  return !!canonicalName && STOCK_NAME_RE.test(canonicalName);
+  return !!canonicalName && STOCK_CUBE_MADE_UP_CANONICALS.has(canonicalName.toLowerCase().trim());
 }
 
 /**

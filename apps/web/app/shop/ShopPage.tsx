@@ -166,7 +166,7 @@ export function ShopPage() {
                 ) : (
                   <span className="shop-card__price shop-card__price--pending">no price yet</span>
                 )}
-                {item.cheapest && isStockLikeName(item.canonicalName ?? item.ingredientName) ? (
+                {item.cheapest && isStockLikeName(item.canonicalName) ? (
                   <span className="shop-card__stock">{STOCK_PRICED_LABEL}</span>
                 ) : null}
               </div>

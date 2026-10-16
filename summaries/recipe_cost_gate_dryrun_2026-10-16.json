@@ -1,0 +1,133 @@
+{
+ "generatedAt": "2026-10-16T21:28:49.339Z",
+ "note": "recomputeRecipeCostsGated(write:false) on prod; nothing written",
+ "result": {
+  "write": false,
+  "wrote": false,
+  "recipes": 1410,
+  "publicRecipes": 328,
+  "publicChanged": 0,
+  "anomalies": [],
+  "before": {
+   "tiers": {
+    "full": 251,
+    "partial": 65,
+    "unavailable": 12
+   },
+   "perServing": {
+    "under1_5": 143,
+    "1_5to3": 112,
+    "3plus": 61,
+    "excluded": 12
+   },
+   "weeklyPlan6": [
+    {
+     "name": "Weekly Plan 6",
+     "total": 34.33,
+     "entriesWithoutPrice": 0
+    }
+   ]
+  },
+  "after": {
+   "tiers": {
+    "full": 251,
+    "partial": 65,
+    "unavailable": 12
+   },
+   "perServing": {
+    "under1_5": 143,
+    "1_5to3": 112,
+    "3plus": 61,
+    "excluded": 12
+   },
+   "weeklyPlan6": [
+    {
+     "name": "Weekly Plan 6",
+     "total": 34.33,
+     "entriesWithoutPrice": 0
+    }
+   ]
+  },
+  "avgAdjustedCoveragePct": 64.89473679154531,
+  "adjustedPriceableTotal": 10195,
+  "adjustedTotalSum": 15092,
+  "lineWeightedAdjustedPct": 67.55234561357011,
+  "withBasket": 1390,
+  "priceCacheStamp": 1792105447222
+ },
+ "stockCubeMadeUpInDb": [
+  "beef bouillon",
+  "beef bouillon cubes",
+  "beef broth",
+  "brown stock",
+  "chicken broth",
+  "chicken or fish broth",
+  "chicken stock",
+  "condensed beef broth or consommé",
+  "stock",
+  "vegetable broth",
+  "vegetable or fish broth, hot",
+  "vegetable stock"
+ ],
+ "nonPublic": {
+  "total": 1082,
+  "changed": 983,
+  "noStored": 0,
+  "changedSamples": [
+   {
+    "title": "Avocado Tomato & Mozzarella Panini",
+    "before": 0.86585,
+    "after": 0.547925
+   },
+   {
+    "title": "Easy Cheese Custard",
+    "before": 0.8782500000000001,
+    "after": 0.83025
+   },
+   {
+    "title": "Sweet & Sour Dumpling Stir-fry with Pineapple Soda Sauce & Side Salad",
+    "before": 1.2388541666666666,
+    "after": 0.8532266666666668
+   },
+   {
+    "title": "Avocado Hollandaise and Guacamole",
+    "before": 8.67875,
+    "after": 8.8595
+   },
+   {
+    "title": "Crispy Baked Chicken Breast",
+    "before": 3.757973958333334,
+    "after": 3.7442083333333334
+   },
+   {
+    "title": "Classic Tomato Bruschetta",
+    "before": 0.09749999999999999,
+    "after": 0.105
+   },
+   {
+    "title": "New Way to Make Lasagna",
+    "before": 1.7006447916666665,
+    "after": 1.5057516666666666
+   },
+   {
+    "title": "Homemade Pasta",
+    "before": 0.27525,
+    "after": 0.2735625
+   },
+   {
+    "title": "Beef and Broccoli Stir-Fry",
+    "before": 0.5703750000000001,
+    "after": 0.49744499999999997
+   },
+   {
+    "title": "Beef Empanadas",
+    "before": 0.9610729166666666,
+    "after": 0.6830416666666667
+   }
+  ]
+ },
+ "publicStoredStampCounts": {
+  "1792105447222": 322,
+  "1784587647589": 6
+ }
+}
