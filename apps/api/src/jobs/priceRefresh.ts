@@ -19,7 +19,7 @@
  * Not skipped docs cost Serper credits (2 per call, <= 2 calls per doc); skipped = protected, stock family, quarantined, orphan, and
  * the cloud override list (`price_refresh_overrides`).
  */
-import type { Db, Document } from "mongodb";
+import type { Collection, Db, Document } from "mongodb";
 import { withDb, type DbEnv } from "../db";
 import { sendTelegram, type TelegramEnv } from "../services/telegram";
 import * as G from "../services/priceRefreshGuard";
@@ -48,6 +48,7 @@ const UPDATE_PCT_MAX = 0.7;
 const UPDATE_PCT_MIN = 0.2;
 const FETCH_ERROR_MAX = 0.1;
 const LOCK_MS = 10 * 60 * 1000;
+const STALL_MS = 48 * 3600 * 1000; // an active run older than this => one Telegram stall alert (cloud decision 36)
 
 const RUNS = "price_refresh_runs";
 const OVERRIDES = "price_refresh_overrides";
@@ -56,8 +57,10 @@ type RunStatus = (typeof ACTIVE)[number] | "done" | "aborted";
 
 /**
  * Cloud keep_old / skip decisions (rules 15 / 23 / 25 / 26): the Worker never refreshes these until cloud removes the row from
- * `price_refresh_overrides`. Seeded once (see seedOverrides). `tomato` / `tomatoe` / `white onion` / `sugar` were set by cloud
- * "update"/"set_metric"/manual decisions that the Worker does not replay, so they are also held (flagged for cloud review).
+ * `price_refresh_overrides`. Seeded once (see seedOverrides). `tomatoe` (typo canonical) and `sugar` (protected via the Part 0
+ * inventory list, not detectable by rule) are also held. `tomato` / `white onion` are NOT skipped any more (cloud decision 34, 10-16):
+ * their hand-set values are already correct, so the guard compares against the right current value and hold_rise / hold_low_n protect.
+ * NOTE the seed runs once (marker doc): editing this list does not touch an already-seeded collection — remove rows there directly.
  */
 const SEED_OVERRIDES: Array<{ name: string; decision: "keep_old" | "skip"; note: string }> = [
   { name: "egg", decision: "keep_old", note: "rule 15: only 1 listing, £0.70 each not plausible" },
@@ -74,9 +77,7 @@ const SEED_OVERRIDES: Array<{ name: string; decision: "keep_old" | "skip"; note:
     "fresh basil leaves", "lettuce leaves", "snow peas", "muffins", "sage", "tomato slices", "ginger ale", "cola (regular) or ginger ale", "raspberry jam",
   ].map((name) => ({ name, decision: "keep_old" as const, note: "rule 23: small-impact hold" })),
   { name: "sugar", decision: "skip", note: "protected in the 10-16 review via the Part 0 inventory list (not detectable by rule)" },
-  { name: "tomato", decision: "skip", note: "10-15/16 cloud override (count £0.166 each); Worker does not replay overrides" },
-  { name: "tomatoe", decision: "skip", note: "10-15/16 cloud override (copies tomato); Worker does not replay overrides" },
-  { name: "white onion", decision: "skip", note: "10-16 cloud override (metric £1.25/kg set by hand); Worker does not replay overrides" },
+  { name: "tomatoe", decision: "skip", note: "10-15/16 cloud override (typo canonical, copies tomato); Worker does not replay overrides" },
 ];
 
 // ------------------------------------------------------------------------------------------------
@@ -129,6 +130,9 @@ interface RunDoc extends Document {
   checks?: Record<string, unknown>;
   recipeCost?: Record<string, unknown>;
   priceWrites?: number;
+  /** set (atomically) when the 48h stall alert has been sent for this run */
+  stallAlertSent?: boolean;
+  stallAlertAt?: Date;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -364,10 +368,34 @@ export interface ProcessResult {
   creditsUsed?: number;
 }
 
+/**
+ * The job is deliberately not registered in cronHealthMonitor (idle fires would read as "0 items" all month), so a stuck run has to
+ * announce itself: every "15 * * * *" fire checks the active run and, once it is older than STALL_MS, Telegrams ONCE. The flag is set
+ * with an atomic findOneAndUpdate so two overlapping invocations cannot both alert.
+ */
+async function alertIfStalled(env: PriceRefreshEnv, runs: Collection<RunDoc>, now: Date): Promise<void> {
+  try {
+    const stalled = await runs.findOneAndUpdate(
+      { status: { $in: [...ACTIVE] }, startedAt: { $lt: new Date(now.getTime() - STALL_MS) }, stallAlertSent: { $ne: true } },
+      { $set: { stallAlertSent: true, stallAlertAt: now } },
+      { returnDocument: "after" },
+    );
+    if (!stalled) return;
+    const hours = Math.round((now.getTime() - new Date(stalled.startedAt).getTime()) / 3_600_000);
+    await tell(
+      env,
+      `⏰ *Price refresh STALLED*\nRun \`${stalled.runId}\` (${stalled.trigger}${stalled.dryRun ? ", dry-run" : ""}) is still \`${md(stalled.status)}\` after ${hours}h — ${stalled.cursor}/${stalled.docsTotal} fetched, credits ${stalled.creditsUsed}, errors ${stalled.fetchErrors}.\nNo new run can open until it finishes. Check \`wrangler tail\` and the \`price_refresh_runs\` doc \`${stalled.runId}\`. (One alert per run.)`,
+    );
+  } catch (err) {
+    console.error("[uiu-api] priceRefresh stall check failed:", err instanceof Error ? err.message : String(err));
+  }
+}
+
 export async function processPriceRefresh(env: PriceRefreshEnv): Promise<ProcessResult> {
   return withDb(env, async (db) => {
     const runs = db.collection<RunDoc>(RUNS);
     const now = new Date();
+    await alertIfStalled(env, runs, now);
     // claim: an active run that nobody holds a live lock on
     const run = await runs.findOneAndUpdate(
       { status: { $in: [...ACTIVE] }, $or: [{ lockedUntil: null }, { lockedUntil: { $exists: false } }, { lockedUntil: { $lt: now } }] },
