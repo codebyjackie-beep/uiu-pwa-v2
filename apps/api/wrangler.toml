@@ -120,7 +120,10 @@ RECIPE_DRAFTS_PER_DAY = "3"
 #                            Anything other than exactly "true" makes every run (scheduled or manual) a dry-run that writes
 #                            nothing to canonical_price_cache / recipe_cost — only a price_refresh_runs doc + a Telegram summary.
 #   PRICE_REFRESH_DOCS_PER_FIRE docs fetched per "15 * * * *" invocation (<= 2 Serper subrequests each; 25 -> ~50 of the 10,000 cap).
-PRICE_REFRESH_SCHEDULE = "monthly"
+# TEMPORARILY "weekly" (Jackie 2026-10-16, cloud decision 39): Serper credits were bought 2026-07-04 and EXPIRE 2027-01-04
+# (23,875 left) — monthly would burn only ~2,240 before then. Weekly ~1,120/run x 11 Mondays (10-19 .. 12-28) ~ 12,320.
+# After 2027-01-04 (credits expired / topped up) change this back to "monthly".
+PRICE_REFRESH_SCHEDULE = "weekly"
 PRICE_REFRESH_AUTO_WRITE = "false"
 PRICE_REFRESH_DOCS_PER_FIRE = "25"
 
