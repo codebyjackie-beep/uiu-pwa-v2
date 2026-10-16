@@ -114,10 +114,21 @@ CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXY
 # read by jobs/dailyRecipeDraft.ts (falls back to 20 if unset/invalid). Was 20/day;
 # tune here without a redeploy.
 RECIPE_DRAFTS_PER_DAY = "3"
+# cc_prompt_price_refresh_monthly_cron.md (2026-10-16) — guarded Serper price refresh (jobs/priceRefresh.ts).
+#   PRICE_REFRESH_SCHEDULE   "monthly" (first Monday of the month, default) | "weekly" (every Monday) | "daily".
+#   PRICE_REFRESH_AUTO_WRITE MUST stay "false" until cloud has compared a full manual dry-run with refresh-20261016.
+#                            Anything other than exactly "true" makes every run (scheduled or manual) a dry-run that writes
+#                            nothing to canonical_price_cache / recipe_cost — only a price_refresh_runs doc + a Telegram summary.
+#   PRICE_REFRESH_DOCS_PER_FIRE docs fetched per "15 * * * *" invocation (<= 2 Serper subrequests each; 25 -> ~50 of the 10,000 cap).
+PRICE_REFRESH_SCHEDULE = "monthly"
+PRICE_REFRESH_AUTO_WRITE = "false"
+PRICE_REFRESH_DOCS_PER_FIRE = "25"
 
-# Six independent crons — scheduled() in index.ts branches on event.cron, the
+# Seven independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:
-#   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC).
+#   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC). Since 2026-10-16 it sits behind the anomaly gate
+#   (jobs/recipeCostGate.ts: per-serving > £8 / drop > 50% / tier change on a PUBLIC recipe => nothing is written, Telegram
+#   lists the anomalies) and it also opens the monthly price-refresh run (first Monday when PRICE_REFRESH_SCHEDULE=monthly).
 #
 #   RE-ENABLED (2026-07-25): first populate done manually via
 #   POST /api/admin/recompute-costs?write=true, human-watched, 2026-07-25
@@ -177,5 +188,13 @@ RECIPE_DRAFTS_PER_DAY = "3"
 #   one-shot attempt — later fires skip rows already attempted (success OR error), so a media id
 #   that 403s (e.g. pre-2026-08-31-brand-merge media on the retired @kura.nook account) doesn't
 #   get retried every hour forever.
+#
+#   "15 * * * *"  Price-refresh worker (cc_prompt_price_refresh_monthly_cron.md, 2026-10-16) — hourly, :15 so it never shares
+#   a fire with "0 * * * *" (diagnostics) or "30 * * * *" (insights). No active run in `price_refresh_runs` => one Mongo read and out.
+#   With an active run it fetches <= PRICE_REFRESH_DOCS_PER_FIRE docs from Serper (~23 fires for the ~560 eligible docs), and the
+#   last fire decides with the shared guard (services/priceRefreshGuard.ts) and — only if PRICE_REFRESH_AUTO_WRITE="true" and no
+#   run-level abort (update >70% / <20% of fetched, fetch errors >10%, credits >1,500) — writes the guard `update`s
+#   (refreshBatch = refresh-auto-YYYYMMDD, rollback: scripts/price_refresh_rollback.cjs) and recomputes recipe_cost through the gate.
+#   Not registered in cronHealthMonitor on purpose (idle fires would read as "0 items processed" all month).
 [triggers]
-crons = ["0 3 * * 1", "0 7 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *"]
+crons = ["0 3 * * 1", "0 7 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *", "15 * * * *"]

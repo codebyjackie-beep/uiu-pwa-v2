@@ -15,12 +15,13 @@
  * expensive to run per-request — this is deliberately a batch job that writes
  * a precomputed cache, not something the read path (routes/recipes.ts) invokes
  * on the fly.
+ *
+ * 2026-10-16 (cc_prompt_price_refresh_monthly_cron.md Part 3): the computation + write now live in recipeCostGate.ts, which
+ * refuses to write ANYTHING when a public recipe trips the anomaly gate (per-serving > £8, drop > 50%, tier change). Before this
+ * the weekly cron wrote unreviewed changes straight to production. On a trip the cron sends the anomalies to Telegram.
  */
-import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { CanonicalIngredient, CanonicalPriceCacheEntry, Recipe } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
-import { buildAliasIndex, resolve } from "../services/ingredientResolver";
-import { costRecipe } from "../services/recipeCost";
+import { recomputeRecipeCostsGated, type GateAnomaly } from "./recipeCostGate";
 
 export interface PrecomputeSummary {
   dryRun: boolean;
@@ -47,6 +48,10 @@ export interface PrecomputeSummary {
   lineWeightedAdjustedPct: number;
   withBasket: number;
   priceCacheStamp: number;
+  /** true when recipe_cost was actually written (false on dryRun, or when the anomaly gate tripped). */
+  wrote: boolean;
+  /** Public recipes that tripped the gate. Non-empty => nothing was written. */
+  gateAnomalies: GateAnomaly[];
 }
 
 /**
@@ -56,90 +61,18 @@ export interface PrecomputeSummary {
  */
 export async function precomputeRecipeCosts(env: DbEnv, dryRun = false): Promise<PrecomputeSummary> {
   return withDb(env, async (db) => {
-    const ingredientsCol = db.collection<Document>("canonical_ingredients");
-    const priceCol = db.collection<Document>("canonical_price_cache");
-    const recipesCol = db.collection<Document>("recipes");
-    const recipeCostCol = db.collection<Document>("recipe_cost");
-
-    if (!dryRun) {
-      await recipeCostCol.createIndex({ recipeId: 1 }, { unique: true });
-    }
-
-    // Deliberately unfiltered (all 741, not just non-quarantine) — the alias
-    // index below filters quarantine for matching, but ingredientsMap needs
-    // every doc so a resolved canonical_name (incl. non-quarantine docs that
-    // happen to match a quarantined one's alias) always has a doc to join to.
-    const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
-    const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
-
-    const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
-    const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
-
-    const index = await buildAliasIndex(ingredientsCol);
-    const resolveFn = (rawName: string) => resolve(rawName, index);
-
-    const quarantinedNames = new Set(
-      allIngredientDocs
-        .filter((d) => d.quarantine === true)
-        .map((d) => d.canonical_name.toLowerCase().trim()),
-    );
-
-    // NOTE (2026-07-25): the old script read `d.updatedAt` for this stamp, but
-    // canonical_price_cache docs have no top-level `updatedAt` — the real
-    // timestamp field (per the 2026-07-24 field census) is nested
-    // `metadata.fetched_at`. The old script's stamp was silently always 0.
-    // Fixed here rather than ported verbatim, since this wrapper is new
-    // Workers-specific code (not one of the four parity-gated engine files).
-    const priceCacheStamp = allPriceDocs.reduce((max, d) => {
-      const fetchedAt = d.metadata?.fetched_at;
-      const t = fetchedAt ? new Date(fetchedAt).getTime() : 0;
-      return t > max ? t : max;
-    }, 0);
-
-    const allRecipes = (await recipesCol.find({}).toArray()) as unknown as Array<Recipe & { _id: ObjectIdType }>;
-
-    let processed = 0;
-    let coverageSum = 0;
-    let withAdjustedDenom = 0;
-    let withBasket = 0;
-    // Canonical line-weighted metric: summed across every recipe (not gated
-    // behind adjustedTotal > 0), matching tools/parity_replay.js's at/ap.
-    let adjustedPriceableTotal = 0;
-    let adjustedTotalSum = 0;
-    const computedAt = new Date().toISOString();
-
-    for (const recipe of allRecipes) {
-      const cost = costRecipe(recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-
-      if (!dryRun) {
-        await recipeCostCol.updateOne(
-          { recipeId: recipe._id },
-          { $set: { recipeId: recipe._id, ...cost, computedAt, priceCacheStamp } },
-          { upsert: true },
-        );
-      }
-
-      processed += 1;
-      adjustedPriceableTotal += cost.adjustedPriceable;
-      adjustedTotalSum += cost.adjustedTotal;
-      // Match the old validate_recipe_cost.js methodology: only average over
-      // recipes with a non-zero adjusted denominator.
-      if (cost.adjustedTotal > 0) {
-        coverageSum += cost.adjustedCoveragePct;
-        withAdjustedDenom += 1;
-      }
-      if (cost.basket > 0) withBasket += 1;
-    }
-
+    const r = await recomputeRecipeCostsGated(db, { write: !dryRun });
     return {
       dryRun,
-      processed,
-      avgAdjustedCoveragePct: withAdjustedDenom ? coverageSum / withAdjustedDenom : 0,
-      adjustedPriceableTotal,
-      adjustedTotalSum,
-      lineWeightedAdjustedPct: adjustedTotalSum ? (adjustedPriceableTotal / adjustedTotalSum) * 100 : 0,
-      withBasket,
-      priceCacheStamp,
+      processed: r.recipes,
+      avgAdjustedCoveragePct: r.avgAdjustedCoveragePct,
+      adjustedPriceableTotal: r.adjustedPriceableTotal,
+      adjustedTotalSum: r.adjustedTotalSum,
+      lineWeightedAdjustedPct: r.lineWeightedAdjustedPct,
+      withBasket: r.withBasket,
+      priceCacheStamp: r.priceCacheStamp,
+      wrote: r.wrote,
+      gateAnomalies: r.anomalies,
     };
   });
 }

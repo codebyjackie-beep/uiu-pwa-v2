@@ -17,6 +17,7 @@ import { recipeImportRouter } from "./routes/recipeImport";
 import { fridgeRecipeGenRouter } from "./routes/fridgeRecipeGen";
 import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts, type PrecomputeSummary } from "./jobs/precomputeRecipeCosts";
+import { anomalyAlertText } from "./jobs/recipeCostGate";
 import { recipeCostStats, type RecipeCostStats } from "./jobs/recipeCostStats";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
 import { runDiagnostics, type DiagnosticsRunResult } from "./jobs/pwaDiagnostics";
@@ -31,6 +32,7 @@ import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { usersRouter } from "./routes/users";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
+import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -103,6 +105,13 @@ type Bindings = {
   // cc_prompt_milestone1_followup_fixes.md gap 1 — same public value as apps/web's
   // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, used by src/clerkAuth.ts to find Clerk's JWKS endpoint.
   CLERK_PUBLISHABLE_KEY: string;
+  // cc_prompt_price_refresh_monthly_cron.md — guarded Serper price refresh (jobs/priceRefresh.ts).
+  //   PRICE_REFRESH_SCHEDULE — "monthly" (default) | "weekly" | "daily"; when a scheduled run is opened.
+  //   PRICE_REFRESH_AUTO_WRITE — must be exactly "true" for any run to write; "false" (default) = every run is a dry-run.
+  //   PRICE_REFRESH_DOCS_PER_FIRE — docs fetched per "15 * * * *" invocation (default 25).
+  PRICE_REFRESH_SCHEDULE?: string;
+  PRICE_REFRESH_AUTO_WRITE?: string;
+  PRICE_REFRESH_DOCS_PER_FIRE?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -197,6 +206,69 @@ app.post("/api/admin/recompute-costs", async (c) => {
   } catch (err) {
     console.error("[uiu-api] recompute-costs error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to compute recipe costs" } };
+    return c.json(body, 502);
+  }
+});
+
+// Guarded price refresh (cc_prompt_price_refresh_monthly_cron.md Part 4). Opens a run and processes the first batch.
+//   ?dryRun=true|false  — default TRUE. dryRun=false is refused unless PRICE_REFRESH_AUTO_WRITE="true" (the one kill-switch).
+//   ?names=a,b,c / ?limit=N  — testing only, dryRun=true only: restrict the run to those eligible canonicals / first N eligible.
+//   ?notify=false  — suppress the Telegram summary (local testing).
+// The remaining batches are fetched by the "15 * * * *" cron (<= 25 docs per fire); POST /api/admin/price-refresh/step
+// processes one more batch by hand; GET /api/admin/price-refresh[?runId=&results=true] reads a run doc.
+app.post("/api/admin/price-refresh", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  const dryRun = c.req.query("dryRun") !== "false";
+  const names = (c.req.query("names") ?? "").split(",").map((n) => n.trim()).filter(Boolean);
+  const limit = Number.parseInt(c.req.query("limit") ?? "", 10);
+  const limited = names.length > 0 || Number.isFinite(limit);
+  if (limited && !dryRun) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "names/limit are only allowed with dryRun=true" } };
+    return c.json(body, 400);
+  }
+  const env = c.req.query("notify") === "false" ? { ...c.env, TELEGRAM_BOT_TOKEN: "", TELEGRAM_CHAT_ID: "" } : c.env;
+  try {
+    const r = await openManualRun(env, { dryRun, names: names.length ? names : undefined, limit: Number.isFinite(limit) ? limit : undefined });
+    if (!r.open.opened) {
+      const code = r.open.reason === "active_run" ? 409 : r.open.reason === "write_disabled" ? 403 : 422;
+      const body: ApiResponse<never> = { ok: false, error: { code: r.open.reason, message: JSON.stringify(r.open) } };
+      return c.json(body, code);
+    }
+    return c.json({ ok: true, data: r });
+  } catch (err) {
+    console.error("[uiu-api] price-refresh error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "price_refresh_error", message: err instanceof Error ? err.message : String(err) } };
+    return c.json(body, 502);
+  }
+});
+app.post("/api/admin/price-refresh/step", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    return c.json({ ok: true, data: await processPriceRefresh(c.env) });
+  } catch (err) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "price_refresh_error", message: err instanceof Error ? err.message : String(err) } };
+    return c.json(body, 502);
+  }
+});
+app.get("/api/admin/price-refresh", async (c) => {
+  const token = c.req.header("X-Admin-Token");
+  if (!token || token !== c.env.ADMIN_TOKEN) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+    return c.json(body, 401);
+  }
+  try {
+    const run = await getRun(c.env, c.req.query("runId") ?? null, c.req.query("results") === "true");
+    return c.json({ ok: true, data: run });
+  } catch (err) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: err instanceof Error ? err.message : String(err) } };
     return c.json(body, 502);
   }
 });
@@ -488,6 +560,23 @@ export default {
       );
       return;
     }
+    if (event.cron === "15 * * * *") {
+      // cc_prompt_price_refresh_monthly_cron.md — hourly price-refresh worker. No active run => one Mongo read and out. With an active
+      // run it fetches <= PRICE_REFRESH_DOCS_PER_FIRE (25) docs; the last fire decides (+ writes only if PRICE_REFRESH_AUTO_WRITE="true").
+      // Deliberately NOT in cronHealthMonitor's MonitoredJobName: the idle fires would look like "ran with 0 items" all month.
+      // The daily schedule needs a kick-off on non-Mondays too, so the 03:xx fire tries to open the day's run (idempotent per slot).
+      ctx.waitUntil(
+        (async () => {
+          if (env.PRICE_REFRESH_SCHEDULE === "daily" && new Date().getUTCHours() === 3) {
+            console.log("[uiu-api] cron priceRefresh daily kick-off:", JSON.stringify(await maybeStartScheduledRun(env)));
+          }
+          console.log("[uiu-api] cron priceRefresh:", JSON.stringify(await processPriceRefresh(env)));
+        })().catch((err) => {
+          console.error("[uiu-api] cron priceRefresh failed:", err instanceof Error ? err.message : String(err));
+        }),
+      );
+      return;
+    }
     if (event.cron === "0 7 * * *") {
       ctx.waitUntil(
         dailyRecipeDraft(env, false)
@@ -512,14 +601,23 @@ export default {
       );
       return;
     }
+    // "0 3 * * 1": (1) the monthly price-refresh kick-off (first Monday for PRICE_REFRESH_SCHEDULE=monthly; no-op otherwise),
+    // (2) the weekly recipe_cost precompute, now behind the anomaly gate (nothing is written if a public recipe trips it).
     ctx.waitUntil(
-      precomputeRecipeCosts(env, false)
-        .then((summary) => {
-          console.log("[uiu-api] cron precompute recipe_cost:", JSON.stringify(summary));
-        })
-        .catch((err) => {
-          console.error("[uiu-api] cron precompute failed:", err instanceof Error ? err.message : String(err));
-        }),
+      (async () => {
+        try {
+          console.log("[uiu-api] cron priceRefresh kick-off:", JSON.stringify(await maybeStartScheduledRun(env)));
+        } catch (err) {
+          console.error("[uiu-api] cron priceRefresh kick-off failed:", err instanceof Error ? err.message : String(err));
+        }
+        const summary = await precomputeRecipeCosts(env, false);
+        console.log("[uiu-api] cron precompute recipe_cost:", JSON.stringify({ ...summary, gateAnomalies: summary.gateAnomalies.length }));
+        if (summary.gateAnomalies.length) {
+          await sendTelegram(env, anomalyAlertText("Weekly recipe_cost precompute NOT written", summary.gateAnomalies)).catch(() => {});
+        }
+      })().catch((err) => {
+        console.error("[uiu-api] cron precompute failed:", err instanceof Error ? err.message : String(err));
+      }),
     );
   },
 };

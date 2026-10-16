@@ -1,4 +1,7 @@
-// Roll back a price_refresh.cjs batch.   node scripts/price_refresh_rollback.cjs <batch> [--verify <dry-run JSON>] [--write]
+// Roll back a price_refresh.cjs batch (refresh-YYYYMMDD) or a Worker auto-refresh batch (refresh-auto-YYYYMMDD[-n]).
+//   node scripts/price_refresh_rollback.cjs <batch> [--verify <dry-run JSON> | --verify-run <runId>] [--write]
+// --verify-run reads results[].cur from the `price_refresh_runs` doc (the Worker stores the pre-write snapshot there); the marker
+// fields (refreshBatch / refreshPrev / refreshAt) are identical for both producers, so the restore logic is shared.
 // Dry run by default: computes, per doc, what the restore would produce from `refreshPrev` and (with --verify)
 // proves it equals the `current` snapshot recorded in the reviewed dry-run JSON. Nothing is written without --write.
 // Restores on canonical_price_cache: per_unit_metric / per_unit_count / cheapest / n_supermarkets / listings /
@@ -15,6 +18,8 @@ const batch = argv[0];
 const WRITE = argv.includes("--write");
 const vi = argv.indexOf("--verify");
 const verifyPath = vi >= 0 ? argv[vi + 1] : null;
+const vri = argv.indexOf("--verify-run");
+const verifyRunId = vri >= 0 ? argv[vri + 1] : null;
 if (!batch || batch.startsWith("--")) {
   console.error("usage: node scripts/price_refresh_rollback.cjs <batch> [--verify <dry-run JSON>] [--write]");
   process.exit(1);
@@ -63,10 +68,16 @@ function snapshotAfter(d, plan) {
 
 (async () => {
   const env = loadDevVars();
-  const verify = verifyPath ? new Map(JSON.parse(fs.readFileSync(path.resolve(verifyPath), "utf8")).docs.map((x) => [x.canonical_name, x.current])) : null;
+  let verify = verifyPath ? new Map(JSON.parse(fs.readFileSync(path.resolve(verifyPath), "utf8")).docs.map((x) => [x.canonical_name, x.current])) : null;
   const client = new MongoClient(env.MONGODB_URI, { serverSelectionTimeoutMS: 20000 });
   await client.connect();
   try {
+    if (verifyRunId) {
+      const run = await client.db(env.MONGODB_DB).collection("price_refresh_runs").findOne({ runId: verifyRunId });
+      if (!run) throw new Error(`ABORT: run ${verifyRunId} not found in price_refresh_runs`);
+      if (run.batch !== batch) throw new Error(`ABORT: run ${verifyRunId} wrote batch ${run.batch}, not ${batch}`);
+      verify = new Map(run.results.filter((x) => x.written === true && x.cur).map((x) => [x.name, x.cur]));
+    }
     const col = client.db(env.MONGODB_DB).collection("canonical_price_cache");
     const docs = await col.find({ refreshBatch: batch }).toArray();
     console.log(`batch ${batch} (${WRITE ? "WRITE" : "dry run"}): ${docs.length} docs carry the marker`);
@@ -86,7 +97,7 @@ function snapshotAfter(d, plan) {
           s.confidence === cur.confidence && s.fetched_at === cur.fetched_at;
         if (eq) ok++; else bad.push({ canonical_name: d.canonical_name, restored: s, dryRunCurrent: cur });
       }
-      console.log(JSON.stringify({ verifiedAgainst: verifyPath, docs: docs.length, restoredEqualsPreRefresh: ok, mismatches: bad.length }, null, 1));
+      console.log(JSON.stringify({ verifiedAgainst: verifyPath || (verifyRunId ? "run:" + verifyRunId : null), docs: docs.length, restoredEqualsPreRefresh: ok, mismatches: bad.length }, null, 1));
       if (bad.length) console.log(JSON.stringify(bad.slice(0, 10), null, 1));
     }
     const changed = plans.filter(({ d }) => d.refreshBatch === batch).length;
