@@ -12,7 +12,7 @@ const API_ROOT = path.resolve(__dirname, "..");
 const SUMMARIES = path.resolve(API_ROOT, "../../summaries");
 const FULL = path.join(SUMMARIES, "price_refresh_full_dryrun_2026-10-13.json");
 const FINAL = path.join(SUMMARIES, "price_refresh_final_dryrun_2026-10-16.json");
-const OUT = path.join(SUMMARIES, "price_refresh_parity_2026-10-16.json");
+const OUT = process.env.PARITY_OUT ? path.resolve(process.env.PARITY_OUT) : path.join(SUMMARIES, "price_refresh_parity_2026-10-16.json");
 
 function loadDevVars() {
   const env = {};
@@ -139,7 +139,7 @@ const j = (x) => JSON.stringify(x);
 
   const total = fin.docs.length;
   const identical = tally.normalOk + tally.stockOk + tally.protectedOk;
-  const report = { generatedAt: new Date().toISOString(), total, actionCountsExpected: byAction, tally, identical, mismatchCount: mismatches.length, mismatches: mismatches.slice(0, 60), protectedNotes, newlyProtectedSinceReview: newlyProtected };
+  const report = { generatedAt: new Date().toISOString(), total, actionCountsExpected: byAction, tally, identical, mismatchCount: mismatches.length, mismatches: process.env.PARITY_OUT ? mismatches : mismatches.slice(0, 60), protectedNotes, newlyProtectedSinceReview: newlyProtected };
   fs.writeFileSync(OUT, JSON.stringify(report, null, 1));
   console.log(JSON.stringify({ total, ...tally, identical, mismatchCount: mismatches.length, protectedNotes: protectedNotes.length, newlyProtectedSinceReview: newlyProtected.length }, null, 1));
   if (mismatches.length) { console.log(JSON.stringify(mismatches.slice(0, 15), null, 1)); process.exit(3); }

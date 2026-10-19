@@ -92,4 +92,21 @@ const tescoTot = tot.find((s) => s.storeKey === "tesco");
 eq(tescoTot?.total, 2.32); // Tesco only lists an unsized one -> falls back to it
 eq(tot.find((s) => s.storeKey === "sainsburys")?.total, 2.64);
 
+// --- B2 narrowing (cloud 10-19 22:05): substitute words only for dairy / meat / oil canonicals, plant qualifier exempts
+const kept = (canonical: string, title: string): boolean => buildPriceOptions(canonical, [L("Tesco", title, 2, 500)]).options.length === 1;
+const dropReason = (canonical: string, title: string): string | undefined => buildPriceOptions(canonical, [L("Tesco", title, 2, 500)]).droppedProduct[0]?.reason;
+eq(kept("butter", "Flora Butter Alternative 500g"), false); // 1 butter ✗ Butter Alternative
+eq(dropReason("butter", "Flora Butter Alternative 500g"), "substitute:alternative");
+eq(kept("olive oil", "Olivio Blended Olive and Vegetable Oil 500ml"), false); // 2 olive oil ✗ Blended
+eq(dropReason("olive oil", "Olivio Blended Olive and Vegetable Oil 500ml"), "substitute:blend");
+eq(kept("soy milk", "Alpro Plant-Based Soya Milk 500ml"), true); // 3 soy milk ✓ plant-based
+eq(kept("coconut milk", "Mighty Vegan Coconut Milk 500ml"), true); // 4 coconut milk ✓ vegan
+eq(kept("garam masala", "Schwartz Garam Masala Spice Blend 500g"), true); // 5 spice blend
+eq(kept("mixed salad greens", "Tesco Mixed Salad Blend 500g"), true); // 6 salad blend
+eq(kept("cucumber", "Tesco Vegan Cucumber 500g"), true); // 7 cucumber ✓ vegan
+eq(kept("tofu", "Cauldron Plant-Based Tofu 500g"), true); // 8 tofu ✓ plant-based
+// in scope + non-exempt canonical still drops the other substitute words
+eq(kept("cheddar cheese", "Violife Dairy-Free Cheddar Style 500g"), false);
+eq(kept("chicken breast", "Quorn Vegan Chicken Breast 500g"), false);
+
 console.log("all shopping-list price tests passed");

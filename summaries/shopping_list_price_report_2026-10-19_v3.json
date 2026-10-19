@@ -1,0 +1,2047 @@
+{
+  "generatedAt": "2026-10-19T21:02:33.313Z",
+  "mode": "read-only; 0 Serper credits",
+  "note": "Shopping-list canonicalName comes from the stored field, else from the reviewed backfill dry-run (backfill not written yet).",
+  "currentLines": [
+    {
+      "userId": "user_3JKvGoTTM94f8ZDdlWblF8Dk4ve",
+      "lines": [
+        {
+          "text": "alpro soya milk",
+          "checked": false,
+          "canonicalName": null,
+          "canonicalFrom": "backfill dry-run",
+          "prices": null
+        }
+      ],
+      "storeTotals": []
+    },
+    {
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "lines": [
+        {
+          "text": "King Prawns, peeled and deveined",
+          "checked": false,
+          "canonicalName": "king prawns, peeled and deveined",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Frozen Large Raw Peeled King Prawns ASC 180g",
+                "price": 2.64,
+                "packLabel": "180g",
+                "perUnit": {
+                  "value": 14.67,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Large King Prawns ASC 150g",
+                "price": 2.99,
+                "packLabel": "150g",
+                "perUnit": {
+                  "value": 19.93,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Iceland",
+                "storeKey": "iceland",
+                "title": "Iceland Raw King Prawns 225g",
+                "price": 4.5,
+                "packLabel": "225g",
+                "perUnit": {
+                  "value": 20,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Large King Prawns ASC Taste the Difference 150g",
+                "price": 3.95,
+                "packLabel": "150g",
+                "perUnit": {
+                  "value": 26.33,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Blue Earth Foods Cooked & Peeled King Prawns (150g)",
+                "price": 5.7,
+                "packLabel": "150g",
+                "perUnit": {
+                  "value": 38,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "The Real Seafood Co. King Juicy Cooked Peeled Prawns",
+                "price": 2.32,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Raw Peeled King Prawns",
+                "price": 3.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons King Prawns",
+                "price": 3.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Shell On King Prawns",
+                "price": 3.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Tiger Delight Jumbo Cooked Peeled King Prawns",
+                "price": 4,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose & Partners Raw Jumbo King Prawns",
+                "price": 4.2,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Raw Whole King Prawns",
+                "price": 4.25,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Tiger Delight Large Raw Peeled King Prawns",
+                "price": 4.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Iceland",
+                "storeKey": "iceland",
+                "title": "Iceland Cooked & Peeled Large King Prawns",
+                "price": 4.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Essential Waitrose & Partners Raw King Prawns",
+                "price": 4.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose & Partners Essential Cooked King Prawns",
+                "price": 4.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "King Prawns, Extra Large - Waitrose",
+                "price": 4.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Iceland",
+                "storeKey": "iceland",
+                "title": "Iceland Peeled Raw Large King Prawns",
+                "price": 5.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Frozen Cooked & Peeled Jumbo King Prawns ASC Taste the Difference",
+                "price": 5.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose & Partners King Prawns Extra Large",
+                "price": 6.95,
+                "packLabel": null,
+                "perUnit": null
+              }
+            ],
+            "cheapestPack": {
+              "store": "Sainsbury's",
+              "storeKey": "sainsburys",
+              "title": "Sainsbury's Frozen Large Raw Peeled King Prawns ASC 180g",
+              "price": 2.64,
+              "packLabel": "180g",
+              "perUnit": {
+                "value": 14.67,
+                "unit": "kg"
+              }
+            },
+            "bestValue": {
+              "store": "Sainsbury's",
+              "storeKey": "sainsburys",
+              "title": "Sainsbury's Frozen Large Raw Peeled King Prawns ASC 180g",
+              "price": 2.64,
+              "packLabel": "180g",
+              "perUnit": {
+                "value": 14.67,
+                "unit": "kg"
+              }
+            },
+            "stamp": "2026-07-20T22:44:12.193Z"
+          }
+        },
+        {
+          "text": "Arborio Rice",
+          "checked": false,
+          "canonicalName": "arborio rice",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Risotto Rice 1Kg",
+                "price": 3.3,
+                "packLabel": "1kg",
+                "perUnit": {
+                  "value": 3.3,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Arborio Risotto Rice",
+                "price": 2.25,
+                "packLabel": "500g",
+                "perUnit": {
+                  "value": 4.5,
+                  "unit": "kg"
+                },
+                "packAssumed": true
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Arborio Risotto Rice",
+                "price": 2.65,
+                "packLabel": "500g",
+                "perUnit": {
+                  "value": 5.3,
+                  "unit": "kg"
+                },
+                "packAssumed": true
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Riso Gallo Arborio Risotto Rice",
+                "price": 3,
+                "packLabel": "500g",
+                "perUnit": {
+                  "value": 6,
+                  "unit": "kg"
+                },
+                "packAssumed": true
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Duchy Organic Arborio Risotto Rice",
+                "price": 3.75,
+                "packLabel": "500g",
+                "perUnit": {
+                  "value": 7.5,
+                  "unit": "kg"
+                },
+                "packAssumed": true
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Daylesford Organic Arborio Rice",
+                "price": 5.55,
+                "packLabel": "500g",
+                "perUnit": {
+                  "value": 11.1,
+                  "unit": "kg"
+                },
+                "packAssumed": true
+              }
+            ],
+            "cheapestPack": {
+              "store": "Sainsbury's",
+              "storeKey": "sainsburys",
+              "title": "Sainsbury's Arborio Risotto Rice",
+              "price": 2.25,
+              "packLabel": "500g",
+              "perUnit": {
+                "value": 4.5,
+                "unit": "kg"
+              },
+              "packAssumed": true
+            },
+            "bestValue": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Risotto Rice 1Kg",
+              "price": 3.3,
+              "packLabel": "1kg",
+              "perUnit": {
+                "value": 3.3,
+                "unit": "kg"
+              }
+            },
+            "stamp": "2026-07-20T22:34:14.015Z"
+          }
+        },
+        {
+          "text": "Vegetable or Fish Broth, hot",
+          "checked": false,
+          "canonicalName": "vegetable or fish broth, hot",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Iceland",
+                "storeKey": "iceland",
+                "title": "Knorr 4 Vegetable Stock Pot",
+                "price": 1.9,
+                "packLabel": "Stock cube / pot",
+                "perUnit": null,
+                "stockLabel": true
+              }
+            ],
+            "cheapestPack": {
+              "store": "Iceland",
+              "storeKey": "iceland",
+              "title": "Knorr 4 Vegetable Stock Pot",
+              "price": 1.9,
+              "packLabel": "Stock cube / pot",
+              "perUnit": null,
+              "stockLabel": true
+            },
+            "bestValue": null,
+            "stamp": "2026-10-15T23:04:07.222Z"
+          }
+        },
+        {
+          "text": "Dry White Wine (e.g., Pinot Grigio)",
+          "checked": false,
+          "canonicalName": "dry white wine (e.g., pinot grigio)",
+          "canonicalFrom": "stored field",
+          "prices": null
+        },
+        {
+          "text": "Onion, finely diced",
+          "checked": false,
+          "canonicalName": "onion",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Brown Onions 1Kg",
+                "price": 0.95,
+                "packLabel": "1kg",
+                "perUnit": {
+                  "value": 0.95,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Red Onions Pack 1Kg",
+                "price": 0.95,
+                "packLabel": "1kg",
+                "perUnit": {
+                  "value": 0.95,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Iceland",
+                "storeKey": "iceland",
+                "title": "Iceland Onions 1kg",
+                "price": 1.25,
+                "packLabel": "1kg",
+                "perUnit": {
+                  "value": 1.25,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Brown Onions 3 Pack",
+                "price": 1,
+                "packLabel": "3 pack",
+                "perUnit": {
+                  "value": 0.33,
+                  "unit": "each"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Red Onions 3Pack Minimum",
+                "price": 1,
+                "packLabel": "3 pack",
+                "perUnit": {
+                  "value": 0.33,
+                  "unit": "each"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Finest Extra Large Brown Onions 2 Pack",
+                "price": 1.6,
+                "packLabel": "2 pack",
+                "perUnit": {
+                  "value": 0.8,
+                  "unit": "each"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Stamford Street Co. Onions",
+                "price": 0.85,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Onions Loose",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Onions",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Red Onions",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Red Onions x3",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "ASDA Sweet & Crunchy Red Onions",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "M&S Brown Cooking Onions",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Market St Red Onions",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "ASDA Crunchy & Fragrant Brown Onions",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Brown Onions x3",
+                "price": 0.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Ocado Brown Onions",
+                "price": 1,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose & Partners Onions",
+                "price": 1.3,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "ASDA Organic Organic Red Onions",
+                "price": 1.31,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Large Onions",
+                "price": 1.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Duchy Organic Red Onions",
+                "price": 1.6,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Picard Pearl Onions",
+                "price": 3.6,
+                "packLabel": null,
+                "perUnit": null
+              }
+            ],
+            "cheapestPack": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Brown Onions 1Kg",
+              "price": 0.95,
+              "packLabel": "1kg",
+              "perUnit": {
+                "value": 0.95,
+                "unit": "kg"
+              }
+            },
+            "bestValue": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Brown Onions 1Kg",
+              "price": 0.95,
+              "packLabel": "1kg",
+              "perUnit": {
+                "value": 0.95,
+                "unit": "kg"
+              }
+            },
+            "stamp": "2026-10-15T23:04:07.222Z"
+          }
+        },
+        {
+          "text": "Parmesan Cheese, freshly grated",
+          "checked": false,
+          "canonicalName": "parmesan cheese",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Parmigiano Reggiano Cheese 200 G",
+                "price": 4,
+                "packLabel": "200g",
+                "perUnit": {
+                  "value": 20,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Grated Parmigiano Reggiano Dop Cheese 100g",
+                "price": 2.4,
+                "packLabel": "100g",
+                "perUnit": {
+                  "value": 24,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Fresh Grated Parmigiano Cheese",
+                "price": 2.25,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Shaved Parmesan Cheese",
+                "price": 3,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Grated Parmesan Cheese",
+                "price": 3.1,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "M&S Grated Parmesan",
+                "price": 3.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Parmigiano Reggiano Cheese",
+                "price": 4.1,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Parmigiano Reggiano Dop Aged Italian Cheese Strength 5",
+                "price": 4.25,
+                "packLabel": null,
+                "perUnit": null
+              }
+            ],
+            "cheapestPack": {
+              "store": "Waitrose",
+              "storeKey": "waitrose",
+              "title": "Waitrose Grated Parmigiano Reggiano Dop Cheese 100g",
+              "price": 2.4,
+              "packLabel": "100g",
+              "perUnit": {
+                "value": 24,
+                "unit": "kg"
+              }
+            },
+            "bestValue": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Parmigiano Reggiano Cheese 200 G",
+              "price": 4,
+              "packLabel": "200g",
+              "perUnit": {
+                "value": 20,
+                "unit": "kg"
+              }
+            },
+            "stamp": "2026-10-15T23:04:07.222Z"
+          }
+        },
+        {
+          "text": "Unsalted Butter",
+          "checked": false,
+          "canonicalName": "unsalted butter",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco British Unsalted Butter 250G",
+                "price": 1.99,
+                "packLabel": "250g",
+                "perUnit": {
+                  "value": 7.96,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's British Butter Unsalted 250g",
+                "price": 1.99,
+                "packLabel": "250g",
+                "perUnit": {
+                  "value": 7.96,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Iceland",
+                "storeKey": "iceland",
+                "title": "Iceland British Unsalted Butter 250g",
+                "price": 2,
+                "packLabel": "250g",
+                "perUnit": {
+                  "value": 8,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "M&S British Unsalted Butter 250g",
+                "price": 2,
+                "packLabel": "250g",
+                "perUnit": {
+                  "value": 8,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "Lurpak Unsalted Butter 200g",
+                "price": 1.85,
+                "packLabel": "200g",
+                "perUnit": {
+                  "value": 9.25,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "All Things Butter Organic British Unsalted Butter 200g",
+                "price": 2.25,
+                "packLabel": "200g",
+                "perUnit": {
+                  "value": 11.25,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Organic Unsalted Butter 250G",
+                "price": 3.2,
+                "packLabel": "250g",
+                "perUnit": {
+                  "value": 12.8,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's British Butter Unsalted SO Organic 250g",
+                "price": 3.2,
+                "packLabel": "250g",
+                "perUnit": {
+                  "value": 12.8,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Anchor Unsalted Butter 200g",
+                "price": 2.6,
+                "packLabel": "200g",
+                "perUnit": {
+                  "value": 13,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "All Things Butter Unsalted Butter 200g",
+                "price": 2.85,
+                "packLabel": "200g",
+                "perUnit": {
+                  "value": 14.25,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Country Life Unsalted Butter",
+                "price": 1.65,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "ASDA British Unsalted Butter",
+                "price": 1.98,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Ltd essential Waitrose Unsalted Butter",
+                "price": 2,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Ocado British Unsalted Butter",
+                "price": 2,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "President French Unsalted Block Butter",
+                "price": 2.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "The Estate Unsalted Cultured Butter",
+                "price": 3.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Calon Wen Organic Unsalted Butter",
+                "price": 3.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Isigny Sainte-Mere Unsalted Butter",
+                "price": 3.9,
+                "packLabel": null,
+                "perUnit": null
+              }
+            ],
+            "cheapestPack": {
+              "store": "Asda",
+              "storeKey": "asda",
+              "title": "Lurpak Unsalted Butter 200g",
+              "price": 1.85,
+              "packLabel": "200g",
+              "perUnit": {
+                "value": 9.25,
+                "unit": "kg"
+              }
+            },
+            "bestValue": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco British Unsalted Butter 250G",
+              "price": 1.99,
+              "packLabel": "250g",
+              "perUnit": {
+                "value": 7.96,
+                "unit": "kg"
+              }
+            },
+            "stamp": "2026-07-20T22:44:38.982Z"
+          }
+        },
+        {
+          "text": "Olive Oil",
+          "checked": false,
+          "canonicalName": "olive oil",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Olive Oil 1L",
+                "price": 7.25,
+                "packLabel": "1L",
+                "perUnit": {
+                  "value": 7.25,
+                  "unit": "L"
+                }
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Napolina Olive Oil 500ml",
+                "price": 4.5,
+                "packLabel": "500ml",
+                "perUnit": {
+                  "value": 9,
+                  "unit": "L"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Olive Oil 500Ml",
+                "price": 5.75,
+                "packLabel": "500ml",
+                "perUnit": {
+                  "value": 11.5,
+                  "unit": "L"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Olive Oil 250Ml",
+                "price": 3.1,
+                "packLabel": "250ml",
+                "perUnit": {
+                  "value": 12.4,
+                  "unit": "L"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Extra Virgin Olive Oil 500Ml",
+                "price": 6.25,
+                "packLabel": "500ml",
+                "perUnit": {
+                  "value": 12.5,
+                  "unit": "L"
+                }
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Terra Delyssa Extra Virgin Olive Oil 750ml",
+                "price": 9.75,
+                "packLabel": "750ml",
+                "perUnit": {
+                  "value": 13,
+                  "unit": "L"
+                }
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "Napolina Extra Virgin Olive Oil",
+                "price": 2.73,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Olive Oil",
+                "price": 3.1,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "La Espanola Extra Virgin Olive Oil",
+                "price": 5.05,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Karyatis Greek Extra Virgin Olive Oil",
+                "price": 6,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Odysea Greek Extra Virgin Olive Oil",
+                "price": 6.95,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "ASDA Olive Oil",
+                "price": 7,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Morrisons",
+                "storeKey": "morrisons",
+                "title": "Morrisons Extra Virgin Olive Oil",
+                "price": 7.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Extra Virgin Olive Oil 1Ltr",
+                "price": 7.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose extra virgin olive oil",
+                "price": 7.85,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Belazu Crete Gold Extra Virgin Olive Oil",
+                "price": 10,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "La Espanola Olive Oil",
+                "price": 10.8,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Terra Delyssa Extra Virgin Olive Oil",
+                "price": 11.85,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Farchioni Il Casolare Unfiltered Extra Virgin Olive Oil",
+                "price": 15,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Filippo Berio Extra Virgin Olive Oil Organic",
+                "price": 17.5,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Citizens of Soil Organic Greek Extra Virgin Olive Oil Bottle",
+                "price": 17.5,
+                "packLabel": null,
+                "perUnit": null
+              }
+            ],
+            "cheapestPack": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Olive Oil 250Ml",
+              "price": 3.1,
+              "packLabel": "250ml",
+              "perUnit": {
+                "value": 12.4,
+                "unit": "L"
+              }
+            },
+            "bestValue": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Olive Oil 1L",
+              "price": 7.25,
+              "packLabel": "1L",
+              "perUnit": {
+                "value": 7.25,
+                "unit": "L"
+              }
+            },
+            "stamp": "2026-10-15T23:04:07.222Z"
+          }
+        },
+        {
+          "text": "Fresh Parsley, chopped",
+          "checked": false,
+          "canonicalName": "fresh parsley, chopped",
+          "canonicalFrom": "stored field",
+          "prices": {
+            "options": [
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Fresh Cut Flat Leaf Parsley 30G",
+                "price": 0.5,
+                "packLabel": "30g",
+                "perUnit": {
+                  "value": 16.67,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Curled Leaf Parsley 30g",
+                "price": 0.5,
+                "packLabel": "30g",
+                "perUnit": {
+                  "value": 16.67,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Asda",
+                "storeKey": "asda",
+                "title": "ASDA Chopped Flat-Leaf Parsley 75g",
+                "price": 1.63,
+                "packLabel": "75g",
+                "perUnit": {
+                  "value": 21.73,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Tesco",
+                "storeKey": "tesco",
+                "title": "Tesco Chopped Parsley 50g",
+                "price": 1.8,
+                "packLabel": "50g",
+                "perUnit": {
+                  "value": 36,
+                  "unit": "kg"
+                }
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Fresh Curly Parsley",
+                "price": 0.55,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Cooks' Ingredients Curly Leaf Parsley",
+                "price": 0.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Fresh Packed Flat Leaf Parsley",
+                "price": 1.25,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Natoora Fresh Italian Flat Leaf Parsley",
+                "price": 1.3,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Cooks' Ingredients Flat Leaf Parsley",
+                "price": 1.7,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Cook With M&S Chopped Parsley Frozen",
+                "price": 1.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Ocado",
+                "storeKey": "ocado",
+                "title": "Ocado Frozen Chopped Parsley",
+                "price": 1.75,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Sainsbury's",
+                "storeKey": "sainsburys",
+                "title": "Sainsbury's Chopped Parsley",
+                "price": 1.8,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Cooks' Ingredients Flat Parsley",
+                "price": 1.9,
+                "packLabel": null,
+                "perUnit": null
+              },
+              {
+                "store": "Waitrose",
+                "storeKey": "waitrose",
+                "title": "Waitrose Cooks' Ingredients Frozen Chopped Parsley",
+                "price": 2.65,
+                "packLabel": null,
+                "perUnit": null
+              }
+            ],
+            "cheapestPack": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Fresh Cut Flat Leaf Parsley 30G",
+              "price": 0.5,
+              "packLabel": "30g",
+              "perUnit": {
+                "value": 16.67,
+                "unit": "kg"
+              }
+            },
+            "bestValue": {
+              "store": "Tesco",
+              "storeKey": "tesco",
+              "title": "Tesco Fresh Cut Flat Leaf Parsley 30G",
+              "price": 0.5,
+              "packLabel": "30g",
+              "perUnit": {
+                "value": 16.67,
+                "unit": "kg"
+              }
+            },
+            "stamp": "2026-10-15T23:04:07.222Z"
+          }
+        },
+        {
+          "text": "Toilet paper",
+          "checked": false,
+          "canonicalName": null,
+          "canonicalFrom": "backfill dry-run",
+          "prices": null
+        }
+      ],
+      "storeTotals": [
+        {
+          "storeKey": "sainsburys",
+          "store": "Sainsbury's",
+          "total": 13.63,
+          "itemsPriced": 7,
+          "itemsTotal": 10
+        },
+        {
+          "storeKey": "waitrose",
+          "store": "Waitrose",
+          "total": 18.35,
+          "itemsPriced": 7,
+          "itemsTotal": 10
+        },
+        {
+          "storeKey": "ocado",
+          "store": "Ocado",
+          "total": 27.25,
+          "itemsPriced": 7,
+          "itemsTotal": 10
+        },
+        {
+          "storeKey": "tesco",
+          "store": "Tesco",
+          "total": 13.84,
+          "itemsPriced": 6,
+          "itemsTotal": 10
+        },
+        {
+          "storeKey": "asda",
+          "store": "Asda",
+          "total": 7.16,
+          "itemsPriced": 4,
+          "itemsTotal": 10
+        },
+        {
+          "storeKey": "iceland",
+          "store": "Iceland",
+          "total": 9.65,
+          "itemsPriced": 4,
+          "itemsTotal": 10
+        },
+        {
+          "storeKey": "morrisons",
+          "store": "Morrisons",
+          "total": 10.85,
+          "itemsPriced": 4,
+          "itemsTotal": 10
+        }
+      ]
+    }
+  ],
+  "testerStoreTotalsBeforeAfter": {
+    "before_v1": [
+      {
+        "storeKey": "sainsburys",
+        "store": "Sainsbury's",
+        "total": 16.01,
+        "itemsPriced": 8,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "waitrose",
+        "store": "Waitrose",
+        "total": 19.85,
+        "itemsPriced": 8,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "ocado",
+        "store": "Ocado",
+        "total": 28.55,
+        "itemsPriced": 8,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "tesco",
+        "store": "Tesco",
+        "total": 13.8,
+        "itemsPriced": 6,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "asda",
+        "store": "Asda",
+        "total": 6.29,
+        "itemsPriced": 4,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "iceland",
+        "store": "Iceland",
+        "total": 9.65,
+        "itemsPriced": 4,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "morrisons",
+        "store": "Morrisons",
+        "total": 10.1,
+        "itemsPriced": 4,
+        "itemsTotal": 9
+      }
+    ],
+    "v2_prev": [
+      {
+        "storeKey": "sainsburys",
+        "store": "Sainsbury's",
+        "total": 13.63,
+        "itemsPriced": 7,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "waitrose",
+        "store": "Waitrose",
+        "total": 18.35,
+        "itemsPriced": 7,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "ocado",
+        "store": "Ocado",
+        "total": 27.25,
+        "itemsPriced": 7,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "tesco",
+        "store": "Tesco",
+        "total": 13.84,
+        "itemsPriced": 6,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "asda",
+        "store": "Asda",
+        "total": 7.16,
+        "itemsPriced": 4,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "iceland",
+        "store": "Iceland",
+        "total": 9.65,
+        "itemsPriced": 4,
+        "itemsTotal": 9
+      },
+      {
+        "storeKey": "morrisons",
+        "store": "Morrisons",
+        "total": 10.85,
+        "itemsPriced": 4,
+        "itemsTotal": 9
+      }
+    ],
+    "after_v3": [
+      {
+        "storeKey": "sainsburys",
+        "store": "Sainsbury's",
+        "total": 13.63,
+        "itemsPriced": 7,
+        "itemsTotal": 10
+      },
+      {
+        "storeKey": "waitrose",
+        "store": "Waitrose",
+        "total": 18.35,
+        "itemsPriced": 7,
+        "itemsTotal": 10
+      },
+      {
+        "storeKey": "ocado",
+        "store": "Ocado",
+        "total": 27.25,
+        "itemsPriced": 7,
+        "itemsTotal": 10
+      },
+      {
+        "storeKey": "tesco",
+        "store": "Tesco",
+        "total": 13.84,
+        "itemsPriced": 6,
+        "itemsTotal": 10
+      },
+      {
+        "storeKey": "asda",
+        "store": "Asda",
+        "total": 7.16,
+        "itemsPriced": 4,
+        "itemsTotal": 10
+      },
+      {
+        "storeKey": "iceland",
+        "store": "Iceland",
+        "total": 9.65,
+        "itemsPriced": 4,
+        "itemsTotal": 10
+      },
+      {
+        "storeKey": "morrisons",
+        "store": "Morrisons",
+        "total": 10.85,
+        "itemsPriced": 4,
+        "itemsTotal": 10
+      }
+    ]
+  },
+  "testerOptionsRemovedSinceV1": [
+    {
+      "line": "Vegetable or Fish Broth, hot",
+      "store": "Ocado",
+      "title": "Soup Broth Pack-Vegetable 150 g",
+      "price": 8.45
+    },
+    {
+      "line": "Vegetable or Fish Broth, hot",
+      "store": "Waitrose",
+      "title": "Knorr Fish Stock Pot Gluten-Free to Add a Rich Fish Flavour",
+      "price": 1.5
+    },
+    {
+      "line": "Vegetable or Fish Broth, hot",
+      "store": "Sainsbury's",
+      "title": "Itsu Miso Ramen Brilliant Broth",
+      "price": 2.7
+    },
+    {
+      "line": "Vegetable or Fish Broth, hot",
+      "store": "Sainsbury's",
+      "title": "Knorr Vegetable Stock Pot",
+      "price": 2.8
+    },
+    {
+      "line": "Vegetable or Fish Broth, hot",
+      "store": "Ocado",
+      "title": "Kallo Organic Vegetable Broth",
+      "price": 3
+    },
+    {
+      "line": "Unsalted Butter",
+      "store": "Asda",
+      "title": "Flora Unsalted Block Butter Alternative 200g",
+      "price": 0.98
+    },
+    {
+      "line": "Unsalted Butter",
+      "store": "Tesco",
+      "title": "Elmlea Creamy & Buttery Blend Block 250g",
+      "price": 1.95
+    },
+    {
+      "line": "Unsalted Butter",
+      "store": "Waitrose",
+      "title": "Lurpak Unsalted Spreadable Blend of Butter and Rapeseed Oil",
+      "price": 3
+    },
+    {
+      "line": "Olive Oil",
+      "store": "Morrisons",
+      "title": "Olivio Blended Olive and Vegetable Oil",
+      "price": 3.75
+    }
+  ],
+  "cacheDistribution": {
+    "docs": 636,
+    "rawListings": 7944,
+    "qualifiedListings": 7192,
+    "droppedOutlier3x": 102,
+    "droppedWrongProduct": 648,
+    "droppedWrongProductByReason": {
+      "substitute": 27,
+      "stock_no_form": 59,
+      "stock_ready_made": 31,
+      "stock_no_count": 34,
+      "title_no_match": 415,
+      "processed_form": 20,
+      "excluded_word": 58,
+      "stock_type_mismatch": 3,
+      "stock_granules": 1
+    },
+    "droppedOtherStoreOrPriceOrDuplicate": 2,
+    "qualifiedListingsPerDoc": {
+      "0": 39,
+      "1": 28,
+      "2-3": 54,
+      "4-6": 87,
+      "7+": 428
+    },
+    "distinctStoresPerDoc": {
+      "0": 39,
+      "1": 34,
+      "2": 43,
+      "3": 61,
+      "4+": 459
+    },
+    "qualifiedListingsByStore": {
+      "sainsburys": 1447,
+      "tesco": 1134,
+      "iceland": 373,
+      "asda": 717,
+      "waitrose": 1264,
+      "ocado": 1525,
+      "morrisons": 731,
+      "aldi": 1
+    }
+  },
+  "wrongProductDroppedFirst40": [
+    {
+      "canonical": "olive oil",
+      "store": "Morrisons",
+      "title": "Olivio Blended Olive and Vegetable Oil",
+      "price": 3.75,
+      "reason": "substitute:blend"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Ocado",
+      "title": "Kallo Organic Vegetable Broth",
+      "price": 3,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Sainsbury's",
+      "title": "Potts Vegetable Stock",
+      "price": 2.3,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Tesco",
+      "title": "Marigold Swiss Vegetable Bouillon",
+      "price": 2.45,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Chicken & Vegetable Broth 600g",
+      "price": 1.49,
+      "reason": "stock_ready_made"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Asda",
+      "title": "OXO Vegetable Stock Cubes",
+      "price": 3.5,
+      "reason": "stock_no_count"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Tesco",
+      "title": "Knorr Vegetable Stock Pot",
+      "price": 2.8,
+      "reason": "stock_no_count"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Sainsbury's",
+      "title": "Kallo Organic Vegetable Stock Cubes",
+      "price": 1.4,
+      "reason": "stock_no_count"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Ocado",
+      "title": "Marks and Spencer Vegetable Stock",
+      "price": 3.5,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Morrisons",
+      "title": "Morrisons Chicken & Vegetable Broth",
+      "price": 1.85,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Vegetable Stock Inspired to Cook",
+      "price": 2.9,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Ocado",
+      "title": "Bay's Kitchen Concentrated Vegetable Stock 200g",
+      "price": 4.3,
+      "reason": "stock_ready_made"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Sainsbury's",
+      "title": "Kallo Vegetable Stock Cubes",
+      "price": 1,
+      "reason": "stock_no_count"
+    },
+    {
+      "canonical": "vegetable broth",
+      "store": "Ocado",
+      "title": "Yorkshire Provender Rustic Vegetable Broth",
+      "price": 3.5,
+      "reason": "stock_no_form"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Courgettes Loose",
+      "price": 2.78,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Tesco",
+      "title": "Tesco Carrots 1Kg",
+      "price": 0.69,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Waitrose",
+      "title": "Waitrose Ltd Essential Carrots",
+      "price": 0.7,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Loose Carrots",
+      "price": 0.69,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Tesco",
+      "title": "Tesco Cauliflower",
+      "price": 1.19,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Tesco",
+      "title": "Tesco Broccoli 375G",
+      "price": 0.82,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Tesco",
+      "title": "Tesco Tenderstem Broccoli 200G",
+      "price": 1.6,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Ocado",
+      "title": "Ocado Broccoli, 375g",
+      "price": 0.82,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Waitrose",
+      "title": "Fresh Broccoli Essential Waitrose",
+      "price": 0.88,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Tesco",
+      "title": "Tesco Brown Onions 1Kg",
+      "price": 0.95,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Sweet Peppers",
+      "price": 2.1,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Iceland",
+      "title": "Iceland Carrots 1kg",
+      "price": 1,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Waitrose",
+      "title": "Fresh Aubergine Essential Waitrose",
+      "price": 1,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Ocado",
+      "title": "Ocado British Carrots",
+      "price": 0.69,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Waitrose",
+      "title": "Whole Fresh Red Cabbage Waitrose",
+      "price": 0.95,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "vegetables",
+      "store": "Ocado",
+      "title": "Ocado Courgettes, 500g",
+      "price": 1.4,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's White Granulated Sugar",
+      "price": 1.09,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Ocado",
+      "title": "Tate & Lyle Fairtrade Granulated Sugar",
+      "price": 0.95,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Tesco",
+      "title": "Icing Sugar Silver Spoon 3kg",
+      "price": 5.5,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Tesco",
+      "title": "Silver Spoon Sugar White Cubes",
+      "price": 1.5,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Fairtrade Granulated Sugar",
+      "price": 1.2,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Ocado",
+      "title": "Ocado Granulated White Sugar",
+      "price": 1.2,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Tesco",
+      "title": "Silver Spoon Caster Sugar",
+      "price": 2.25,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Sainsbury's",
+      "title": "Sainsbury's Fairtrade Demerara Cane Sugar",
+      "price": 1.7,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Tesco",
+      "title": "Sussex Wholefoods Organic Golden Cane Sugar Multi",
+      "price": 2.56,
+      "reason": "title_no_match"
+    },
+    {
+      "canonical": "sucre",
+      "store": "Ocado",
+      "title": "Marks and Spencer Light Muscovado Sugar",
+      "price": 1.85,
+      "reason": "title_no_match"
+    }
+  ],
+  "outlier3xDropped": {
+    "count": 102,
+    "first20": [
+      {
+        "canonical": "vinegar",
+        "store": "Tesco",
+        "title": "Tesco Distilled Vinegar 1.14l",
+        "price": 0.65,
+        "perUnit": 0.57,
+        "median": 2.91
+      },
+      {
+        "canonical": "vinegar",
+        "store": "Asda",
+        "title": "ASDA Distilled Vinegar 1l",
+        "price": 0.57,
+        "perUnit": 0.57,
+        "median": 2.91
+      },
+      {
+        "canonical": "vinegar",
+        "store": "Asda",
+        "title": "ASDA Classic Malt Vinegar 568ml",
+        "price": 0.35,
+        "perUnit": 0.62,
+        "median": 2.91
+      },
+      {
+        "canonical": "vinegar",
+        "store": "Sainsbury's",
+        "title": "Blue Dragon Rice Vinegar 150ml",
+        "price": 2.2,
+        "perUnit": 14.67,
+        "median": 2.91
+      },
+      {
+        "canonical": "pepper",
+        "store": "Asda",
+        "title": "Saxa Ground Black Pepper 25g",
+        "price": 1.25,
+        "perUnit": 50,
+        "median": 9
+      },
+      {
+        "canonical": "vegetables",
+        "store": "Ocado",
+        "title": "M&S Summer Vegetable Selection, 275g",
+        "price": 3.75,
+        "perUnit": 13.64,
+        "median": 1.65
+      },
+      {
+        "canonical": "chicken 8%",
+        "store": "Waitrose",
+        "title": "Waitrose Small Whole Chicken 1.2kg",
+        "price": 5.25,
+        "perUnit": 4.38,
+        "median": 13.44
+      },
+      {
+        "canonical": "king prawns, peeled and deveined",
+        "store": "Sainsbury's",
+        "title": "Sainsbury's Frozen Cooked & Peeled Large King Prawns ASC 400g",
+        "price": 2.64,
+        "perUnit": 6.6,
+        "median": 19.97
+      },
+      {
+        "canonical": "basil",
+        "store": "Ocado",
+        "title": "Daylesford Organic Basil, 30g",
+        "price": 2.9,
+        "perUnit": 96.67,
+        "median": 17.5
+      },
+      {
+        "canonical": "vegetable oil",
+        "store": "Sainsbury's",
+        "title": "Sainsbury's Vegetable Oil 3L",
+        "price": 1.45,
+        "perUnit": 0.48,
+        "median": 1.5
+      },
+      {
+        "canonical": "carrot",
+        "store": "Tesco",
+        "title": "Tesco Imperator Carrot 450G",
+        "price": 2,
+        "perUnit": 4.44,
+        "median": 1.05
+      },
+      {
+        "canonical": "soy sauce",
+        "store": "Morrisons",
+        "title": "Blue Dragon Light Soy Sauce 150ml",
+        "price": 1.85,
+        "perUnit": 12.33,
+        "median": 3.67
+      },
+      {
+        "canonical": "a onion",
+        "store": "Sainsbury's",
+        "title": "Sainsbury's Red Onions SO Organic 500g",
+        "price": 1.45,
+        "perUnit": 2.9,
+        "median": 0.95
+      },
+      {
+        "canonical": "ground pepper",
+        "store": "Asda",
+        "title": "Laila Black Pepper Ground 100g",
+        "price": 0.98,
+        "perUnit": 9.8,
+        "median": 32
+      },
+      {
+        "canonical": "ground pepper",
+        "store": "Morrisons",
+        "title": "Indus Coarse Black Pepper 100g",
+        "price": 1,
+        "perUnit": 10,
+        "median": 32
+      },
+      {
+        "canonical": "organic red peppers",
+        "store": "Ocado",
+        "title": "Mr Organic Grilled Peppers Antipasti 190g",
+        "price": 4.4,
+        "perUnit": 23.16,
+        "median": 7.08
+      },
+      {
+        "canonical": "cream of mushroom soup",
+        "store": "Ocado",
+        "title": "M&S Creamy Mushroom Cup Soup, 4 x 22g",
+        "price": 0.95,
+        "perUnit": 10.8,
+        "median": 1.48
+      },
+      {
+        "canonical": "seasoning",
+        "store": "Asda",
+        "title": "Dunn's River All Purpose Seasoning 700g",
+        "price": 0.9,
+        "perUnit": 1.29,
+        "median": 21.11
+      },
+      {
+        "canonical": "tomato sauce",
+        "store": "Tesco",
+        "title": "Tiptree Tomato Ketchup 310g",
+        "price": 3.15,
+        "perUnit": 10.16,
+        "median": 3.34
+      },
+      {
+        "canonical": "baby carrots",
+        "store": "Ocado",
+        "title": "M&S Baby Carrots, 200g",
+        "price": 2.5,
+        "perUnit": 12.5,
+        "median": 3.97
+      }
+    ]
+  }
+}

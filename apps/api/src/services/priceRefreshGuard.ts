@@ -127,6 +127,14 @@ const SUBSTITUTE_WORDS: Array<[string, RegExp]> = [
   ["alternative", /\balternatives?\b/i], ["blend", /\bblend(?:ed)?\b/i], ["spread", /\bspreads?\b/i],
   ["dairy-free", /\bdairy[- ]free\b/i], ["vegan", /\bvegan\b/i], ["plant-based", /\bplant[- ]based\b/i],
 ];
+// Cloud 10-19 22:05: substitute words only apply to dairy / meat / oil canonicals (name or alias), and a plant qualifier on the
+// canonical (soy milk, coconut milk, vegan cheese, tofu...) exempts it. Produce, spice blends, salad blends etc. never hit them.
+const SUBSTITUTE_SCOPE_RE = /\b(butter|ghee|cream|milk|cheese|cheddar|mozzarella|parmesan|yog(?:h)?urt|mince|sausages?|burgers?|chicken|beef|pork|lamb|bacon|ham|oil)\b/i;
+const SUBSTITUTE_PLANT_EXEMPT_RE = /\b(soy|soya|oat|almond|coconut|rice|cashew|hemp|pea|plant|vegan|tofu)\b/i;
+/** true when the substitute-word rule applies to this canonical (name + aliases text) */
+export function substituteRuleApplies(nameAliasLower: string): boolean {
+  return SUBSTITUTE_SCOPE_RE.test(nameAliasLower) && !SUBSTITUTE_PLANT_EXEMPT_RE.test(nameAliasLower);
+}
 export function stem(w: string): string {
   w = w.toLowerCase();
   if (w.length > 4 && w.endsWith("ies")) return `${w.slice(0, -3)}y`;
@@ -218,8 +226,10 @@ export function makeTitleMatcher(canon: any, priceDoc?: any): (title: string | u
       if (!newExempt(label)) return { ok: false, reason: `excluded_word:${label}` };
       if (!oldExempt(label)) rescued.push(label);
     }
-    for (const [label, re] of SUBSTITUTE_WORDS) {
-      if (re.test(t) && !re.test(nameAliasLower)) return { ok: false, reason: `substitute:${label}` };
+    if (substituteRuleApplies(nameAliasLower)) {
+      for (const [label, re] of SUBSTITUTE_WORDS) {
+        if (re.test(t) && !re.test(nameAliasLower)) return { ok: false, reason: `substitute:${label}` };
+      }
     }
     // cloud rule 16: processed / different-form products. A phrase is exempt when the canonical name or an alias itself contains it.
     const pfRescued: string[] = [];

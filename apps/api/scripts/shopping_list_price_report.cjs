@@ -1,6 +1,6 @@
 /**
  * cc_prompt_shopping_list_price_compare.md Part B — read-only data report (no writes, 0 Serper credits).
- *   node scripts/shopping_list_price_report.cjs   -> summaries/shopping_list_price_report_<date>_v2.json
+ *   node scripts/shopping_list_price_report.cjs   -> summaries/shopping_list_price_report_<date>_v3.json
  *   (v2 = Part B2: options go through makeTitleMatcher / classifyStockListing; also reports the wrong-product drops and a
  *    before/after storeTotals comparison against the committed v1 report.)
  *
@@ -111,6 +111,9 @@ const bucketStores = (n) => (n >= 4 ? "4+" : String(n));
     for (const x of droppedProduct) { const k = String(x.reason).replace(/[(:].*$/, ""); reasonCounts[k] = (reasonCounts[k] || 0) + 1; }
     const testerV1 = v1 ? v1.currentLines.find((u) => u.lines.length > 1) : null;
     const testerV2 = lines.find((u) => u.lines.length > 1);
+    const PREV = path.join(SUMMARIES, `shopping_list_price_report_${TODAY}_v2.json`);
+    const prevV2 = fs.existsSync(PREV) ? JSON.parse(fs.readFileSync(PREV, "utf8")) : null;
+    const testerPrevV2 = prevV2 ? prevV2.currentLines.find((u) => u.lines.length > 1) : null;
     // listings v1 showed on the Tester lines that v2 no longer shows (for the "wrong product removed" check)
     const removedOnTester = [];
     if (testerV1 && testerV2) {
@@ -127,7 +130,7 @@ const bucketStores = (n) => (n >= 4 ? "4+" : String(n));
       mode: "read-only; 0 Serper credits",
       note: "Shopping-list canonicalName comes from the stored field, else from the reviewed backfill dry-run (backfill not written yet).",
       currentLines: lines,
-      testerStoreTotalsBeforeAfter: { before_v1: testerV1 ? testerV1.storeTotals : null, after_v2: testerV2 ? testerV2.storeTotals : null },
+      testerStoreTotalsBeforeAfter: { before_v1: testerV1 ? testerV1.storeTotals : null, v2_prev: testerPrevV2 ? testerPrevV2.storeTotals : null, after_v3: testerV2 ? testerV2.storeTotals : null },
       testerOptionsRemovedSinceV1: removedOnTester,
       cacheDistribution: {
         docs: cache.length,
@@ -144,7 +147,7 @@ const bucketStores = (n) => (n >= 4 ? "4+" : String(n));
       wrongProductDroppedFirst40: droppedProduct.slice(0, 40).map((x) => ({ canonical: x.canonical, store: x.store, title: x.title, price: x.price, reason: x.reason })),
       outlier3xDropped: { count: dropped.length, first20: dropped.slice(0, 20).map((x) => ({ canonical: x.canonical, store: x.store, title: x.title, price: x.price, perUnit: x.perUnit, median: x.median })) },
     };
-    const outPath = path.join(SUMMARIES, `shopping_list_price_report_${TODAY}_v2.json`);
+    const outPath = path.join(SUMMARIES, `shopping_list_price_report_${TODAY}_v3.json`);
     fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
     console.log("docs", cache.length, "raw", rawListings, "qualified", qualified, "dropped3x", dropped.length, "droppedOther", droppedOther);
     console.log("wrong-product drops", droppedProduct.length, JSON.stringify(reasonCounts));
