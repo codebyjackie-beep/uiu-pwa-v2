@@ -1,0 +1,362 @@
+{
+ "generatedAt": "2026-10-19T13:04:08.321Z",
+ "calls": 12,
+ "credits": 24,
+ "byCanonical": {
+  "sesame seeds (for garnish)": [
+   {
+    "q": "sesame seeds 100g price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Sesame Seeds",
+      "price": "£1.25"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Sesame Seeds",
+      "price": "£1.25"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Ltd Waitrose Sesame Seeds",
+      "price": "£2.25"
+     },
+     {
+      "store": "Ocado",
+      "title": "Ottogi Roasted Sesame",
+      "price": "£2.85"
+     },
+     {
+      "store": "Ocado",
+      "title": "Ocado Sesame Seeds",
+      "price": "£1.20"
+     }
+    ]
+   },
+   {
+    "q": "sesame seeds 250g price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Ltd Waitrose Sesame Seeds",
+      "price": "£2.25"
+     }
+    ]
+   }
+  ],
+  "fresh ginger": [
+   {
+    "q": "fresh root ginger loose price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Root Ginger Loose",
+      "price": "£5.60"
+     }
+    ]
+   },
+   {
+    "q": "root ginger 100g price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Ginger",
+      "price": "£1.25"
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Root Ginger Loose",
+      "price": "£5.60"
+     },
+     {
+      "store": "Ocado",
+      "title": "PACK'D Organic Chopped Ginger, 100g",
+      "price": "£2.95"
+     }
+    ]
+   }
+  ],
+  "ancho chile powder": [
+   {
+    "q": "ancho chilli powder 50g price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": []
+   },
+   {
+    "q": "ancho chilli powder price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Ancho Chilli Flakes",
+      "price": "£1.15"
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Gran Luchito 28g Mild Taco Seasoning",
+      "price": "£1.60"
+     },
+     {
+      "store": "Ocado",
+      "title": "Cook With M&S Ancho Chilli, 25g",
+      "price": "£2.65"
+     },
+     {
+      "store": "Ocado",
+      "title": "Marks & Spencer Ancho Chilli Flakes",
+      "price": "£1.70"
+     }
+    ]
+   }
+  ],
+  "arborio rice": [
+   {
+    "q": "arborio risotto rice 500g price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Arborio Risotto Rice",
+      "price": "£2.25"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Duchy Organic Arborio Risotto Rice",
+      "price": "£3.75"
+     },
+     {
+      "store": "Ocado",
+      "title": "Riso Gallo Arborio Risotto Rice",
+      "price": "£3.00"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Arborio Risotto Rice",
+      "price": "£2.65"
+     },
+     {
+      "store": "Ocado",
+      "title": "Daylesford Organic Arborio Rice",
+      "price": "£5.55"
+     }
+    ]
+   },
+   {
+    "q": "arborio rice 1kg price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco Risotto Rice 1Kg",
+      "price": "£3.30"
+     },
+     {
+      "store": "Ocado",
+      "title": "Belazu Arborio Risotto Rice",
+      "price": "£5.85"
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Arborio Risotto Rice",
+      "price": "£2.25"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Arborio Risotto Rice",
+      "price": "£2.65"
+     },
+     {
+      "store": "Ocado",
+      "title": "Riso Gallo Arborio Risotto Rice",
+      "price": "£3.50"
+     }
+    ]
+   }
+  ],
+  "eggplant": [
+   {
+    "q": "aubergine each price",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco Aubergine Each",
+      "price": "£0.95"
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA Aubergine",
+      "price": "£0.77"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Fresh Whole Purple Aubergine",
+      "price": "£1.00"
+     },
+     {
+      "store": "Ocado",
+      "title": "Daylesford Organic Aubergine",
+      "price": "£2.50"
+     },
+     {
+      "store": "Ocado",
+      "title": "M&S Aubergine",
+      "price": "£0.95"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Duchy Organic Aubergine",
+      "price": "£1.50"
+     },
+     {
+      "store": "Ocado",
+      "title": "Ocado Aubergine",
+      "price": "£0.95"
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons Purple Aubergine",
+      "price": "£0.99"
+     },
+     {
+      "store": "Ocado",
+      "title": "Natoora Italian Round Aubergine",
+      "price": "£3.95"
+     },
+     {
+      "store": "Ocado",
+      "title": "Natoora Italian Aubergine 380g",
+      "price": "£3.00"
+     }
+    ]
+   },
+   {
+    "q": "aubergine 1 each",
+    "serperResults": 40,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco Aubergine Each",
+      "price": "£0.95"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Fresh Whole Purple Aubergine",
+      "price": "£1.00"
+     },
+     {
+      "store": "Ocado",
+      "title": "M&S Aubergine",
+      "price": "£0.95"
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons Purple Aubergine",
+      "price": "£0.99"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Duchy Organic Aubergine",
+      "price": "£1.50"
+     },
+     {
+      "store": "Ocado",
+      "title": "Ocado Aubergine",
+      "price": "£0.95"
+     },
+     {
+      "store": "Ocado",
+      "title": "Yarden Greek Style Aubergine",
+      "price": "£2.65"
+     },
+     {
+      "store": "Ocado",
+      "title": "Natoora Italian Round Aubergine",
+      "price": "£3.95"
+     }
+    ]
+   }
+  ],
+  "arugula": [
+   {
+    "q": "wild rocket 65g price",
+    "serperResults": 10,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco Wild Rocket 60G",
+      "price": "£1.00"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Wild Rocket",
+      "price": "£1.50"
+     },
+     {
+      "store": "Ocado",
+      "title": "M&S Wild Rocket Washed & Ready to Eat",
+      "price": "£1.25"
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA Wild Rocket",
+      "price": "£0.96"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Wild Rocket Salad",
+      "price": "£1.95"
+     },
+     {
+      "store": "Tesco",
+      "title": "Fresh & Naked Wild Rocket 60g",
+      "price": "£1.20"
+     }
+    ]
+   },
+   {
+    "q": "baby rocket salad 60g price",
+    "serperResults": 6,
+    "credits": 2,
+    "listings": [
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Wild Rocket Salad",
+      "price": "£1.95"
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "SO Organic 60g Babyleaf & Rocket Salad",
+      "price": "£1.50"
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Organic Babyleaf & Peppery Rocket Salad",
+      "price": "£2.90"
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Peppery Babyleaf Rocket Salad 90G",
+      "price": "£1.30"
+     }
+    ]
+   }
+  ]
+ }
+}
