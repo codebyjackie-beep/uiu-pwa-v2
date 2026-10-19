@@ -4,7 +4,7 @@
  * The guard logic is NOT here — it is the shared services/priceRefreshGuard.ts (one copy, also bundled by scripts/price_refresh.cjs,
  * parity-tested 600/600 against the cloud-reviewed final dry-run). This file is only the Worker plumbing around it:
  *
- *   kick-off   scheduled "0 3 * * 1" (and "15 * * * *" for PRICE_REFRESH_SCHEDULE=daily) -> maybeStartScheduledRun() opens a run
+ *   kick-off   scheduled "0 3 * * MON" (and "15 * * * *" for PRICE_REFRESH_SCHEDULE=daily) -> maybeStartScheduledRun() opens a run
  *   processing scheduled "15 * * * *"  -> processPriceRefresh(): one invocation handles <= DOCS_PER_FIRE docs, no-op without a run
  *   lifecycle  queued -> fetching -> deciding -> writing -> done | aborted      (collection `price_refresh_runs`, resumable)
  *
@@ -157,6 +157,8 @@ async function tell(env: PriceRefreshEnv, text: string): Promise<void> {
   }
 }
 
+const DOW_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 /** Mon..Sun by UTC; schedule key = what makes two kick-offs "the same run slot". */
 function scheduleKey(schedule: string, now: Date): string | null {
   const dow = now.getUTCDay(); // 0 Sun .. 6 Sat
@@ -290,11 +292,19 @@ export async function openManualRun(env: PriceRefreshEnv, o: { dryRun: boolean; 
   return { open, processed };
 }
 
-/** Scheduled kick-off. Called from the "0 3 * * 1" cron (and from "15 * * * *" for the daily schedule). */
+/** Scheduled kick-off. Called from the "0 3 * * MON" cron (and from "15 * * * *" for the daily schedule). */
 export async function maybeStartScheduledRun(env: PriceRefreshEnv, now = new Date()): Promise<{ started: boolean; reason: string }> {
   const schedule = scheduleOf(env);
   const key = scheduleKey(schedule, now);
-  if (!key) return { started: false, reason: `not_a_${schedule}_slot` };
+  if (!key) {
+    // Wrong-day guard (2026-10-19 incident): Cloudflare cron weekday 1 = SUNDAY, so "0 3 * * 1" fired on Sundays, scheduleKey() said
+    // "not a Monday" and the kick-off returned silently for weeks. A null key is only legitimate for the monthly schedule on a
+    // Monday that is not the first one; any other null (weekly any day, monthly on a non-Monday) means the cron is on the wrong day.
+    if (schedule !== "monthly" || now.getUTCDay() !== 1) {
+      await tell(env, `⚠️ *Price refresh kick-off fired on the wrong day* (schedule ${md(schedule)}, UTC ${md(DOW_NAMES[now.getUTCDay()])} ${md(now.toISOString())}).\nNo run opened. Cloudflare cron weekday numbers are 1 = Sunday — check the \`0 3 * * MON\` trigger in wrangler.toml.`);
+    }
+    return { started: false, reason: `not_a_${schedule}_slot` };
+  }
   return withDb(env, async (db) => {
     const runs = db.collection<RunDoc>(RUNS);
     // one run per slot: a second call in the same slot (e.g. Monday 03:00 cron + the daily 03:15 fire) is a silent no-op

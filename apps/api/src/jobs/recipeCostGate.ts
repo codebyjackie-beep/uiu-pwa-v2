@@ -1,7 +1,7 @@
 /**
  * recipe_cost recompute with an anomaly gate (cc_prompt_price_refresh_monthly_cron.md Part 3).
  *
- * Shared by the weekly "0 3 * * 1" precompute and the monthly price-refresh job. Computes the cost of EVERY recipe, compares the
+ * Shared by the weekly "0 3 * * MON" precompute and the monthly price-refresh job. Computes the cost of EVERY recipe, compares the
  * PUBLIC ones with the stored recipe_cost doc, and only writes when no public recipe trips the gate (same thresholds as
  * scripts/recipe_cost_recompute.cjs, which cloud reviewed on 2026-10-16):
  *   - perServing > £8          (a recipe that was already > £8 is exempt unless it rises > 50% — e.g. Crab Cakes Eggs Benedict,

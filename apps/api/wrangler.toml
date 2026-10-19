@@ -120,10 +120,12 @@ RECIPE_DRAFTS_PER_DAY = "3"
 #                            refresh-20261016, hold_drop guard re-decide = 14 hold_drop / update 46.4% / no recipe_cost anomaly).
 #                            KILL SWITCH: anything other than exactly "true" makes every run (scheduled or manual) a dry-run that
 #                            writes nothing to canonical_price_cache / recipe_cost — only a price_refresh_runs doc + a Telegram summary.
-#                            First automatic write = the weekly run opened Mon 2026-10-19 03:00 UTC (finishes ~Tue 03:00).
+#                            First automatic run = Mon 2026-10-26 03:00 UTC (finishes ~Tue 03:00). The 2026-10-19 slot was missed: the
+#                            cron was written "0 3 * * 1" but Cloudflare weekday 1 = SUNDAY, so it fired on Sundays and the kick-off
+#                            saw "not a Monday". Fixed 2026-10-19 (cron names) + a Telegram wrong-day alert in maybeStartScheduledRun.
 #   PRICE_REFRESH_DOCS_PER_FIRE docs fetched per "15 * * * *" invocation (<= 2 Serper subrequests each; 25 -> ~50 of the 10,000 cap).
 # TEMPORARILY "weekly" (Jackie 2026-10-16, cloud decision 39): Serper credits were bought 2026-07-04 and EXPIRE 2027-01-04
-# (23,875 left) — monthly would burn only ~2,240 before then. Weekly ~1,120/run x 11 Mondays (10-19 .. 12-28) ~ 12,320.
+# (23,875 left) — monthly would burn only ~2,240 before then. Weekly ~1,120/run x 11 Mondays (10-19 .. 12-28) ~ 12,320 (now 10-26 .. 12-28 = 10 runs ~ 11,200).
 # After 2027-01-04 (credits expired / topped up) change this back to "monthly".
 PRICE_REFRESH_SCHEDULE = "weekly"
 PRICE_REFRESH_AUTO_WRITE = "true"
@@ -131,7 +133,8 @@ PRICE_REFRESH_DOCS_PER_FIRE = "25"
 
 # Seven independent crons — scheduled() in index.ts branches on event.cron, the
 # jobs are NOT merged:
-#   "0 3 * * 1"  Weekly recipe_cost precompute (Mon 03:00 UTC). Since 2026-10-16 it sits behind the anomaly gate
+#   "0 3 * * MON"  Weekly recipe_cost precompute (Mon 03:00 UTC). ALWAYS write weekdays as names here: Cloudflare numbers them
+#   1 = Sunday .. 7 = Saturday (not cron-standard 0/7 = Sunday, 1 = Monday). Since 2026-10-16 it sits behind the anomaly gate
 #   (jobs/recipeCostGate.ts: per-serving > £8 / drop > 50% / tier change on a PUBLIC recipe => nothing is written, Telegram
 #   lists the anomalies) and it also opens the monthly price-refresh run (first Monday when PRICE_REFRESH_SCHEDULE=monthly).
 #
@@ -202,4 +205,4 @@ PRICE_REFRESH_DOCS_PER_FIRE = "25"
 #   (refreshBatch = refresh-auto-YYYYMMDD, rollback: scripts/price_refresh_rollback.cjs) and recomputes recipe_cost through the gate.
 #   Not registered in cronHealthMonitor on purpose (idle fires would read as "0 items processed" all month).
 [triggers]
-crons = ["0 3 * * 1", "0 7 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *", "15 * * * *"]
+crons = ["0 3 * * MON", "0 7 * * *", "0 * * * *", "0 9 * * *", "0 8 * * *", "30 * * * *", "15 * * * *"]

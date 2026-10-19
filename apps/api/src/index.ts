@@ -601,7 +601,8 @@ export default {
       );
       return;
     }
-    // "0 3 * * 1": (1) the monthly price-refresh kick-off (first Monday for PRICE_REFRESH_SCHEDULE=monthly; no-op otherwise),
+    // "0 3 * * MON" (Cloudflare weekday numbers are 1 = SUNDAY, so the number form fired on Sundays until 2026-10-19 — use names):
+    // (1) the monthly price-refresh kick-off (first Monday for PRICE_REFRESH_SCHEDULE=monthly; no-op otherwise),
     // (2) the weekly recipe_cost precompute, now behind the anomaly gate (nothing is written if a public recipe trips it).
     ctx.waitUntil(
       (async () => {
