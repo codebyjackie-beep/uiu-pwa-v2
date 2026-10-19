@@ -3993,6 +3993,29 @@ a {
   color: var(--uiu-muted);
 }
 
+.shop-store-totals__mix {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+}
+
+.shop-store-totals__sub {
+  font-size: 11px;
+  color: var(--uiu-muted);
+}
+
+.shop-store-totals__tag {
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.shop-store-totals__lowcov {
+  color: var(--uiu-muted);
+}
+
 .shop-store-totals__note {
   margin: 4px 0 0;
   font-size: 11px;

@@ -130,7 +130,7 @@ const SUBSTITUTE_WORDS: Array<[string, RegExp]> = [
 // Cloud 10-19 22:05: substitute words only apply to dairy / meat / oil canonicals (name or alias), and a plant qualifier on the
 // canonical (soy milk, coconut milk, vegan cheese, tofu...) exempts it. Produce, spice blends, salad blends etc. never hit them.
 const SUBSTITUTE_SCOPE_RE = /\b(butter|ghee|cream|milk|cheese|cheddar|mozzarella|parmesan|yog(?:h)?urt|mince|sausages?|burgers?|chicken|beef|pork|lamb|bacon|ham|oil)\b/i;
-const SUBSTITUTE_PLANT_EXEMPT_RE = /\b(soy|soya|oat|almond|coconut|rice|cashew|hemp|pea|plant|vegan|tofu)\b/i;
+const SUBSTITUTE_PLANT_EXEMPT_RE = /\b(soy|soya|oat|almond|coconut|rice|cashew|hemp|pea|plant|vegan|tofu|substitute|vegetable|veggie|meat[- ]free|meatless)\b/i;
 /** true when the substitute-word rule applies to this canonical (name + aliases text) */
 export function substituteRuleApplies(nameAliasLower: string): boolean {
   return SUBSTITUTE_SCOPE_RE.test(nameAliasLower) && !SUBSTITUTE_PLANT_EXEMPT_RE.test(nameAliasLower);

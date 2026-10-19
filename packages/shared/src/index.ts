@@ -994,6 +994,17 @@ export interface ShoppingListStoreTotal {
   total: number;
   itemsPriced: number;
   itemsTotal: number;
+  /** B3: the cheapest store among those with the most items priced (same coverage -> cheaper wins). */
+  bestOneStop?: true;
+  /** B3: this store prices fewer items than the best-covered store, so its total is not comparable (shown grey). */
+  lowCoverage?: true;
+}
+
+/** B3 "Mixing stores": the cheapest pack of every UNCHECKED item across all stores, summed. */
+export interface ShoppingListMixTotal {
+  total: number;
+  itemsPriced: number;
+  itemsTotal: number;
 }
 
 /** GET /api/shopping-list — `data` stays the item array; the one-store totals ride beside it. */
@@ -1004,19 +1015,22 @@ export type ShoppingListResponse = ApiResponse<ShoppingListItem[]> & { storeTota
  * itemsTotal = unchecked items; stores with no priced item are left out; sorted by itemsPriced desc, then total asc.
  * One function for the API (GET /api/shopping-list) and the Shop tab (re-run on every tick / untick).
  */
+/** A listing with a size beats one without; otherwise the lower shelf price wins. */
+function betterPackOption(o: ShoppingListPriceOption, cur: ShoppingListPriceOption | undefined): boolean {
+  if (!cur) return true;
+  const oSized = o.packLabel !== null;
+  const curSized = cur.packLabel !== null;
+  if (oSized !== curSized) return oSized;
+  return o.price < cur.price;
+}
+
 export function computeShoppingListStoreTotals(items: readonly Pick<ShoppingListItem, "checked" | "prices">[]): ShoppingListStoreTotal[] {
   const open = items.filter((i) => !i.checked);
   const byStore = new Map<string, ShoppingListStoreTotal>();
   for (const item of open) {
     // Per store: the cheapest pack whose size is listed; only when that store has no sized listing for the item, the cheapest unsized one.
     const cheapestAt = new Map<string, ShoppingListPriceOption>();
-    const better = (o: ShoppingListPriceOption, cur: ShoppingListPriceOption | undefined): boolean => {
-      if (!cur) return true;
-      const oSized = o.packLabel !== null;
-      const curSized = cur.packLabel !== null;
-      if (oSized !== curSized) return oSized;
-      return o.price < cur.price;
-    };
+    const better = betterPackOption;
     for (const o of item.prices?.options ?? []) if (better(o, cheapestAt.get(o.storeKey))) cheapestAt.set(o.storeKey, o);
     for (const [key, o] of cheapestAt) {
       const row = byStore.get(key) ?? { storeKey: key, store: o.store, total: 0, itemsPriced: 0, itemsTotal: open.length };
@@ -1025,9 +1039,35 @@ export function computeShoppingListStoreTotals(items: readonly Pick<ShoppingList
       byStore.set(key, row);
     }
   }
-  return [...byStore.values()]
+  const rows: ShoppingListStoreTotal[] = [...byStore.values()]
     .map((r) => ({ ...r, total: Math.round(r.total * 100) / 100 }))
     .sort((a, b) => b.itemsPriced - a.itemsPriced || a.total - b.total);
+  // B3: rows are sorted coverage desc then total asc, so the first row is the best one-stop; fewer-covered stores are flagged.
+  const maxPriced = rows[0]?.itemsPriced ?? 0;
+  rows.forEach((r, idx) => {
+    if (idx === 0) r.bestOneStop = true;
+    else if (r.itemsPriced < maxPriced) r.lowCoverage = true;
+  });
+  return rows;
+}
+
+/**
+ * B3 "Mixing stores": for each UNCHECKED item the cheapest pack across every store (sized first, unsized only when no store lists a
+ * size), summed. null when no open item has a price. Same sized-first rule as computeShoppingListStoreTotals.
+ */
+export function computeShoppingListMix(items: readonly Pick<ShoppingListItem, "checked" | "prices">[]): ShoppingListMixTotal | null {
+  const open = items.filter((i) => !i.checked);
+  let total = 0;
+  let itemsPriced = 0;
+  for (const item of open) {
+    let best: ShoppingListPriceOption | undefined;
+    for (const o of item.prices?.options ?? []) if (betterPackOption(o, best)) best = o;
+    if (best) {
+      total += best.price;
+      itemsPriced += 1;
+    }
+  }
+  return itemsPriced === 0 ? null : { total: Math.round(total * 100) / 100, itemsPriced, itemsTotal: open.length };
 }
 
 /** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 — dedupe an aggregated meal-plan

@@ -1,0 +1,2695 @@
+{
+ "generatedAt": "2026-10-19T21:09:27.568Z",
+ "total": 600,
+ "actionCountsExpected": {
+  "update": 283,
+  "protected_skip": 27,
+  "hold_low_n": 165,
+  "hold": 24,
+  "nominal_stock": 12,
+  "hold_rise": 68,
+  "keep_old": 21
+ },
+ "tally": {
+  "normal": 561,
+  "normalOk": 555,
+  "normalOverride": 29,
+  "stock": 12,
+  "stockOk": 12,
+  "protected": 27,
+  "protectedOk": 26,
+  "other": 0
+ },
+ "identical": 593,
+ "mismatchCount": 20,
+ "mismatches": [
+  {
+   "canonical_name": "olive oil",
+   "what": "guarded.n_supermarkets",
+   "module": 21,
+   "expected": 22
+  },
+  {
+   "canonical_name": "olive oil",
+   "what": "listing status/reason",
+   "module": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:blend"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ],
+   "expected": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ]
+  },
+  {
+   "canonical_name": "olive oil",
+   "what": "proposed.set",
+   "module": {
+    "per_unit_metric": {
+     "value": 0.011949999999999999,
+     "unit": "g_or_ml",
+     "n": 6
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 2.73,
+     "title": "Napolina Extra Virgin Olive Oil"
+    },
+    "n_supermarkets": 21,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Odysea Greek Extra Virgin Olive Oil",
+      "price": 6.95,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0139
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Olive Oil 250Ml",
+      "price": 3.1,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0124
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "Napolina Extra Virgin Olive Oil",
+      "price": 2.73,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0055
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose extra virgin olive oil",
+      "price": 7.85,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0157
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Terra Delyssa Extra Virgin Olive Oil 750ml",
+      "price": 9.75,
+      "pack": {
+       "qty": 750,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.013
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Olive Oil 500Ml",
+      "price": 5.75,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0115
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Karyatis Greek Extra Virgin Olive Oil",
+      "price": 6,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.012
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA Olive Oil",
+      "price": 7,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.014
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Extra Virgin Olive Oil 1Ltr",
+      "price": 7.75,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0155
+     },
+     {
+      "store": "Ocado",
+      "title": "Filippo Berio Extra Virgin Olive Oil Organic",
+      "price": 17.5,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.035
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Napolina Olive Oil 500ml",
+      "price": 4.5,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.009
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Terra Delyssa Extra Virgin Olive Oil",
+      "price": 11.85,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0237
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Olive Oil 1L",
+      "price": 7.25,
+      "pack": {
+       "qty": 1000,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0073
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Citizens of Soil Organic Greek Extra Virgin Olive Oil Bottle",
+      "price": 17.5,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.035
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Farchioni Il Casolare Unfiltered Extra Virgin Olive Oil",
+      "price": 15,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.03
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons Extra Virgin Olive Oil",
+      "price": 7.5,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.015
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Extra Virgin Olive Oil 500Ml",
+      "price": 6.25,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0125
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "La Espanola Extra Virgin Olive Oil",
+      "price": 5.05,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0101
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Olive Oil",
+      "price": 3.1,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0062
+     },
+     {
+      "store": "Ocado",
+      "title": "La Espanola Olive Oil",
+      "price": 10.8,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0216
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Belazu Crete Gold Extra Virgin Olive Oil",
+      "price": 10,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.02
+     }
+    ],
+    "confidence": "high",
+    "needs_review": false,
+    "metadata.source": "serper",
+    "metadata.query_used": "olive oil",
+    "metadata.raw_listing_count": 22,
+    "metadata.attempts": 1
+   },
+   "expected": {
+    "per_unit_metric": {
+     "value": 0.011949999999999999,
+     "unit": "g_or_ml",
+     "n": 6
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 2.73,
+     "title": "Napolina Extra Virgin Olive Oil"
+    },
+    "n_supermarkets": 22,
+    "listings": [
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Odysea Greek Extra Virgin Olive Oil",
+      "price": 6.95,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0139
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Olive Oil 250Ml",
+      "price": 3.1,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0124
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "Napolina Extra Virgin Olive Oil",
+      "price": 2.73,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0055
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose extra virgin olive oil",
+      "price": 7.85,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0157
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Terra Delyssa Extra Virgin Olive Oil 750ml",
+      "price": 9.75,
+      "pack": {
+       "qty": 750,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.013
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Olive Oil 500Ml",
+      "price": 5.75,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0115
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Karyatis Greek Extra Virgin Olive Oil",
+      "price": 6,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.012
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Olivio Blended Olive and Vegetable Oil",
+      "price": 3.75,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0075
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA Olive Oil",
+      "price": 7,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.014
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Extra Virgin Olive Oil 1Ltr",
+      "price": 7.75,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0155
+     },
+     {
+      "store": "Ocado",
+      "title": "Filippo Berio Extra Virgin Olive Oil Organic",
+      "price": 17.5,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.035
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Napolina Olive Oil 500ml",
+      "price": 4.5,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.009
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Terra Delyssa Extra Virgin Olive Oil",
+      "price": 11.85,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0237
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Olive Oil 1L",
+      "price": 7.25,
+      "pack": {
+       "qty": 1000,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0073
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Citizens of Soil Organic Greek Extra Virgin Olive Oil Bottle",
+      "price": 17.5,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.035
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Farchioni Il Casolare Unfiltered Extra Virgin Olive Oil",
+      "price": 15,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.03
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons Extra Virgin Olive Oil",
+      "price": 7.5,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.015
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Extra Virgin Olive Oil 500Ml",
+      "price": 6.25,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0125
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "La Espanola Extra Virgin Olive Oil",
+      "price": 5.05,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0101
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Olive Oil",
+      "price": 3.1,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0062
+     },
+     {
+      "store": "Ocado",
+      "title": "La Espanola Olive Oil",
+      "price": 10.8,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0216
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Belazu Crete Gold Extra Virgin Olive Oil",
+      "price": 10,
+      "pack": {
+       "qty": 500,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.02
+     }
+    ],
+    "confidence": "high",
+    "needs_review": false,
+    "metadata.source": "serper",
+    "metadata.query_used": "olive oil",
+    "metadata.raw_listing_count": 22,
+    "metadata.attempts": 1
+   }
+  },
+  {
+   "canonical_name": "butter",
+   "what": "guarded.n_supermarkets",
+   "module": 32,
+   "expected": 33
+  },
+  {
+   "canonical_name": "butter",
+   "what": "listing status/reason",
+   "module": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "title_no_match"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:blend"
+    ]
+   ],
+   "expected": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "title_no_match"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ]
+  },
+  {
+   "canonical_name": "butter",
+   "what": "proposed.set",
+   "module": {
+    "per_unit_metric": {
+     "value": 0.0098,
+     "unit": "g_or_ml",
+     "n": 11
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 1.5,
+     "title": "Country Life Salted Butter"
+    },
+    "n_supermarkets": 32,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco British Unsalted Butter 250G",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Kerrygold Pure Irish Salted Butter 200g",
+      "price": 2.25,
+      "pack": {
+       "qty": 200,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0113
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA British Unsalted Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Ocado",
+      "title": "All Things Butter Salted Butter 200g",
+      "price": 1.95,
+      "pack": {
+       "qty": 200,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0098
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Country Life Unsalted Butter",
+      "price": 2.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.01
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Anchor Salted Butter",
+      "price": 1.7,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0068
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco British Salted Block Butter 250G",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Ocado",
+      "title": "Yeo Valley Organic Unsalted Butter",
+      "price": 2.25,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.009
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "Country Life Salted Butter",
+      "price": 1.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.006
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "essential Waitrose Salted Dairy Butter",
+      "price": 2,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.008
+     },
+     {
+      "store": "Iceland",
+      "title": "Iceland Salted British Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Graham's The Family Dairy Slightly Salted Butter 250g",
+      "price": 2.65,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0106
+     },
+     {
+      "store": "Ocado",
+      "title": "CALON WEN Organic Lightly Salted Butter 250g",
+      "price": 3.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.014
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's British Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA British Salted Butter 500g",
+      "price": 3.7,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons Salted Spreadable With 100% British Butter",
+      "price": 2.18,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0087
+     },
+     {
+      "store": "Tesco",
+      "title": "Lurpak Butter Slightly Salted",
+      "price": 2.8,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0112
+     },
+     {
+      "store": "Ocado",
+      "title": "M&S British Unsalted Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Kerrygold Spreadable Butter 400g",
+      "price": 3.7,
+      "pack": {
+       "qty": 400,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0093
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "The Estate Dairy Cultured Salted Butter",
+      "price": 3.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.014
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Longley Farm Luxury Jersey Butter",
+      "price": 2.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.01
+     },
+     {
+      "store": "Ocado",
+      "title": "Anchor Butter Unsalted",
+      "price": 1.7,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0068
+     },
+     {
+      "store": "Iceland",
+      "title": "Lurpak Lighter Spreadable Butter",
+      "price": 3,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.012
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Duchy Organic English Salted Butter",
+      "price": 3.7,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0148
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Graham's Scottish Butter with Isle Skye Sea Salt",
+      "price": 2.75,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.011
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Isigny Ste Mere Unpasteurised Salted Butter",
+      "price": 3.9,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0156
+     },
+     {
+      "store": "Ocado",
+      "title": "All Things Butter Spreadable Butter 250g",
+      "price": 2.45,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0098
+     },
+     {
+      "store": "Iceland",
+      "title": "Iceland British Unsalted Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Yeo Valley Organic Salted Butter",
+      "price": 2.25,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.009
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Castle Dairies Salted Welsh Butter",
+      "price": 2.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0114
+     },
+     {
+      "store": "Ocado",
+      "title": "All Things Butter Unsalted Butter 200g",
+      "price": 1.95,
+      "pack": {
+       "qty": 200,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0098
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Anchor Butter 500g",
+      "price": 5.5,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.011
+     }
+    ],
+    "confidence": "high",
+    "needs_review": false,
+    "metadata.source": "serper",
+    "metadata.query_used": "butter",
+    "metadata.raw_listing_count": 34,
+    "metadata.attempts": 1
+   },
+   "expected": {
+    "per_unit_metric": {
+     "value": 0.0098,
+     "unit": "g_or_ml",
+     "n": 11
+    },
+    "cheapest": {
+     "store": "Asda Groceries",
+     "price": 1.5,
+     "title": "Country Life Salted Butter"
+    },
+    "n_supermarkets": 33,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco British Unsalted Butter 250G",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Kerrygold Pure Irish Salted Butter 200g",
+      "price": 2.25,
+      "pack": {
+       "qty": 200,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0113
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA British Unsalted Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Ocado",
+      "title": "All Things Butter Salted Butter 200g",
+      "price": 1.95,
+      "pack": {
+       "qty": 200,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0098
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Country Life Unsalted Butter",
+      "price": 2.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.01
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Anchor Salted Butter",
+      "price": 1.7,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0068
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco British Salted Block Butter 250G",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Ocado",
+      "title": "Yeo Valley Organic Unsalted Butter",
+      "price": 2.25,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.009
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "Country Life Salted Butter",
+      "price": 1.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.006
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "essential Waitrose Salted Dairy Butter",
+      "price": 2,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.008
+     },
+     {
+      "store": "Iceland",
+      "title": "Iceland Salted British Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Graham's The Family Dairy Slightly Salted Butter 250g",
+      "price": 2.65,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0106
+     },
+     {
+      "store": "Ocado",
+      "title": "CALON WEN Organic Lightly Salted Butter 250g",
+      "price": 3.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.014
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's British Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA British Salted Butter 500g",
+      "price": 3.7,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons Salted Spreadable With 100% British Butter",
+      "price": 2.18,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0087
+     },
+     {
+      "store": "Tesco",
+      "title": "Lurpak Butter Slightly Salted",
+      "price": 2.8,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0112
+     },
+     {
+      "store": "Ocado",
+      "title": "M&S British Unsalted Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Kerrygold Spreadable Butter 400g",
+      "price": 3.7,
+      "pack": {
+       "qty": 400,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0093
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "The Estate Dairy Cultured Salted Butter",
+      "price": 3.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.014
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Longley Farm Luxury Jersey Butter",
+      "price": 2.5,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.01
+     },
+     {
+      "store": "Ocado",
+      "title": "Anchor Butter Unsalted",
+      "price": 1.7,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0068
+     },
+     {
+      "store": "Iceland",
+      "title": "Lurpak Lighter Spreadable Butter",
+      "price": 3,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.012
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Duchy Organic English Salted Butter",
+      "price": 3.7,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0148
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Graham's Scottish Butter with Isle Skye Sea Salt",
+      "price": 2.75,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.011
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Isigny Ste Mere Unpasteurised Salted Butter",
+      "price": 3.9,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0156
+     },
+     {
+      "store": "Ocado",
+      "title": "All Things Butter Spreadable Butter 250g",
+      "price": 2.45,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0098
+     },
+     {
+      "store": "Iceland",
+      "title": "Iceland British Unsalted Butter",
+      "price": 1.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0074
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Yeo Valley Organic Salted Butter",
+      "price": 2.25,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.009
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Castle Dairies Salted Welsh Butter",
+      "price": 2.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0114
+     },
+     {
+      "store": "Ocado",
+      "title": "All Things Butter Unsalted Butter 200g",
+      "price": 1.95,
+      "pack": {
+       "qty": 200,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0098
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Anchor Butter 500g",
+      "price": 5.5,
+      "pack": {
+       "qty": 500,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.011
+     },
+     {
+      "store": "Iceland",
+      "title": "Dairypak Irish Butter Blended with Vegetable Oil",
+      "price": 2.25,
+      "pack": {
+       "qty": 250,
+       "unit": "g"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.009
+     }
+    ],
+    "confidence": "high",
+    "needs_review": false,
+    "metadata.source": "serper",
+    "metadata.query_used": "butter",
+    "metadata.raw_listing_count": 34,
+    "metadata.attempts": 1
+   }
+  },
+  {
+   "canonical_name": "single cream (_milk_)",
+   "what": "guarded.n_supermarkets",
+   "module": 7,
+   "expected": 8
+  },
+  {
+   "canonical_name": "single cream (_milk_)",
+   "what": "listing status/reason",
+   "module": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:alternative"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ],
+   "expected": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ]
+  },
+  {
+   "canonical_name": "single cream (_milk_)",
+   "what": "proposed.set",
+   "module": {
+    "per_unit_metric": {
+     "value": 0.00405,
+     "unit": "g_or_ml",
+     "n": 2
+    },
+    "cheapest": {
+     "store": "Morrisons.com",
+     "price": 0.85,
+     "title": "Morrisons British Semi Skimmed Milk"
+    },
+    "n_supermarkets": 7,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco British Single Cream",
+      "price": 2.25,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's British Single",
+      "price": 1.35,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Tesco",
+      "title": "Creamfields Single Cream 300Ml",
+      "price": 1.09,
+      "pack": {
+       "qty": 300,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0036
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "essential Waitrose Single Cream",
+      "price": 0.95,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's British Single Fresh",
+      "price": 2.25,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco British Single Cream 300Ml",
+      "price": 1.35,
+      "pack": {
+       "qty": 300,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0045
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons British Semi Skimmed Milk",
+      "price": 0.85,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     }
+    ],
+    "confidence": "low",
+    "needs_review": true,
+    "metadata.source": "serper",
+    "metadata.query_used": "single cream (_milk_)",
+    "metadata.raw_listing_count": 8,
+    "metadata.attempts": 1
+   },
+   "expected": {
+    "per_unit_metric": {
+     "value": 0.00405,
+     "unit": "g_or_ml",
+     "n": 2
+    },
+    "cheapest": {
+     "store": "Morrisons.com",
+     "price": 0.85,
+     "title": "Morrisons British Semi Skimmed Milk"
+    },
+    "n_supermarkets": 8,
+    "listings": [
+     {
+      "store": "Tesco",
+      "title": "Tesco British Single Cream",
+      "price": 2.25,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's British Single",
+      "price": 1.35,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Alpro Soya Chilled Alternative to Single Cream",
+      "price": 1.25,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Tesco",
+      "title": "Creamfields Single Cream 300Ml",
+      "price": 1.09,
+      "pack": {
+       "qty": 300,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0036
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "essential Waitrose Single Cream",
+      "price": 0.95,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's British Single Fresh",
+      "price": 2.25,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco British Single Cream 300Ml",
+      "price": 1.35,
+      "pack": {
+       "qty": 300,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0045
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Morrisons British Semi Skimmed Milk",
+      "price": 0.85,
+      "pack": null,
+      "source_of_pack": "unknown",
+      "per_unit": null
+     }
+    ],
+    "confidence": "low",
+    "needs_review": true,
+    "metadata.source": "serper",
+    "metadata.query_used": "single cream (_milk_)",
+    "metadata.raw_listing_count": 8,
+    "metadata.attempts": 1
+   }
+  },
+  {
+   "canonical_name": "sesame oil",
+   "what": "guarded.per_unit_metric",
+   "module": {
+    "value": 0.0106,
+    "unit": "g_or_ml",
+    "n": 3
+   },
+   "expected": {
+    "value": 0.0106,
+    "unit": "g_or_ml",
+    "n": 4
+   }
+  },
+  {
+   "canonical_name": "sesame oil",
+   "what": "guarded.n_supermarkets",
+   "module": 8,
+   "expected": 9
+  },
+  {
+   "canonical_name": "sesame oil",
+   "what": "listing status/reason",
+   "module": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:vegan"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ],
+   "expected": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ]
+  },
+  {
+   "canonical_name": "sesame oil",
+   "what": "proposed.set",
+   "module": {
+    "per_unit_metric": {
+     "value": 0.0106,
+     "unit": "g_or_ml",
+     "n": 3
+    },
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 2.2,
+     "title": "KTC Sesame Oil Pure & Pressed Toasted 250ml"
+    },
+    "n_supermarkets": 8,
+    "listings": [
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA Cook Sesame Oil 250ml",
+      "price": 2.64,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0106
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Toasted Sesame Oil 250Ml",
+      "price": 2.65,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0106
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Lee Kum Kee Pure Sesame Oil",
+      "price": 3.5,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0233
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Sesame Oil",
+      "price": 2.75,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0183
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "KTC Sesame Oil Pure & Pressed Toasted 250ml",
+      "price": 2.2,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0088
+     },
+     {
+      "store": "Tesco",
+      "title": "Lee Kum Kee Sesame Wok Oil",
+      "price": 2.6,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0173
+     },
+     {
+      "store": "Ocado",
+      "title": "Kadoya Pure Sesame Oil",
+      "price": 2.85,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.019
+     },
+     {
+      "store": "Ocado",
+      "title": "Biona Organic Cold-Pressed Sesame Oil",
+      "price": 8.6,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0573
+     }
+    ],
+    "confidence": "high",
+    "needs_review": false,
+    "metadata.source": "serper",
+    "metadata.query_used": "sesame oil",
+    "metadata.raw_listing_count": 9,
+    "metadata.attempts": 1
+   },
+   "expected": {
+    "per_unit_metric": {
+     "value": 0.0106,
+     "unit": "g_or_ml",
+     "n": 4
+    },
+    "cheapest": {
+     "store": "sainsburys.co.uk",
+     "price": 2.2,
+     "title": "KTC Sesame Oil Pure & Pressed Toasted 250ml"
+    },
+    "n_supermarkets": 9,
+    "listings": [
+     {
+      "store": "Asda Groceries",
+      "title": "ASDA Cook Sesame Oil 250ml",
+      "price": 2.64,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0106
+     },
+     {
+      "store": "Tesco",
+      "title": "Tesco Toasted Sesame Oil 250Ml",
+      "price": 2.65,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0106
+     },
+     {
+      "store": "Morrisons.com",
+      "title": "Lee Kum Kee Pure Sesame Oil",
+      "price": 3.5,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0233
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "Sainsbury's Sesame Oil",
+      "price": 2.75,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0183
+     },
+     {
+      "store": "Waitrose & Partners",
+      "title": "Waitrose Pure Toasted Sesame Oil 250ml Vegan Asian Cooking",
+      "price": 2.85,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0114
+     },
+     {
+      "store": "sainsburys.co.uk",
+      "title": "KTC Sesame Oil Pure & Pressed Toasted 250ml",
+      "price": 2.2,
+      "pack": {
+       "qty": 250,
+       "unit": "g_or_ml"
+      },
+      "source_of_pack": "title",
+      "per_unit": 0.0088
+     },
+     {
+      "store": "Tesco",
+      "title": "Lee Kum Kee Sesame Wok Oil",
+      "price": 2.6,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0173
+     },
+     {
+      "store": "Ocado",
+      "title": "Kadoya Pure Sesame Oil",
+      "price": 2.85,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.019
+     },
+     {
+      "store": "Ocado",
+      "title": "Biona Organic Cold-Pressed Sesame Oil",
+      "price": 8.6,
+      "pack": {
+       "qty": 150,
+       "unit": "ml"
+      },
+      "source_of_pack": "reference",
+      "per_unit": 0.0573
+     }
+    ],
+    "confidence": "high",
+    "needs_review": false,
+    "metadata.source": "serper",
+    "metadata.query_used": "sesame oil",
+    "metadata.raw_listing_count": 9,
+    "metadata.attempts": 1
+   }
+  },
+  {
+   "canonical_name": "drizzles of olive oil",
+   "what": "guarded.n_supermarkets",
+   "module": 6,
+   "expected": 7
+  },
+  {
+   "canonical_name": "drizzles of olive oil",
+   "what": "listing status/reason",
+   "module": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "title_no_match"
+    ],
+    [
+     "dropped",
+     "substitute:blend"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ],
+   "expected": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "title_no_match"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ]
+  },
+  {
+   "canonical_name": "unsalted butter",
+   "what": "reason",
+   "module": "rise_over_1.3x:per_unit_metric=1.662",
+   "expected": "rise_over_1.3x:per_unit_metric=1.631"
+  },
+  {
+   "canonical_name": "unsalted butter",
+   "what": "guarded.per_unit_metric",
+   "module": {
+    "value": 0.0133,
+    "unit": "g_or_ml",
+    "n": 5
+   },
+   "expected": {
+    "value": 0.013049999999999999,
+    "unit": "g_or_ml",
+    "n": 6
+   }
+  },
+  {
+   "canonical_name": "unsalted butter",
+   "what": "guarded.cheapest",
+   "module": {
+    "store": "Asda Groceries",
+    "price": 1.85,
+    "title": "ASDA British Unsalted Butter"
+   },
+   "expected": {
+    "store": "Morrisons.com",
+    "price": 1.5,
+    "title": "Elmlea Creamy & Buttery Blend Block 250g"
+   }
+  },
+  {
+   "canonical_name": "unsalted butter",
+   "what": "guarded.n_supermarkets",
+   "module": 18,
+   "expected": 21
+  },
+  {
+   "canonical_name": "unsalted butter",
+   "what": "listing status/reason",
+   "module": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:blend"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:blend"
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "dropped",
+     "substitute:alternative"
+    ],
+    [
+     "kept",
+     null
+    ]
+   ],
+   "expected": [
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ],
+    [
+     "kept",
+     null
+    ]
+   ]
+  }
+ ],
+ "protectedNotes": [
+  {
+   "canonical_name": "sugar",
+   "nowReasons": "(not protected by rule now)",
+   "reviewedReason": "in reviewed Part 0 protected list"
+  }
+ ],
+ "newlyProtectedSinceReview": [
+  "arborio rice[hold_low_n]",
+  "vegetable broth[nominal_stock]",
+  "chicken broth[nominal_stock]",
+  "chicken stock[nominal_stock]",
+  "ancho chile powder[hold_low_n]",
+  "beef bouillon[nominal_stock]",
+  "baby arugula[hold_low_n]",
+  "beef broth[nominal_stock]",
+  "beef bouillon cubes[nominal_stock]",
+  "chicken or fish broth[nominal_stock]",
+  "eggplant[hold_low_n]",
+  "vegetable stock[nominal_stock]",
+  "stock[nominal_stock]",
+  "fresh ginger[hold_low_n]",
+  "arugula[hold_low_n]",
+  "brown stock[nominal_stock]",
+  "sesame seeds (for garnish)[hold_low_n]",
+  "vegetable or fish broth, hot[nominal_stock]",
+  "lemon juice from a lemon[hold_low_n]",
+  "condensed beef broth or consommé[nominal_stock]"
+ ]
+}

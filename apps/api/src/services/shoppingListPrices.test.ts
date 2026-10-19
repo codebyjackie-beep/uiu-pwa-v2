@@ -1,5 +1,5 @@
 /** Standalone assertions: npx tsx apps/api/src/services/shoppingListPrices.test.ts */
-import { computeShoppingListStoreTotals } from "@uiu/shared";
+import { computeShoppingListMix, computeShoppingListStoreTotals } from "@uiu/shared";
 import { normaliseStore, buildPriceOptions, buildItemPrices, STOCK_PACK_LABEL } from "./shoppingListPrices";
 
 function eq(actual: unknown, expected: unknown): void {
@@ -109,4 +109,29 @@ eq(kept("tofu", "Cauldron Plant-Based Tofu 500g"), true); // 8 tofu ✓ plant-ba
 eq(kept("cheddar cheese", "Violife Dairy-Free Cheddar Style 500g"), false);
 eq(kept("chicken breast", "Quorn Vegan Chicken Breast 500g"), false);
 
+// --- cloud 22:10 exemptions: butter substitute / vegetable burger crumbles behave like the reviewed dry-run again
+eq(kept("butter substitute", "Flora Plant-Based Butter Alternative 500g"), true);
+eq(kept("vegetable burger crumbles", "Quorn Vegan Burger Crumbles 500g"), true);
+// B3: Mixing stores total + Best one-stop tag
+const P = (store: string, price: number, size: string | null) => ({ store, storeKey: store.toLowerCase(), title: store + " x", price, packLabel: size, perUnit: null });
+const itemOf = (opts: ReturnType<typeof P>[]) => ({ checked: false, prices: { options: opts, cheapestPack: opts[0]!, bestValue: null, stamp: null } });
+const mixItems = [
+  itemOf([P("Tesco", 2.0, "500g"), P("Asda", 1.5, "500g"), P("Lidl", 0.9, null)]), // unsized Lidl never wins -> Asda 1.50
+  itemOf([P("Tesco", 3.0, "1kg"), P("Asda", 3.5, "1kg")]), // Tesco 3.00
+  itemOf([P("Lidl", 1.0, "each")]), // Lidl only
+  { checked: true, prices: { options: [P("Tesco", 9, "1kg")], cheapestPack: P("Tesco", 9, "1kg"), bestValue: null, stamp: null } }, // ticked: ignored
+  { checked: false, prices: null }, // no price
+];
+eq(computeShoppingListMix(mixItems), { total: 5.5, itemsPriced: 3, itemsTotal: 4 });
+eq(computeShoppingListMix([itemOf([P("Lidl", 0.9, null)])]), { total: 0.9, itemsPriced: 1, itemsTotal: 1 }); // unsized only as fallback
+eq(computeShoppingListMix([{ checked: false, prices: null }]), null);
+const rows = computeShoppingListStoreTotals(mixItems);
+eq(rows.map((r) => [r.storeKey, r.total, r.itemsPriced]), [["lidl", 1.9, 2], ["tesco", 5, 2], ["asda", 5, 2]]); // same coverage -> cheaper first
+eq(rows.map((r) => [!!r.bestOneStop, !!r.lowCoverage]), [[true, false], [false, false], [false, false]]);
+// a cheaper store that prices fewer items is NOT best one-stop, and is flagged lowCoverage
+const cov = computeShoppingListStoreTotals([
+  itemOf([P("Tesco", 2, "1kg"), P("Aldi", 0.5, "1kg")]),
+  itemOf([P("Tesco", 3, "1kg")]),
+]);
+eq(cov.map((r) => [r.storeKey, r.total, r.itemsPriced, !!r.bestOneStop, !!r.lowCoverage]), [["tesco", 5, 2, true, false], ["aldi", 0.5, 1, false, true]]);
 console.log("all shopping-list price tests passed");

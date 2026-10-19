@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { computeShoppingListStoreTotals, formatPricesChecked, isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
+import { computeShoppingListMix, computeShoppingListStoreTotals, formatPricesChecked, isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
 import type {
   AffiliateProduct,
   ApiResponse,
@@ -156,6 +156,7 @@ export function ShopPage() {
 
   // Ticked items drop out of the totals straight away — recomputed on the client, no refetch.
   const storeTotals = computeShoppingListStoreTotals(manualItems);
+  const mixTotal = computeShoppingListMix(manualItems);
   const priceStamp = manualItems.reduce<number | null>((max, i) => {
     const t = i.prices?.stamp ? Date.parse(i.prices.stamp) : Number.NaN;
     return Number.isFinite(t) && (max === null || t > max) ? t : max;
@@ -252,7 +253,6 @@ export function ShopPage() {
             const isOpen = !!prices && expanded.has(item._id);
             const all = showAll.has(item._id);
             const options = prices ? (all ? prices.options : prices.options.slice(0, OPTIONS_PREVIEW)) : [];
-            const stock = isStockLikeName(item.canonicalName);
             return (
               <div key={item._id} className={`shop-manual-item${item.checked ? " shop-manual-item--checked" : ""}`}>
                 <div className="shop-manual-item__row">
@@ -268,7 +268,6 @@ export function ShopPage() {
                               Cheapest pack: {prices.cheapestPack.store} {formatCost(prices.cheapestPack.price)}
                             </span>
                           ) : null}
-                          {stock ? <span className="shop-manual-item__cheapest">{STOCK_PRICED_LABEL}</span> : null}
                         </>
                       ) : (
                         <span className="shop-manual-item__price shop-manual-item__price--none">No price yet</span>
@@ -319,10 +318,25 @@ export function ShopPage() {
         {storeTotals.length > 0 ? (
           <div className="shop-store-totals">
             <h3>If you shop at one store</h3>
+            {mixTotal ? (
+              <div className="shop-store-totals__mix">
+                <div className="shop-store-totals__row">
+                  <span>Mixing stores</span>
+                  <span>
+                    {formatCost(mixTotal.total)}{" "}
+                    <span className="shop-store-totals__count">({mixTotal.itemsPriced}/{mixTotal.itemsTotal} priced)</span>
+                  </span>
+                </div>
+                <span className="shop-store-totals__sub">Cheapest pack of each item across stores</span>
+              </div>
+            ) : null}
             {storeTotals.map((t) => (
               <div key={t.storeKey} className="shop-store-totals__row">
-                <span>{t.store}</span>
                 <span>
+                  {t.store}
+                  {t.bestOneStop ? <span className="shop-option__tag shop-store-totals__tag">Best one-stop</span> : null}
+                </span>
+                <span className={t.lowCoverage ? "shop-store-totals__lowcov" : undefined}>
                   {formatCost(t.total)} <span className="shop-store-totals__count">({t.itemsPriced}/{t.itemsTotal} priced)</span>
                 </span>
               </div>
