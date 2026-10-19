@@ -33,7 +33,7 @@ function toRecipe(doc: Document): Recipe {
   };
 }
 
-function toDetailCost(costDoc: Document | null): RecipeDetailCost | null {
+function toDetailCost(costDoc: Document | null, pantryNames: Set<string> = new Set()): RecipeDetailCost | null {
   if (!costDoc || (costDoc.basket as number) <= 0) return null;
   const lines: RecipeDetailCostLine[] = ((costDoc.lines as Document[]) ?? []).map((line) => ({
     rawName: line.rawName as string,
@@ -44,6 +44,7 @@ function toDetailCost(costDoc: Document | null): RecipeDetailCost | null {
     store: line.store as string | undefined,
     productTitle: line.productTitle as string | null | undefined,
     canonicalName: line.canonical_name as string | undefined,
+    ...(!line.priceable && typeof line.canonical_name === "string" && pantryNames.has(line.canonical_name) ? { isPantry: true } : {}),
     normValue: line.normValue as number | undefined,
     normUnit: line.normUnit as "g" | "ml" | "pc" | undefined,
   }));
@@ -145,17 +146,27 @@ recipesRouter.get("/:id", async (c) => {
   }
 
   try {
-    const { doc, costDoc } = await withDb(c.env, async (db) => {
+    const { doc, costDoc, pantryNames } = await withDb(c.env, async (db) => {
       const doc = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
-      if (!doc) return { doc: null, costDoc: null };
+      if (!doc) return { doc: null, costDoc: null, pantryNames: new Set<string>() };
       const costDoc = await db.collection("recipe_cost").findOne({ recipeId: doc._id });
-      return { doc, costDoc };
+      // Display only: which unpriced lines are pantry staples ("Pantry staple" instead of "Price unavailable").
+      const unpricedNames = [
+        ...new Set(((costDoc?.lines as Document[]) ?? []).filter((l) => !l.priceable && typeof l.canonical_name === "string").map((l) => l.canonical_name as string)),
+      ];
+      const pantryDocs = unpricedNames.length
+        ? await db
+            .collection("canonical_ingredients")
+            .find({ canonical_name: { $in: unpricedNames }, $or: [{ is_pantry: true }, { pantry_staple: true }] }, { projection: { canonical_name: 1 } })
+            .toArray()
+        : [];
+      return { doc, costDoc, pantryNames: new Set(pantryDocs.map((d) => d.canonical_name as string)) };
     });
     if (!doc) {
       const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };
       return c.json(body, 404);
     }
-    const body: ApiResponse<RecipeDetail> = { ok: true, data: { ...toRecipe(doc), cost: toDetailCost(costDoc) } };
+    const body: ApiResponse<RecipeDetail> = { ok: true, data: { ...toRecipe(doc), cost: toDetailCost(costDoc, pantryNames) } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] recipe get error:", err instanceof Error ? err.message : String(err));

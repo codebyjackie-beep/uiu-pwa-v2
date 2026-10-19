@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { isStockLikeName, STOCK_PRICED_LABEL } from "@uiu/shared";
+import { isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
 import type { AffiliateProduct, ApiResponse, ShopPricesStamp, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
 import { PricesChecked } from "../components/PricesChecked";
 
@@ -163,6 +163,8 @@ export function ShopPage() {
                   <span className="shop-card__price">
                     {formatCost(item.cheapest.price)}{isStockLikeName(item.canonicalName) ? "" : ` · ${item.cheapest.store}`}
                   </span>
+                ) : item.isPantry ? (
+                  <span className="shop-card__price shop-card__price--pending">{PANTRY_STAPLE_LABEL}</span>
                 ) : (
                   <span className="shop-card__price shop-card__price--pending">no price yet</span>
                 )}

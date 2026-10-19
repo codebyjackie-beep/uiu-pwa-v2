@@ -148,9 +148,11 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
               <div className="recipe-detail__ingredient-row">
                 <span
                   className={
-                    storeLine.unpriceable
-                      ? "recipe-detail__ingredient-store recipe-detail__ingredient-store--unpriceable"
-                      : "recipe-detail__ingredient-store"
+                    storeLine.pantry
+                      ? "recipe-detail__ingredient-store recipe-detail__ingredient-store--pantry"
+                      : storeLine.unpriceable
+                        ? "recipe-detail__ingredient-store recipe-detail__ingredient-store--unpriceable"
+                        : "recipe-detail__ingredient-store"
                   }
                 >
                   {isStock ? STOCK_PRICED_LABEL : storeLine.label}

@@ -202,6 +202,9 @@ export const STOCK_CUBE_MADE_UP_CANONICALS: ReadonlySet<string> = new Set([
   "vegetable stock",
 ]);
 export const STOCK_PRICED_LABEL = "Priced as stock cube, made up";
+
+/** Shown instead of "Price unavailable" for an unpriced line whose canonical is a pantry staple (salt, pepper…). Display only. */
+export const PANTRY_STAPLE_LABEL = "Pantry staple";
 export const STOCK_PRICE_NOTE = "Stock and broth are priced as stock cubes made up with water.";
 
 export function isStockLikeName(canonicalName: string | null | undefined): boolean {
@@ -270,6 +273,8 @@ export interface RecipeDetailCostLine {
   /** Present only when priceable. */
   productTitle?: string | null;
   canonicalName?: string;
+  /** True only on an unpriced line whose canonical is_pantry / pantry_staple — display-only ("Pantry staple"). */
+  isPantry?: boolean;
   /** Converted value in normUnit — present only when priceable (conversion succeeded). */
   normValue?: number;
   /** g | ml | pc — matches RecipeCostLine.normUnit. Present only when priceable. */
@@ -931,6 +936,8 @@ export interface ShopRestockItem {
   cheapest: { store: string; price: number } | null;
   /** Resolved canonical name when known — display-only (stock label), not used for pricing. */
   canonicalName?: string;
+  /** True when the canonical is a pantry staple (is_pantry / pantry_staple) — display-only. */
+  isPantry?: boolean;
 }
 
 /** GET /api/shop/prices-stamp — newest recipe_cost.priceCacheStamp (epoch ms), 0 when none. */

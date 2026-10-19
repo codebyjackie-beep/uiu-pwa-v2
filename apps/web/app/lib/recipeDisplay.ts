@@ -1,4 +1,4 @@
-import { RECIPE_MEAL_CLASS_PRIORITY, type RecipeDetailCostLine } from "@uiu/shared";
+import { PANTRY_STAPLE_LABEL, RECIPE_MEAL_CLASS_PRIORITY, type RecipeDetailCostLine } from "@uiu/shared";
 import { classifyMealTypes, type FilterMealType } from "./recipeFilters";
 
 interface MealTagged {
@@ -127,11 +127,15 @@ export interface IngredientStoreLine {
   /** £price, only set when priceable. */
   price: string | null;
   unpriceable: boolean;
+  /** Unpriced pantry staple — shown as a small neutral note instead of "Price unavailable". */
+  pantry?: boolean;
 }
 
 /** Line 2: store name (mapped, left) + price (right), or a "no price data" fallback when unpriceable. */
 export function formatIngredientStorePrice(line: RecipeDetailCostLine | undefined): IngredientStoreLine {
   if (!line || !line.priceable || line.lineCost == null || !line.store) {
+    // Unpriced pantry staple (salt, pepper…): a plain note, not an "unavailable" warning.
+    if (line && !line.priceable && line.isPantry) return { label: PANTRY_STAPLE_LABEL, price: null, unpriceable: true, pantry: true };
     return { label: "Price unavailable", price: null, unpriceable: true };
   }
   return { label: displayStoreName(line.store), price: `£${line.lineCost.toFixed(2)}`, unpriceable: false };

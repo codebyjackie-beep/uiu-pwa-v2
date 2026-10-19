@@ -26,6 +26,7 @@ shopRouter.get("/restock-list", async (c) => {
         ? await db.collection("canonical_ingredients").find({ _id: { $in: canonicalIds } }).toArray()
         : [];
       const canonicalNameById = new Map(canonicalDocs.map((d) => [(d._id as ObjectIdType).toString(), d.canonical_name as string]));
+      const pantryNames = new Set(canonicalDocs.filter((d) => d.is_pantry === true || d.pantry_staple === true).map((d) => d.canonical_name as string));
 
       const canonicalNames = [...new Set(canonicalNameById.values())];
       const priceDocs = canonicalNames.length
@@ -45,6 +46,7 @@ shopRouter.get("/restock-list", async (c) => {
           unit: doc.unit as string,
           cheapest: cheapest ? { store: cheapest.store, price: cheapest.price } : null,
           ...(canonicalName ? { canonicalName } : {}),
+          ...(!cheapest && canonicalName && pantryNames.has(canonicalName) ? { isPantry: true } : {}),
         };
       });
     });
