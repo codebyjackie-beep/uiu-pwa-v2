@@ -976,8 +976,23 @@ export interface AffiliateProduct {
 }
 
 export type ShoppingListFromIngredientResponse =
-  | { merged: true }
+  | { merged: true; reason?: "already_on_list" | "in_fridge" }
   | { merged: false; added: true; item: ShoppingListItem };
+
+/** cc_prompt_guest_browse.md Part D2 — POST /api/shopping-list/check: per-ingredient flags the
+ * recipe "Add to shopping list" sheet uses for its default ticks. Same order as the request. */
+export interface ShoppingListCheckRequest {
+  ingredients: ShoppingListFromIngredientRequest[];
+}
+
+export interface ShoppingListCheckResult {
+  /** Matches fridge_stock (canonical id first, then name) — the same rule as from-ingredient. */
+  inFridge: boolean;
+  /** Canonical is a pantry staple (canonical_ingredients.pantry_staple / is_pantry). */
+  pantry: boolean;
+  /** An unchecked shopping-list item already has this text (case / plural normalised). */
+  onList: boolean;
+}
 
 export const API_VERSION = "0.1.0" as const;
 

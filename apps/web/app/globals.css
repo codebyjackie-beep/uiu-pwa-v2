@@ -930,6 +930,146 @@ a {
   margin: var(--space) 0 4px;
 }
 
+/* cc_prompt_guest_browse.md Part D1 — ❤️ beside the title (same look as .recipe-card__favourite). */
+.recipe-detail__title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.recipe-detail__title-row .recipe-detail__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipe-detail__favourite {
+  flex-shrink: 0;
+  margin-top: var(--space);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--uiu-border);
+  background: var(--card);
+  color: var(--uiu-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.recipe-detail__favourite--active {
+  color: var(--uiu-red);
+  border-color: var(--uiu-red);
+}
+
+/* cc_prompt_guest_browse.md Part D2 — Ingredients heading row + add-to-list sheet + toast. */
+.recipe-detail__ingredients-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: var(--space) 0 8px;
+}
+
+.recipe-detail__ingredients-head h2 {
+  margin: 0;
+  min-width: 0;
+}
+
+.recipe-detail__add-to-list {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--uiu-green-ink);
+  background: transparent;
+  color: var(--uiu-green-ink);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.add-to-list-sheet__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-to-list-sheet__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--uiu-border);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.add-to-list-sheet__row input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--uiu-green-ink);
+}
+
+.add-to-list-sheet__name {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-to-list-sheet__flag {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--uiu-overlay);
+  color: var(--uiu-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.add-to-list-sheet__status,
+.add-to-list-sheet__error {
+  margin: 0;
+  font-size: 14px;
+  color: var(--uiu-muted);
+}
+
+.add-to-list-sheet__error {
+  color: var(--uiu-red);
+}
+
+.add-to-list-sheet__submit {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 999px;
+}
+
+.add-to-list-toast {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  max-width: 528px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--uiu-black);
+  color: var(--uiu-white);
+  font-size: 14px;
+  z-index: 30;
+}
+
+.add-to-list-toast__link {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 /* cc_prompt_recipe-list-redesign-and-cook-mode.md Part B — ink-green (not --accent's bright
  * green, which .wizard-primary-button already uses elsewhere) so this CTA reads as its own
  * distinct "enter full-screen mode" action rather than a generic form-wizard button. */

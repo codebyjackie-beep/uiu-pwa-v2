@@ -4,8 +4,14 @@
  * fridge_stock, a manual item doesn't need a history trail once bought).
  */
 import { Hono } from "hono";
-import type { Document, ObjectId as ObjectIdType } from "mongodb";
-import type { ApiResponse, ShoppingListFromIngredientResponse, ShoppingListItem } from "@uiu/shared";
+import type { Db, Document, ObjectId as ObjectIdType } from "mongodb";
+import type {
+  ApiResponse,
+  ShoppingListCheckResult,
+  ShoppingListFromIngredientRequest,
+  ShoppingListFromIngredientResponse,
+  ShoppingListItem,
+} from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { findTitleMatch } from "../services/recipeDraftGenerator";
 
@@ -18,6 +24,51 @@ function toShoppingListItem(doc: Document): ShoppingListItem {
     checked: !!doc.checked,
     addedAt: doc.addedAt as string,
   };
+}
+
+/** One word to its singular: case / plural folding for "already on the list" matching
+ * ("Prawns" == "prawn", "tomatoes" == "tomato", "cherries" == "cherry"). */
+function singularWord(w: string): string {
+  if (w.length > 3 && w.endsWith("ies")) return `${w.slice(0, -3)}y`;
+  if (w.length > 3 && /(oes|ches|shes|xes|sses)$/.test(w)) return w.slice(0, -2);
+  if (w.length > 2 && w.endsWith("s") && !/(ss|us|is)$/.test(w)) return w.slice(0, -1);
+  return w;
+}
+
+export function normalizeListText(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(singularWord)
+    .join(" ");
+}
+
+type FridgeIndex = { canonicalIds: Set<string>; names: string[] };
+
+async function loadFridgeIndex(db: Db, userId: string): Promise<FridgeIndex> {
+  const docs = await db
+    .collection("fridge_stock")
+    .find({ userId }, { projection: { ingredientName: 1, canonicalIngredientId: 1 } })
+    .toArray();
+  return {
+    canonicalIds: new Set(docs.filter((d) => d.canonicalIngredientId).map((d) => String(d.canonicalIngredientId))),
+    names: docs.map((d) => d.ingredientName as string),
+  };
+}
+
+/** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 rule, shared by from-ingredient and check:
+ * canonical id match first, then exact/substring name match via recipeDraftGenerator's title-dedup. */
+function fridgeHas(fridge: FridgeIndex, ingredientName: string, canonicalDoc: Document | null | undefined): boolean {
+  if (canonicalDoc && fridge.canonicalIds.has(String(canonicalDoc._id))) return true;
+  return findTitleMatch(ingredientName, fridge.names) !== null;
+}
+
+/** Normalised texts of the user's unchecked shopping-list items. */
+async function loadOnListTexts(db: Db, userId: string): Promise<Set<string>> {
+  const docs = await db.collection("shopping_list_items").find({ userId, checked: false }, { projection: { text: 1 } }).toArray();
+  return new Set(docs.map((d) => normalizeListText(String(d.text ?? ""))).filter(Boolean));
 }
 
 shoppingListRouter.get("/", async (c) => {
@@ -55,8 +106,48 @@ shoppingListRouter.post("/", async (c) => {
   }
 });
 
+/** cc_prompt_guest_browse.md Part D2 — read-only flags for the recipe "Add to shopping list" sheet. */
+shoppingListRouter.post("/check", async (c) => {
+  const payload = (await c.req.json().catch(() => null)) as { ingredients?: ShoppingListFromIngredientRequest[] } | null;
+  const ingredients = payload?.ingredients;
+  if (!Array.isArray(ingredients) || ingredients.length > 100 || ingredients.some((i) => typeof i?.ingredientName !== "string")) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "ingredients[] (max 100) is required" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const results = await withDb(c.env, async (db) => {
+      const userId = c.var.clerkUserId;
+      const canonicalNames = [...new Set(ingredients.map((i) => i.canonicalName).filter((n): n is string => typeof n === "string" && n !== ""))];
+      const [canonicalDocs, fridge, onList] = await Promise.all([
+        canonicalNames.length ? db.collection("canonical_ingredients").find({ canonical_name: { $in: canonicalNames } }).toArray() : Promise.resolve([] as Document[]),
+        loadFridgeIndex(db, userId),
+        loadOnListTexts(db, userId),
+      ]);
+      const canonicalByName = new Map(canonicalDocs.map((d) => [d.canonical_name as string, d]));
+      return ingredients.map((ing): ShoppingListCheckResult => {
+        const canonicalDoc = ing.canonicalName ? canonicalByName.get(ing.canonicalName) : undefined;
+        const keys = [ing.ingredientName, ing.canonicalName].filter((k): k is string => !!k).map(normalizeListText);
+        return {
+          inFridge: fridgeHas(fridge, ing.ingredientName, canonicalDoc),
+          pantry: !!canonicalDoc && (canonicalDoc.is_pantry === true || canonicalDoc.pantry_staple === true),
+          onList: keys.some((k) => k !== "" && onList.has(k)),
+        };
+      });
+    });
+    const body: ApiResponse<{ results: ShoppingListCheckResult[] }> = { ok: true, data: { results } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] shopping-list check error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to check ingredients" } };
+    return c.json(body, 502);
+  }
+});
+
 /** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 — dedupe check against fridge_stock
- * before inserting a meal-plan-aggregated ingredient. Never writes to fridge_stock. */
+ * before inserting a meal-plan-aggregated ingredient. Never writes to fridge_stock.
+ * cc_prompt_guest_browse.md Part D2 — also skips when the user already has an unchecked item with
+ * the same text (case / plural normalised): `{ merged: true, reason: "already_on_list" }`. */
 shoppingListRouter.post("/from-ingredient", async (c) => {
   const payload = await c.req.json().catch(() => null);
   const ingredientName = payload?.ingredientName as string | undefined;
@@ -67,26 +158,17 @@ shoppingListRouter.post("/from-ingredient", async (c) => {
   }
 
   try {
-    const merged = await withDb(c.env, async (db) => {
-      if (canonicalName) {
-        const canonicalDoc = await db.collection("canonical_ingredients").findOne({ canonical_name: canonicalName });
-        if (canonicalDoc) {
-          const fridgeMatch = await db
-            .collection("fridge_stock")
-            .findOne({ userId: c.var.clerkUserId, canonicalIngredientId: canonicalDoc._id as ObjectIdType });
-          if (fridgeMatch) return true;
-        }
-      }
+    const reason = await withDb(c.env, async (db) => {
+      const userId = c.var.clerkUserId;
+      const onList = await loadOnListTexts(db, userId);
+      if (onList.has(normalizeListText(ingredientName))) return "already_on_list" as const;
 
-      // Fallback: exact/substring name match against fridge_stock.ingredientName,
-      // reusing recipeDraftGenerator's title-dedup rule per the handoff.
-      const fridgeDocs = await db.collection("fridge_stock").find({ userId: c.var.clerkUserId }, { projection: { ingredientName: 1 } }).toArray();
-      const fridgeNames = fridgeDocs.map((d) => d.ingredientName as string);
-      return findTitleMatch(ingredientName, fridgeNames) !== null;
+      const canonicalDoc = canonicalName ? await db.collection("canonical_ingredients").findOne({ canonical_name: canonicalName }) : null;
+      return fridgeHas(await loadFridgeIndex(db, userId), ingredientName, canonicalDoc) ? ("in_fridge" as const) : null;
     });
 
-    if (merged) {
-      const body: ApiResponse<ShoppingListFromIngredientResponse> = { ok: true, data: { merged: true } };
+    if (reason) {
+      const body: ApiResponse<ShoppingListFromIngredientResponse> = { ok: true, data: { merged: true, reason } };
       return c.json(body);
     }
 

@@ -8,6 +8,8 @@ import {
 } from "@uiu/shared";
 import { apiGet } from "../../lib/api";
 import { PricesChecked } from "../../components/PricesChecked";
+import { RecipeAddToList } from "./RecipeAddToList";
+import { RecipeFavouriteButton } from "./RecipeFavouriteButton";
 import {
   costPendingLabel,
   dietaryBadges,
@@ -58,7 +60,10 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         </div>
       )}
 
-      <h1 className="recipe-detail__title">{recipe.title}</h1>
+      <div className="recipe-detail__title-row">
+        <h1 className="recipe-detail__title">{recipe.title}</h1>
+        <RecipeFavouriteButton recipeId={id} />
+      </div>
 
       {recipe.steps.length > 0 && (
         <Link href={`/recipes/${id}/cook`} className="recipe-detail__cook-cta">
@@ -128,9 +133,17 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         </div>
       )}
 
-      <h2>
-        Ingredients <span className="recipe-detail__ingredients-note">(makes {recipe.servings} serving{recipe.servings === 1 ? "" : "s"})</span>
-      </h2>
+      <div className="recipe-detail__ingredients-head">
+        <h2>
+          Ingredients <span className="recipe-detail__ingredients-note">(makes {recipe.servings} serving{recipe.servings === 1 ? "" : "s"})</span>
+        </h2>
+        <RecipeAddToList
+          ingredients={recipe.ingredients.map((ing) => {
+            const line = lineFor(recipe, ing);
+            return { name: ingredientName(line, ing.name), canonicalName: line?.canonicalName || undefined };
+          })}
+        />
+      </div>
       <ul className="recipe-detail__ingredients">
         {recipe.ingredients.map((ing, i) => {
           const line = lineFor(recipe, ing);
