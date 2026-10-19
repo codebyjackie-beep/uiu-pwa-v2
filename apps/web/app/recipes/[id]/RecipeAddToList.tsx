@@ -16,6 +16,8 @@ type Flag = "fridge" | "pantry" | "list";
 interface Row {
   ingredient: AddToListIngredient;
   flag: Flag | null;
+  /** Part 0b — the fridge item that matched, shown as "In your fridge (Garlic)". */
+  fridgeMatch?: string;
   checked: boolean;
 }
 
@@ -73,7 +75,7 @@ export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredi
     setRows(
       ingredients.map((ingredient, i) => {
         const flag = flagFor(results[i]);
-        return { ingredient, flag, checked: flag === null };
+        return { ingredient, flag, fridgeMatch: flag === "fridge" ? results[i]?.fridgeMatch : undefined, checked: flag === null };
       }),
     );
   }
@@ -140,7 +142,7 @@ export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredi
                       <label className="add-to-list-sheet__row">
                         <input type="checkbox" checked={row.checked} disabled={adding} onChange={() => toggleRow(i)} />
                         <span className="add-to-list-sheet__name">{row.ingredient.name}</span>
-                        {row.flag ? <span className={`add-to-list-sheet__flag add-to-list-sheet__flag--${row.flag}`}>{FLAG_LABEL[row.flag]}</span> : null}
+                        {row.flag ? <span className={`add-to-list-sheet__flag add-to-list-sheet__flag--${row.flag}`}>{row.flag === "fridge" && row.fridgeMatch ? `${FLAG_LABEL.fridge} (${row.fridgeMatch})` : FLAG_LABEL[row.flag]}</span> : null}
                       </label>
                     </li>
                   ))}

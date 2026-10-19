@@ -278,6 +278,9 @@ function parsePackGuarded(title: string | undefined, referencePack: Pack | null)
   return { pack: null, source: "unknown", flags };
 }
 
+/** Guard 5 predicate (also used by the shopping-list price comparison): a per-unit value more than 3x, or less than 1/3, of its dimension's median. */
+export const isOutlier3x = (perUnit: number, med: number): boolean => perUnit > med * 3 || perUnit < med / 3;
+
 export type AmbiguousMode = "exclude" | "total" | "each";
 export type GuardCtx = { matcher: (title: string | undefined) => MatchResult; referencePack: Pack | null };
 
@@ -311,7 +314,7 @@ export function computeGuarded(rawListings: RawListing[], ctx: GuardCtx, ambiguo
     const med = median(cands.map((r) => r.per_unit))!;
     const kept: any[] = [];
     for (const r of cands) {
-      if (r.per_unit > med * 3 || r.per_unit < med / 3) { r.status = "dropped"; r.reason = `outlier_3x(median ${r5(med)})`; } else kept.push(r);
+      if (isOutlier3x(r.per_unit, med)) { r.status = "dropped"; r.reason = `outlier_3x(median ${r5(med)})`; } else kept.push(r);
     }
     dims[unit] = { n: kept.length, medianBefore: med, value: median(kept.map((r) => r.per_unit)), droppedOutliers: cands.length - kept.length };
   }

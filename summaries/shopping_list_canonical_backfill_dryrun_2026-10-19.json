@@ -1,0 +1,82 @@
+{
+  "generatedAt": "2026-10-19T15:50:13.227Z",
+  "mode": "dry-run",
+  "rule": "ingredientResolver exact/alias only (no fuzzy); null = unresolved",
+  "shoppingListItemsTotal": 10,
+  "withoutCanonicalNameField": 10,
+  "resolved": 9,
+  "unresolved": 1,
+  "fuzzyOnlyNotUsed": [],
+  "items": [
+    {
+      "_id": "6acb828b33ae4d4249af696f",
+      "userId": "user_3JKvGoTTM94f8ZDdlWblF8Dk4ve",
+      "text": "alpro soya milk",
+      "checked": false,
+      "canonicalName": null
+    },
+    {
+      "_id": "6ad62e0260470d3e46b9cf01",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "King Prawns, peeled and deveined",
+      "checked": false,
+      "canonicalName": "king prawns, peeled and deveined"
+    },
+    {
+      "_id": "6ad62e0260470d3e46b9cf02",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Arborio Rice",
+      "checked": false,
+      "canonicalName": "arborio rice"
+    },
+    {
+      "_id": "6ad62e0360470d3e46b9cf03",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Vegetable or Fish Broth, hot",
+      "checked": false,
+      "canonicalName": "vegetable or fish broth, hot"
+    },
+    {
+      "_id": "6ad62e0360470d3e46b9cf04",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Dry White Wine (e.g., Pinot Grigio)",
+      "checked": false,
+      "canonicalName": "dry white wine (e.g., pinot grigio)"
+    },
+    {
+      "_id": "6ad62e0460470d3e46b9cf05",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Onion, finely diced",
+      "checked": false,
+      "canonicalName": "onion"
+    },
+    {
+      "_id": "6ad62e0560470d3e46b9cf06",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Parmesan Cheese, freshly grated",
+      "checked": false,
+      "canonicalName": "parmesan cheese"
+    },
+    {
+      "_id": "6ad62e0560470d3e46b9cf07",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Unsalted Butter",
+      "checked": false,
+      "canonicalName": "unsalted butter"
+    },
+    {
+      "_id": "6ad62e0660470d3e46b9cf08",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Olive Oil",
+      "checked": false,
+      "canonicalName": "olive oil"
+    },
+    {
+      "_id": "6ad62e0660470d3e46b9cf09",
+      "userId": "user_3KTcW1QgNcKxyHRw3sGQvyqWAn3",
+      "text": "Fresh Parsley, chopped",
+      "checked": false,
+      "canonicalName": "fresh parsley, chopped"
+    }
+  ]
+}

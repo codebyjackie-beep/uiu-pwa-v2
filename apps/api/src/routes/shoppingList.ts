@@ -11,9 +11,12 @@ import type {
   ShoppingListFromIngredientRequest,
   ShoppingListFromIngredientResponse,
   ShoppingListItem,
+  ShoppingListResponse,
 } from "@uiu/shared";
+import { computeShoppingListStoreTotals } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
-import { findTitleMatch } from "../services/recipeDraftGenerator";
+import { buildAliasIndex, resolve } from "../services/ingredientResolver";
+import { buildItemPrices } from "../services/shoppingListPrices";
 
 export const shoppingListRouter = new Hono<{ Bindings: DbEnv }>();
 
@@ -23,6 +26,7 @@ function toShoppingListItem(doc: Document): ShoppingListItem {
     text: doc.text as string,
     checked: !!doc.checked,
     addedAt: doc.addedAt as string,
+    ...(doc.canonicalName !== undefined ? { canonicalName: (doc.canonicalName as string | null) ?? null } : {}),
   };
 }
 
@@ -45,24 +49,79 @@ export function normalizeListText(text: string): string {
     .join(" ");
 }
 
-type FridgeIndex = { canonicalIds: Set<string>; names: string[] };
+type FridgeIndex = { canonicalIds: Map<string, string>; names: string[] };
 
-async function loadFridgeIndex(db: Db, userId: string): Promise<FridgeIndex> {
-  const docs = await db
-    .collection("fridge_stock")
-    .find({ userId }, { projection: { ingredientName: 1, canonicalIngredientId: 1 } })
-    .toArray();
+/** Europe/London calendar day (YYYY-MM-DD) of an instant — "today" for expiry is the user's day, not UTC's. */
+export function londonDay(d: Date): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+}
+
+/**
+ * Part 0b — what the user can still use: not flagged needsRestock, and not expired. An item expiring today still counts; one whose
+ * expiresAt day (Europe/London) is before today doesn't. A missing / unparseable expiresAt counts as in date.
+ */
+export function isUsableFridgeDoc(doc: Document, today: string): boolean {
+  if (doc.needsRestock === true) return false;
+  if (typeof doc.expiresAt === "string" || doc.expiresAt instanceof Date) {
+    const t = new Date(doc.expiresAt);
+    if (!Number.isNaN(t.getTime()) && londonDay(t) < today) return false;
+  }
+  return true;
+}
+
+async function loadFridgeIndex(db: Db, userId: string, now: Date = new Date()): Promise<FridgeIndex> {
+  const today = londonDay(now);
+  const docs = (
+    await db
+      .collection("fridge_stock")
+      .find({ userId }, { projection: { ingredientName: 1, canonicalIngredientId: 1, needsRestock: 1, expiresAt: 1 } })
+      .toArray()
+  ).filter((d) => isUsableFridgeDoc(d, today));
   return {
-    canonicalIds: new Set(docs.filter((d) => d.canonicalIngredientId).map((d) => String(d.canonicalIngredientId))),
+    canonicalIds: new Map(docs.filter((d) => d.canonicalIngredientId).map((d) => [String(d.canonicalIngredientId), String(d.ingredientName ?? "")])),
     names: docs.map((d) => d.ingredientName as string),
   };
 }
 
+/** Words that describe the state of an ingredient, not what it is — ignored when comparing names. */
+const FRIDGE_DESCRIPTOR_WORDS = new Set(["fresh", "chopped", "minced", "diced", "sliced", "peeled", "large", "small"]);
+/** Words that turn one product into another (chicken -> chicken stock cube, milk -> coconut milk tin): extra ones on the longer name = no match. */
+const FRIDGE_TYPE_CHANGING_WORDS = new Set(["stock", "cube", "tin", "canned", "milk", "powder", "paste", "sauce", "oil", "juice", "extract", "flake", "seed"]);
+
+function fridgeTokens(name: string): string[] {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(singularWord)
+    .filter((w) => !FRIDGE_DESCRIPTOR_WORDS.has(w));
+}
+
+/**
+ * Part 0b — does a fridge item's name cover this recipe ingredient? Whole words only: every word of the shorter name (singularised,
+ * descriptor words dropped) must be a whole word of the longer one, and the longer one may not add a type-changing word the shorter
+ * lacks. Replaces the old "normalised length > 8 => substring" rule, which let "chicken" cover a chicken stock cube.
+ */
+export function fridgeNameMatches(ingredientName: string, fridgeName: string): boolean {
+  const a = fridgeTokens(ingredientName);
+  const b = fridgeTokens(fridgeName);
+  if (a.length === 0 || b.length === 0) return false;
+  const [short, long] = a.length <= b.length ? [a, b] : [b, a];
+  const longSet = new Set(long);
+  if (!short.every((w) => longSet.has(w))) return false;
+  const shortSet = new Set(short);
+  return !long.some((w) => !shortSet.has(w) && FRIDGE_TYPE_CHANGING_WORDS.has(w));
+}
+
 /** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 rule, shared by from-ingredient and check:
- * canonical id match first, then exact/substring name match via recipeDraftGenerator's title-dedup. */
-function fridgeHas(fridge: FridgeIndex, ingredientName: string, canonicalDoc: Document | null | undefined): boolean {
-  if (canonicalDoc && fridge.canonicalIds.has(String(canonicalDoc._id))) return true;
-  return findTitleMatch(ingredientName, fridge.names) !== null;
+ * canonical id match first, then the whole-word name match above. Returns the fridge item's own name, or null. */
+function fridgeMatchName(fridge: FridgeIndex, ingredientName: string, canonicalDoc: Document | null | undefined): string | null {
+  if (canonicalDoc) {
+    const byId = fridge.canonicalIds.get(String(canonicalDoc._id));
+    if (byId !== undefined) return byId;
+  }
+  return fridge.names.find((n) => fridgeNameMatches(ingredientName, n)) ?? null;
 }
 
 /** Normalised texts of the user's unchecked shopping-list items. */
@@ -71,10 +130,30 @@ async function loadOnListTexts(db: Db, userId: string): Promise<Set<string>> {
   return new Set(docs.map((d) => normalizeListText(String(d.text ?? ""))).filter(Boolean));
 }
 
+/** Part A — canonical_name for free text via the ingredient resolver: exact or alias hit only, never the fuzzy fallback. */
+export async function resolveCanonicalExact(db: Db, text: string): Promise<string | null> {
+  const r = resolve(text, await buildAliasIndex(db.collection("canonical_ingredients")));
+  return "canonical_name" in r && r.method === "exact" ? r.canonical_name : null;
+}
+
 shoppingListRouter.get("/", async (c) => {
   try {
-    const docs = await withDb(c.env, (db) => db.collection("shopping_list_items").find({ userId: c.var.clerkUserId }).sort({ addedAt: 1 }).toArray());
-    const body: ApiResponse<ShoppingListItem[]> = { ok: true, data: docs.map(toShoppingListItem) };
+    const { items, storeTotals } = await withDb(c.env, async (db) => {
+      const docs = await db.collection("shopping_list_items").find({ userId: c.var.clerkUserId }).sort({ addedAt: 1 }).toArray();
+      // Part B — attach every qualified product price (canonical_price_cache read only, 0 Serper credits) to lines that carry a canonical.
+      const names = [...new Set(docs.map((d) => d.canonicalName).filter((n): n is string => typeof n === "string" && n !== ""))];
+      const cache = names.length
+        ? await db.collection("canonical_price_cache").find({ canonical_name: { $in: names } }, { projection: { canonical_name: 1, listings: 1, metadata: 1 } }).toArray()
+        : [];
+      const byName = new Map(cache.map((d) => [d.canonical_name as string, d]));
+      const items = docs.map((d) => {
+        const item = toShoppingListItem(d);
+        const cacheDoc = typeof d.canonicalName === "string" ? byName.get(d.canonicalName) : undefined;
+        return { ...item, prices: cacheDoc ? buildItemPrices(d.canonicalName as string, cacheDoc) : null };
+      });
+      return { items, storeTotals: computeShoppingListStoreTotals(items) };
+    });
+    const body: ShoppingListResponse = { ok: true, data: items, storeTotals };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] shopping-list list error:", err instanceof Error ? err.message : String(err));
@@ -92,8 +171,10 @@ shoppingListRouter.post("/", async (c) => {
   }
 
   try {
-    const doc = { userId: c.var.clerkUserId, text: text.trim(), checked: false, addedAt: new Date().toISOString() };
     const inserted = await withDb(c.env, async (db) => {
+      // Part A — resolve the typed text with the same resolver costRecipe() uses, exact / alias only (no fuzzy); null when it doesn't resolve.
+      const canonicalName = await resolveCanonicalExact(db, text.trim());
+      const doc = { userId: c.var.clerkUserId, text: text.trim(), canonicalName, checked: false, addedAt: new Date().toISOString() };
       const result = await db.collection("shopping_list_items").insertOne(doc);
       return { ...doc, _id: result.insertedId };
     });
@@ -128,8 +209,10 @@ shoppingListRouter.post("/check", async (c) => {
       return ingredients.map((ing): ShoppingListCheckResult => {
         const canonicalDoc = ing.canonicalName ? canonicalByName.get(ing.canonicalName) : undefined;
         const keys = [ing.ingredientName, ing.canonicalName].filter((k): k is string => !!k).map(normalizeListText);
+        const fridgeMatch = fridgeMatchName(fridge, ing.ingredientName, canonicalDoc);
         return {
-          inFridge: fridgeHas(fridge, ing.ingredientName, canonicalDoc),
+          inFridge: fridgeMatch !== null,
+          ...(fridgeMatch ? { fridgeMatch } : {}),
           pantry: !!canonicalDoc && (canonicalDoc.is_pantry === true || canonicalDoc.pantry_staple === true),
           onList: keys.some((k) => k !== "" && onList.has(k)),
         };
@@ -164,7 +247,7 @@ shoppingListRouter.post("/from-ingredient", async (c) => {
       if (onList.has(normalizeListText(ingredientName))) return "already_on_list" as const;
 
       const canonicalDoc = canonicalName ? await db.collection("canonical_ingredients").findOne({ canonical_name: canonicalName }) : null;
-      return fridgeHas(await loadFridgeIndex(db, userId), ingredientName, canonicalDoc) ? ("in_fridge" as const) : null;
+      return fridgeMatchName(await loadFridgeIndex(db, userId), ingredientName, canonicalDoc) !== null ? ("in_fridge" as const) : null;
     });
 
     if (reason) {
@@ -172,7 +255,14 @@ shoppingListRouter.post("/from-ingredient", async (c) => {
       return c.json(body);
     }
 
-    const doc = { userId: c.var.clerkUserId, text: ingredientName.trim(), checked: false, addedAt: new Date().toISOString() };
+    // Part A — keep the canonical the recipe / plan resolved (null when it sent none), so the Shop tab can price the line.
+    const doc = {
+      userId: c.var.clerkUserId,
+      text: ingredientName.trim(),
+      canonicalName: typeof canonicalName === "string" && canonicalName.trim() ? canonicalName.trim() : null,
+      checked: false,
+      addedAt: new Date().toISOString(),
+    };
     const inserted = await withDb(c.env, async (db) => {
       const result = await db.collection("shopping_list_items").insertOne(doc);
       return { ...doc, _id: result.insertedId as ObjectIdType };

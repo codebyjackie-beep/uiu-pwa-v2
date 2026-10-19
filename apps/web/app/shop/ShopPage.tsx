@@ -2,8 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
-import type { AffiliateProduct, ApiResponse, ShopPricesStamp, ShopRestockItem, ShoppingListItem } from "@uiu/shared";
+import { computeShoppingListStoreTotals, formatPricesChecked, isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
+import type {
+  AffiliateProduct,
+  ApiResponse,
+  ShopPricesStamp,
+  ShopRestockItem,
+  ShoppingListItem,
+  ShoppingListPriceOption,
+} from "@uiu/shared";
 import { PricesChecked } from "../components/PricesChecked";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
@@ -16,6 +23,20 @@ function formatCost(value: number): string {
   return `£${value.toFixed(2)}`;
 }
 
+const OPTIONS_PREVIEW = 6;
+
+function formatPerUnit(o: ShoppingListPriceOption): string | null {
+  if (!o.perUnit) return null;
+  return o.perUnit.unit === "each" ? `${formatCost(o.perUnit.value)} each` : `${formatCost(o.perUnit.value)}/${o.perUnit.unit}`;
+}
+
+/** "Tesco £3.30 · 1kg · £3.30/kg" — pack and £/unit left out when unknown. */
+function optionSummary(o: ShoppingListPriceOption): string {
+  return [`${o.store} ${formatCost(o.price)}`, o.packLabel, formatPerUnit(o)].filter(Boolean).join(" · ");
+}
+
+const sameOption = (a: ShoppingListPriceOption, b: ShoppingListPriceOption) => a.storeKey === b.storeKey && a.title === b.title && a.price === b.price;
+
 export function ShopPage() {
   const [restockItems, setRestockItems] = useState<ShopRestockItem[]>([]);
   const [restockLoading, setRestockLoading] = useState(true);
@@ -26,6 +47,8 @@ export function ShopPage() {
   const [manualLoading, setManualLoading] = useState(true);
   const [manualText, setManualText] = useState("");
   const [adding, setAdding] = useState(false);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [showAll, setShowAll] = useState<Set<string>>(new Set());
 
   const [toast, setToast] = useState<string | null>(null);
 
@@ -123,6 +146,21 @@ export function ShopPage() {
     }
   }
 
+  function toggleIn(setter: (fn: (prev: Set<string>) => Set<string>) => void, id: string) {
+    setter((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+  }
+
+  // Ticked items drop out of the totals straight away — recomputed on the client, no refetch.
+  const storeTotals = computeShoppingListStoreTotals(manualItems);
+  const priceStamp = manualItems.reduce<number | null>((max, i) => {
+    const t = i.prices?.stamp ? Date.parse(i.prices.stamp) : Number.NaN;
+    return Number.isFinite(t) && (max === null || t > max) ? t : max;
+  }, null);
+
   async function clearChecked() {
     const checked = manualItems.filter((i) => i.checked);
     if (checked.length === 0) return;
@@ -208,13 +246,92 @@ export function ShopPage() {
         {!manualLoading && manualItems.length === 0 ? <p className="admin-drafts-page__sub">No manual items yet.</p> : null}
 
         <div className="shop-manual-list">
-          {manualItems.map((item) => (
-            <label key={item._id} className={`shop-manual-item${item.checked ? " shop-manual-item--checked" : ""}`}>
-              <input type="checkbox" checked={item.checked} onChange={() => toggleManualItem(item)} />
-              <span>{item.text}</span>
-            </label>
-          ))}
+          {manualItems.map((item) => {
+            const prices = item.prices ?? null;
+            const best = prices ? (prices.bestValue ?? prices.cheapestPack) : null;
+            const isOpen = !!prices && expanded.has(item._id);
+            const all = showAll.has(item._id);
+            const options = prices ? (all ? prices.options : prices.options.slice(0, OPTIONS_PREVIEW)) : [];
+            const stock = isStockLikeName(item.canonicalName);
+            return (
+              <div key={item._id} className={`shop-manual-item${item.checked ? " shop-manual-item--checked" : ""}`}>
+                <div className="shop-manual-item__row">
+                  <label className="shop-manual-item__check">
+                    <input type="checkbox" checked={item.checked} onChange={() => toggleManualItem(item)} />
+                    <span className="shop-manual-item__body">
+                      <span className="shop-manual-item__text">{item.text}</span>
+                      {best && prices ? (
+                        <>
+                          <span className="shop-manual-item__price">{optionSummary(best)}</span>
+                          {!sameOption(best, prices.cheapestPack) ? (
+                            <span className="shop-manual-item__cheapest">
+                              Cheapest pack: {prices.cheapestPack.store} {formatCost(prices.cheapestPack.price)}
+                            </span>
+                          ) : null}
+                          {stock ? <span className="shop-manual-item__cheapest">{STOCK_PRICED_LABEL}</span> : null}
+                        </>
+                      ) : (
+                        <span className="shop-manual-item__price shop-manual-item__price--none">No price yet</span>
+                      )}
+                    </span>
+                  </label>
+                  {prices ? (
+                    <button
+                      type="button"
+                      className="shop-manual-item__toggle"
+                      aria-expanded={isOpen}
+                      aria-label={isOpen ? `Hide prices for ${item.text}` : `Show all prices for ${item.text}`}
+                      onClick={() => toggleIn(setExpanded, item._id)}
+                    >
+                      {isOpen ? "▴" : "▾"}
+                    </button>
+                  ) : null}
+                </div>
+                {isOpen && prices ? (
+                  <div className="shop-options">
+                    {options.map((o) => (
+                      <div key={`${o.storeKey}|${o.title}|${o.price}`} className="shop-option">
+                        <div className="shop-option__main">
+                          <span className="shop-option__store">{o.store}</span>
+                          <span className="shop-option__title">{o.title}</span>
+                          <span className="shop-option__meta">
+                            {[o.packLabel, formatPerUnit(o)].filter(Boolean).join(" · ") || "Pack size not listed"}
+                            {o.packAssumed ? " (assumed)" : ""}
+                          </span>
+                          {prices.bestValue && sameOption(o, prices.bestValue) ? <span className="shop-option__tag">Best value</span> : null}
+                          {sameOption(o, prices.cheapestPack) ? <span className="shop-option__tag shop-option__tag--cheap">Cheapest</span> : null}
+                        </div>
+                        <span className="shop-option__price">{formatCost(o.price)}</span>
+                      </div>
+                    ))}
+                    {!all && prices.options.length > OPTIONS_PREVIEW ? (
+                      <button type="button" className="shop-options__more" onClick={() => toggleIn(setShowAll, item._id)}>
+                        Show all {prices.options.length}
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
+
+        {storeTotals.length > 0 ? (
+          <div className="shop-store-totals">
+            <h3>If you shop at one store</h3>
+            {storeTotals.map((t) => (
+              <div key={t.storeKey} className="shop-store-totals__row">
+                <span>{t.store}</span>
+                <span>
+                  {formatCost(t.total)} <span className="shop-store-totals__count">({t.itemsPriced}/{t.itemsTotal} priced)</span>
+                </span>
+              </div>
+            ))}
+            <p className="shop-store-totals__note">
+              Cheapest pack of each item · {formatPricesChecked(priceStamp ?? pricesStamp) ?? "Prices checked recently"}
+            </p>
+          </div>
+        ) : null}
 
         {manualItems.some((i) => i.checked) ? (
           <button type="button" className="wizard-secondary-button" onClick={clearChecked}>

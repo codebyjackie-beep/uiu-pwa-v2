@@ -952,6 +952,77 @@ export interface ShoppingListItem {
   text: string;
   checked: boolean;
   addedAt: ISODate;
+  /** cc_prompt_shopping_list_price_compare.md Part A — resolved canonical_ingredients.canonical_name, null when the text didn't resolve
+   * (exact / alias only, no fuzzy). Absent on items saved before Part A until the backfill runs. */
+  canonicalName?: string | null;
+  /** Part B — GET /api/shopping-list only: every qualified product price for the canonical; null = no canonical / no listing. */
+  prices?: ShoppingListItemPrices | null;
+}
+
+/** cc_prompt_shopping_list_price_compare.md Part B — one supermarket product that could satisfy a shopping-list line. */
+export interface ShoppingListPriceOption {
+  /** Display name: Tesco / Sainsbury's / Asda / Morrisons / Waitrose / Ocado / Iceland / Co-op / Aldi / Lidl. */
+  store: string;
+  storeKey: string;
+  title: string;
+  price: number;
+  /** "500g", "1kg", "2L", "6 pack", "each" — null when the pack could not be read from the listing. */
+  packLabel: string | null;
+  /** Price per kg / per litre / each; null when the pack is unknown (never guessed). */
+  perUnit: { value: number; unit: "kg" | "L" | "each" } | null;
+  /** The pack size was assumed from the canonical's reference pack, not read from this listing's title. */
+  packAssumed?: true;
+  /** The canonical is priced as a made-up stock cube (stock / broth) — show the stock label. */
+  stockLabel?: true;
+}
+
+export interface ShoppingListItemPrices {
+  /** Every qualified listing (any brand / size / store), best £/unit first; listings without £/unit last by price. */
+  options: ShoppingListPriceOption[];
+  /** Lowest shelf price. */
+  cheapestPack: ShoppingListPriceOption;
+  /** Lowest £/unit (null when no option has a £/unit). */
+  bestValue: ShoppingListPriceOption | null;
+  /** canonical_price_cache metadata.fetched_at */
+  stamp: string | null;
+}
+
+/** "If you shop at one store" row: cheapest pack of each UNCHECKED item at that store. */
+export interface ShoppingListStoreTotal {
+  storeKey: string;
+  store: string;
+  total: number;
+  itemsPriced: number;
+  itemsTotal: number;
+}
+
+/** GET /api/shopping-list — `data` stays the item array; the one-store totals ride beside it. */
+export type ShoppingListResponse = ApiResponse<ShoppingListItem[]> & { storeTotals?: ShoppingListStoreTotal[] };
+
+/**
+ * "If you shop at one store": for each store, the cheapest pack of every UNCHECKED item that store stocks, summed.
+ * itemsTotal = unchecked items; stores with no priced item are left out; sorted by itemsPriced desc, then total asc.
+ * One function for the API (GET /api/shopping-list) and the Shop tab (re-run on every tick / untick).
+ */
+export function computeShoppingListStoreTotals(items: readonly Pick<ShoppingListItem, "checked" | "prices">[]): ShoppingListStoreTotal[] {
+  const open = items.filter((i) => !i.checked);
+  const byStore = new Map<string, ShoppingListStoreTotal>();
+  for (const item of open) {
+    const cheapestAt = new Map<string, ShoppingListPriceOption>();
+    for (const o of item.prices?.options ?? []) {
+      const cur = cheapestAt.get(o.storeKey);
+      if (!cur || o.price < cur.price) cheapestAt.set(o.storeKey, o);
+    }
+    for (const [key, o] of cheapestAt) {
+      const row = byStore.get(key) ?? { storeKey: key, store: o.store, total: 0, itemsPriced: 0, itemsTotal: open.length };
+      row.total += o.price;
+      row.itemsPriced += 1;
+      byStore.set(key, row);
+    }
+  }
+  return [...byStore.values()]
+    .map((r) => ({ ...r, total: Math.round(r.total * 100) / 100 }))
+    .sort((a, b) => b.itemsPriced - a.itemsPriced || a.total - b.total);
 }
 
 /** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 — dedupe an aggregated meal-plan
@@ -992,6 +1063,8 @@ export interface ShoppingListCheckResult {
   pantry: boolean;
   /** An unchecked shopping-list item already has this text (case / plural normalised). */
   onList: boolean;
+  /** Part 0b — the fridge item's own name that matched (shown as "In your fridge (Garlic)"); set only when inFridge. */
+  fridgeMatch?: string;
 }
 
 export const API_VERSION = "0.1.0" as const;
