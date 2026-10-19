@@ -13,6 +13,11 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isPublicRoute = createRouteMatcher([
   "/",
   "/how-it-works",
+  // cc_prompt_guest_browse.md Part B — guests may browse Recipes (list, detail, cook mode).
+  // /recipes/share-target stays gated: isShareTarget below overrides this.
+  "/recipes",
+  "/recipes/:id",
+  "/recipes/:id/cook",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/public-shop(.*)",
@@ -21,8 +26,10 @@ const isPublicRoute = createRouteMatcher([
   "/api/(.*)",
 ]);
 
+const isShareTarget = createRouteMatcher(["/recipes/share-target(.*)"]);
+
 export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
+  if (!isPublicRoute(req) || isShareTarget(req)) {
     await auth.protect();
   }
 });

@@ -4330,3 +4330,78 @@ a {
     text-align: left;
   }
 }
+
+/* cc_prompt_guest_browse.md Part B — guest banner on /recipes* and the "Sign up free to save this" sheet. */
+.guest-banner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 10px var(--space);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--uiu-surface-2);
+  border-bottom: 1px solid var(--uiu-border);
+}
+
+.guest-banner__text {
+  flex: 1;
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--uiu-muted);
+}
+
+.guest-banner__cta {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--uiu-black);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.guest-gate-modal__body {
+  align-items: stretch;
+  text-align: center;
+  gap: 12px;
+}
+
+.guest-gate-modal__title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.guest-gate-modal__text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--uiu-muted);
+  line-height: 1.5;
+}
+
+.guest-gate-modal__primary {
+  padding: 14px 20px;
+  border-radius: 999px;
+}
+
+.guest-gate-modal__secondary {
+  display: block;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--uiu-border);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--uiu-green-ink);
+}
+
+.guest-gate-modal__dismiss {
+  background: none;
+  border: none;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--uiu-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}

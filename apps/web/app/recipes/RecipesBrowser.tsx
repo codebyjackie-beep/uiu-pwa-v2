@@ -12,6 +12,7 @@ import {
   type FilterMealType,
 } from "../lib/recipeFilters";
 import { CoveragePrice } from "../components/CoveragePrice";
+import { useGuestGate } from "../components/GuestGate";
 import { SaveFromLinkModal } from "./SaveFromLinkModal";
 
 const RANDOM_BROWSE_SIZE = 10;
@@ -58,6 +59,10 @@ function toggle<T>(list: T[], value: T): T[] {
 }
 
 export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
+  // Guests (cc_prompt_guest_browse.md Part B) never call the auth-only endpoints below
+  // (/api/favourite-recipes, /api/recipe-browse/*): favourites open the sign-up sheet instead,
+  // and the random-10 refresh runs on local state with no daily cap.
+  const { isSignedIn, requireAuth } = useGuestGate();
   const [search, setSearch] = useState("");
   const [mealTypes, setMealTypes] = useState<FilterMealType[]>([]);
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
@@ -79,7 +84,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     const params = new URLSearchParams(window.location.search);
     const shareUrl = params.get("shareUrl");
     const shareText = params.get("shareText");
-    if (shareUrl || shareText) {
+    if ((shareUrl || shareText) && isSignedIn) {
       setSharePrefill({ url: shareUrl ?? undefined, text: shareText ?? undefined });
       setSaveFromLinkOpen(true);
       params.delete("shareUrl");
@@ -87,11 +92,12 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       const query = params.toString();
       window.history.replaceState(null, "", query ? `?${query}` : window.location.pathname);
     }
-  }, []);
+  }, [isSignedIn]);
 
   // Same fetch-on-mount + optimistic toggle pattern as MealPlannerBoard.tsx's favourite
   // heart — independent of Recipe.isFavorite/favoriteCount, see favouriteRecipes.ts header.
   useEffect(() => {
+    if (!isSignedIn) return;
     let cancelled = false;
     (async () => {
       const res = await fetch("/api/favourite-recipes");
@@ -101,9 +107,10 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isSignedIn]);
 
   async function toggleFavourite(recipeId: string) {
+    if (!requireAuth()) return;
     const isFav = favouriteIds.has(recipeId);
     setFavouriteIds((prev) => {
       const next = new Set(prev);
@@ -139,6 +146,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   }, [filtersSheetOpen]);
 
   useEffect(() => {
+    if (!isSignedIn) return;
     let cancelled = false;
     fetch("/api/recipe-browse/refresh-status")
       .then((r) => r.json())
@@ -149,10 +157,14 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isSignedIn]);
 
   async function doRefresh() {
     if (refreshing) return;
+    if (!isSignedIn) {
+      setRandomTen(pickRandom(items, RANDOM_BROWSE_SIZE));
+      return;
+    }
     setRefreshing(true);
     setRefreshError(null);
     const res = await fetch("/api/recipe-browse/refresh", { method: "POST" });
@@ -256,7 +268,10 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
           <button
             type="button"
             className={`chip${favouritesOnly ? " chip--active" : ""}`}
-            onClick={() => setFavouritesOnly(!favouritesOnly)}
+            onClick={() => {
+              if (!requireAuth()) return;
+              setFavouritesOnly(!favouritesOnly);
+            }}
           >
             ♥ Favourites
           </button>
@@ -420,7 +435,9 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
             {refreshing ? "Refreshing…" : "🔀 Refresh"}
           </button>
           <span>
-            {refreshError
+            {!isSignedIn
+              ? ""
+              : refreshError
               ? refreshError
               : remainingToday === 0
                 ? "You've used today's 3 refreshes — come back tomorrow"
@@ -435,7 +452,9 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
         type="button"
         className="recipes-fab"
         aria-label="Add a recipe"
-        onClick={() => setSaveFromLinkOpen(true)}
+        onClick={() => {
+          if (requireAuth()) setSaveFromLinkOpen(true);
+        }}
       >
         +
       </button>
