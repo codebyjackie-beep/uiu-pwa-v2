@@ -112,6 +112,11 @@ a {
   background: var(--uiu-surface);
 }
 
+.auth-page__redirecting {
+  color: var(--uiu-muted);
+  font-size: 14px;
+}
+
 /* --- /how-it-works (cc_prompt_welcome_page_v2.md): hero + feature sections with real app
    screenshots in a CSS phone frame. Layout takes cues from Mise's intro page only —
    colours are UIU tokens. Page text carries no numeric stats (09-13 / 09-14 decision). --- */

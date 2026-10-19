@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isSignedOutPublicPath } from "../lib/signedOutPublicPaths";
-import { authUrl } from "./GuestGate";
+import { authUrl, useGuestGate } from "./GuestGate";
 
 const ICON_PROPS = {
   width: 22,
@@ -91,7 +91,8 @@ const TABS = [
  * returns to the page they were on. Home bounces a guest to the welcome page; Recipes stays open. */
 const GUEST_GATED_HREFS = new Set(["/meal-planner", "/fridge", "/shop", "/health"]);
 
-export function BottomNav({ isSignedIn }: { isSignedIn: boolean }) {
+export function BottomNav() {
+  const { isSignedIn } = useGuestGate();
   const pathname = usePathname();
   if (!isSignedIn && isSignedOutPublicPath(pathname)) return null;
   // cc_prompt_recipe-list-redesign-and-cook-mode.md Part C — cook mode is full-screen.

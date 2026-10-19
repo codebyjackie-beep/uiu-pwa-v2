@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import "./globals.css";
 import { AppHeader } from "./components/AppHeader";
 import { BottomNav } from "./components/BottomNav";
-import { GuestBanner, GuestGateProvider } from "./components/GuestGate";
+import { AppShell, GuestBanner, GuestGateProvider } from "./components/GuestGate";
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
 import { SiteFooter } from "./components/SiteFooter";
 
@@ -33,15 +33,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body>
         <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/how-it-works">
-          <GuestGateProvider isSignedIn={!!userId}>
+          <GuestGateProvider serverSignedIn={!!userId}>
             {!isPublicShop && <ServiceWorkerKillSwitch />}
-            {!isPublicShop && <AppHeader isSignedIn={!!userId} />}
-            <div className={!isPublicShop && userId ? "app-shell app-shell--with-app-header" : "app-shell"}>
+            {!isPublicShop && <AppHeader />}
+            <AppShell publicShop={isPublicShop}>
               {!isPublicShop && <GuestBanner />}
               {children}
-            </div>
-            {!isPublicShop && <SiteFooter isSignedIn={!!userId} />}
-            {!isPublicShop && <BottomNav isSignedIn={!!userId} />}
+            </AppShell>
+            {!isPublicShop && <SiteFooter />}
+            {!isPublicShop && <BottomNav />}
           </GuestGateProvider>
         </ClerkProvider>
       </body>

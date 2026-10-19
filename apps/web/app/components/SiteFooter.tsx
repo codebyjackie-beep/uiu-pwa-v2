@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isSignedOutPublicPath } from "../lib/signedOutPublicPaths";
+import { useGuestGate } from "./GuestGate";
 
 /** HANDOFF_auth-subscription-front-page.md Milestone 1 — signed-in users need a way back
  * to /how-it-works too (it's not just a signed-out landing page), so this renders on every
@@ -13,7 +14,8 @@ import { isSignedOutPublicPath } from "../lib/signedOutPublicPaths";
  *
  * cc_prompt_recipe-list-redesign-and-cook-mode.md Part C — hidden on cook mode
  * (/recipes/[id]/cook), which is full-screen. */
-export function SiteFooter({ isSignedIn }: { isSignedIn: boolean }) {
+export function SiteFooter() {
+  const { isSignedIn } = useGuestGate();
   const pathname = usePathname();
   if (!isSignedIn && isSignedOutPublicPath(pathname)) return null;
   if (pathname.endsWith("/cook")) return null;

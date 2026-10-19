@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
+import { useGuestGate } from "./GuestGate";
 
 /** cc_prompt_milestone1_followup_fixes_2.md Task 1 (renamed from AccountHeader in
  * cc_prompt_account_header_to_app_header.md) — a lone avatar floating in an empty 56px
@@ -12,7 +13,8 @@ import { UserButton } from "@clerk/nextjs";
  * /recipes/[id]/cook (future cook-mode, full-bleed). */
 const HIDDEN_PATHS = ["/how-it-works", "/sign-in", "/sign-up"];
 
-export function AppHeader({ isSignedIn }: { isSignedIn: boolean }) {
+export function AppHeader() {
+  const { isSignedIn } = useGuestGate();
   const pathname = usePathname();
   const hidden =
     HIDDEN_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`)) ||

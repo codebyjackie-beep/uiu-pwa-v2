@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 /**
  * cc_prompt_guest_browse.md Part B — signed-out visitors can browse Recipes only. Anything that
@@ -12,11 +13,13 @@ import { usePathname } from "next/navigation";
  */
 interface GuestGateValue {
   isSignedIn: boolean;
+  /** false while Clerk is still loading AND the server render said "guest" — treat as unknown: no banner, no sheet. */
+  authResolved: boolean;
   /** true when the action may go ahead; false after opening the sign-up sheet for a guest. */
   requireAuth: () => boolean;
 }
 
-const GuestGateContext = createContext<GuestGateValue>({ isSignedIn: true, requireAuth: () => true });
+const GuestGateContext = createContext<GuestGateValue>({ isSignedIn: true, authResolved: true, requireAuth: () => true });
 
 export function useGuestGate(): GuestGateValue {
   return useContext(GuestGateContext);
@@ -53,17 +56,26 @@ function AuthLink({ href, className, children }: { href: string; className: stri
   );
 }
 
-export function GuestGateProvider({ isSignedIn, children }: { isSignedIn: boolean; children: React.ReactNode }) {
+/**
+ * cc_prompt_shopping_list_price_compare.md Part 0c-A — the browser's Clerk session is the source of truth. The server `auth()` result
+ * (`serverSignedIn`) is only the initial value: on the Clerk dev instance the server-side handshake can fail while the client is still
+ * signed in, which used to leave a signed-in visitor looking like a guest (banner + sheet whose "Log in" bounced straight back).
+ * Until Clerk has loaded, a server "guest" is "unknown" (`authResolved` false) so nothing guest-only is shown.
+ */
+export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { isLoaded, isSignedIn: clerkSignedIn } = useAuth();
+  const isSignedIn = isLoaded ? !!clerkSignedIn : serverSignedIn;
+  const authResolved = isLoaded || serverSignedIn;
 
   const requireAuth = useCallback(() => {
     if (isSignedIn) return true;
-    setOpen(true);
+    if (authResolved) setOpen(true);
     return false;
-  }, [isSignedIn]);
+  }, [isSignedIn, authResolved]);
 
-  const value = useMemo(() => ({ isSignedIn, requireAuth }), [isSignedIn, requireAuth]);
+  const value = useMemo(() => ({ isSignedIn, authResolved, requireAuth }), [isSignedIn, authResolved, requireAuth]);
 
   useEffect(() => {
     if (!open) return;
@@ -117,9 +129,9 @@ export function GuestGateProvider({ isSignedIn, children }: { isSignedIn: boolea
 
 /** Slim banner on the recipes pages while signed out. Hidden in full-screen cook mode. */
 export function GuestBanner() {
-  const { isSignedIn } = useGuestGate();
+  const { isSignedIn, authResolved } = useGuestGate();
   const pathname = usePathname();
-  if (isSignedIn || !pathname.startsWith("/recipes") || pathname.endsWith("/cook")) return null;
+  if (isSignedIn || !authResolved || !pathname.startsWith("/recipes") || pathname.endsWith("/cook")) return null;
 
   return (
     <div className="guest-banner">
@@ -131,4 +143,10 @@ export function GuestBanner() {
       </AuthLink>
     </div>
   );
+}
+
+/** The page wrapper: gets the extra top padding for the app header whenever the visitor is signed in (client view, same as AppHeader). */
+export function AppShell({ publicShop, children }: { publicShop: boolean; children: React.ReactNode }) {
+  const { isSignedIn } = useGuestGate();
+  return <div className={!publicShop && isSignedIn ? "app-shell app-shell--with-app-header" : "app-shell"}>{children}</div>;
 }
