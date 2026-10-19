@@ -3,7 +3,7 @@
 //   node scripts/unpriced_fix_rollback.cjs --price-batch ... --canon-batch ... --write
 // price docs  : restore the fields saved in `priceFixPrev` (a field that was absent / null before goes back to its old value), unset priceFixPrev/Batch/At,
 //               and delete the `price_refresh_overrides` rows this batch inserted (note = "manual_curated by <batch>").
-// canonical   : restore each field in `unpricedFixPrev` (absent -> $unset), unset unpricedFixPrev/Source/Batch/At.
+// canonical   : remove the aliases added by aliasFixBatch ($pull aliasFixAdded); restore each field in `unpricedFixPrev` (absent -> $unset), unset unpricedFixPrev/Source/Batch/At.
 // recipe_cost : not touched here - roll that back FIRST with `recipe_cost_recompute_rollback.cjs <rcr-batch> --write`, then run this.
 const fs = require("fs");
 const path = require("path");
@@ -49,6 +49,10 @@ function loadDevVars() {
         report.price.push({ name: d.canonical_name, nowMetric: d.per_unit_metric, restoredMetric: prev.per_unit_metric, restoredConfidence: prev.confidence });
         if (WRITE) await priceCol.updateOne({ _id: d._id, priceFixBatch: priceBatch }, { $set: set, $unset: unset });
       }
+      for (const d of await priceCol.find({ quarantineNoteBatch: priceBatch }).toArray()) {
+        report.price.push({ name: d.canonical_name, removeQuarantineNote: true });
+        if (WRITE) await priceCol.updateOne({ _id: d._id, quarantineNoteBatch: priceBatch }, { $unset: { quarantine_note: "", quarantineNoteBatch: "" } });
+      }
       const ov = await ovCol.find({ note: `manual_curated by ${priceBatch}` }).toArray();
       report.overrides = ov.length;
       if (WRITE && ov.length) await ovCol.deleteMany({ note: `manual_curated by ${priceBatch}` });
@@ -60,6 +64,13 @@ function loadDevVars() {
         for (const [f, p] of Object.entries(prev)) { if (p.absent) unset[f] = ""; else set[f] = p.value; }
         report.canon.push({ name: d.canonical_name, restore: prev });
         if (WRITE) await canonCol.updateOne({ _id: d._id, unpricedFixBatch: canonBatch }, { ...(Object.keys(set).length ? { $set: set } : {}), $unset: unset });
+      }
+    }
+    if (canonBatch) {
+      for (const d of await canonCol.find({ aliasFixBatch: canonBatch }).toArray()) {
+        const added = d.aliasFixAdded || [];
+        report.canon.push({ name: d.canonical_name, removeAliases: added });
+        if (WRITE) await canonCol.updateOne({ _id: d._id, aliasFixBatch: canonBatch }, { $pull: { aliases: { $in: added } }, $unset: { aliasFixBatch: "", aliasFixAdded: "", aliasFixAt: "" } });
       }
     }
     console.log(JSON.stringify(report, null, 1));

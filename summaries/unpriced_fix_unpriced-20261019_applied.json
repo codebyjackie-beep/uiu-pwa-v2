@@ -1,0 +1,300 @@
+{
+ "priceBatch": "unpriced-20261019",
+ "canonBatch": "canonfix-20261019",
+ "appliedAt": "2026-10-19T15:19:49.237Z",
+ "source": "unpriced_fix_dryrun_2026-10-19.json",
+ "included": [
+  "price:ancho chile powder",
+  "alias:lemon zest->lemon",
+  "alias:lime zest->lime",
+  "alias:lemon juice from a lemon->juice of lemon"
+ ],
+ "price": [
+  {
+   "target": "sesame seeds (for garnish)",
+   "modified": 1
+  },
+  {
+   "target": "arborio rice",
+   "modified": 1
+  },
+  {
+   "target": "eggplant",
+   "modified": 1
+  },
+  {
+   "target": "arugula",
+   "modified": 1
+  },
+  {
+   "target": "baby arugula",
+   "modified": 1
+  },
+  {
+   "target": "fresh ginger",
+   "modified": 1
+  },
+  {
+   "target": "ancho chile powder",
+   "modified": 1
+  }
+ ],
+ "canon": [
+  {
+   "target": "parmesan",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "cornflour",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "agave nectar",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "chicken",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "juice of lemon",
+   "fields": [
+    "per_item_g"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "thumb sized ginger",
+   "fields": [
+    "per_item_g"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "ginger",
+   "fields": [
+    "per_item_g"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "fresh ginger",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "arugula",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  },
+  {
+   "target": "baby arugula",
+   "fields": [
+    "density_cup"
+   ],
+   "modified": 1
+  }
+ ],
+ "overrides": [
+  "sesame seeds (for garnish)",
+  "arborio rice",
+  "eggplant",
+  "arugula",
+  "baby arugula",
+  "fresh ginger",
+  "ancho chile powder"
+ ],
+ "alias": [
+  {
+   "id": "alias:lemon zest->lemon",
+   "alias": "lemon zest",
+   "to": "lemon",
+   "modified": 1
+  },
+  {
+   "id": "alias:lime zest->lime",
+   "alias": "lime zest",
+   "to": "lime",
+   "modified": 1
+  },
+  {
+   "id": "alias:lemon juice from a lemon->juice of lemon",
+   "alias": "lemon juice from a lemon",
+   "to": "juice of lemon",
+   "modified": 1
+  },
+  {
+   "id": "alias:lemon juice from a lemon->juice of lemon",
+   "quarantineNote": "lemon juice from a lemon",
+   "modified": 1
+  }
+ ],
+ "requery": {
+  "price": [
+   {
+    "name": "arborio rice",
+    "metric": {
+     "value": 0.0056500000000000005,
+     "unit": "g_or_ml",
+     "n": 6
+    },
+    "count": null,
+    "confidence": "manual_curated"
+   },
+   {
+    "name": "ancho chile powder",
+    "metric": {
+     "value": 0.106,
+     "unit": "g_or_ml",
+     "n": 1
+    },
+    "count": null,
+    "confidence": "manual_curated"
+   },
+   {
+    "name": "baby arugula",
+    "metric": {
+     "value": 0.02,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "count": null,
+    "confidence": "manual_curated"
+   },
+   {
+    "name": "eggplant",
+    "metric": null,
+    "count": {
+     "value": 0.95,
+     "unit": "each",
+     "n": 6
+    },
+    "confidence": "manual_curated"
+   },
+   {
+    "name": "fresh ginger",
+    "metric": {
+     "value": 0.0146,
+     "unit": "g_or_ml",
+     "n": 7
+    },
+    "count": null,
+    "confidence": "manual_curated"
+   },
+   {
+    "name": "arugula",
+    "metric": {
+     "value": 0.02,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "count": null,
+    "confidence": "manual_curated"
+   },
+   {
+    "name": "sesame seeds (for garnish)",
+    "metric": {
+     "value": 0.0125,
+     "unit": "g_or_ml",
+     "n": 5
+    },
+    "count": null,
+    "confidence": "manual_curated"
+   }
+  ],
+  "alias": [
+   {
+    "name": "lime",
+    "aliases": [
+     "lime",
+     "Lime",
+     "limes",
+     "lime zest"
+    ]
+   },
+   {
+    "name": "juice of lemon",
+    "aliases": [
+     "juice of lemon",
+     "lemon juice from a lemon"
+    ]
+   },
+   {
+    "name": "lemon",
+    "aliases": [
+     "lemon",
+     "Lemon",
+     "lemon zest"
+    ]
+   }
+  ],
+  "canon": [
+   {
+    "name": "chicken",
+    "density_cup": 140,
+    "per_item_g": 1500
+   },
+   {
+    "name": "agave nectar",
+    "density_cup": 336,
+    "per_item_g": null
+   },
+   {
+    "name": "thumb sized ginger",
+    "density_cup": null,
+    "per_item_g": 11
+   },
+   {
+    "name": "parmesan",
+    "density_cup": 100,
+    "per_item_g": null
+   },
+   {
+    "name": "ginger",
+    "density_cup": 96,
+    "per_item_g": 11
+   },
+   {
+    "name": "baby arugula",
+    "density_cup": 20,
+    "per_item_g": null
+   },
+   {
+    "name": "juice of lemon",
+    "density_cup": 244,
+    "per_item_g": 48
+   },
+   {
+    "name": "cornflour",
+    "density_cup": 128,
+    "per_item_g": null
+   },
+   {
+    "name": "arugula",
+    "density_cup": 20,
+    "per_item_g": null
+   },
+   {
+    "name": "fresh ginger",
+    "density_cup": 96,
+    "per_item_g": null
+   }
+  ]
+ }
+}

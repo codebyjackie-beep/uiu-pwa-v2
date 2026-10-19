@@ -34,7 +34,7 @@ const BUCKETS = [
 const PER_SERVING_MAX = 8;
 const DROP_MAX = 0.5;
 const PLAN_NAME_RE = /weekly plan 6/i;
-// Cloud Part 4 decision 29 (2026-10-16, ba6595e): the anomaly gate is waived ONLY for these 18 recipes (16 stock-line drops,
+// Cloud Part 4 decision 29 (2026-10-16, ba6595e): the anomaly gate is waived ONLY for these 18 recipes (+12 cloud-approved 2026-10-19, below) (16 stock-line drops,
 // Caprese Salad tomato/mozzarella corrections, Crab Cakes Eggs Benedict unchanged > £8). Any other recipe tripping the gate aborts.
 const GATE_ALLOWLIST = {
   "69c31de2b17f27d65b4f4ecf": "Azteca Soup",
@@ -55,6 +55,19 @@ const GATE_ALLOWLIST = {
   "6ac80e0cb0ca951a2fbf7664": "Smoky Butternut Black Bean Chili with Bulgur",
   "69c473017393a7f0235b89b4": "Thai Shrimp",
   "69c31dd4b17f27d65b4f4ec4": "Vegan Colcannon Soup",
+  // cloud 2026-10-19 (unpriced-lines fix, 13 ids = all tier upgrades, none > £8, none dropped; "Red quinoa cranberry arugula soup" above is the 13th):
+  "69b1db92974afef25b93a44d": "Chicken and Roasted Broccoli Salad With Goat Cheese", // tier unavailable -> partial
+  "69b4af41734a319b1f59a1c5": "Baked Chicken With Lemon & Garlic", // tier partial -> full
+  "69c31de2b17f27d65b4f4ec8": "Caponata Style Celery Spaghetti", // tier partial -> full
+  "69b1db93974afef25b93a453": "Quick and Easy Scallop Pasta", // tier unavailable -> partial
+  "69c31de2b17f27d65b4f4ec7": "Celery Apple Risotto With Crispy Pancetta", // tier partial -> full
+  "69d191951648bcfb8b552615": "Zesty Avocado Toast with Ginger-Shallot Relish", // tier partial -> full
+  "69d5710287d5d72710ae8eb0": "Crock Pot Chicken Pho", // tier partial -> full
+  "69c7275f754babcc25875c89": "Easy Tabouleh", // tier partial -> full
+  "69d1933f0ce7d5269f695273": "Crispy Sesame Prawn Toast", // tier partial -> full
+  "69d191951648bcfb8b55261d": "Black Bean Burgers with Caramelized Onions & Avocado Mash", // tier partial -> full
+  "69c7275f754babcc25875c8a": "Winter Fattoush Salad", // tier partial -> full
+  "6a5ff781a91e3f027a2961e9": "Korean Beef Rice Bowl", // tier unavailable -> partial
 };
 
 const r4 = (v) => Math.round(v * 1e4) / 1e4;

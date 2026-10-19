@@ -10,7 +10,7 @@
 // Items carry a tier:
 //   spec           = cloud's Part C table, applied as specified
 //   recommended    = Part B price docs / density the dry-run recommends writing (written by default in --write)
-//   needs_decision = single-source, alias, or judgement items: simulated, but written only when named in --include
+//   needs_decision = single-source, alias, or judgement items: simulated, but written only when named in --include (alias = $addToSet on the target doc's aliases)
 // recipe_cost docs are NOT written here: after the price / canonical write, run recipe_cost_recompute.cjs (dry-run -> review -> --write --batch rcr-<date>).
 // --write re-computes everything live and ABORTS (nothing written) when any item differs from the reviewed file.
 const fs = require("fs");
@@ -216,7 +216,7 @@ function buildItems(ctx) {
       evidence: { sizedListings: sized, note: "Serper (2 calls) found no second sized ancho listing" },
     });
   }
-  // alias scenarios (simulation only; alias writes are NOT implemented in --write, they need cloud's design call)
+  // alias scenarios: simulated by remapping the resolved canonical; written (cloud-approved 2026-10-19, via --include) by adding the alias to the `to` doc's aliases
   items.push({ id: "alias:lemon zest->lemon", kind: "alias", tier: "needs_decision", target: "lemon zest", to: "lemon", note: "lemon doc: 10 recipes, high, £0.3625 each, per_item_g 58. '(none)' lines price as one whole lemon; teaspoon lines stay unpriced (lemon has no density_cup)" });
   items.push({ id: "alias:lime zest->lime", kind: "alias", tier: "needs_decision", target: "lime zest", to: "lime", note: "same as lemon zest; lime doc £0.19 each, per_item_g 67" });
   items.push({ id: "alias:lemon juice from a lemon->juice of lemon", kind: "alias", tier: "needs_decision", target: "lemon juice from a lemon", to: "juice of lemon", note: "its own price doc is WRONG (the only listing is 'Waitrose Still Lemonade' £3.75); juice of lemon has density_cup 244, manual £0.0087/ml" });
@@ -411,11 +411,10 @@ function diffRecipes(before, after, recipes) {
     const revById = new Map(reviewed.items.map((i) => [i.id, i]));
     const toWrite = items.filter((it) => it.tier === "spec" || it.tier === "recommended" || INCLUDE.has(it.id));
     for (const it of toWrite) {
-      if (it.kind === "alias") { bad.push(`${it.id}: alias writes are not implemented in this script`); continue; }
       const rv = revById.get(it.id);
       if (!rv) { bad.push(`${it.id}: not in reviewed file`); continue; }
-      const mine = it.kind === "canon" ? { field: it.field, value: it.value } : { set: it.set, before: it.before };
-      const theirs = it.kind === "canon" ? { field: rv.field, value: rv.value } : { set: rv.set, before: rv.before };
+      const mine = it.kind === "alias" ? { target: it.target, to: it.to } : it.kind === "canon" ? { field: it.field, value: it.value } : { set: it.set, before: it.before };
+      const theirs = it.kind === "alias" ? { target: rv.target, to: rv.to } : rv.kind === "canon" ? { field: rv.field, value: rv.value } : { set: rv.set, before: rv.before };
       // listings carry no timestamps, so a plain structural compare is stable
       if (hash(mine) !== hash(theirs)) bad.push(`${it.id}: differs from the reviewed file (live data changed since the dry-run) - re-run the dry-run and re-review`);
     }
@@ -424,6 +423,16 @@ function diffRecipes(before, after, recipes) {
     for (const it of toWrite) {
       if (it.kind === "price") { const d = priceMap.get(it.target); if (d.priceFixBatch || d.curation_note || (typeof d.confidence === "string" && d.confidence.startsWith("manual"))) bad.push(`${it.id}: price doc already curated/protected (${d.confidence}, priceFixBatch=${d.priceFixBatch ?? "-"})`); }
       if (it.kind === "canon" && canonMap.get(it.target).unpricedFixBatch) bad.push(`${it.id}: canonical already has unpricedFixBatch=${canonMap.get(it.target).unpricedFixBatch}`);
+      if (it.kind === "alias") {
+        // cloud 2026-10-19: an alias = add `target` to the `aliases` of the `to` canonical doc. Pre-verify with the real resolver that the key then resolves to `to`.
+        const toDoc = canonMap.get(it.to);
+        if (!toDoc) { bad.push(`${it.id}: target canonical "${it.to}" missing`); continue; }
+        if (toDoc.aliasFixBatch) bad.push(`${it.id}: "${it.to}" already has aliasFixBatch=${toDoc.aliasFixBatch}`);
+        if ((toDoc.aliases || []).some((a) => String(a).toLowerCase() === it.target.toLowerCase())) bad.push(`${it.id}: "${it.to}" already has alias "${it.target}"`);
+        const docsAfter = canonDocs.map((d) => (d.canonical_name === it.to ? { ...d, aliases: [...(d.aliases || []), it.target] } : d));
+        const r = resolve(it.target, await buildAliasIndex(shimCol(docsAfter)));
+        if (!r || r.canonical_name !== it.to) bad.push(`${it.id}: after adding the alias "${it.target}" still resolves to ${r && r.canonical_name} (expected ${it.to}) - collision winner is another doc`);
+      }
     }
     if (bad.length) { console.error(["ABORT - guard failures (nothing written):", ...bad.slice(0, 40)].join("\n  ")); process.exit(1); }
 
@@ -459,8 +468,35 @@ function diffRecipes(before, after, recipes) {
       evidence.canon.push({ target, fields: Object.keys(set), modified: res.modifiedCount });
       if (res.modifiedCount !== 1) failed = true;
     }
+    // aliases (cloud-approved needs_decision items named in --include): add `target` to the `to` doc's aliases; markers allow an exact rollback
+    for (const it of toWrite.filter((i) => i.kind === "alias")) {
+      const d = canonMap.get(it.to);
+      const res = await canonCol.updateOne(
+        { _id: d._id, aliasFixBatch: { $exists: false }, aliases: { $ne: it.target } },
+        { $addToSet: { aliases: it.target }, $set: { aliasFixBatch: canonBatch, aliasFixAdded: [it.target], aliasFixAt: at } },
+      );
+      evidence.alias = evidence.alias || [];
+      evidence.alias.push({ id: it.id, alias: it.target, to: it.to, modified: res.modifiedCount });
+      if (res.modifiedCount !== 1) failed = true;
+      // the alias source's own price doc (e.g. "lemon juice from a lemon" = Waitrose Still Lemonade) is a WRONG product: keep it, flag it, and stop the auto refresh re-fetching it
+      const pd = priceMap.get(it.target);
+      if (it.target === "lemon juice from a lemon" && pd) {
+        const q = await priceCol.updateOne(
+          { _id: pd._id, quarantine_note: { $exists: false } },
+          { $set: { quarantine_note: `unpriced-fix ${TODAY}: WRONG PRODUCT - the only listing is "Waitrose Still Lemonade" £3.75, not lemon juice. Line names now alias to "juice of lemon" (${canonBatch}); do not price from this doc.`, quarantineNoteBatch: priceBatch } },
+        );
+        await db.collection("price_refresh_overrides").updateOne(
+          { canonical_name: it.target },
+          { $setOnInsert: { canonical_name: it.target, decision: "skip", note: `manual_curated by ${priceBatch}`, ref: "cc_prompt_unpriced_lines_fix alias lemon juice from a lemon", createdAt: at } },
+          { upsert: true },
+        );
+        evidence.alias.push({ id: it.id, quarantineNote: it.target, modified: q.modifiedCount });
+        if (q.modifiedCount !== 1) failed = true;
+      }
+    }
     evidence.requery = {
       price: (await priceCol.find({ priceFixBatch: priceBatch }).project({ canonical_name: 1, per_unit_metric: 1, per_unit_count: 1, confidence: 1 }).toArray()).map((d) => ({ name: d.canonical_name, metric: d.per_unit_metric, count: d.per_unit_count, confidence: d.confidence })),
+      alias: (await canonCol.find({ aliasFixBatch: canonBatch }).project({ canonical_name: 1, aliases: 1 }).toArray()).map((d) => ({ name: d.canonical_name, aliases: d.aliases })),
       canon: (await canonCol.find({ unpricedFixBatch: canonBatch }).project({ canonical_name: 1, density_cup: 1, per_item_g: 1 }).toArray()).map((d) => ({ name: d.canonical_name, density_cup: d.density_cup ?? null, per_item_g: d.per_item_g ?? null })),
     };
     const outApplied = path.join(SUMMARIES, `unpriced_fix_${priceBatch}_applied.json`);

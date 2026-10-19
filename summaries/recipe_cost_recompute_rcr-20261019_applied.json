@@ -1,0 +1,49 @@
+{
+ "batch": "rcr-20261019",
+ "appliedAt": "2026-10-19T15:20:47.842Z",
+ "source": "recipe_cost_recompute_dryrun_2026-10-19.json",
+ "recipeCostModified": 95,
+ "expected": 95,
+ "gateAllowlist": {
+  "waivedIds": [],
+  "allowlistSize": 30,
+  "ref": "cloud Part 4 decision 29"
+ },
+ "requery": {
+  "rowMismatch": 0,
+  "tiers": {
+   "full": 261,
+   "partial": 58,
+   "unavailable": 9
+  },
+  "tiersMatchDryRunAfter": true,
+  "priceBuckets": {
+   "under1_5": 144,
+   "1_5to3": 112,
+   "3plus": 63,
+   "excluded_no_price_or_unavailable": 9
+  },
+  "bucketsMatchDryRunAfter": true,
+  "plans": [
+   {
+    "name": "Weekly Plan 6",
+    "id": "6ab52b2f9b0819afa3920923",
+    "isActive": true,
+    "entries": 21,
+    "entriesWithoutPrice": 0,
+    "total": 34.68,
+    "byDay": {
+     "1": 4.73,
+     "2": 5.59,
+     "3": 3.96,
+     "4": 5.73,
+     "5": 4.34,
+     "6": 5.02,
+     "7": 5.32
+    }
+   }
+  ],
+  "plansMatchDryRunAfter": true,
+  "publicAbove8": 1
+ }
+}
