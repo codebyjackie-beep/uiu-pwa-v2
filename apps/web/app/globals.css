@@ -203,6 +203,17 @@ a {
   margin-top: 14px;
 }
 
+/* "Continue as guest" — a quiet text link under the two buttons (flex-basis 100% puts it on its own row). */
+.hiw-hero__guest {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: underline;
+  margin-top: 4px;
+}
+
 /* Feature sections — heading + one-line subtitle + phone frame, alternating backgrounds. */
 .hiw-feature {
   padding: 56px var(--space);
@@ -327,6 +338,10 @@ a {
   font-weight: 600;
   color: var(--uiu-muted);
   text-decoration: underline;
+}
+
+.hiw-final__guest {
+  margin-top: -8px;
 }
 
 /* Mobile-only sticky CTA; revealed once the hero has scrolled out of view. */

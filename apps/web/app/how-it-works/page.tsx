@@ -73,6 +73,9 @@ export default async function HowItWorksPage() {
                 <Link href="/sign-in" className="hiw-btn hiw-btn--secondary">
                   Log in
                 </Link>
+                <Link href="/recipes" className="hiw-hero__guest">
+                  Continue as guest
+                </Link>
               </>
             )}
           </div>
@@ -138,6 +141,9 @@ export default async function HowItWorksPage() {
               </Link>
               <Link href="/sign-in" className="hiw-final__login">
                 Log in
+              </Link>
+              <Link href="/recipes" className="hiw-final__login hiw-final__guest">
+                Continue as guest
               </Link>
             </>
           )}
