@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,6 +25,32 @@ export function useGuestGate(): GuestGateValue {
 /** Sign-up / log-in URL that brings the visitor back to the page they were on. */
 export function authUrl(kind: "sign-up" | "sign-in", returnTo: string): string {
   return `/${kind}?redirect_url=${encodeURIComponent(returnTo)}`;
+}
+
+/**
+ * cc_prompt_shopping_list_price_compare.md Part 0c-C — Log in / Sign up navigate through /sign-in, which can take a beat (or bounce
+ * straight back), so the tapped link flips to "Loading…" and ignores further taps until the route changes. A 10 s timer re-enables it
+ * in case the navigation never completes.
+ */
+function AuthLink({ href, className, children }: { href: string; className: string; children: React.ReactNode }) {
+  const [loading, setLoading] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+  return (
+    <Link
+      href={href}
+      className={className}
+      aria-disabled={loading || undefined}
+      style={loading ? { pointerEvents: "none", opacity: 0.7 } : undefined}
+      onClick={(e) => {
+        if (loading) { e.preventDefault(); return; }
+        setLoading(true);
+        timer.current = setTimeout(() => setLoading(false), 10000);
+      }}
+    >
+      {loading ? "Loading…" : children}
+    </Link>
+  );
 }
 
 export function GuestGateProvider({ isSignedIn, children }: { isSignedIn: boolean; children: React.ReactNode }) {
@@ -72,12 +98,12 @@ export function GuestGateProvider({ isSignedIn, children }: { isSignedIn: boolea
               <p className="guest-gate-modal__text">
                 Create a free account to save recipes, plan meals and build your shopping list.
               </p>
-              <Link href={authUrl("sign-up", pathname)} className="wizard-primary-button guest-gate-modal__primary">
+              <AuthLink href={authUrl("sign-up", pathname)} className="wizard-primary-button guest-gate-modal__primary">
                 Sign up free
-              </Link>
-              <Link href={authUrl("sign-in", pathname)} className="guest-gate-modal__secondary">
+              </AuthLink>
+              <AuthLink href={authUrl("sign-in", pathname)} className="guest-gate-modal__secondary">
                 Log in
-              </Link>
+              </AuthLink>
               <button type="button" className="guest-gate-modal__dismiss" onClick={() => setOpen(false)}>
                 Not now
               </button>
@@ -100,9 +126,9 @@ export function GuestBanner() {
       <p className="guest-banner__text">
         You&apos;re browsing as a guest. Sign up free to save recipes, plan meals and build your shopping list.
       </p>
-      <Link href={authUrl("sign-up", pathname)} className="guest-banner__cta">
+      <AuthLink href={authUrl("sign-up", pathname)} className="guest-banner__cta">
         Sign up free
-      </Link>
+      </AuthLink>
     </div>
   );
 }
