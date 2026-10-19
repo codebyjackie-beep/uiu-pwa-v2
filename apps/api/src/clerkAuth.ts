@@ -73,3 +73,24 @@ export const requireClerkAuth: MiddlewareHandler<{ Bindings: ClerkAuthEnv }> = a
 
   await next();
 };
+
+/**
+ * Optional verification for public routes that return more to the owner than to everyone else
+ * (cc_prompt_guest_browse.md Part C). No / malformed / invalid / expired token → `null` and the
+ * caller carries on as an anonymous visitor; it never throws or responds 401.
+ */
+export async function optionalClerkUserId(c: {
+  req: { header(name: string): string | undefined };
+  env: ClerkAuthEnv;
+}): Promise<string | null> {
+  const authHeader = c.req.header("Authorization");
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice("Bearer ".length) : undefined;
+  if (!token) return null;
+  try {
+    const { jwks, issuer } = jwksFor(c.env.CLERK_PUBLISHABLE_KEY);
+    const { payload } = await jwtVerify(token, jwks, { issuer });
+    return typeof payload.sub === "string" ? payload.sub : null;
+  } catch {
+    return null;
+  }
+}

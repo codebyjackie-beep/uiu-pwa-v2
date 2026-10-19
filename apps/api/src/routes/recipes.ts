@@ -10,8 +10,9 @@ import type {
   RecipeListPage,
 } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
+import { optionalClerkUserId, type ClerkAuthEnv } from "../clerkAuth";
 
-export const recipesRouter = new Hono<{ Bindings: DbEnv }>();
+export const recipesRouter = new Hono<{ Bindings: DbEnv & ClerkAuthEnv }>();
 
 const DEFAULT_LIMIT = 20;
 // Per-request page cap. Clients that need the whole set (Recipes page) page through using
@@ -146,8 +147,22 @@ recipesRouter.get("/:id", async (c) => {
   }
 
   try {
+    // Public route: guests read public recipes. A non-public recipe is only returned to its owner
+    // (verified Clerk token); everyone else gets the same 404 as a missing id so existence isn't leaked.
     const { doc, costDoc, pantryNames } = await withDb(c.env, async (db) => {
-      const doc = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
+      let doc = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
+      if (doc && doc.isPublic !== true) {
+        const clerkUserId = await optionalClerkUserId(c);
+        let isOwner = false;
+        if (clerkUserId) {
+          if (doc.clerkUserId === clerkUserId) isOwner = true;
+          else if (doc.userId) {
+            const user = await db.collection("users").findOne({ clerkUserId }, { projection: { _id: 1 } });
+            isOwner = !!user && String(user._id) === String(doc.userId);
+          }
+        }
+        if (!isOwner) doc = null;
+      }
       if (!doc) return { doc: null, costDoc: null, pantryNames: new Set<string>() };
       const costDoc = await db.collection("recipe_cost").findOne({ recipeId: doc._id });
       // Display only: which unpriced lines are pantry staples ("Pantry staple" instead of "Price unavailable").
