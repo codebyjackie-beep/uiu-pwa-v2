@@ -1,5 +1,6 @@
 /** Standalone assertions: npx tsx apps/api/src/services/shoppingListPrices.test.ts */
-import { normaliseStore, buildPriceOptions, buildItemPrices } from "./shoppingListPrices";
+import { computeShoppingListStoreTotals } from "@uiu/shared";
+import { normaliseStore, buildPriceOptions, buildItemPrices, STOCK_PACK_LABEL } from "./shoppingListPrices";
 
 function eq(actual: unknown, expected: unknown): void {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) throw new Error(`expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
@@ -50,4 +51,45 @@ eq(p?.cheapestPack.store, "Asda");
 eq(p?.bestValue?.store, "Tesco");
 eq(p?.stamp, "2026-10-12T03:00:00Z");
 eq(buildItemPrices("x", { listings: [] }), null);
+// --- B2: wrong products are dropped via the refresh guard's matcher (incl. substitute words)
+const butter = buildPriceOptions("unsalted butter", [
+  L("Tesco", "Tesco Unsalted Butter 250g", 1.99, 250),
+  L("Asda", "Flora Unsalted Block Butter Alternative 200g", 0.98, 200),
+  L("Tesco", "Elmlea Creamy & Buttery Blend Block 250g", 1.95, 250),
+  L("Waitrose & Partners", "Lurpak Unsalted Spreadable Blend 400g", 3, 400),
+]);
+eq(butter.options.map((o) => o.store), ["Tesco"]);
+eq(butter.droppedProduct.length, 3);
+eq(butter.droppedProduct.every((d) => d.reason.startsWith("substitute:") || d.reason.length > 0), true);
+
+// --- B2: stock canonicals keep cube / pot only, no £/kg, labelled "Stock cube / pot"
+const stk = buildPriceOptions("vegetable stock", [
+  L("Iceland", "Knorr 4 Vegetable Stock Pot 112g", 1.9, 112),
+  L("Ocado", "Soup Broth Pack-Vegetable 150 g", 8.45, 150),
+  L("Sainsbury's", "Itsu Miso Ramen Brilliant Broth 200g", 2.7, 200),
+]);
+eq(stk.options.length, 1);
+eq(stk.options[0]!.packLabel, STOCK_PACK_LABEL);
+eq(stk.options[0]!.perUnit, null);
+eq(stk.options[0]!.stockLabel, true);
+eq(STOCK_PACK_LABEL, "Stock cube / pot");
+
+// --- B2: cheapestPack is chosen among listings with a size; unsized only when none has one
+const prawns = buildItemPrices("king prawns", { listings: [
+  L("Sainsbury's", "King Prawns 180g", 2.64, 180),
+  L("Tesco", "Real Seafood Co King Prawns", 2.32, null), // cheaper but no size
+] });
+eq(prawns?.cheapestPack.store, "Sainsbury's");
+eq(prawns?.options.length, 2); // the expanded list still shows the unsized one
+eq(prawns?.options.find((o) => o.store === "Tesco")?.packLabel, null);
+const unsizedOnly = buildItemPrices("king prawns", { listings: [L("Tesco", "Real Seafood Co King Prawns", 2.32, null)] });
+eq(unsizedOnly?.cheapestPack.packLabel, null);
+eq(unsizedOnly?.cheapestPack.store, "Tesco");
+
+// --- B2: store totals use the sized listing; unsized only when that store has no sized one
+const tot = computeShoppingListStoreTotals([{ checked: false, prices: prawns ?? null }]);
+const tescoTot = tot.find((s) => s.storeKey === "tesco");
+eq(tescoTot?.total, 2.32); // Tesco only lists an unsized one -> falls back to it
+eq(tot.find((s) => s.storeKey === "sainsburys")?.total, 2.64);
+
 console.log("all shopping-list price tests passed");

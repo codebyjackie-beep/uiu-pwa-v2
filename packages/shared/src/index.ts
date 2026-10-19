@@ -966,7 +966,7 @@ export interface ShoppingListPriceOption {
   storeKey: string;
   title: string;
   price: number;
-  /** "500g", "1kg", "2L", "6 pack", "each" — null when the pack could not be read from the listing. */
+  /** "500g", "1kg", "2L", "6 pack", "each", "Stock cube / pot" — null = size not listed (the Shop tab says so). */
   packLabel: string | null;
   /** Price per kg / per litre / each; null when the pack is unknown (never guessed). */
   perUnit: { value: number; unit: "kg" | "L" | "each" } | null;
@@ -979,7 +979,7 @@ export interface ShoppingListPriceOption {
 export interface ShoppingListItemPrices {
   /** Every qualified listing (any brand / size / store), best £/unit first; listings without £/unit last by price. */
   options: ShoppingListPriceOption[];
-  /** Lowest shelf price. */
+  /** Lowest shelf price among listings with a pack size; the unsized ones only when none has a size. */
   cheapestPack: ShoppingListPriceOption;
   /** Lowest £/unit (null when no option has a £/unit). */
   bestValue: ShoppingListPriceOption | null;
@@ -1008,11 +1008,16 @@ export function computeShoppingListStoreTotals(items: readonly Pick<ShoppingList
   const open = items.filter((i) => !i.checked);
   const byStore = new Map<string, ShoppingListStoreTotal>();
   for (const item of open) {
+    // Per store: the cheapest pack whose size is listed; only when that store has no sized listing for the item, the cheapest unsized one.
     const cheapestAt = new Map<string, ShoppingListPriceOption>();
-    for (const o of item.prices?.options ?? []) {
-      const cur = cheapestAt.get(o.storeKey);
-      if (!cur || o.price < cur.price) cheapestAt.set(o.storeKey, o);
-    }
+    const better = (o: ShoppingListPriceOption, cur: ShoppingListPriceOption | undefined): boolean => {
+      if (!cur) return true;
+      const oSized = o.packLabel !== null;
+      const curSized = cur.packLabel !== null;
+      if (oSized !== curSized) return oSized;
+      return o.price < cur.price;
+    };
+    for (const o of item.prices?.options ?? []) if (better(o, cheapestAt.get(o.storeKey))) cheapestAt.set(o.storeKey, o);
     for (const [key, o] of cheapestAt) {
       const row = byStore.get(key) ?? { storeKey: key, store: o.store, total: 0, itemsPriced: 0, itemsTotal: open.length };
       row.total += o.price;

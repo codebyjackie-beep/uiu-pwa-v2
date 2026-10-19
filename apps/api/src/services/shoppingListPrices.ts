@@ -3,13 +3,15 @@
  * canonical_price_cache (0 Serper credits; nothing is fetched or written here). Pure logic: no mongodb / fetch.
  *
  * Qualified listing = a whitelisted UK supermarket (UK_SUPERMARKETS, marketplaces excluded), a real price, not a duplicate
- * (same store + title + price), and — when its £/unit is known — within the same ±3x-of-median band the refresh guard uses
- * (isOutlier3x, imported, not copied). A listing whose pack is unknown keeps perUnit null (never guessed) and sorts last.
+ * (same store + title + price), the right product (B2: makeTitleMatcher — the refresh guard's own title match / EXCLUDE_WORDS /
+ * PROCESSED_FORM / substitute words; the 12 stock canonicals go through classifyStockListing and keep cube / pot only), and — when
+ * its £/unit is known — within the same ±3x-of-median band the refresh guard uses (isOutlier3x, imported, not copied). A listing
+ * whose pack is unknown keeps perUnit null (never guessed) and sorts last; it never wins "cheapest pack" while a sized one exists.
  */
 import type { Document } from "mongodb";
 import type { ShoppingListItemPrices, ShoppingListPriceOption } from "@uiu/shared";
 import { isStockLikeName } from "@uiu/shared";
-import { isOutlier3x, isUkSupermarket, median } from "./priceRefreshGuard";
+import { classifyStockListing, docStockType, isOutlier3x, isUkSupermarket, makeTitleMatcher, median } from "./priceRefreshGuard";
 
 /** Ordered: first hit wins. Display names are what the Shop tab shows. */
 const STORES: { key: string; name: string; match: RegExp }[] = [
@@ -76,14 +78,32 @@ export interface PriceOptionsResult {
   droppedOutliers: DroppedOutlier[];
   /** listings with a non-whitelisted store / no price / duplicate */
   droppedOther: number;
+  /** B2: listings the title matcher / stock classifier rejected (wrong product) */
+  droppedProduct: DroppedProduct[];
 }
+
+export interface DroppedProduct {
+  canonical: string;
+  store: string;
+  title: string;
+  price: number;
+  reason: string;
+}
+
+export const STOCK_PACK_LABEL = "Stock cube / pot";
 
 const isPos = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v) && v > 0;
 
-/** Qualified options for one canonical_price_cache doc, sorted £/unit asc (null £/unit last, by price). */
-export function buildPriceOptions(canonicalName: string, listings: unknown): PriceOptionsResult {
+/**
+ * Qualified options for one canonical_price_cache doc, sorted £/unit asc (null £/unit last, by price).
+ * `canon` = the canonical_ingredients doc (aliases / query_alias feed makeTitleMatcher); optional so a missing doc degrades to name-only.
+ */
+export function buildPriceOptions(canonicalName: string, listings: unknown, canon?: Document | null): PriceOptionsResult {
   const stock = isStockLikeName(canonicalName);
+  const matcher = makeTitleMatcher(canon ?? { canonical_name: canonicalName }, { canonical_name: canonicalName });
+  const stockType = stock ? docStockType(canonicalName).type : "";
   const seen = new Set<string>();
+  const droppedProduct: DroppedProduct[] = [];
   let droppedOther = 0;
   type Cand = ShoppingListPriceOption & { _dim: "metric" | "each" | null; _rawPerUnit: number | null };
   const cands: Cand[] = [];
@@ -96,6 +116,16 @@ export function buildPriceOptions(canonicalName: string, listings: unknown): Pri
     const dedupKey = `${st.key}|${title.trim().toLowerCase()}|${price}`;
     if (seen.has(dedupKey)) { droppedOther++; continue; }
     seen.add(dedupKey);
+
+    if (stock) {
+      // Stock / broth canonicals are priced as stock cubes (STOCK_PRICED_LABEL): keep cube / pot listings of the right type, no £/kg.
+      const c = classifyStockListing({ store: l.store as string, title, price }, stockType);
+      if (!c.used) { droppedProduct.push({ canonical: canonicalName, store: st.name, title, price, reason: String(c.reason) }); continue; }
+      cands.push({ store: st.name, storeKey: st.key, title, price: Math.round(price * 100) / 100, packLabel: STOCK_PACK_LABEL, perUnit: null, stockLabel: true, _dim: null, _rawPerUnit: null });
+      continue;
+    }
+    const m = matcher(title);
+    if (!m.ok) { droppedProduct.push({ canonical: canonicalName, store: st.name, title, price, reason: m.reason }); continue; }
 
     const qty = l.pack && isPos(l.pack.qty) ? l.pack.qty : null;
     const unit = l.pack && (l.pack.unit === "g_or_ml" || l.pack.unit === "each") ? l.pack.unit : null;
@@ -148,14 +178,16 @@ export function buildPriceOptions(canonicalName: string, listings: unknown): Pri
   const rank = (c: Cand): number => (!c.perUnit ? 2 : c.perUnit.unit === dominant ? 0 : 1);
   out.sort((a, b) => rank(a) - rank(b) || (a.perUnit && b.perUnit ? a.perUnit.value - b.perUnit.value : 0) || a.price - b.price);
 
-  return { options: out.map(({ _dim, _rawPerUnit, ...o }) => o), droppedOutliers, droppedOther };
+  return { options: out.map(({ _dim, _rawPerUnit, ...o }) => o), droppedOutliers, droppedOther, droppedProduct };
 }
 
 /** Wire shape for one shopping-list line, or null when the doc has no qualified listing at all. */
-export function buildItemPrices(canonicalName: string, doc: Document): ShoppingListItemPrices | null {
-  const { options } = buildPriceOptions(canonicalName, doc.listings);
+export function buildItemPrices(canonicalName: string, doc: Document, canon?: Document | null): ShoppingListItemPrices | null {
+  const { options } = buildPriceOptions(canonicalName, doc.listings, canon);
   if (!options.length) return null;
-  const cheapestPack = options.reduce((m, o) => (o.price < m.price ? o : m));
+  // cheapest pack = lowest price among listings whose size is listed; unsized ones only when none has a size
+  const sized = options.filter((o) => o.packLabel !== null);
+  const cheapestPack = (sized.length ? sized : options).reduce((m, o) => (o.price < m.price ? o : m));
   const dominantUnit = options.find((o) => o.perUnit)?.perUnit?.unit;
   const bestValue = options.find((o) => o.perUnit && o.perUnit.unit === dominantUnit) ?? null;
   const fetched = (doc.metadata as { fetched_at?: unknown } | null | undefined)?.fetched_at;

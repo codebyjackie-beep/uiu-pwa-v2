@@ -146,10 +146,13 @@ shoppingListRouter.get("/", async (c) => {
         ? await db.collection("canonical_price_cache").find({ canonical_name: { $in: names } }, { projection: { canonical_name: 1, listings: 1, metadata: 1 } }).toArray()
         : [];
       const byName = new Map(cache.map((d) => [d.canonical_name as string, d]));
+      // makeTitleMatcher needs the canonical's aliases / query_alias — the same doc the price refresh uses.
+      const canons = names.length ? await db.collection("canonical_ingredients").find({ canonical_name: { $in: names } }).toArray() : [];
+      const canonByName = new Map(canons.map((d) => [d.canonical_name as string, d]));
       const items = docs.map((d) => {
         const item = toShoppingListItem(d);
         const cacheDoc = typeof d.canonicalName === "string" ? byName.get(d.canonicalName) : undefined;
-        return { ...item, prices: cacheDoc ? buildItemPrices(d.canonicalName as string, cacheDoc) : null };
+        return { ...item, prices: cacheDoc ? buildItemPrices(d.canonicalName as string, cacheDoc, canonByName.get(d.canonicalName as string)) : null };
       });
       return { items, storeTotals: computeShoppingListStoreTotals(items) };
     });

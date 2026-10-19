@@ -30,9 +30,9 @@ function formatPerUnit(o: ShoppingListPriceOption): string | null {
   return o.perUnit.unit === "each" ? `${formatCost(o.perUnit.value)} each` : `${formatCost(o.perUnit.value)}/${o.perUnit.unit}`;
 }
 
-/** "Tesco £3.30 · 1kg · £3.30/kg" — pack and £/unit left out when unknown. */
+/** "Tesco £3.30 · 1kg · £3.30/kg" — "size not listed" when the pack is unknown, £/unit left out. */
 function optionSummary(o: ShoppingListPriceOption): string {
-  return [`${o.store} ${formatCost(o.price)}`, o.packLabel, formatPerUnit(o)].filter(Boolean).join(" · ");
+  return [`${o.store} ${formatCost(o.price)}`, o.packLabel ?? "size not listed", formatPerUnit(o)].filter(Boolean).join(" · ");
 }
 
 const sameOption = (a: ShoppingListPriceOption, b: ShoppingListPriceOption) => a.storeKey === b.storeKey && a.title === b.title && a.price === b.price;
@@ -295,7 +295,7 @@ export function ShopPage() {
                           <span className="shop-option__store">{o.store}</span>
                           <span className="shop-option__title">{o.title}</span>
                           <span className="shop-option__meta">
-                            {[o.packLabel, formatPerUnit(o)].filter(Boolean).join(" · ") || "Pack size not listed"}
+                            {[o.packLabel ?? "size not listed", formatPerUnit(o)].filter(Boolean).join(" · ")}
                             {o.packAssumed ? " (assumed)" : ""}
                           </span>
                           {prices.bestValue && sameOption(o, prices.bestValue) ? <span className="shop-option__tag">Best value</span> : null}

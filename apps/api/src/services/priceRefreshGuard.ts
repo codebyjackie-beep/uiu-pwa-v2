@@ -121,6 +121,12 @@ const EXCLUDE_WORDS: Array<[string, RegExp]> = [
   ["supplement", /\bsupplements?\b/i], ["capsule", /\bcapsules?\b/i], ["tablet", /\btablets?\b/i], ["powder", /\bpowder\b/i],
   ["pet", /\bpets?\b/i], ["dog", /\bdogs?\b/i], ["cat", /\bcats?\b/i], ["candle", /\bcandles?\b/i], ["gift", /\bgifts?\b/i], ["hamper", /\bhampers?\b/i],
 ];
+// Substitutes (B2 cloud 10-19): "Butter Alternative", "Olive & Vegetable Blend", dairy-free / vegan / plant-based spreads are not the ingredient.
+// A canonical name / alias that itself contains the word exempts it (same rule as EXCLUDE_WORDS).
+const SUBSTITUTE_WORDS: Array<[string, RegExp]> = [
+  ["alternative", /\balternatives?\b/i], ["blend", /\bblend(?:ed)?\b/i], ["spread", /\bspreads?\b/i],
+  ["dairy-free", /\bdairy[- ]free\b/i], ["vegan", /\bvegan\b/i], ["plant-based", /\bplant[- ]based\b/i],
+];
 export function stem(w: string): string {
   w = w.toLowerCase();
   if (w.length > 4 && w.endsWith("ies")) return `${w.slice(0, -3)}y`;
@@ -211,6 +217,9 @@ export function makeTitleMatcher(canon: any, priceDoc?: any): (title: string | u
       if (!re.test(t)) continue;
       if (!newExempt(label)) return { ok: false, reason: `excluded_word:${label}` };
       if (!oldExempt(label)) rescued.push(label);
+    }
+    for (const [label, re] of SUBSTITUTE_WORDS) {
+      if (re.test(t) && !re.test(nameAliasLower)) return { ok: false, reason: `substitute:${label}` };
     }
     // cloud rule 16: processed / different-form products. A phrase is exempt when the canonical name or an alias itself contains it.
     const pfRescued: string[] = [];
