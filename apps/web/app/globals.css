@@ -5100,3 +5100,19 @@ a {
   font-size: 15px;
   line-height: 1.5;
 }
+
+/* ---------- Privacy policy (Part PP) ---------- */
+.privacy-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space);
+  line-height: 1.6;
+  color: var(--uiu-green-ink);
+}
+.privacy-page h1 { font-size: 26px; margin: 8px 0 0; }
+.privacy-page h2 { font-size: 18px; margin: 24px 0 6px; }
+.privacy-page ul { padding-left: 20px; margin: 0; }
+.privacy-page li + li { margin-top: 6px; }
+.privacy-page a { color: var(--uiu-green-ink); }
+.privacy-page__updated { margin: 4px 0 0; font-size: 14px; color: var(--uiu-muted); }
+.privacy-page__back { margin-top: 32px; }

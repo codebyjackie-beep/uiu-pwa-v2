@@ -25,6 +25,9 @@ export function SiteFooter() {
       <Link href="/how-it-works" className="site-footer__link">
         How it works
       </Link>
+      <Link href="/privacy" className="site-footer__link">
+        Privacy
+      </Link>
     </div>
   );
 }
