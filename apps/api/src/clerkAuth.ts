@@ -1,5 +1,6 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import type { MiddlewareHandler } from "hono";
+import { verifyGuestToken } from "./services/guest";
 
 /**
  * HANDOFF_auth-subscription-front-page.md Milestone 1 followup (cc_prompt_milestone1_followup_fixes.md,
@@ -46,6 +47,8 @@ declare module "hono" {
     clerkAzp: string | undefined;
     /** `email` claim of the verified token, when the Clerk session template includes it. */
     clerkTokenEmail: string | undefined;
+    /** true when the request was authorised by an X-Guest-Token (clerkUserId is then a guest_… id). */
+    isGuest: boolean;
   }
 }
 
@@ -94,3 +97,32 @@ export async function optionalClerkUserId(c: {
     return null;
   }
 }
+
+/**
+ * Guest mode (claude/plan_guest_mode.md): a verified Clerk session as requireClerkAuth, otherwise a valid
+ * X-Guest-Token makes `clerkUserId` the temporary guest_… id and sets `isGuest`. Neither → 401.
+ * Use on the per-user routes guests may use; Premium routes are additionally refused by `guestForbidden`.
+ */
+export const requireUser: MiddlewareHandler<{ Bindings: ClerkAuthEnv & { ADMIN_TOKEN: string } }> = async (c, next) => {
+  if (c.req.header("Authorization")?.startsWith("Bearer ")) {
+    c.set("isGuest", false);
+    return requireClerkAuth(c as never, next);
+  }
+  const guestId = await verifyGuestToken(c.env.ADMIN_TOKEN, c.req.header("X-Guest-Token"));
+  if (!guestId) {
+    return c.json({ ok: false, error: { code: "unauthorized", message: "Missing bearer or guest token" } }, 401);
+  }
+  c.set("clerkUserId", guestId);
+  c.set("clerkAzp", undefined);
+  c.set("clerkTokenEmail", undefined);
+  c.set("isGuest", true);
+  await next();
+};
+
+/** Premium functions (Jackie 2026-10-20): guests get 403 guest_forbidden so the web shows the sign-up sheet. */
+export const guestForbidden: MiddlewareHandler = async (c, next) => {
+  if (c.get("isGuest")) {
+    return c.json({ ok: false, error: { code: "guest_forbidden", message: "Sign up free to use this feature" } }, 403);
+  }
+  await next();
+};

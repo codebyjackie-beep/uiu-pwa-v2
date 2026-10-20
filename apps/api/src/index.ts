@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
-import { requireClerkAuth } from "./clerkAuth";
+import { guestForbidden, requireClerkAuth, requireUser } from "./clerkAuth";
 import { recipesRouter } from "./routes/recipes";
 import { mealPlanRouter } from "./routes/mealPlan";
 import { mealPlanSetsRouter } from "./routes/mealPlanSets";
@@ -34,6 +34,7 @@ import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
 import { withDb } from "./db";
+import { claimGuestData, cleanupExpiredGuests, mintGuestToken, verifyGuestToken } from "./services/guest";
 import { notify, setupChat, NotifyError } from "./services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "./services/adminRollbacks";
 import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
@@ -152,8 +153,42 @@ for (const path of [
   "/api/recipe-import",
   "/api/recipe-import/*",
 ]) {
-  app.use(path, requireClerkAuth);
+  // Guest mode: a Clerk session OR a guest token (requireUser); Premium routes below refuse guests.
+  app.use(path, requireUser);
 }
+
+// Premium functions (Jackie 2026-10-20) — guests get 403 guest_forbidden. Free signed-in users are not gated
+// until Stripe (Milestone 3).
+for (const [method, path] of [
+  ["POST", "/api/meal-plan/generate"], // AI meal plan wizard
+  ["POST", "/api/health/coach"], // AI Nutrition Coach
+  ["POST", "/api/health/meal-logs"], // meal photo -> vision estimate
+  ["POST", "/api/health/meal-logs/barcode"], // barcode scan
+  ["POST", "/api/fridge-stock/ocr"], // receipt scan
+  ["POST", "/api/fridge-stock/scan-fridge"], // fridge photo
+  ["POST", "/api/recipes/generate-from-fridge"], // fridge -> recipe
+  ["POST", "/api/recipes/save-fridge-recipe"],
+  ["ALL", "/api/recipe-import/*"], // recipe import (link / text / photo)
+] as const) {
+  app.on(method === "ALL" ? ["GET", "POST", "PUT", "PATCH", "DELETE"] : [method], path, guestForbidden);
+}
+
+// Guest mode: mint a stateless guest token (no DB write), and claim a guest's data into a freshly signed-up account.
+app.post("/api/guest/session", async (c) => {
+  const out = await mintGuestToken(c.env.ADMIN_TOKEN);
+  return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+});
+app.post("/api/guest/claim", requireClerkAuth, async (c) => {
+  const guestId = await verifyGuestToken(c.env.ADMIN_TOKEN, c.req.header("X-Guest-Token"));
+  if (!guestId) return c.json({ ok: true, data: { claimed: false, reason: "no_valid_guest_token", moved: {} } });
+  try {
+    const out = await withDb(c.env, (db) => claimGuestData(db, guestId, c.get("clerkUserId")));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    console.error("[uiu-api] guest claim error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "claim failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
 
 app.get("/health", (c) => {
   const body: ApiResponse<HealthCheck> = {
@@ -369,6 +404,20 @@ app.post("/api/admin/notify", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return notifyError(c, err);
+  }
+});
+
+// Guest cleanup (services/guest.ts): deletes data of guest ids older than GUEST_TTL_DAYS. Dry run unless ?write=true.
+// Also runs daily from scheduled() ("0 9 * * *").
+app.post("/api/admin/guest-cleanup", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  try {
+    const out = await withDb(c.env, (db) => cleanupExpiredGuests(db, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    console.error("[uiu-api] guest cleanup error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "guest cleanup failed" } } satisfies ApiResponse<never>, 502);
   }
 });
 
@@ -677,6 +726,12 @@ export default {
         checkIgTokenHealth(env).catch((err) => {
           console.error("[uiu-api] cron igTokenHealth failed:", err instanceof Error ? err.message : String(err));
         }),
+      );
+      // Guest mode: daily delete of guest data older than 7 days (services/guest.ts).
+      ctx.waitUntil(
+        withDb(env, (db) => cleanupExpiredGuests(db, true))
+          .then((r) => console.log("[uiu-api] cron guestCleanup:", JSON.stringify(r)))
+          .catch((err) => console.error("[uiu-api] cron guestCleanup failed:", err instanceof Error ? err.message : String(err))),
       );
       return;
     }
