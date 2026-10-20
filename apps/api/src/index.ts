@@ -34,6 +34,7 @@ import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
 import { withDb } from "./db";
+import { notify, setupChat, NotifyError } from "./services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "./services/adminRollbacks";
 import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
 
@@ -115,6 +116,8 @@ type Bindings = {
   PRICE_REFRESH_SCHEDULE?: string;
   PRICE_REFRESH_AUTO_WRITE?: string;
   PRICE_REFRESH_DOCS_PER_FIRE?: string;
+  // Cloud-session notifications to Jackie (services/cloudNotify.ts) — secret, dedicated bot.
+  CLOUD_NOTIFY_BOT_TOKEN?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -337,6 +340,35 @@ app.post("/api/admin/recipe-cost/rollback", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return rollbackError(c, err, "recipe-cost rollback");
+  }
+});
+
+// Cloud-session -> Jackie Telegram notifications (dedicated bot, services/cloudNotify.ts).
+//   POST /api/admin/notify/setup  — saves the chat id after Jackie has messaged the bot once.
+//   POST /api/admin/notify        body { text } — sends a plain-text message.
+function notifyError(c: any, err: unknown) {
+  if (err instanceof NotifyError) return c.json({ ok: false, error: { code: "notify_error", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error("[uiu-api] notify error:", err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "notify_error", message: "notify failed" } } satisfies ApiResponse<never>, 502);
+}
+app.post("/api/admin/notify/setup", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  try {
+    const out = await withDb(c.env, (db) => setupChat(c.env, db));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return notifyError(c, err);
+  }
+});
+app.post("/api/admin/notify", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const body = (await c.req.json().catch(() => null)) as { text?: string } | null;
+  if (!body?.text?.trim()) return c.json({ ok: false, error: { code: "bad_request", message: "text is required" } } satisfies ApiResponse<never>, 400);
+  try {
+    const out = await withDb(c.env, (db) => notify(c.env, db, body.text!));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return notifyError(c, err);
   }
 });
 
