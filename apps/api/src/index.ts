@@ -142,6 +142,9 @@ for (const path of [
   "/api/recipe-browse/*",
   "/api/recipes/generate-from-fridge",
   "/api/recipes/save-fridge-recipe",
+  // from-url / from-text / from-photo call OpenRouter (paid) — never open to anonymous callers.
+  "/api/recipe-import",
+  "/api/recipe-import/*",
 ]) {
   app.use(path, requireClerkAuth);
 }
