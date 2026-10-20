@@ -14,10 +14,10 @@ import { useGuestGate } from "../../components/GuestGate";
 export function RecipeFavouriteButton({ recipeId }: { recipeId: string }) {
   const { isSignedIn, requireAuth } = useGuestGate();
   const [isFavourite, setIsFavourite] = useState(false);
-  const [loaded, setLoaded] = useState(!isSignedIn);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!isSignedIn) return;
+    // Guest mode: guests have favourites too (stored under their guest id).
     let cancelled = false;
     (async () => {
       const res = await fetch("/api/favourite-recipes");

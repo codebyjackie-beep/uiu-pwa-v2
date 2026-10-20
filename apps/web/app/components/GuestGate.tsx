@@ -2,24 +2,27 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
 /**
- * cc_prompt_guest_browse.md Part B — signed-out visitors can browse Recipes only. Anything that
- * writes or lives in another tab calls `requireAuth()` first: signed in → true, carry on;
- * guest → false and the "Sign up free to save this" sheet opens (so no auth-only API is called
- * and no 401 toast appears).
+ * Guest mode (claude/plan_guest_mode.md, Jackie 2026-10-20): signed-out visitors can use every tab; what they add is
+ * kept server-side under a temporary guest id (cookie `uiu_guest`, 7 days) and moved into the account when they sign
+ * up. Only Premium functions need an account: `requireAccount()` opens the sign-up sheet for a guest, and any
+ * same-origin /api response with error code `guest_forbidden` opens it too (so every Premium button is covered).
+ * `requireAuth()` is kept for existing call sites and now lets guests through.
  */
 interface GuestGateValue {
   isSignedIn: boolean;
   /** false while Clerk is still loading AND the server render said "guest" — treat as unknown: no banner, no sheet. */
   authResolved: boolean;
-  /** true when the action may go ahead; false after opening the sign-up sheet for a guest. */
+  /** true when the action may go ahead (signed in or guest). */
   requireAuth: () => boolean;
+  /** Premium / account-only actions: true when signed in; a guest gets the sign-up sheet and false. */
+  requireAccount: () => boolean;
 }
 
-const GuestGateContext = createContext<GuestGateValue>({ isSignedIn: true, authResolved: true, requireAuth: () => true });
+const GuestGateContext = createContext<GuestGateValue>({ isSignedIn: true, authResolved: true, requireAuth: () => true, requireAccount: () => true });
 
 export function useGuestGate(): GuestGateValue {
   return useContext(GuestGateContext);
@@ -65,17 +68,65 @@ function AuthLink({ href, className, children }: { href: string; className: stri
 export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { isLoaded, isSignedIn: clerkSignedIn } = useAuth();
   const isSignedIn = isLoaded ? !!clerkSignedIn : serverSignedIn;
   const authResolved = isLoaded || serverSignedIn;
 
-  const requireAuth = useCallback(() => {
+  const requireAuth = useCallback(() => true, []);
+  const requireAccount = useCallback(() => {
     if (isSignedIn) return true;
     if (authResolved) setOpen(true);
     return false;
   }, [isSignedIn, authResolved]);
 
-  const value = useMemo(() => ({ isSignedIn, authResolved, requireAuth }), [isSignedIn, authResolved, requireAuth]);
+  const value = useMemo(() => ({ isSignedIn, authResolved, requireAuth, requireAccount }), [isSignedIn, authResolved, requireAuth, requireAccount]);
+
+  // Any Premium call a guest makes comes back with error code guest_forbidden (apps/api guestForbidden) → sign-up sheet.
+  useEffect(() => {
+    const original = window.fetch;
+    const patched: typeof window.fetch = async (input, init) => {
+      const res = await original(input, init);
+      try {
+        const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+        const sameOriginApi = url.startsWith("/api/") || url.startsWith(`${window.location.origin}/api/`);
+        if (sameOriginApi && (res.headers.get("content-type") ?? "").includes("application/json")) {
+          const body = (await res.clone().json().catch(() => null)) as { ok?: boolean; error?: { code?: string } } | null;
+          if (body && body.ok === false && body.error?.code === "guest_forbidden") setOpen(true);
+        }
+      } catch {
+        // never let the check break the request
+      }
+      return res;
+    };
+    window.fetch = patched;
+    return () => {
+      if (window.fetch === patched) window.fetch = original;
+    };
+  }, []);
+
+  // After sign-in / sign-up: move this browser's guest data into the account (new accounts only; the API decides),
+  // once per browser session.
+  useEffect(() => {
+    if (!isLoaded || !clerkSignedIn) return;
+    let done = false;
+    try {
+      done = sessionStorage.getItem("uiu_guest_claim_done") === "1";
+    } catch {
+      // storage blocked — just try once more
+    }
+    if (done) return;
+    void (async () => {
+      const res = await fetch("/api/guest/claim", { method: "POST" }).catch(() => null);
+      const body = (await res?.json().catch(() => null)) as { ok?: boolean; data?: { claimed?: boolean } } | null;
+      try {
+        sessionStorage.setItem("uiu_guest_claim_done", "1");
+      } catch {
+        // ignore
+      }
+      if (body?.ok && body.data?.claimed) router.refresh();
+    })();
+  }, [isLoaded, clerkSignedIn, router]);
 
   useEffect(() => {
     if (!open) return;
@@ -105,10 +156,10 @@ export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn
           >
             <div className="meal-planner-modal__body guest-gate-modal__body">
               <h3 id="guest-gate-title" className="guest-gate-modal__title">
-                Sign up free to save this
+                Sign up free to use this
               </h3>
               <p className="guest-gate-modal__text">
-                Create a free account to save recipes, plan meals and build your shopping list.
+                This feature needs a free account. Signing up also keeps everything you&apos;ve added as a guest.
               </p>
               <AuthLink href={authUrl("sign-up", pathname)} className="wizard-primary-button guest-gate-modal__primary">
                 Sign up free
@@ -127,16 +178,18 @@ export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn
   );
 }
 
-/** Slim banner on the recipes pages while signed out. Hidden in full-screen cook mode. */
+/** Guest mode: slim banner on every app page while signed out — states that guest data is not saved. Hidden in full-screen cook mode. */
+const GUEST_BANNER_PREFIXES = ["/recipes", "/meal-planner", "/fridge", "/shop", "/health"];
 export function GuestBanner() {
   const { isSignedIn, authResolved } = useGuestGate();
   const pathname = usePathname();
-  if (isSignedIn || !authResolved || !pathname.startsWith("/recipes") || pathname.endsWith("/cook")) return null;
+  const onAppPage = pathname === "/" || GUEST_BANNER_PREFIXES.some((p) => pathname.startsWith(p));
+  if (isSignedIn || !authResolved || !onAppPage || pathname.endsWith("/cook")) return null;
 
   return (
     <div className="guest-banner">
       <p className="guest-banner__text">
-        You&apos;re browsing as a guest. Sign up free to save recipes, plan meals and build your shopping list.
+        You&apos;re using UseItUp as a guest — nothing you add is saved. Sign up free to keep it.
       </p>
       <AuthLink href={authUrl("sign-up", pathname)} className="guest-banner__cta">
         Sign up free
@@ -147,6 +200,13 @@ export function GuestBanner() {
 
 /** The page wrapper: gets the extra top padding for the app header whenever the visitor is signed in (client view, same as AppHeader). */
 export function AppShell({ publicShop, children }: { publicShop: boolean; children: React.ReactNode }) {
-  const { isSignedIn } = useGuestGate();
-  return <div className={!publicShop && isSignedIn ? "app-shell app-shell--with-app-header" : "app-shell"}>{children}</div>;
+  const pathname = usePathname();
+  // Guest mode: the app header shows for guests too (with a Sign up button), so the padding follows the header's own rule.
+  const withHeader = !publicShop && !isAppHeaderHidden(pathname);
+  return <div className={withHeader ? "app-shell app-shell--with-app-header" : "app-shell"}>{children}</div>;
+}
+
+/** Pages without the app header (signed-out intro / auth pages / full-screen cook mode). Shared by AppHeader and AppShell. */
+export function isAppHeaderHidden(pathname: string): boolean {
+  return ["/how-it-works", "/sign-in", "/sign-up"].some((p) => pathname === p || pathname.startsWith(`${p}/`)) || pathname.endsWith("/cook");
 }

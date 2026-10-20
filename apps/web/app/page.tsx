@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
+import { GUEST_COOKIE } from "./lib/guestCookie";
 import { formatTotalWithIncomplete, type MealPlanSetDetail, type MealPlanSetSummary, type RecipeListPage } from "@uiu/shared";
 import { apiGet, apiPost } from "./lib/api";
 import { InstallButton } from "./InstallButton";
@@ -18,9 +20,11 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const { userId, getToken } = await auth();
-  if (!userId) redirect("/how-it-works");
+  // Guest mode: a signed-out first visit is the welcome page; a guest who has already used the app (guest cookie) gets Home.
+  const isGuest = !userId;
+  if (isGuest && !(await cookies()).get(GUEST_COOKIE)) redirect("/how-it-works");
 
-  const user = await currentUser();
+  const user = isGuest ? null : await currentUser();
   if (user) {
     const email = user.primaryEmailAddress?.emailAddress ?? "";
     if (email) {
@@ -61,7 +65,7 @@ export default async function Home() {
     <div className="home-page">
       <OnboardingOverlay />
       <section className="home-hero">
-        <h1 className="home-hero__title">Welcome back</h1>
+        <h1 className="home-hero__title">{isGuest ? "Welcome" : "Welcome back"}</h1>
         <p className="home-hero__subtitle">
           Plan meals, track your fridge, shop smart, and stay healthy — all in one place.
         </p>

@@ -1,5 +1,7 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
+import { GUEST_COOKIE } from "./guestCookie";
 import type { ApiResponse } from "@uiu/shared";
 
 /**
@@ -40,7 +42,29 @@ async function withAuth(headers?: Record<string, string>): Promise<Record<string
   } catch {
     // No Clerk request context (e.g. build-time or cron) — go unauthenticated; the API will 401 user routes.
   }
+  // Guest mode: no Clerk session → forward the guest token cookie (set by middleware) so the API scopes data to it.
+  try {
+    const guest = (await cookies()).get(GUEST_COOKIE)?.value;
+    if (guest) return { ...headers, "X-Guest-Token": guest };
+  } catch {
+    // no request context
+  }
   return headers;
+}
+
+/** Mints a guest token via the API service binding (middleware uses it; never called with a user session). */
+export async function mintGuestToken(): Promise<{ token: string; expiresAt: string } | null> {
+  try {
+    const env = await resolveEnv();
+    const url = `${apiBaseUrl(env)}/api/guest/session`;
+    const init: RequestInit = { method: "POST" };
+    const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
+    const parsed = (await res.json().catch(() => null)) as ApiResponse<{ token: string; expiresAt: string }> | null;
+    return parsed?.ok ? parsed.data : null;
+  } catch (err) {
+    console.error("[uiu-web] mintGuestToken failed:", err instanceof Error ? err.message : String(err));
+    return null;
+  }
 }
 
 export async function apiGet<T>(path: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {

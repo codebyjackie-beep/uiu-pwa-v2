@@ -38,6 +38,13 @@ export default function PrivacyPage() {
         </li>
       </ul>
 
+      <h2>Using UseItUp as a guest</h2>
+      <p>
+        You can use UseItUp without an account. What you add as a guest is linked to a random guest ID kept in a cookie on
+        your device, is not saved to an account, and is deleted automatically after 7 days. If you sign up for a new
+        account within that time, it is moved into your account.
+      </p>
+
       <h2>How we use it</h2>
       <p>Only to run the features you use. We do not sell your data, and we do not use advertising trackers.</p>
 
@@ -79,7 +86,10 @@ export default function PrivacyPage() {
       </p>
 
       <h2>Cookies</h2>
-      <p>We only use the cookies needed to keep you signed in (set by Clerk). There are no analytics or advertising cookies.</p>
+      <p>
+        We only use the cookies needed to keep you signed in (set by Clerk) and, if you use the app as a guest, one cookie
+        holding your temporary guest ID. There are no analytics or advertising cookies.
+      </p>
 
       <h2>Amazon links</h2>
       <p>

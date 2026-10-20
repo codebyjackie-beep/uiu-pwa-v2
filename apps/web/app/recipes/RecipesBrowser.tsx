@@ -62,7 +62,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   // Guests (cc_prompt_guest_browse.md Part B) never call the auth-only endpoints below
   // (/api/favourite-recipes, /api/recipe-browse/*): favourites open the sign-up sheet instead,
   // and the random-10 refresh runs on local state with no daily cap.
-  const { isSignedIn, requireAuth } = useGuestGate();
+  const { isSignedIn, requireAuth, requireAccount } = useGuestGate();
   const [search, setSearch] = useState("");
   const [mealTypes, setMealTypes] = useState<FilterMealType[]>([]);
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
@@ -97,7 +97,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   // Same fetch-on-mount + optimistic toggle pattern as MealPlannerBoard.tsx's favourite
   // heart — independent of Recipe.isFavorite/favoriteCount, see favouriteRecipes.ts header.
   useEffect(() => {
-    if (!isSignedIn) return;
+    // Guest mode: guests have favourites too (stored under their guest id).
     let cancelled = false;
     (async () => {
       const res = await fetch("/api/favourite-recipes");
@@ -453,7 +453,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
         className="recipes-fab"
         aria-label="Add a recipe"
         onClick={() => {
-          if (requireAuth()) setSaveFromLinkOpen(true);
+          if (requireAccount()) setSaveFromLinkOpen(true);
         }}
       >
         +

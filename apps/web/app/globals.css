@@ -5116,3 +5116,17 @@ a {
 .privacy-page a { color: var(--uiu-green-ink); }
 .privacy-page__updated { margin: 4px 0 0; font-size: 14px; color: var(--uiu-muted); }
 .privacy-page__back { margin-top: 32px; }
+
+/* Guest mode: Sign up button in the app header (replaces the avatar for guests). */
+.app-header__signup {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--uiu-green);
+  color: var(--uiu-green-ink);
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isSignedOutPublicPath } from "../lib/signedOutPublicPaths";
-import { authUrl, useGuestGate } from "./GuestGate";
+import { useGuestGate } from "./GuestGate";
 
 const ICON_PROPS = {
   width: 22,
@@ -87,9 +87,7 @@ const TABS = [
   { label: "Health", href: "/health", Icon: HealthIcon },
 ] as const;
 
-/** Tabs a guest can't use (cc_prompt_guest_browse.md Part B) — tapping one goes to sign-up and
- * returns to the page they were on. Home bounces a guest to the welcome page; Recipes stays open. */
-const GUEST_GATED_HREFS = new Set(["/meal-planner", "/fridge", "/shop", "/health"]);
+/* Guest mode (claude/plan_guest_mode.md): every tab is open to guests. */
 
 export function BottomNav() {
   const { isSignedIn } = useGuestGate();
@@ -105,7 +103,7 @@ export function BottomNav() {
         return (
           <Link
             key={href}
-            href={!isSignedIn && GUEST_GATED_HREFS.has(href) ? authUrl("sign-up", pathname) : href}
+            href={href}
             className={active ? "bottom-nav__tab bottom-nav__tab--active" : "bottom-nav__tab"}
             aria-label={label}
           >

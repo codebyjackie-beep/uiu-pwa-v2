@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { useGuestGate } from "./GuestGate";
+import { authUrl, isAppHeaderHidden, useGuestGate } from "./GuestGate";
 
 /** cc_prompt_milestone1_followup_fixes_2.md Task 1 (renamed from AccountHeader in
  * cc_prompt_account_header_to_app_header.md) — a lone avatar floating in an empty 56px
@@ -11,17 +11,30 @@ import { useGuestGate } from "./GuestGate";
  * the left, UserButton on the right. Renders top-right/left on every app-shell page.
  * Hidden on pages reached while signed out (how-it-works / sign-in / sign-up) and on
  * /recipes/[id]/cook (future cook-mode, full-bleed). */
-const HIDDEN_PATHS = ["/how-it-works", "/sign-in", "/sign-up"];
 
 export function AppHeader() {
-  const { isSignedIn } = useGuestGate();
+  const { isSignedIn, authResolved } = useGuestGate();
   const { user } = useUser();
   const pathname = usePathname();
-  const hidden =
-    HIDDEN_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`)) ||
-    pathname.endsWith("/cook");
+  if (isAppHeaderHidden(pathname)) return null;
 
-  if (!isSignedIn || hidden) return null;
+  // Guest mode: guests get the same header with a Sign up button instead of the avatar.
+  if (!isSignedIn) {
+    return (
+      <header className="app-header">
+        <div className="app-header__inner">
+          <Link href="/" className="app-header__wordmark">
+            UseItUp
+          </Link>
+          {authResolved ? (
+            <Link href={authUrl("sign-up", pathname)} className="app-header__signup">
+              Sign up free
+            </Link>
+          ) : null}
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="app-header">
