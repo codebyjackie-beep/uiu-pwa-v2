@@ -32,7 +32,7 @@ import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { usersRouter } from "./routes/users";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
-import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, type RemapInput } from "./services/clerkRemap";
+import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
 import { withDb } from "./db";
 import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
 
@@ -269,6 +269,37 @@ app.post("/api/admin/clerk-remap/scratch-verify", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return remapError(c, err, "clerk-remap scratch-verify");
+  }
+});
+
+// Delete a seed/test users row (Jackie 2026-10-20: delete test_clerk_id_1789421842). Only ids starting with
+// "test_clerk_id_" are accepted; refused if any per-user collection still references the id. Default dry run;
+// ?write=true copies the doc to clerk_remap_backups (batch "seeddelete_<id>") and then deletes it.
+app.post("/api/admin/users/delete-seed", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { clerkUserId?: string } | null;
+  const id = body?.clerkUserId ?? "";
+  if (!/^test_clerk_id_\d+$/.test(id)) return c.json({ ok: false, error: { code: "bad_request", message: "clerkUserId must match test_clerk_id_<digits>" } } satisfies ApiResponse<never>, 400);
+  try {
+    const out = await withDb(c.env, async (db) => {
+      const docs = await db.collection("users").find({ clerkUserId: id }).toArray();
+      const refs: Record<string, number> = {};
+      for (const name of USERID_COLLECTIONS) {
+        const n = await db.collection(name).countDocuments({ userId: id });
+        if (n) refs[name] = n;
+      }
+      if (await db.collection("meal_plan_sequence").countDocuments({ _id: id as never })) refs.meal_plan_sequence = 1;
+      const blocked = Object.keys(refs).length > 0;
+      if (!write || blocked || docs.length !== 1) return { mode: blocked ? "refused" : "dry-run", found: docs.length, refs, deleted: 0 };
+      await db.collection("clerk_remap_backups").insertOne({ batch: `seeddelete_${id}`, at: new Date(), collection: "users", docId: docs[0]!._id, doc: docs[0] });
+      const r = await db.collection("users").deleteOne({ _id: docs[0]!._id, clerkUserId: id });
+      const left = await db.collection("users").countDocuments({ clerkUserId: id });
+      return { mode: "write", found: 1, refs, deleted: r.deletedCount, left };
+    });
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return remapError(c, err, "users delete-seed");
   }
 });
 
