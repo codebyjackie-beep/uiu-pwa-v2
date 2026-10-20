@@ -70,6 +70,11 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
             </Link>
           </li>
           <li>
+            <Link href="/privacy" className="profile-settings__row">
+              <span>Privacy policy</span>
+            </Link>
+          </li>
+          <li>
             <button
               type="button"
               className="profile-settings__row profile-settings__row--danger"
