@@ -10,7 +10,16 @@ import { useAuth } from "@clerk/nextjs";
  * (same-site relative paths only) and refresh so the server layout re-reads the session.
  */
 function safeRedirect(raw: string | null): string {
-  return raw && raw.startsWith("/") && !raw.startsWith("//") && !raw.startsWith("/\\") ? raw : "/";
+  if (!raw) return "/";
+  if (raw.startsWith("/") && !raw.startsWith("//") && !raw.startsWith("/\\")) return raw;
+  // Clerk's middleware (auth.protect) sends an absolute same-origin URL, e.g. https://useitup.uk/meal-planner — keep its path.
+  try {
+    const u = new URL(raw);
+    if (typeof window !== "undefined" && u.origin === window.location.origin) return `${u.pathname}${u.search}${u.hash}` || "/";
+  } catch {
+    // not a URL — fall through
+  }
+  return "/";
 }
 
 export function AuthPageGuard({ children }: { children: React.ReactNode }) {
