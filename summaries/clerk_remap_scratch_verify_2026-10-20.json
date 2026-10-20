@@ -1,0 +1,278 @@
+{
+  "scratchDb": "uiu_remap_scratch_1792525006074",
+  "steps": [
+    {
+      "script": "clerk_user_remap.cjs",
+      "args": [
+        "--by-email",
+        "JACKIE_EMAIL=user_TEST_NEW_JACKIE",
+        "--map",
+        "OLD_TESTER=user_TEST_NEW_TESTER"
+      ],
+      "exit": 0,
+      "stdout": "Mode: DRY RUN (pass --write to commit)  db=uiu_remap_scratch_1792525006074\n  OLD_TESTER  ->  user_TEST_NEW_TESTER   (map)\n  OLD_JACKIE  ->  user_TEST_NEW_JACKIE   (email:JACKIE_EMAIL)\n┌─────────┬───────────────────────────┬───────────┬───────────────────┐\n│ (index) │ collection                │ willRemap │ newIdAlreadyThere │\n├─────────┼───────────────────────────┼───────────┼───────────────────┤\n│ 0       │ 'fridge_stock'            │ 6         │ 0                 │\n│ 1       │ 'meal_plan_sets'          │ 2         │ 0                 │\n│ 2       │ 'meal_plans'              │ 42        │ 0                 │\n│ 3       │ 'user_health_profiles'    │ 1         │ 0                 │\n│ 4       │ 'weight_logs'             │ 2         │ 0                 │\n│ 5       │ 'meal_logs'               │ 1         │ 0                 │\n│ 6       │ 'nutrition_coach_history' │ 2         │ 0                 │\n│ 7       │ 'favourite_recipes'       │ 1         │ 0                 │\n│ 8       │ 'shopping_list_items'     │ 11        │ 0                 │\n│ 9       │ 'recipe_browse_state'     │ 0         │ 0                 │\n│ 10      │ 'meal_plan_sequence'      │ 1         │ 0                 │\n│ 11      │ 'users'                   │ 2         │ 2                 │\n└─────────┴───────────────────────────┴───────────┴───────────────────┘\nTotal docs to remap: 71\nUnmapped ids found (left untouched):\n┌─────────┬──────────────────────┬───────────────┬────────────────────────────┬──────┬────────────────────────────────────────────┐\n│ (index) │ collection           │ field         │ value                      │ docs │ email                                      │\n├─────────┼──────────────────────┼───────────────┼────────────────────────────┼──────┼────────────────────────────────────────────┤\n│ 0       │ 'meal_plan_sequence' │ '_id'         │ 'meal_plan_set'            │ 1    │                                            │\n│ 1       │ 'users'              │ 'clerkUserId' │ 'test_clerk_id_1789421842' │ 1    │ 'verify-users-sync-1789421842@example.com' │\n└─────────┴──────────────────────┴───────────────┴────────────────────────────┴──────┴────────────────────────────────────────────┘\n\nDry run only — nothing written.\n",
+      "stderr": ""
+    },
+    {
+      "script": "clerk_user_remap.cjs",
+      "args": [
+        "--by-email",
+        "JACKIE_EMAIL=user_TEST_NEW_JACKIE",
+        "--map",
+        "OLD_TESTER=user_TEST_NEW_TESTER",
+        "--write",
+        "--out",
+        "C:\\Project\\UIU-PWA-v2\\uiu-pwa-v2\\apps\\api\\scripts\\_scratch_write_report.json"
+      ],
+      "exit": 0,
+      "stdout": "Mode: WRITE  db=uiu_remap_scratch_1792525006074\nBatch id: clerkremap_20261020_cef52c\n  OLD_TESTER  ->  user_TEST_NEW_TESTER   (map)\n  OLD_JACKIE  ->  user_TEST_NEW_JACKIE   (email:JACKIE_EMAIL)\n┌─────────┬───────────────────────────┬───────────┬───────────────────┐\n│ (index) │ collection                │ willRemap │ newIdAlreadyThere │\n├─────────┼───────────────────────────┼───────────┼───────────────────┤\n│ 0       │ 'fridge_stock'            │ 6         │ 0                 │\n│ 1       │ 'meal_plan_sets'          │ 2         │ 0                 │\n│ 2       │ 'meal_plans'              │ 42        │ 0                 │\n│ 3       │ 'user_health_profiles'    │ 1         │ 0                 │\n│ 4       │ 'weight_logs'             │ 2         │ 0                 │\n│ 5       │ 'meal_logs'               │ 1         │ 0                 │\n│ 6       │ 'nutrition_coach_history' │ 2         │ 0                 │\n│ 7       │ 'favourite_recipes'       │ 1         │ 0                 │\n│ 8       │ 'shopping_list_items'     │ 11        │ 0                 │\n│ 9       │ 'recipe_browse_state'     │ 0         │ 0                 │\n│ 10      │ 'meal_plan_sequence'      │ 1         │ 0                 │\n│ 11      │ 'users'                   │ 2         │ 2                 │\n└─────────┴───────────────────────────┴───────────┴───────────────────┘\nTotal docs to remap: 71\nUnmapped ids found (left untouched):\n┌─────────┬──────────────────────┬───────────────┬────────────────────────────┬──────┬────────────────────────────────────────────┐\n│ (index) │ collection           │ field         │ value                      │ docs │ email                                      │\n├─────────┼──────────────────────┼───────────────┼────────────────────────────┼──────┼────────────────────────────────────────────┤\n│ 0       │ 'meal_plan_sequence' │ '_id'         │ 'meal_plan_set'            │ 1    │                                            │\n│ 1       │ 'users'              │ 'clerkUserId' │ 'test_clerk_id_1789421842' │ 1    │ 'verify-users-sync-1789421842@example.com' │\n└─────────┴──────────────────────┴───────────────┴────────────────────────────┴──────┴────────────────────────────────────────────┘\n  fridge_stock: OLD_TESTER -> user_TEST_NEW_TESTER: 6\n  meal_plan_sets: OLD_TESTER -> user_TEST_NEW_TESTER: 2\n  meal_plans: OLD_TESTER -> user_TEST_NEW_TESTER: 42\n  user_health_profiles: OLD_TESTER -> user_TEST_NEW_TESTER: 1\n  weight_logs: OLD_TESTER -> user_TEST_NEW_TESTER: 2\n  meal_logs: OLD_TESTER -> user_TEST_NEW_TESTER: 1\n  nutrition_coach_history: OLD_TESTER -> user_TEST_NEW_TESTER: 2\n  favourite_recipes: OLD_TESTER -> user_TEST_NEW_TESTER: 1\n  shopping_list_items: OLD_TESTER -> user_TEST_NEW_TESTER: 10\n  shopping_list_items: OLD_JACKIE -> user_TEST_NEW_JACKIE: 1\n  meal_plan_sequence: OLD_TESTER -> user_TEST_NEW_TESTER: 1\n  users: OLD_TESTER -> user_TEST_NEW_TESTER: 1 (duplicate folded)\n  users: OLD_JACKIE -> user_TEST_NEW_JACKIE: 1 (duplicate folded)\n┌─────────┬───────────────────────────┬────────────────────────────────────┬────────────────────────┬──────────┬──────────┬─────────────┬──────┐\n│ (index) │ collection                │ oldId                              │ newId                  │ oldAfter │ newAfter │ expectedNew │ ok   │\n├─────────┼───────────────────────────┼────────────────────────────────────┼────────────────────────┼──────────┼──────────┼─────────────┼──────┤\n│ 0       │ 'fridge_stock'            │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 6        │ 6           │ true │\n│ 1       │ 'meal_plan_sets'          │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 2        │ 2           │ true │\n│ 2       │ 'meal_plans'              │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 42       │ 42          │ true │\n│ 3       │ 'user_health_profiles'    │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 1        │ 1           │ true │\n│ 4       │ 'weight_logs'             │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 2        │ 2           │ true │\n│ 5       │ 'meal_logs'               │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 1        │ 1           │ true │\n│ 6       │ 'nutrition_coach_history' │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 2        │ 2           │ true │\n│ 7       │ 'favourite_recipes'       │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 1        │ 1           │ true │\n│ 8       │ 'shopping_list_items'     │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 10       │ 10          │ true │\n│ 9       │ 'shopping_list_items'     │ 'OLD_JACKIE' │ 'user_TEST_NEW_JACKIE' │ 0        │ 1        │ 1           │ true │\n│ 10      │ 'meal_plan_sequence'      │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 1        │ 1           │ true │\n│ 11      │ 'users'                   │ 'OLD_TESTER' │ 'user_TEST_NEW_TESTER' │ 0        │ 1        │ 1           │ true │\n│ 12      │ 'users'                   │ 'OLD_JACKIE' │ 'user_TEST_NEW_JACKIE' │ 0        │ 1        │ 1           │ true │\n└─────────┴───────────────────────────┴────────────────────────────────────┴────────────────────────┴──────────┴──────────┴─────────────┴──────┘\nRe-query OK: old ids = 0 everywhere, new ids = expected.\nRollback: node scripts/clerk_user_remap_rollback.cjs clerkremap_20261020_cef52c --write\n",
+      "stderr": ""
+    },
+    {
+      "script": "clerk_user_remap_rollback.cjs",
+      "args": [
+        "clerkremap_20261020_cef52c"
+      ],
+      "exit": 0,
+      "stdout": "Mode: DRY RUN  batch=clerkremap_20261020_cef52c  db=uiu_remap_scratch_1792525006074\n┌─────────┬───────────────────────────┬────────┐\n│ (index) │ collection                │ tagged │\n├─────────┼───────────────────────────┼────────┤\n│ 0       │ 'fridge_stock'            │ 6      │\n│ 1       │ 'meal_plan_sets'          │ 2      │\n│ 2       │ 'meal_plans'              │ 42     │\n│ 3       │ 'user_health_profiles'    │ 1      │\n│ 4       │ 'weight_logs'             │ 2      │\n│ 5       │ 'meal_logs'               │ 1      │\n│ 6       │ 'nutrition_coach_history' │ 2      │\n│ 7       │ 'favourite_recipes'       │ 1      │\n│ 8       │ 'shopping_list_items'     │ 11     │\n│ 9       │ 'recipe_browse_state'     │ 0      │\n│ 10      │ 'meal_plan_sequence'      │ 1      │\n│ 11      │ 'users'                   │ 2      │\n└─────────┴───────────────────────────┴────────┘\nTotal docs that would be restored: 71\n",
+      "stderr": ""
+    },
+    {
+      "script": "clerk_user_remap_rollback.cjs",
+      "args": [
+        "clerkremap_20261020_cef52c",
+        "--write"
+      ],
+      "exit": 0,
+      "stdout": "Mode: WRITE  batch=clerkremap_20261020_cef52c  db=uiu_remap_scratch_1792525006074\n┌─────────┬───────────────────────────┬────────┐\n│ (index) │ collection                │ tagged │\n├─────────┼───────────────────────────┼────────┤\n│ 0       │ 'fridge_stock'            │ 6      │\n│ 1       │ 'meal_plan_sets'          │ 2      │\n│ 2       │ 'meal_plans'              │ 42     │\n│ 3       │ 'user_health_profiles'    │ 1      │\n│ 4       │ 'weight_logs'             │ 2      │\n│ 5       │ 'meal_logs'               │ 1      │\n│ 6       │ 'nutrition_coach_history' │ 2      │\n│ 7       │ 'favourite_recipes'       │ 1      │\n│ 8       │ 'shopping_list_items'     │ 11     │\n│ 9       │ 'recipe_browse_state'     │ 0      │\n│ 10      │ 'meal_plan_sequence'      │ 1      │\n│ 11      │ 'users'                   │ 2      │\n└─────────┴───────────────────────────┴────────┘\nTotal docs restored: 71\nTagged docs left after rollback: 0\n",
+      "stderr": ""
+    }
+  ],
+  "dryRunWroteNothing": true,
+  "batch": "clerkremap_20261020_cef52c",
+  "writeReport": {
+    "summary": [
+      {
+        "collection": "fridge_stock",
+        "willRemap": 6,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "meal_plan_sets",
+        "willRemap": 2,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "meal_plans",
+        "willRemap": 42,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "user_health_profiles",
+        "willRemap": 1,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "weight_logs",
+        "willRemap": 2,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "meal_logs",
+        "willRemap": 1,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "nutrition_coach_history",
+        "willRemap": 2,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "favourite_recipes",
+        "willRemap": 1,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "shopping_list_items",
+        "willRemap": 11,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "recipe_browse_state",
+        "willRemap": 0,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "meal_plan_sequence",
+        "willRemap": 1,
+        "newIdAlreadyThere": 0
+      },
+      {
+        "collection": "users",
+        "willRemap": 2,
+        "newIdAlreadyThere": 2
+      }
+    ],
+    "requeryAllOk": true,
+    "unmapped": [
+      {
+        "collection": "meal_plan_sequence",
+        "field": "_id",
+        "value": "meal_plan_set",
+        "docs": 1
+      },
+      {
+        "collection": "users",
+        "field": "clerkUserId",
+        "value": "test_clerk_id_1789421842",
+        "docs": 1,
+        "email": "verify-users-sync-1789421842@example.com"
+      }
+    ],
+    "perIdCounts": [
+      {
+        "collection": "fridge_stock",
+        "oldId": "OLD_TESTER",
+        "docs": 6
+      },
+      {
+        "collection": "meal_plan_sets",
+        "oldId": "OLD_TESTER",
+        "docs": 2
+      },
+      {
+        "collection": "meal_plans",
+        "oldId": "OLD_TESTER",
+        "docs": 42
+      },
+      {
+        "collection": "user_health_profiles",
+        "oldId": "OLD_TESTER",
+        "docs": 1
+      },
+      {
+        "collection": "weight_logs",
+        "oldId": "OLD_TESTER",
+        "docs": 2
+      },
+      {
+        "collection": "meal_logs",
+        "oldId": "OLD_TESTER",
+        "docs": 1
+      },
+      {
+        "collection": "nutrition_coach_history",
+        "oldId": "OLD_TESTER",
+        "docs": 2
+      },
+      {
+        "collection": "favourite_recipes",
+        "oldId": "OLD_TESTER",
+        "docs": 1
+      },
+      {
+        "collection": "shopping_list_items",
+        "oldId": "OLD_TESTER",
+        "docs": 10
+      },
+      {
+        "collection": "shopping_list_items",
+        "oldId": "OLD_JACKIE",
+        "docs": 1
+      },
+      {
+        "collection": "meal_plan_sequence",
+        "oldId": "OLD_TESTER",
+        "docs": 1
+      },
+      {
+        "collection": "users",
+        "oldId": "OLD_TESTER",
+        "docs": 1
+      },
+      {
+        "collection": "users",
+        "oldId": "OLD_JACKIE",
+        "docs": 1
+      }
+    ]
+  },
+  "writeChangedSomething": true,
+  "rollbackDryRunWroteNothing": true,
+  "diffAfterRollback": {
+    "fridge_stock": {
+      "before": 6,
+      "after": 6,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "meal_plan_sets": {
+      "before": 2,
+      "after": 2,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "meal_plans": {
+      "before": 42,
+      "after": 42,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "user_health_profiles": {
+      "before": 1,
+      "after": 1,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "weight_logs": {
+      "before": 2,
+      "after": 2,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "meal_logs": {
+      "before": 1,
+      "after": 1,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "nutrition_coach_history": {
+      "before": 2,
+      "after": 2,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "favourite_recipes": {
+      "before": 1,
+      "after": 1,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "shopping_list_items": {
+      "before": 11,
+      "after": 11,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "recipe_browse_state": {
+      "before": 0,
+      "after": 0,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "meal_plan_sequence": {
+      "before": 2,
+      "after": 2,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    },
+    "users": {
+      "before": 5,
+      "after": 5,
+      "onlyBefore": 0,
+      "onlyAfter": 0
+    }
+  },
+  "zeroDiff": true,
+  "scratchDropped": true
+}
