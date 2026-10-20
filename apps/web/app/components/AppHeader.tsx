@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useGuestGate } from "./GuestGate";
 
 /** cc_prompt_milestone1_followup_fixes_2.md Task 1 (renamed from AccountHeader in
@@ -15,6 +15,7 @@ const HIDDEN_PATHS = ["/how-it-works", "/sign-in", "/sign-up"];
 
 export function AppHeader() {
   const { isSignedIn } = useGuestGate();
+  const { user } = useUser();
   const pathname = usePathname();
   const hidden =
     HIDDEN_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`)) ||
@@ -28,7 +29,15 @@ export function AppHeader() {
         <Link href="/" className="app-header__wordmark">
           UseItUp
         </Link>
-        <UserButton />
+        {/* cc_prompt_meal_grid_profile.md Part P — the avatar opens /profile (Account / Sign out live there now). */}
+        <Link href="/profile" className="app-header__avatar" aria-label="Profile">
+          {user?.hasImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.imageUrl} alt="" width={32} height={32} />
+          ) : (
+            <span aria-hidden="true">{(user?.firstName?.[0] ?? user?.primaryEmailAddress?.emailAddress?.[0] ?? "?").toUpperCase()}</span>
+          )}
+        </Link>
       </div>
     </header>
   );
