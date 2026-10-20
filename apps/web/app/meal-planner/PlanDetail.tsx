@@ -225,12 +225,12 @@ export function PlanDetail({ planId, onBack, onDuplicate, duplicating, atPlanLim
 
       {tab === "meals" ? (
         <div className="meal-planner-meals">
-          <MealPlannerBoard planId={planId} days={days} weekTotalCost={weekTotalCost} onChanged={reload} />
           <div className="meal-planner-fab-row">
             <button type="button" className="wizard-primary-button meal-planner-fab" disabled={aggregated.length === 0} onClick={() => setListSheetOpen(true)}>
               Create shopping list
             </button>
           </div>
+          <MealPlannerBoard planId={planId} days={days} weekTotalCost={weekTotalCost} onChanged={reload} />
           <AddToListSheet
             open={listSheetOpen}
             ingredients={aggregated.map((i) => ({ name: capitalizeFirst(i.rawName), canonicalName: i.canonicalName }))}

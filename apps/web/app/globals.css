@@ -4928,23 +4928,18 @@ a {
   color: var(--uiu-white);
 }
 
-/* Create shopping list: floats at the bottom of the Meals tab's scroll area; at the very end it sits in flow
-   below Day 7, so it never covers the last row. */
+/* Create shopping list: in flow above the grid (not sticky) so it never covers a cell and is
+   reachable without scrolling to Day 7. */
 .meal-planner-fab-row {
-  position: sticky;
-  bottom: 8px;
   display: flex;
-  justify-content: flex-end;
-  pointer-events: none;
-  padding-top: 4px;
+  margin-bottom: 12px;
 }
 
 .meal-planner-fab {
-  pointer-events: auto;
+  flex: 1;
   min-height: 48px;
   padding: 0 20px;
   border-radius: 999px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 .meal-planner-overview__duplicate {
