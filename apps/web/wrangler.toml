@@ -20,7 +20,7 @@ API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 # designed to be public (it's shipped to the browser bundle), so it's a plain [vars] entry
 # like API_BASE_URL above, not a secret. CLERK_SECRET_KEY is set via `wrangler secret put
 # CLERK_SECRET_KEY --name uiu-web` (raw value: Key\clerk-key.txt), never committed.
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXYk"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsudXNlaXR1cC51ayQ"
 NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
 NEXT_PUBLIC_CLERK_SIGN_UP_URL = "/sign-up"
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL = "/"

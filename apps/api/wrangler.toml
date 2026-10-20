@@ -108,7 +108,7 @@ PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
 # NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (apps/web/wrangler.toml). Publishable keys are designed to
 # be shipped to the browser, so duplicating it here (not a secret) is fine — src/clerkAuth.ts
 # decodes it to find Clerk's JWKS endpoint for independent session-token verification.
-CLERK_PUBLISHABLE_KEY = "pk_test_ZXRoaWNhbC10b2FkLTE2NS5jbGVyay5hY2NvdW50cy5kZXYk"
+CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsudXNlaXR1cC51ayQ"
 # cc_prompt_recipe_drafts_auto_triage.md Part 1, 2026-10-08 — Jackie 拍板減慢生成
 # (recipe_drafts backlog 923 pending vs 207 live, 人手睇唔切). Daily idea-spec quota,
 # read by jobs/dailyRecipeDraft.ts (falls back to 20 if unset/invalid). Was 20/day;
