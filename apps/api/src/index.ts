@@ -32,6 +32,8 @@ import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { usersRouter } from "./routes/users";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
+import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, type RemapInput } from "./services/clerkRemap";
+import { withDb } from "./db";
 import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
@@ -210,6 +212,63 @@ app.post("/api/admin/recompute-costs", async (c) => {
     console.error("[uiu-api] recompute-costs error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to compute recipe costs" } };
     return c.json(body, 502);
+  }
+});
+
+// Clerk dev -> production cutover remap (services/clerkRemap.ts; Worker port of scripts/clerk_user_remap*.cjs).
+//   POST /api/admin/clerk-remap                 body { map?: [{oldId,newId}], byEmail?: [{email,newId}] }
+//        default DRY RUN (plan only); ?write=true writes (refused with 409 when blockers exist).
+//   POST /api/admin/clerk-remap/rollback        body { batch } — dry run; ?write=true restores.
+//   POST /api/admin/clerk-remap/scratch-verify  body as above with fake user_TEST_ new ids — copies the 12 collections
+//        to a scratch DB, write + rollback there, snapshot diff, drops it. Prod is only read.
+function adminDenied(c: { req: { header(n: string): string | undefined }; env: Bindings }): boolean {
+  const token = c.req.header("X-Admin-Token");
+  return !token || token !== c.env.ADMIN_TOKEN;
+}
+function remapError(c: any, err: unknown, where: string) {
+  if (err instanceof RemapInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+const UNAUTH_ADMIN: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+
+app.post("/api/admin/clerk-remap", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const input = (await c.req.json().catch(() => null)) as RemapInput | null;
+  try {
+    const out = await withDb(c.env, async (db) => {
+      const plan = await planRemap(db, await resolvePairs(db, input ?? {}));
+      if (!write) return { mode: "dry-run" as const, ...plan };
+      if (plan.blockers.length) return { mode: "refused" as const, ...plan };
+      return { mode: "write" as const, ...(await writeRemap(db, plan)) };
+    });
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>, out.mode === "refused" ? 409 : 200);
+  } catch (err) {
+    return remapError(c, err, "clerk-remap");
+  }
+});
+
+app.post("/api/admin/clerk-remap/rollback", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
+  try {
+    const out = await withDb(c.env, (db) => rollbackRemap(db, body?.batch ?? "", write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return remapError(c, err, "clerk-remap rollback");
+  }
+});
+
+app.post("/api/admin/clerk-remap/scratch-verify", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const input = (await c.req.json().catch(() => null)) as RemapInput | null;
+  try {
+    const out = await scratchVerify(c.env, input ?? {});
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return remapError(c, err, "clerk-remap scratch-verify");
   }
 });
 
