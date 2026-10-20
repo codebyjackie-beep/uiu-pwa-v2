@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formatTotalWithIncomplete, recipePerServingPrice } from "@uiu/shared";
+import { formatCostWithCoverage, formatTotalWithIncomplete, recipePerServingPrice } from "@uiu/shared";
 import type {
   ApiResponse,
   FavouriteRecipe,
@@ -12,7 +12,7 @@ import type {
   RecipeListPage,
 } from "@uiu/shared";
 import { CoveragePrice } from "../components/CoveragePrice";
-import { dayIndexLabel, todayDayIndex } from "../lib/dates";
+import { dayIndexLabel } from "../lib/dates";
 import { costPendingLabel, isNutritionUnavailable, mealTypeBadge, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
 const DAY_INDEXES = [1, 2, 3, 4, 5, 6, 7];
@@ -22,6 +22,12 @@ const SLOT_LABEL: Record<MealSlot, string> = {
   lunch: "Lunch",
   dinner: "Dinner",
   snack: "Snack",
+};
+const SLOT_ICON: Record<MealSlot, string> = {
+  breakfast: "🥣",
+  lunch: "🥪",
+  dinner: "🍽️",
+  snack: "🍎",
 };
 
 interface Props {
@@ -37,7 +43,8 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
   const [results, setResults] = useState<RecipeListItem[]>([]);
   const [searching, setSearching] = useState(false);
   const [pendingId, setPendingId] = useState<string | null>(null);
-  const [expandedDays, setExpandedDays] = useState<Set<number>>(() => new Set([todayDayIndex()]));
+  const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
   const [duplicateQuery, setDuplicateQuery] = useState<string | null>(null);
 
@@ -55,15 +62,6 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
       cancelled = true;
     };
   }, []);
-
-  function toggleDay(dayIndex: number) {
-    setExpandedDays((prev) => {
-      const next = new Set(prev);
-      if (next.has(dayIndex)) next.delete(dayIndex);
-      else next.add(dayIndex);
-      return next;
-    });
-  }
 
   useEffect(() => {
     if (!picker) return;
@@ -110,7 +108,10 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
     try {
       const res = await fetch(`/api/meal-plan/${entryId}`, { method: "DELETE" });
       const parsed = (await res.json()) as ApiResponse<unknown>;
-      if (parsed.ok) onChanged();
+      if (parsed.ok) {
+        closeEntrySheet();
+        onChanged();
+      }
     } finally {
       setPendingId(null);
     }
@@ -121,14 +122,23 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
     try {
       const res = await fetch(`/api/meal-plan/${entryId}/refresh`, { method: "POST" });
       const parsed = (await res.json()) as ApiResponse<unknown>;
-      if (parsed.ok) onChanged();
+      if (parsed.ok) {
+        closeEntrySheet();
+        onChanged();
+      }
     } finally {
       setPendingId(null);
     }
   }
 
+  function closeEntrySheet() {
+    setActiveEntryId(null);
+    setConfirmRemove(false);
+  }
+
   function duplicateMeal(title: string) {
     setDuplicateQuery(title);
+    closeEntrySheet();
   }
 
   function openPicker(dayIndex: number, slot: MealSlot) {
@@ -158,131 +168,138 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
     }
   }
 
+  const activeEntry = activeEntryId ? days.flatMap((d) => d.entries).find((e) => e._id === activeEntryId) ?? null : null;
+
   return (
     <div className="meal-planner-board">
-      {DAY_INDEXES.map((dayIndex) => {
-        const summary = dayByIndex.get(dayIndex);
-        const entriesBySlot = new Map((summary?.entries ?? []).map((e) => [e.mealSlot, e]));
+      {duplicateQuery ? (
+        <div className="meal-grid-hint" role="status">
+          <span>Tap a + cell to add “{duplicateQuery}”</span>
+          <button type="button" className="meal-grid-hint__close" onClick={() => setDuplicateQuery(null)} aria-label="Cancel duplicate">
+            ×
+          </button>
+        </div>
+      ) : null}
 
-        const expanded = expandedDays.has(dayIndex);
-        const aboveAverage = !!summary && averageDayCost > 0 && summary.totalCost > averageDayCost;
+      <div className="meal-grid" role="grid" aria-label="Meal plan, 7 days by 4 meals">
+        <div className="meal-grid__head" role="row">
+          <span />
+          {MEAL_SLOTS.map((slot) => (
+            <span key={slot} className="meal-grid__slot-head" role="columnheader">
+              <span aria-hidden="true">{SLOT_ICON[slot]}</span>
+              <span>{SLOT_LABEL[slot]}</span>
+            </span>
+          ))}
+        </div>
 
-        return (
-          <div key={dayIndex} className="meal-planner-day">
-            <button
-              type="button"
-              className="meal-planner-day__header"
-              onClick={() => toggleDay(dayIndex)}
-              aria-expanded={expanded}
-            >
-              <span className="meal-planner-day__label">Day {dayIndex} · {dayIndexLabel(dayIndex)}</span>
-              <span className="meal-planner-day__header-right">
-                {summary ? (
-                  <span className={`meal-planner-day__totals${aboveAverage ? " meal-planner-day__totals--high" : ""}`}>
-                    {aboveAverage ? <span className="meal-planner-day__flag">Above average</span> : null}
-                    {formatTotalWithIncomplete(summary.totalCost, summary.costIncomplete)} · {Math.round(summary.totalCalories)} cal
-                  </span>
-                ) : null}
-                <span className={`meal-planner-day__chevron${expanded ? " meal-planner-day__chevron--open" : ""}`}>▾</span>
+        {DAY_INDEXES.map((dayIndex) => {
+          const summary = dayByIndex.get(dayIndex);
+          const entriesBySlot = new Map((summary?.entries ?? []).map((e) => [e.mealSlot, e]));
+          const aboveAverage = !!summary && averageDayCost > 0 && summary.totalCost > averageDayCost;
+
+          return (
+            <div key={dayIndex} className={`meal-grid__day${aboveAverage ? " meal-grid__day--high" : ""}`} role="row">
+              <span className="meal-grid__day-label" role="rowheader">
+                Day {dayIndex}
               </span>
-            </button>
-
-            {expanded ? (
-              <div className="meal-planner-slots">
-                {MEAL_SLOTS.map((slot) => {
-                  const entry = entriesBySlot.get(slot);
+              {MEAL_SLOTS.map((slot) => {
+                const entry = entriesBySlot.get(slot);
+                if (!entry) {
                   return (
-                    <div key={slot} className="meal-planner-slot">
-                      <span className="meal-planner-slot__label">{SLOT_LABEL[slot]}</span>
-                      {entry ? (
-                        <div className="meal-planner-slot__card-wrap">
-                          <Link href={`/recipes/${entry.recipeId}`} className="recipe-card meal-planner-slot__card">
-                            {entry.recipe.imageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img className="recipe-card__image" src={entry.recipe.imageUrl} alt="" />
-                            ) : (
-                              <div className="recipe-card__image" />
-                            )}
-                            <div className="recipe-card__body">
-                              <div className="recipe-card__header">
-                                <p className="recipe-card__title">{entry.recipe.title}</p>
-                                <button
-                                  type="button"
-                                  className="meal-planner-slot__remove"
-                                  disabled={pendingId === entry._id}
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    removeMeal(entry._id);
-                                  }}
-                                  aria-label={`Remove ${entry.recipe.title}`}
-                                >
-                                  ×
-                                </button>
-                              </div>
-                              <div className="recipe-card__macros">
-                                {entry.recipe.costPerServing != null ? (
-                                  <CoveragePrice
-                                    value={entry.recipe.costPerServing}
-                                    coveragePct={entry.recipe.adjustedCoveragePct}
-                                    className="recipe-card__price"
-                                    pendingClassName="recipe-card__price--pending"
-                                  />
-                                ) : (
-                                  <span className="recipe-card__price">—</span>
-                                )}
-                                {isNutritionUnavailable(entry.recipe) ? (
-                                  <span>{NUTRITION_NOT_AVAILABLE}</span>
-                                ) : entry.recipe.calories != null ? (
-                                  <span>{Math.round(entry.recipe.calories)} cal</span>
-                                ) : null}
-                              </div>
-                            </div>
-                          </Link>
-                          <div className="meal-planner-slot__icons">
-                            <button
-                              type="button"
-                              className="meal-planner-slot__icon"
-                              disabled={pendingId === entry._id}
-                              onClick={() => refreshMeal(entry._id)}
-                              aria-label={`Refresh ${entry.recipe.title}`}
-                              title="Swap for another recipe"
-                            >
-                              ⟳
-                            </button>
-                            <button
-                              type="button"
-                              className="meal-planner-slot__icon"
-                              onClick={() => duplicateMeal(entry.recipe.title)}
-                              aria-label={`Duplicate ${entry.recipe.title}`}
-                              title="Add this recipe to another slot"
-                            >
-                              ⧉
-                            </button>
-                            <button
-                              type="button"
-                              className={`meal-planner-slot__icon${favouriteIds.has(entry.recipeId) ? " meal-planner-slot__icon--active" : ""}`}
-                              onClick={() => toggleFavourite(entry.recipeId)}
-                              aria-label={`Favourite ${entry.recipe.title}`}
-                              title="Favourite"
-                            >
-                              {favouriteIds.has(entry.recipeId) ? "♥" : "♡"}
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <button type="button" className="meal-planner-slot__add" onClick={() => openPicker(dayIndex, slot)}>
-                          + Add
-                        </button>
-                      )}
-                    </div>
+                    <button
+                      key={slot}
+                      type="button"
+                      role="gridcell"
+                      className="meal-grid__cell meal-grid__cell--empty"
+                      onClick={() => openPicker(dayIndex, slot)}
+                      aria-label={`Add ${SLOT_LABEL[slot]} on day ${dayIndex}`}
+                    >
+                      +
+                    </button>
                   );
-                })}
-              </div>
-            ) : null}
+                }
+                const price =
+                  entry.recipe.costPerServing != null ? formatCostWithCoverage(entry.recipe.costPerServing, entry.recipe.adjustedCoveragePct) : null;
+                return (
+                  <button
+                    key={slot}
+                    type="button"
+                    role="gridcell"
+                    className="meal-grid__cell meal-grid__cell--filled"
+                    onClick={() => setActiveEntryId(entry._id)}
+                    aria-label={`${entry.recipe.title}, ${SLOT_LABEL[slot]} on day ${dayIndex}`}
+                  >
+                    <span className="meal-grid__cell-title">{entry.recipe.title}</span>
+                    <span className="meal-grid__cell-price">{price == null || price.tier === "unavailable" ? "No price" : price.text}</span>
+                  </button>
+                );
+              })}
+              {summary ? (
+                <span className={`meal-grid__day-total${aboveAverage ? " meal-grid__day-total--high" : ""}`}>
+                  {aboveAverage ? <span className="meal-planner-day__flag">Above average</span> : null}
+                  {formatTotalWithIncomplete(summary.totalCost, summary.costIncomplete)} · {Math.round(summary.totalCalories)} cal
+                </span>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+
+      {activeEntry ? (
+        <div className="meal-planner-modal-overlay" onClick={closeEntrySheet}>
+          <div className="meal-planner-modal meal-cell-sheet" role="dialog" aria-modal="true" aria-labelledby="meal-cell-title" onClick={(e) => e.stopPropagation()}>
+            <div className="meal-planner-modal__header">
+              <h3 id="meal-cell-title" className="meal-planner-modal__title">
+                {activeEntry.recipe.title}
+              </h3>
+              <button type="button" className="meal-planner-modal__close" onClick={closeEntrySheet} aria-label="Close">
+                ×
+              </button>
+            </div>
+            <div className="meal-planner-modal__body">
+              <p className="meal-cell-sheet__meta">
+                {SLOT_LABEL[activeEntry.mealSlot]} · Day {activeEntry.dayIndex} ({dayIndexLabel(activeEntry.dayIndex)})
+              </p>
+              {confirmRemove ? (
+                <div className="meal-cell-sheet__confirm">
+                  <p>Remove this meal from the plan?</p>
+                  <div className="meal-cell-sheet__confirm-actions">
+                    <button type="button" className="wizard-secondary-button" onClick={() => setConfirmRemove(false)}>
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="wizard-primary-button meal-cell-sheet__danger"
+                      disabled={pendingId === activeEntry._id}
+                      onClick={() => removeMeal(activeEntry._id)}
+                    >
+                      Yes, remove
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="meal-cell-sheet__actions">
+                  <Link href={`/recipes/${activeEntry.recipeId}`} className="meal-cell-sheet__action">
+                    View recipe
+                  </Link>
+                  <button type="button" className="meal-cell-sheet__action" disabled={pendingId === activeEntry._id} onClick={() => refreshMeal(activeEntry._id)}>
+                    {pendingId === activeEntry._id ? "Swapping…" : "Swap"}
+                  </button>
+                  <button type="button" className="meal-cell-sheet__action" onClick={() => duplicateMeal(activeEntry.recipe.title)}>
+                    Duplicate
+                  </button>
+                  <button type="button" className="meal-cell-sheet__action" onClick={() => toggleFavourite(activeEntry.recipeId)}>
+                    {favouriteIds.has(activeEntry.recipeId) ? "♥ Favourited" : "♡ Favourite"}
+                  </button>
+                  <button type="button" className="meal-cell-sheet__action meal-cell-sheet__action--danger" onClick={() => setConfirmRemove(true)}>
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        );
-      })}
+        </div>
+      ) : null}
 
       {picker ? (
         <div className="meal-picker-overlay" role="dialog" aria-modal="true">

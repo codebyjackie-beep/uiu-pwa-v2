@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { ApiResponse, MealPlanSetSummary } from "@uiu/shared";
+import type { ApiResponse, MealPlanSetDetail, MealPlanSetSummary } from "@uiu/shared";
 import { formatTotalWithIncomplete, MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { TonightSuggestion } from "./TonightSuggestion";
 import { PlanDetail } from "./PlanDetail";
@@ -20,6 +20,8 @@ export function MealPlannerView({ initialSets }: Props) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [limitMessage, setLimitMessage] = useState<string | null>(null);
+  const [duplicating, setDuplicating] = useState(false);
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
   async function refetchSets() {
     const res = await fetch("/api/meal-plan-sets");
@@ -45,6 +47,58 @@ export function MealPlannerView({ initialSets }: Props) {
       }
     } finally {
       setCreating(false);
+    }
+  }
+
+  /** Plans aren't tied to dates (Day 1–7), so this is "copy previous week": a new empty card (monotonic
+   * counter name), then every entry copied over with the existing POST /api/meal-plan. */
+  async function duplicatePlan(sourceId: string) {
+    setDuplicating(true);
+    setDuplicateError(null);
+    try {
+      const srcRes = await fetch(`/api/meal-plan-sets/${sourceId}`);
+      const src = (await srcRes.json()) as ApiResponse<MealPlanSetDetail>;
+      if (!src.ok) throw new Error("source");
+      const entries = src.data.days.flatMap((d) => d.entries);
+
+      const createRes = await fetch("/api/meal-plan-sets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skipGenerate: true }),
+      });
+      const created = (await createRes.json()) as ApiResponse<MealPlanSetSummary>;
+      if (!created.ok) {
+        setDuplicateError(created.error.message);
+        return;
+      }
+      const newId = created.data._id;
+
+      let failed = 0;
+      for (let i = 0; i < entries.length; i += 5) {
+        const results = await Promise.all(
+          entries.slice(i, i + 5).map(async (e) => {
+            try {
+              const res = await fetch("/api/meal-plan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ planId: newId, dayIndex: e.dayIndex, mealSlot: e.mealSlot, recipeId: e.recipeId, servings: e.servings }),
+              });
+              return ((await res.json()) as ApiResponse<unknown>).ok;
+            } catch {
+              return false;
+            }
+          }),
+        );
+        failed += results.filter((ok) => !ok).length;
+      }
+
+      await refetchSets();
+      if (failed > 0) setDuplicateError(`The new plan is missing ${failed} of ${entries.length} meals — please check it.`);
+      setDetailPlanId(newId);
+    } catch {
+      setDuplicateError("Couldn't duplicate this plan. Please try again.");
+    } finally {
+      setDuplicating(false);
     }
   }
 
@@ -187,7 +241,18 @@ export function MealPlannerView({ initialSets }: Props) {
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
-            <PlanDetail planId={detailPlanId} onBack={() => setDetailPlanId(null)} />
+            <PlanDetail
+              key={detailPlanId}
+              planId={detailPlanId}
+              onBack={() => {
+                setDetailPlanId(null);
+                setDuplicateError(null);
+              }}
+              onDuplicate={duplicatePlan}
+              duplicating={duplicating}
+              atPlanLimit={atLimit}
+              duplicateError={duplicateError}
+            />
           </div>
         </div>
       ) : null}

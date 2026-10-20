@@ -4751,3 +4751,210 @@ a {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* --- Meal Planner Meals tab: 7 days x 4 meals grid (cc_prompt_meal_grid_profile.md Part G) --- */
+.meal-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meal-grid__head,
+.meal-grid__day {
+  display: grid;
+  grid-template-columns: 38px repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  align-items: stretch;
+}
+
+.meal-grid__slot-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--uiu-muted);
+  text-align: center;
+}
+
+.meal-grid__slot-head > span:first-child {
+  font-size: 15px;
+}
+
+.meal-grid__day {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--uiu-border);
+}
+
+.meal-grid__day-label {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.meal-grid__cell {
+  min-height: 72px;
+  min-width: 44px;
+  padding: 5px 4px;
+  border-radius: 10px;
+  border: 1px solid var(--uiu-border);
+  background: var(--uiu-surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.meal-grid__cell--empty {
+  align-items: center;
+  justify-content: center;
+  background: var(--uiu-overlay);
+  border-style: dashed;
+  color: var(--uiu-muted);
+  font-size: 20px;
+}
+
+.meal-grid__cell-title {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.meal-grid__cell-price {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--uiu-green);
+}
+
+.meal-grid__day-total {
+  grid-column: 2 / -1;
+  font-size: 11px;
+  color: var(--uiu-muted);
+  text-align: right;
+}
+
+.meal-grid__day--high {
+  border-color: var(--uiu-red);
+}
+
+.meal-grid__day-total--high {
+  color: var(--uiu-red);
+}
+
+.meal-grid-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--uiu-overlay);
+  font-size: 13px;
+}
+
+.meal-grid-hint__close {
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--uiu-muted);
+  cursor: pointer;
+}
+
+.meal-cell-sheet__meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}
+
+.meal-cell-sheet__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meal-cell-sheet__action {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--uiu-border);
+  background: var(--uiu-surface);
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.meal-cell-sheet__action--danger {
+  color: var(--uiu-red);
+}
+
+.meal-cell-sheet__confirm p {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.meal-cell-sheet__confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.meal-cell-sheet__confirm-actions > button {
+  flex: 1;
+  min-height: 48px;
+}
+
+.meal-cell-sheet__danger {
+  background: var(--uiu-red);
+  border-color: var(--uiu-red);
+  color: var(--uiu-white);
+}
+
+/* Create shopping list: floats at the bottom of the Meals tab's scroll area; at the very end it sits in flow
+   below Day 7, so it never covers the last row. */
+.meal-planner-fab-row {
+  position: sticky;
+  bottom: 8px;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+  padding-top: 4px;
+}
+
+.meal-planner-fab {
+  pointer-events: auto;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.meal-planner-overview__duplicate {
+  align-self: flex-start;
+  min-height: 44px;
+  margin-top: 12px;
+}
+
+.meal-planner-overview__note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}

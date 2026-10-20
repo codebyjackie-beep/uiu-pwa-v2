@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, ShoppingListCheckResult, ShoppingListFromIngredientResponse } from "@uiu/shared";
 import { useGuestGate } from "../../components/GuestGate";
@@ -37,17 +37,18 @@ function flagFor(r: ShoppingListCheckResult | undefined): Flag | null {
 }
 
 /**
- * cc_prompt_guest_browse.md Part D2 — "Add to shopping list" beside the Ingredients heading.
- * Opens a bottom sheet: everything ticked except what the user already has (fridge / pantry) or has
- * already queued. Adding calls from-ingredient one by one, no quantities. Guests get the sign-up sheet.
+ * cc_prompt_guest_browse.md Part D2 — the "Add to shopping list" bottom sheet. Controlled: the caller owns
+ * `open` (Recipe detail's button, the Meal Planner's "Create shopping list"). Everything is ticked except what the
+ * user already has (fridge / pantry) or has already queued. Adding calls from-ingredient one by one, no quantities.
+ * The toast lives here so it outlives the sheet closing.
  */
-export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredient[] }) {
-  const { requireAuth } = useGuestGate();
-  const [open, setOpen] = useState(false);
+export function AddToListSheet({ open, ingredients, onClose }: { open: boolean; ingredients: AddToListIngredient[]; onClose: () => void }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const ingredientsRef = useRef(ingredients);
+  ingredientsRef.current = ingredients;
 
   useEffect(() => {
     if (!toast) return;
@@ -55,30 +56,37 @@ export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredi
     return () => clearTimeout(t);
   }, [toast]);
 
-  async function openSheet() {
-    if (!requireAuth()) return;
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
     setError(null);
     setRows(null);
-    setOpen(true);
-    let results: ShoppingListCheckResult[] = [];
-    try {
-      const res = await fetch("/api/shopping-list/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredients: ingredients.map((i) => ({ ingredientName: i.name, canonicalName: i.canonicalName })) }),
-      });
-      const parsed = (await res.json().catch(() => null)) as ApiResponse<{ results: ShoppingListCheckResult[] }> | null;
-      if (parsed?.ok) results = parsed.data.results;
-    } catch {
-      // No flags — fall back to everything ticked; from-ingredient still dedupes server-side.
-    }
-    setRows(
-      ingredients.map((ingredient, i) => {
-        const flag = flagFor(results[i]);
-        return { ingredient, flag, fridgeMatch: flag === "fridge" ? results[i]?.fridgeMatch : undefined, checked: flag === null };
-      }),
-    );
-  }
+    (async () => {
+      const list = ingredientsRef.current;
+      let results: ShoppingListCheckResult[] = [];
+      try {
+        const res = await fetch("/api/shopping-list/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ingredients: list.map((i) => ({ ingredientName: i.name, canonicalName: i.canonicalName })) }),
+        });
+        const parsed = (await res.json().catch(() => null)) as ApiResponse<{ results: ShoppingListCheckResult[] }> | null;
+        if (parsed?.ok) results = parsed.data.results;
+      } catch {
+        // No flags — fall back to everything ticked; from-ingredient still dedupes server-side.
+      }
+      if (cancelled) return;
+      setRows(
+        list.map((ingredient, i) => {
+          const flag = flagFor(results[i]);
+          return { ingredient, flag, fridgeMatch: flag === "fridge" ? results[i]?.fridgeMatch : undefined, checked: flag === null };
+        }),
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   function toggleRow(index: number) {
     setRows((prev) => prev && prev.map((r, i) => (i === index ? { ...r, checked: !r.checked } : r)));
@@ -111,24 +119,20 @@ export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredi
       setError("Couldn't add to your shopping list. Please try again.");
       return;
     }
-    setOpen(false);
+    onClose();
     setToast(`${added} item${added === 1 ? "" : "s"} added to your shopping list${failed > 0 ? ` (${failed} failed)` : ""}`);
   }
 
   return (
     <>
-      <button type="button" className="recipe-detail__add-to-list" onClick={() => void openSheet()}>
-        Add to shopping list
-      </button>
-
       {open ? (
-        <div className="meal-planner-modal-overlay" onClick={() => !adding && setOpen(false)}>
+        <div className="meal-planner-modal-overlay" onClick={() => !adding && onClose()}>
           <div className="meal-planner-modal add-to-list-sheet" role="dialog" aria-modal="true" aria-labelledby="add-to-list-title" onClick={(e) => e.stopPropagation()}>
             <div className="meal-planner-modal__header">
               <h3 id="add-to-list-title" className="meal-planner-modal__title">
                 Add to shopping list
               </h3>
-              <button type="button" className="meal-planner-modal__close" aria-label="Close" onClick={() => setOpen(false)} disabled={adding}>
+              <button type="button" className="meal-planner-modal__close" aria-label="Close" onClick={onClose} disabled={adding}>
                 ×
               </button>
             </div>
@@ -165,6 +169,26 @@ export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredi
           </Link>
         </div>
       ) : null}
+    </>
+  );
+}
+
+/** Recipe detail's "Add to shopping list" button beside the Ingredients heading. Guests get the sign-up sheet. */
+export function RecipeAddToList({ ingredients }: { ingredients: AddToListIngredient[] }) {
+  const { requireAuth } = useGuestGate();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        className="recipe-detail__add-to-list"
+        onClick={() => {
+          if (requireAuth()) setOpen(true);
+        }}
+      >
+        Add to shopping list
+      </button>
+      <AddToListSheet open={open} ingredients={ingredients} onClose={() => setOpen(false)} />
     </>
   );
 }

@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { formatTotalWithIncomplete, type ApiResponse, type MealPlanSetDetail, type ShoppingListFromIngredientResponse } from "@uiu/shared";
+import { formatTotalWithIncomplete, MEAL_PLAN_SET_LIMIT, type ApiResponse, type MealPlanSetDetail, type ShoppingListFromIngredientResponse } from "@uiu/shared";
 import { MealPlannerBoard } from "./MealPlannerBoard";
+import { AddToListSheet } from "../recipes/[id]/RecipeAddToList";
 import { NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
 function formatCost(value: number): string {
@@ -63,13 +64,19 @@ function aggregateIngredients(days: MealPlanSetDetail["days"]): AggregatedIngred
 interface Props {
   planId: string;
   onBack: () => void;
+  /** Duplicate this plan into a new card (owned by MealPlannerView, which holds the card list). */
+  onDuplicate: (planId: string) => void;
+  duplicating: boolean;
+  atPlanLimit: boolean;
+  duplicateError: string | null;
 }
 
-export function PlanDetail({ planId, onBack }: Props) {
+export function PlanDetail({ planId, onBack, onDuplicate, duplicating, atPlanLimit, duplicateError }: Props) {
   const [tab, setTab] = useState<Tab>("overview");
   const [detail, setDetail] = useState<MealPlanSetDetail | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [itemStatus, setItemStatus] = useState<Map<string, "pending" | "merged" | "added">>(() => new Map());
+  const [listSheetOpen, setListSheetOpen] = useState(false);
 
   const reload = useCallback(async () => {
     const res = await fetch(`/api/meal-plan-sets/${planId}`);
@@ -203,12 +210,32 @@ export function PlanDetail({ planId, onBack }: Props) {
             <OverviewStat label="Fat" value={weekNutritionUnavailable ? NUTRITION_NOT_AVAILABLE : `${Math.round(totalFat)} g`} />
             <OverviewStat label="Items" value={String(itemsCount)} />
           </div>
+          <button
+            type="button"
+            className="wizard-secondary-button meal-planner-overview__duplicate"
+            disabled={duplicating || atPlanLimit || mealsCount === 0}
+            onClick={() => onDuplicate(planId)}
+          >
+            {duplicating ? "Duplicating…" : "Duplicate plan"}
+          </button>
+          {atPlanLimit ? <p className="meal-planner-overview__note">You&apos;ve got {MEAL_PLAN_SET_LIMIT} plans already — delete one before duplicating.</p> : null}
+          {duplicateError ? <p className="meal-planner-overview__note">{duplicateError}</p> : null}
         </div>
       ) : null}
 
       {tab === "meals" ? (
         <div className="meal-planner-meals">
           <MealPlannerBoard planId={planId} days={days} weekTotalCost={weekTotalCost} onChanged={reload} />
+          <div className="meal-planner-fab-row">
+            <button type="button" className="wizard-primary-button meal-planner-fab" disabled={aggregated.length === 0} onClick={() => setListSheetOpen(true)}>
+              Create shopping list
+            </button>
+          </div>
+          <AddToListSheet
+            open={listSheetOpen}
+            ingredients={aggregated.map((i) => ({ name: capitalizeFirst(i.rawName), canonicalName: i.canonicalName }))}
+            onClose={() => setListSheetOpen(false)}
+          />
         </div>
       ) : null}
 
