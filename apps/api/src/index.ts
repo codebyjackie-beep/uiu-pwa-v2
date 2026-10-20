@@ -34,6 +34,7 @@ import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
 import { withDb } from "./db";
+import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "./services/adminRollbacks";
 import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
@@ -300,6 +301,42 @@ app.post("/api/admin/users/delete-seed", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return remapError(c, err, "users delete-seed");
+  }
+});
+
+// Rollbacks (services/adminRollbacks.ts; Worker ports of scripts/price_refresh_rollback.cjs and
+// scripts/recipe_cost_recompute_rollback.cjs). Dry run unless ?write=true.
+//   POST /api/admin/price-refresh/rollback  body { batch, verifyRunId? } — for refresh-auto-* batches pass the runId:
+//        every restored doc is checked against the run's pre-write snapshot and nothing is written on any mismatch.
+//        Afterwards run POST /api/admin/recompute-costs (dry run first) so recipe_cost follows the restored prices.
+//   POST /api/admin/recipe-cost/rollback    body { batch } — restores recipe_cost from costFixPrev (rcr-* batches).
+function rollbackError(c: any, err: unknown, where: string) {
+  if (err instanceof RollbackInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+
+app.post("/api/admin/price-refresh/rollback", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: string; verifyRunId?: string } | null;
+  try {
+    const out = await withDb(c.env, (db) => priceRefreshRollback(db, body?.batch ?? "", { write, verifyRunId: body?.verifyRunId ?? null }));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return rollbackError(c, err, "price-refresh rollback");
+  }
+});
+
+app.post("/api/admin/recipe-cost/rollback", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
+  try {
+    const out = await withDb(c.env, (db) => recipeCostRollback(db, body?.batch ?? "", write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return rollbackError(c, err, "recipe-cost rollback");
   }
 });
 
