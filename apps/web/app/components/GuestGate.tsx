@@ -193,9 +193,6 @@ export function GuestBanner() {
       <p className="guest-banner__text">
         You&apos;re using UseItUp as a guest — nothing you add is saved. Sign up free to keep it.
       </p>
-      <AuthLink href={authUrl("sign-up", pathname)} className="guest-banner__cta">
-        Sign up free
-      </AuthLink>
     </div>
   );
 }
