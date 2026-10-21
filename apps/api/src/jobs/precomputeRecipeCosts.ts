@@ -21,7 +21,7 @@
  * the weekly cron wrote unreviewed changes straight to production. On a trip the cron sends the anomalies to Telegram.
  */
 import { withDb, type DbEnv } from "../db";
-import { recomputeRecipeCostsGated, type GateAnomaly } from "./recipeCostGate";
+import { recomputeRecipeCostsGated, type CostStats, type GateAnomaly } from "./recipeCostGate";
 
 export interface PrecomputeSummary {
   dryRun: boolean;
@@ -52,6 +52,10 @@ export interface PrecomputeSummary {
   wrote: boolean;
   /** Public recipes that tripped the gate. Non-empty => nothing was written. */
   gateAnomalies: GateAnomaly[];
+  /** Public recipes whose cost changes vs the stored recipe_cost, and the stored vs recomputed stats (tiers, £ buckets, Weekly Plan 6). */
+  publicChanged?: number;
+  before?: CostStats;
+  after?: CostStats;
 }
 
 /**
@@ -73,6 +77,9 @@ export async function precomputeRecipeCosts(env: DbEnv, dryRun = false): Promise
       priceCacheStamp: r.priceCacheStamp,
       wrote: r.wrote,
       gateAnomalies: r.anomalies,
+      publicChanged: r.publicChanged,
+      before: r.before,
+      after: r.after,
     };
   });
 }
