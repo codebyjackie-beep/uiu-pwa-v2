@@ -34,6 +34,7 @@ import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
 import { withDb } from "./db";
+import { reviewPublishCandidates } from "./services/publishCandidates";
 import { PUSH_SUBSCRIPTIONS, saveSubscription, sendExpiryReminders, sendPush, validSubscription, type PushSubscriptionInput } from "./services/webPush";
 import { claimGuestData, cleanupExpiredGuests, mintGuestToken, verifyGuestToken } from "./services/guest";
 import { notify, setupChat, NotifyError } from "./services/cloudNotify";
@@ -520,6 +521,19 @@ app.post("/api/admin/users/delete-data", async (c) => {
   } catch (err) {
     console.error("[uiu-api] delete-data error:", err instanceof Error ? err.message : String(err));
     return c.json({ ok: false, error: { code: "db_error", message: "delete-data failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+
+// TheMealDB publish review (services/publishCandidates.ts) — read-only dry run, writes nothing.
+app.get("/api/admin/recipes-publish-review", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const source = c.req.query("source") ?? "themealdb";
+  try {
+    const out = await withDb(c.env, (db) => reviewPublishCandidates(db, source));
+    return c.json({ ok: true, data: out });
+  } catch (err) {
+    console.error("[uiu-api] publish review error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "publish review failed" } } satisfies ApiResponse<never>, 502);
   }
 });
 
