@@ -12,7 +12,7 @@ import type {
   RecipeListPage,
 } from "@uiu/shared";
 import { CoveragePrice } from "../components/CoveragePrice";
-import { dayIndexLabel } from "../lib/dates";
+import { dayIndexLabel, todayDayIndex } from "../lib/dates";
 import { costPendingLabel, isNutritionUnavailable, mealTypeBadge, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
 const DAY_INDEXES = [1, 2, 3, 4, 5, 6, 7];
@@ -47,6 +47,9 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
   const [confirmRemove, setConfirmRemove] = useState(false);
   const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
   const [duplicateQuery, setDuplicateQuery] = useState<string | null>(null);
+  // UI refresh A: day tabs + one day's meals by default; the 7×4 week grid stays one tap away.
+  const [view, setView] = useState<"day" | "week">("day");
+  const [selectedDay, setSelectedDay] = useState<number>(() => todayDayIndex());
 
   const dayByIndex = new Map(days.map((d) => [d.dayIndex, d]));
   const averageDayCost = weekTotalCost / 7;
@@ -181,6 +184,97 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
         </div>
       ) : null}
 
+      <div className="meal-view-toggle" role="group" aria-label="Plan view">
+        <button type="button" className={view === "day" ? "meal-view-toggle__btn meal-view-toggle__btn--on" : "meal-view-toggle__btn"} aria-pressed={view === "day"} onClick={() => setView("day")}>
+          Day
+        </button>
+        <button type="button" className={view === "week" ? "meal-view-toggle__btn meal-view-toggle__btn--on" : "meal-view-toggle__btn"} aria-pressed={view === "week"} onClick={() => setView("week")}>
+          Week
+        </button>
+      </div>
+
+      {view === "day" ? (
+        <div className="meal-day">
+          <div className="meal-day__tabs" role="tablist" aria-label="Day">
+            {DAY_INDEXES.map((d) => {
+              const count = dayByIndex.get(d)?.entries.length ?? 0;
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  role="tab"
+                  aria-selected={selectedDay === d}
+                  className={selectedDay === d ? "meal-day__tab meal-day__tab--on" : "meal-day__tab"}
+                  onClick={() => setSelectedDay(d)}
+                >
+                  <span>{dayIndexLabel(d)}</span>
+                  <span className="meal-day__tab-count">{count ? `${count} meal${count === 1 ? "" : "s"}` : "—"}</span>
+                </button>
+              );
+            })}
+          </div>
+          {(() => {
+            const summary = dayByIndex.get(selectedDay);
+            const entriesBySlot = new Map((summary?.entries ?? []).map((e) => [e.mealSlot, e]));
+            return (
+              <>
+                <ul className="meal-day__list">
+                  {MEAL_SLOTS.map((slot) => {
+                    const entry = entriesBySlot.get(slot);
+                    if (!entry) {
+                      return (
+                        <li key={slot}>
+                          <button type="button" className="meal-day__add" onClick={() => openPicker(selectedDay, slot)}>
+                            + Add {SLOT_LABEL[slot].toLowerCase()}
+                          </button>
+                        </li>
+                      );
+                    }
+                    const price =
+                      entry.recipe.costPerServing != null ? formatCostWithCoverage(entry.recipe.costPerServing, entry.recipe.adjustedCoveragePct) : null;
+                    const mins = (entry.recipe.prepTimeMinutes || 0) + (entry.recipe.cookTimeMinutes || 0);
+                    return (
+                      <li key={slot}>
+                        <button type="button" className="meal-day__meal" onClick={() => setActiveEntryId(entry._id)}>
+                          {entry.recipe.imageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img className="meal-day__img" src={entry.recipe.imageUrl} alt="" />
+                          ) : (
+                            <span className="meal-day__img" />
+                          )}
+                          <span className="meal-day__body">
+                            <span className="meal-day__slot">{SLOT_LABEL[slot]}</span>
+                            <span className="meal-day__title">{entry.recipe.title}</span>
+                            <span className="meal-day__meta">
+                              {[
+                                price == null || price.tier === "unavailable" ? "No price" : price.text,
+                                mins ? `${mins} min` : null,
+                                entry.recipe.calories != null ? `${Math.round(entry.recipe.calories)} kcal` : null,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {summary ? (
+                  <p className="meal-day__total">
+                    <span>{dayIndexLabel(selectedDay)} total</span>
+                    <span>
+                      {formatTotalWithIncomplete(summary.totalCost, summary.costIncomplete)} · {Math.round(summary.totalCalories).toLocaleString("en-GB")} kcal
+                    </span>
+                  </p>
+                ) : null}
+              </>
+            );
+          })()}
+        </div>
+      ) : null}
+
+      {view === "week" ? (
       <div className="meal-grid" role="grid" aria-label="Meal plan, 7 days by 4 meals">
         <div className="meal-grid__head" role="row">
           <span />
@@ -244,6 +338,7 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
           );
         })}
       </div>
+      ) : null}
 
       {activeEntry ? (
         <div className="meal-planner-modal-overlay" onClick={closeEntrySheet}>

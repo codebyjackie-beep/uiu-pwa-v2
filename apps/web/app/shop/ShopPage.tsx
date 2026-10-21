@@ -162,6 +162,11 @@ export function ShopPage() {
     return Number.isFinite(t) && (max === null || t > max) ? t : max;
   }, null);
 
+  const restockTotal = restockItems.reduce((sum, i) => sum + (i.cheapest?.price ?? 0), 0);
+  const basketTotal = Math.round(((mixTotal?.total ?? 0) + restockTotal) * 100) / 100;
+  const tickedCount = manualItems.filter((i) => i.checked).length;
+  const hasAnything = restockItems.length + manualItems.length > 0;
+
   async function clearChecked() {
     const checked = manualItems.filter((i) => i.checked);
     if (checked.length === 0) return;
@@ -171,23 +176,41 @@ export function ShopPage() {
 
   return (
     <div className="shop-page">
-      <h1>Shop</h1>
+      <header className="shop-page__header">
+        <h1>Shopping list</h1>
+        <p className="shop-page__sub">Your meal plan, fridge restock and anything you add — one list.</p>
+      </header>
 
       {toast ? <p className="admin-drafts-toast">{toast}</p> : null}
 
-      <section className="shop-section">
-        <h2>Auto — from your Fridge</h2>
-        <p className="admin-drafts-page__sub">
-          Items flagged to restock in Fridge, with the cheapest price we found. &quot;Bought&quot; just clears the
-          restock flag — use Scan Receipt or Scan Fridge in the Fridge tab to actually add stock back in.
-        </p>
+      {hasAnything ? (
+        <section className="shop-summary" aria-label="Basket estimate">
+          <div>
+            <p className="shop-summary__label">Est. basket</p>
+            <p className="shop-summary__total">{basketTotal > 0 ? formatCost(basketTotal) : "—"}</p>
+            <p className="shop-summary__sub">
+              {manualItems.length > 0 ? `${tickedCount} of ${manualItems.length} ticked` : `${restockItems.length} to restock`}
+            </p>
+          </div>
+          {storeTotals.length > 0 ? (
+            <a href="#compare-shops" className="shop-summary__cta">
+              Compare shops
+            </a>
+          ) : null}
+        </section>
+      ) : null}
 
-        <PricesChecked stamp={pricesStamp} />
+      <section className="shop-section">
+        <div className="shop-section__head">
+          <h2>Restock</h2>
+          <span className="shop-section__badge">Auto from fridge</span>
+        </div>
+        <p className="shop-section__hint">Items you flagged in Fridge, with the cheapest price we found. &quot;Bought&quot; clears the flag — scan your receipt in Fridge to add stock back.</p>
 
         {restockError ? <p className="admin-drafts-error">{restockError}</p> : null}
         {restockLoading ? <p className="admin-drafts-page__sub">Loading…</p> : null}
         {!restockLoading && restockItems.length === 0 && !restockError ? (
-          <p className="admin-drafts-page__sub">Nothing to restock right now.</p>
+          <p className="shop-section__hint">Nothing to restock right now.</p>
         ) : null}
 
         <div className="shop-list">
@@ -225,8 +248,10 @@ export function ShopPage() {
       </section>
 
       <section className="shop-section">
-        <h2>Manual</h2>
-        <p className="admin-drafts-page__sub">Anything else you want to remember to buy.</p>
+        <div className="shop-section__head">
+          <h2>Your list</h2>
+        </div>
+        <p className="shop-section__hint">From your meal plan, plus anything else you add.</p>
 
         <div className="shop-add-form">
           <input
@@ -244,7 +269,7 @@ export function ShopPage() {
         </div>
 
         {manualLoading ? <p className="admin-drafts-page__sub">Loading…</p> : null}
-        {!manualLoading && manualItems.length === 0 ? <p className="admin-drafts-page__sub">No manual items yet.</p> : null}
+        {!manualLoading && manualItems.length === 0 ? <p className="shop-section__hint">Nothing on your list yet.</p> : null}
 
         <div className="shop-manual-list">
           {manualItems.map((item) => {
@@ -316,7 +341,7 @@ export function ShopPage() {
         </div>
 
         {storeTotals.length > 0 ? (
-          <div className="shop-store-totals">
+          <div className="shop-store-totals" id="compare-shops">
             <h3>If you shop at one store</h3>
             {mixTotal ? (
               <div className="shop-store-totals__mix">
@@ -346,6 +371,8 @@ export function ShopPage() {
             </p>
           </div>
         ) : null}
+
+        <PricesChecked stamp={pricesStamp} />
 
         {manualItems.some((i) => i.checked) ? (
           <button type="button" className="wizard-secondary-button" onClick={clearChecked}>
