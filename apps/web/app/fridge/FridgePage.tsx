@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
 import { FridgeRecipeGenModal } from "./FridgeRecipeGenModal";
+import { ImpactCard } from "./ImpactCard";
 
 interface IngredientOption {
   id: string;
@@ -85,6 +86,7 @@ function ChefHatIcon() {
 
 export function FridgePage() {
   const [items, setItems] = useState<FridgeStockItem[]>([]);
+  const [impactVersion, setImpactVersion] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -189,16 +191,19 @@ export function FridgePage() {
     setItems((prev) => prev.map((i) => (i._id === item._id ? parsed.data : i)));
   }
 
-  async function deleteItem(item: FridgeStockItem) {
+  /** Impact: "used" / "wasted" are logged (fridge_events) before the item is removed; no outcome = added by mistake. */
+  async function deleteItem(item: FridgeStockItem, outcome?: "used" | "wasted") {
     setPendingId(item._id);
-    const { res } = await fetchJson<{ deleted: true }>(`/api/fridge-stock/${item._id}`, { method: "DELETE" });
+    const q = outcome ? `?outcome=${outcome}` : "";
+    const { res, parsed } = await fetchJson<{ deleted: true }>(`/api/fridge-stock/${item._id}${q}`, { method: "DELETE" });
     setPendingId(null);
-    if (!res.ok) {
-      setToast("Delete failed, please try again.");
+    if (!res.ok || !parsed?.ok) {
+      setToast("Update failed, please try again.");
       return;
     }
     setItems((prev) => prev.filter((i) => i._id !== item._id));
-    setToast("Deleted.");
+    setToast(outcome === "used" ? "Nice — marked as used." : outcome === "wasted" ? "Marked as thrown away." : "Removed.");
+    setImpactVersion((v) => v + 1);
   }
 
   function triggerScan(kind: ScanKind) {
@@ -410,6 +415,8 @@ export function FridgePage() {
         </div>
       ) : null}
 
+      <ImpactCard version={impactVersion} />
+
       {error ? <p className="admin-drafts-error">{error}</p> : null}
       {loading ? <p className="admin-drafts-page__sub">Loading…</p> : null}
       {!loading && sortedItems.length === 0 && !error ? <p className="admin-drafts-page__sub">Your fridge is empty.</p> : null}
@@ -437,8 +444,16 @@ export function FridgePage() {
                   />
                   Restock
                 </label>
-                <button type="button" className="fridge-card__delete" disabled={pendingId === item._id} onClick={() => deleteItem(item)}>
-                  Delete
+                <div className="fridge-card__outcome">
+                  <button type="button" className="fridge-card__used" disabled={pendingId === item._id} onClick={() => deleteItem(item, "used")}>
+                    Used
+                  </button>
+                  <button type="button" className="fridge-card__binned" disabled={pendingId === item._id} onClick={() => deleteItem(item, "wasted")}>
+                    Binned
+                  </button>
+                </div>
+                <button type="button" className="fridge-card__delete" disabled={pendingId === item._id} onClick={() => deleteItem(item)} aria-label={`Remove ${item.ingredientName} (added by mistake)`}>
+                  Remove
                 </button>
               </div>
             </div>

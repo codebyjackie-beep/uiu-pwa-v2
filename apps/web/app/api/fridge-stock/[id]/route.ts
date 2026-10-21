@@ -8,8 +8,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   return NextResponse.json(result);
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const result = await apiDelete(`/api/fridge-stock/${id}`);
+  // Impact: ?outcome=used|wasted is passed through (anything else is dropped).
+  const outcome = req.nextUrl.searchParams.get("outcome");
+  const q = outcome === "used" || outcome === "wasted" ? `?outcome=${outcome}` : "";
+  const result = await apiDelete(`/api/fridge-stock/${id}${q}`);
   return NextResponse.json(result);
 }

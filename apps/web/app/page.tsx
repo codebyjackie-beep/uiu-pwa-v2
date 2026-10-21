@@ -18,6 +18,18 @@ const QUICK_ACTIONS = [
 
 export const dynamic = "force-dynamic";
 
+/** Whole days from today (UK date) to the expiry date; negative = already past. */
+function daysLeft(expiresAt: string): number {
+  const toDay = (d: Date) => Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  return Math.round((toDay(new Date(expiresAt)) - toDay(new Date())) / 864e5);
+}
+function whenLabel(days: number): string {
+  if (days < 0) return "Expired";
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  return `In ${days} days`;
+}
+
 export default async function Home() {
   const { userId, getToken } = await auth();
   // Guest mode: a signed-out first visit is the welcome page; a guest who has already used the app (guest cookie) gets Home.
@@ -42,10 +54,13 @@ export default async function Home() {
     }
   }
 
-  const [setsRes, recipeCountRes] = await Promise.all([
+  const [setsRes, recipeCountRes, expiringRes] = await Promise.all([
     apiGet<MealPlanSetSummary[]>("/api/meal-plan-sets"),
     apiGet<RecipeListPage>("/api/recipes?limit=1"),
+    // Use-it-up (research_rminder_competitors.md #1): fridge items expiring within 3 days.
+    apiGet<{ _id: string; ingredientName: string; expiresAt: string }[]>("/api/fridge-stock/expiring?days=3"),
   ]);
+  const expiring = expiringRes.ok ? expiringRes.data.slice(0, 5) : [];
   // No hard-coded fallback number: if the total can't be fetched, drop the count entirely.
   const recipesHint = recipeCountRes.ok
     ? `${recipeCountRes.data.total} recipes with UK supermarket prices`
@@ -71,6 +86,26 @@ export default async function Home() {
         </p>
         <InstallButton />
       </section>
+
+      {expiring.length ? (
+        <section className="use-soon-card" aria-label="Use it up soon">
+          <h2 className="use-soon-card__title">Use it up soon</h2>
+          <ul className="use-soon-card__list">
+            {expiring.map((item) => {
+              const days = daysLeft(item.expiresAt);
+              return (
+                <li key={item._id}>
+                  <span>{item.ingredientName}</span>
+                  <span className={days <= 0 ? "use-soon-card__when use-soon-card__when--urgent" : "use-soon-card__when"}>{whenLabel(days)}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <Link href="/fridge" className="use-soon-card__link">
+            Open fridge →
+          </Link>
+        </section>
+      ) : null}
 
       <section>
         <p className="home-section__label">This week&apos;s meal plan</p>
