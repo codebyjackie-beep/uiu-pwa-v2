@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Plan meals, track your fridge, shop smart, stay healthy.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0a0a0a",
-    theme_color: "#0a0a0a",
+    background_color: "#f3ede2",
+    theme_color: "#f3ede2",
     share_target: {
       action: "/recipes/share-target",
       method: "GET",
@@ -19,14 +19,12 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     },
     icons: [
-      // Temporary icon (green bg + white "U") — real icons land with the logo design
-      // task (Pending Items). PNGs required for Android's install-prompt heuristic;
-      // the SVG alone doesn't satisfy it.
-      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
-      { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icon-192-maskable.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
-      { src: "/icon-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      // "USE IT UP!" sticker logo (Jackie, 2026-10-21 round 3C). PNG only — the sticker
+      // uses Bricolage Grotesque, which an SVG icon can't load.
+      { src: "/icon-192.png?v=2", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icon-512.png?v=2", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icon-192-maskable.png?v=2", sizes: "192x192", type: "image/png", purpose: "maskable" },
+      { src: "/icon-512-maskable.png?v=2", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

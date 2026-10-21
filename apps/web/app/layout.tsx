@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/fraunces";
+import "@fontsource/bricolage-grotesque/800.css";
 import "./globals.css";
 import { AppHeader } from "./components/AppHeader";
 import { BottomNav } from "./components/BottomNav";
@@ -15,6 +16,10 @@ export const metadata: Metadata = {
   title: "UseItUp",
   description: "Plan meals, track your fridge, shop smart, stay healthy.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/favicon-32.png", sizes: "32x32", type: "image/png" }, { url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "UseItUp" },
 };
 

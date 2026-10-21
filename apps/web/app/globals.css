@@ -5734,3 +5734,20 @@ a {
   font-weight: 500;
   color: var(--uiu-muted);
 }
+
+/* "USE IT UP!" sticker wordmark (logo round 3C). Solid lime offset, not a blur. */
+.app-header__sticker {
+  display: inline-block;
+  transform: rotate(-4deg);
+  padding: 5px 12px 4px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 3px 3px 0 var(--uiu-lime);
+  font-family: "Bricolage Grotesque", var(--font);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.1;
+  white-space: nowrap;
+}

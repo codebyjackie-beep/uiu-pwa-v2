@@ -23,8 +23,8 @@ export function AppHeader() {
     return (
       <header className="app-header">
         <div className="app-header__inner">
-          <Link href="/" className="app-header__wordmark">
-            UseItUp
+          <Link href="/" className="app-header__wordmark" aria-label="UseItUp home">
+            <span className="app-header__sticker">USE IT UP!</span>
           </Link>
           {authResolved ? (
             <Link href={authUrl("sign-up", pathname)} className="app-header__signup">
@@ -39,8 +39,8 @@ export function AppHeader() {
   return (
     <header className="app-header">
       <div className="app-header__inner">
-        <Link href="/" className="app-header__wordmark">
-          UseItUp
+        <Link href="/" className="app-header__wordmark" aria-label="UseItUp home">
+          <span className="app-header__sticker">USE IT UP!</span>
         </Link>
         {/* cc_prompt_meal_grid_profile.md Part P — the avatar opens /profile (Account / Sign out live there now). */}
         <Link href="/profile" className="app-header__avatar" aria-label="Profile">
