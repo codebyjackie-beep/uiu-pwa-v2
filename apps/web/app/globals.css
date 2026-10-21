@@ -1188,7 +1188,7 @@ a {
   margin: 12px 0 var(--space);
   padding: 14px 20px;
   border-radius: 999px;
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   font-weight: 700;
   font-size: 15px;
@@ -1339,7 +1339,7 @@ a {
 
 .cook-mode__timer-suggest {
   border: none;
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   border-radius: 999px;
   padding: 10px 18px;
@@ -1370,7 +1370,7 @@ a {
 }
 
 .cook-timer--ringing {
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   animation: cook-timer-pulse 1s ease-in-out infinite;
 }
@@ -1493,7 +1493,7 @@ a {
   padding: 14px;
   border-radius: var(--radius);
   border: none;
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   font-weight: 700;
   font-size: 15px;
@@ -1613,7 +1613,7 @@ a {
 }
 
 .cook-mode__prompt-button--primary {
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   border: none;
 }
@@ -1633,7 +1633,7 @@ a {
   margin-top: 8px;
   padding: 14px;
   border-radius: var(--radius);
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   font-weight: 700;
   font-size: 15px;
@@ -1641,10 +1641,10 @@ a {
 
 .cost-hero {
   margin-top: var(--space);
-  padding: 16px;
-  background: var(--uiu-surface-2);
-  border: 1px solid var(--uiu-border);
-  border-radius: var(--radius);
+  padding: 18px;
+  background: var(--card);
+  border: none;
+  border-radius: 22px;
 }
 
 .cost-hero__header {
@@ -1666,17 +1666,18 @@ a {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(22, 163, 74, 0.14);
-  color: var(--accent);
-  font-size: 11px;
+  background: var(--uiu-olive-soft);
+  color: var(--uiu-olive-ink);
+  font-size: 12px;
   font-weight: 700;
 }
 
 .cost-hero__price {
   margin: 6px 0 14px;
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--accent);
 }
 
 .cost-hero__price--pending {
@@ -3133,7 +3134,7 @@ a {
 
 .wizard-option--selected {
   border-color: var(--accent);
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
 }
 
@@ -3335,7 +3336,7 @@ a {
 
 .admin-drafts-gap-badge {
   display: inline-block;
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-green);
   border-radius: 999px;
   padding: 4px 10px;
@@ -3387,7 +3388,7 @@ a {
 }
 
 .admin-drafts-toast {
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-green);
   border-radius: 8px;
   padding: 8px 12px;
@@ -3582,7 +3583,7 @@ a {
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--uiu-muted);
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   border-radius: 6px;
   padding: 4px 8px;
   display: inline-block;
@@ -5190,7 +5191,7 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   font-weight: 700;
   font-size: 15px;
@@ -5225,7 +5226,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--uiu-green-ink);
+  background: var(--accent);
   color: var(--uiu-white);
   font-size: 30px;
   font-weight: 700;
@@ -5494,7 +5495,7 @@ a {
   cursor: pointer;
 }
 .reminder-toggle__btn--on {
-  background: rgba(22, 163, 74, 0.1);
+  background: var(--uiu-olive-soft);
 }
 .reminder-toggle__note {
   margin: 6px 0 12px;
