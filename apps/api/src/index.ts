@@ -273,7 +273,9 @@ app.post("/api/admin/recompute-costs", async (c) => {
   }
   const write = c.req.query("write") === "true";
   try {
-    const summary = await precomputeRecipeCosts(c.env, !write);
+    // ?allow=<recipeId>,<recipeId> — reviewed gate anomalies that may be written anyway (still reported, flagged allowed).
+    const allowIds = new Set((c.req.query("allow") ?? "").split(",").map((x) => x.trim()).filter((x) => /^[0-9a-f]{24}$/.test(x)));
+    const summary = await precomputeRecipeCosts(c.env, !write, allowIds.size ? allowIds : undefined);
     const body: ApiResponse<PrecomputeSummary> = { ok: true, data: summary };
     return c.json(body);
   } catch (err) {

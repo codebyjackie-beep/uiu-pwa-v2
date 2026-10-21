@@ -63,9 +63,9 @@ export interface PrecomputeSummary {
  *   to `recipe_cost` (no createIndex, no updateOne). Use for verifying against
  *   production data before the first real populate.
  */
-export async function precomputeRecipeCosts(env: DbEnv, dryRun = false): Promise<PrecomputeSummary> {
+export async function precomputeRecipeCosts(env: DbEnv, dryRun = false, allowIds?: Set<string>): Promise<PrecomputeSummary> {
   return withDb(env, async (db) => {
-    const r = await recomputeRecipeCostsGated(db, { write: !dryRun });
+    const r = await recomputeRecipeCostsGated(db, { write: !dryRun, allowIds });
     return {
       dryRun,
       processed: r.recipes,

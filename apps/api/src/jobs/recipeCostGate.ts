@@ -105,7 +105,7 @@ function statsOf(
  */
 export async function recomputeRecipeCostsGated(
   db: Db,
-  opts: { write: boolean; priceOverlay?: Map<string, Document> },
+  opts: { write: boolean; priceOverlay?: Map<string, Document>; allowIds?: Set<string> },
 ): Promise<GatedRecompute> {
   const ingredientsCol = db.collection<Document>("canonical_ingredients");
   const recipeCostCol = db.collection<Document>("recipe_cost");
@@ -190,8 +190,11 @@ export async function recomputeRecipeCostsGated(
   // "after" = what recipe_cost holds once this run finishes: fresh values if written, else projection of fresh values
   const after = statsOf(publicIds, freshById, planSets, planEntries);
 
+  // Reviewed anomalies (e.g. a tier upgrade Jackie approved) don't block the write; they are still returned, flagged allowed.
+  const blocking = anomalies.filter((a) => !opts.allowIds?.has(a.id));
+  for (const a of anomalies) if (opts.allowIds?.has(a.id)) (a as GateAnomaly & { allowed?: boolean }).allowed = true;
   let wrote = false;
-  if (opts.write && anomalies.length === 0) {
+  if (opts.write && blocking.length === 0) {
     await recipeCostCol.createIndex({ recipeId: 1 }, { unique: true });
     const ops = fresh.map(({ recipe, cost }) => ({
       updateOne: {
