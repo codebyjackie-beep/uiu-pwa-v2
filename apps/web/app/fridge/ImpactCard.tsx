@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import type { ApiResponse } from "@uiu/shared";
 
 type Bucket = { items: number; valueGbp: number; pricedItems: number; grams: number };
+
+/** Headline £ for a bucket: "£0.00" when nothing, "£–" when items exist but none could be priced. */
+function money(b: Bucket): string {
+  if (b.pricedItems) return `≈£${b.valueGbp.toFixed(2)}`;
+  return b.items ? "£–" : "£0.00";
+}
 type Impact = { month: { used: Bucket; wasted: Bucket }; allTime: { used: Bucket; wasted: Bucket; since: string | null }; usedRate: number | null };
 
 const gbp = (n: number) => `£${n.toFixed(2)}`;
@@ -42,14 +48,23 @@ export function ImpactCard({ version }: { version: number }) {
         <>
           <div className="impact-card__stats">
             <div className="impact-card__stat impact-card__stat--used">
-              <span className="impact-card__num">{used.items}</span>
-              <span className="impact-card__label">used up{used.pricedItems ? ` · ≈${gbp(used.valueGbp)}` : ""}</span>
+              <span className="impact-card__num">{money(used)}</span>
+              <span className="impact-card__label">
+                saved · {used.items} item{used.items === 1 ? "" : "s"} used up
+              </span>
             </div>
             <div className="impact-card__stat impact-card__stat--wasted">
-              <span className="impact-card__num">{wasted.items}</span>
-              <span className="impact-card__label">binned{wasted.pricedItems ? ` · ≈${gbp(wasted.valueGbp)}` : ""}</span>
+              <span className="impact-card__num">{money(wasted)}</span>
+              <span className="impact-card__label">
+                wasted · {wasted.items} item{wasted.items === 1 ? "" : "s"} binned
+              </span>
             </div>
           </div>
+          {used.items + wasted.items > used.pricedItems + wasted.pricedItems ? (
+            <p className="impact-card__source">
+              {used.items + wasted.items - used.pricedItems - wasted.pricedItems} item(s) have no price yet, so the £ may be a little low.
+            </p>
+          ) : null}
           {usedKg ? <p className="impact-card__hint">That&apos;s about {usedKg} of food kept out of the bin.</p> : null}
           {data.usedRate !== null ? (
             <p className="impact-card__hint">All time you&apos;ve used {Math.round(data.usedRate * 100)}% of what left your fridge.</p>

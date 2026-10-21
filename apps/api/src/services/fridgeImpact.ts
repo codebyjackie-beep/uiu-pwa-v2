@@ -6,7 +6,9 @@
  * those still count as items, never as £.
  */
 import type { Db, Document } from "mongodb";
+import type { CanonicalIngredient, CanonicalPriceCacheEntry } from "@uiu/shared";
 import { buildAliasIndex, resolve } from "./ingredientResolver";
+import { normalizeQty } from "./recipeCost";
 
 export type FridgeOutcome = "used" | "wasted";
 export const FRIDGE_EVENTS = "fridge_events";
@@ -29,6 +31,32 @@ export function estimateValueGbp(priceDoc: Document | null, quantity: number, un
   return null;
 }
 
+/**
+ * £ estimate using the same unit rules as recipe costing (recipeCost.normalizeQty): count items
+ * ("1 pc broccoli") convert to grams through the canonical's per_item_g when only a £/kg price
+ * exists, volumes through density. Falls back to the simple metric/count estimate above.
+ */
+export function estimateValueWithCanonical(canonicalDoc: Document | null, priceDoc: Document | null, quantity: number, unit: string): number | null {
+  if (!priceDoc || !(quantity > 0)) return null;
+  if (canonicalDoc) {
+    const norm = normalizeQty(quantity, unit, canonicalDoc as unknown as CanonicalIngredient, priceDoc as unknown as CanonicalPriceCacheEntry);
+    if (!("unpriceable" in norm)) {
+      const per = norm.bucket === "count" ? priceDoc.per_unit_count?.value : priceDoc.per_unit_metric?.value;
+      if (typeof per === "number" && per > 0) return +(per * norm.normValue).toFixed(2);
+    }
+  }
+  return estimateValueGbp(priceDoc, quantity, unit);
+}
+
+async function valueForCanonical(db: Db, canonicalName: string | null, quantity: number, unit: string): Promise<number | null> {
+  if (!canonicalName) return null;
+  const [canonicalDoc, priceDoc] = await Promise.all([
+    db.collection("canonical_ingredients").findOne({ canonical_name: canonicalName }),
+    db.collection("canonical_price_cache").findOne({ canonical_name: canonicalName }, { projection: { per_unit_metric: 1, per_unit_count: 1 } }),
+  ]);
+  return estimateValueWithCanonical(canonicalDoc, priceDoc, quantity, unit);
+}
+
 /** Grams for metric units (ml counted as g), else null — used for the "kg kept out of the bin" line. */
 export function estimateGrams(quantity: number, unit: string): number | null {
   const u = unit.trim().toLowerCase();
@@ -47,7 +75,6 @@ async function canonicalNameFor(db: Db, item: Document): Promise<string | null> 
 /** Logs a used / wasted event for a fridge item that is about to be removed. */
 export async function logFridgeEvent(db: Db, userId: string, item: Document, outcome: FridgeOutcome, at = new Date()) {
   const canonicalName = await canonicalNameFor(db, item);
-  const priceDoc = canonicalName ? await db.collection("canonical_price_cache").findOne({ canonical_name: canonicalName }, { projection: { per_unit_metric: 1, per_unit_count: 1 } }) : null;
   const quantity = Number(item.quantity) || 0;
   const unit = String(item.unit ?? "");
   const expiresAt = item.expiresAt ? new Date(item.expiresAt) : null;
@@ -58,7 +85,7 @@ export async function logFridgeEvent(db: Db, userId: string, item: Document, out
     canonicalName,
     quantity,
     unit,
-    valueGbp: estimateValueGbp(priceDoc, quantity, unit),
+    valueGbp: await valueForCanonical(db, canonicalName, quantity, unit),
     grams: estimateGrams(quantity, unit),
     expiresAt,
     /** Used on or before its expiry day (the "used it up in time" count). */
@@ -81,7 +108,17 @@ const empty = (): ImpactBucket => ({ items: 0, valueGbp: 0, pricedItems: 0, gram
 
 export async function impactSummary(db: Db, userId: string, now = new Date()): Promise<ImpactSummary> {
   const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const events = await db.collection(FRIDGE_EVENTS).find({ userId }, { projection: { outcome: 1, valueGbp: 1, grams: 1, at: 1 } }).sort({ at: 1 }).toArray();
+  const events = await db.collection(FRIDGE_EVENTS).find({ userId }, { projection: { outcome: 1, valueGbp: 1, grams: 1, at: 1, canonicalName: 1, quantity: 1, unit: 1 } }).sort({ at: 1 }).toArray();
+  // Events logged before count items were priced through per_item_g have valueGbp null — fill them once.
+  for (const e of events) {
+    if (e.valueGbp == null && e.canonicalName) {
+      const v = await valueForCanonical(db, String(e.canonicalName), Number(e.quantity) || 0, String(e.unit ?? ""));
+      if (v != null) {
+        e.valueGbp = v;
+        await db.collection(FRIDGE_EVENTS).updateOne({ _id: e._id, valueGbp: null }, { $set: { valueGbp: v, valueFilledAt: now } });
+      }
+    }
+  }
   const out: ImpactSummary = {
     month: { used: empty(), wasted: empty(), since: monthStart.toISOString() },
     allTime: { used: empty(), wasted: empty(), since: events[0]?.at ? new Date(events[0].at).toISOString() : null },
