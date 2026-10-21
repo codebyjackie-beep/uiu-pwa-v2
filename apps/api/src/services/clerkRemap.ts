@@ -26,6 +26,7 @@ export const USERID_COLLECTIONS = [
   "favourite_recipes",
   "shopping_list_items",
   "recipe_browse_state",
+  "fridge_events",
 ] as const;
 export const SEQUENCE_COLLECTION = "meal_plan_sequence";
 export const USERS_COLLECTION = "users";
