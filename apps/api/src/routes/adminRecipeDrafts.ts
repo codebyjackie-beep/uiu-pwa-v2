@@ -7,7 +7,7 @@ import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import { type ApiResponse, type CanonicalIngredient, type CanonicalPriceCacheEntry, type Recipe, type RecipeCostLine, type RecipeDraft, type RecipeDraftStatus } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { dailyRecipeDraft, type DailyRecipeDraftEnv, type DailyRecipeDraftSummary } from "../jobs/dailyRecipeDraft";
-import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
+import { findRecipePhoto, usedPexelsIds, type PexelsEnv } from "../services/pexels";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { approveRecipeDraft, rejectRecipeDraft } from "../services/recipeDraftApproval";
@@ -244,6 +244,8 @@ adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
       if (afterIdParam) filter._id = { $gt: new ObjectId(afterIdParam) };
       const drafts = await db.collection("recipe_drafts").find(filter).sort({ _id: 1 }).limit(limit).toArray();
 
+      // G2: one shared set so this run never gives two drafts the same photo (dry run included).
+      const usedPhotos = await usedPexelsIds(c.env).catch(() => new Set<string>());
       for (const draft of drafts) {
         const id = (draft._id as ObjectIdType).toString();
         const title = draft.title as string;
@@ -274,7 +276,7 @@ adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
           const newTags = Array.isArray(parsed.tags) ? (parsed.tags as string[]) : oldTags;
           const newMealType = typeof parsed.mealType === "string" ? parsed.mealType : oldMealType;
 
-          const imageUrl = await findRecipePhoto(c.env, title).catch(() => null);
+          const imageUrl = await findRecipePhoto(c.env, title, { used: usedPhotos }).catch(() => null);
 
           if (write) {
             await db.collection("recipe_drafts").updateOne(
