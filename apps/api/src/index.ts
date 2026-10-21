@@ -438,6 +438,28 @@ app.post("/api/admin/notify", async (c) => {
   }
 });
 
+// Admin image proxy — lets cloud's headless screenshot runs (welcome-page phone frames) load recipe photos,
+// which the cloud sandbox can't fetch directly. Admin-token only; recipe image hosts only; read-only.
+const IMAGE_PROXY_HOSTS = new Set(["images.pexels.com", "img.spoonacular.com", "www.themealdb.com"]);
+app.get("/api/admin/image-proxy", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  let target: URL;
+  try {
+    target = new URL(c.req.query("url") ?? "");
+  } catch {
+    return c.json({ ok: false, error: { code: "bad_request", message: "url is required" } } satisfies ApiResponse<never>, 400);
+  }
+  if (target.protocol !== "https:" || !IMAGE_PROXY_HOSTS.has(target.hostname)) {
+    return c.json({ ok: false, error: { code: "forbidden_host", message: "host not allowed" } } satisfies ApiResponse<never>, 400);
+  }
+  const res = await fetch(target.toString());
+  const type = res.headers.get("content-type") ?? "";
+  if (!res.ok || !type.startsWith("image/")) {
+    return c.json({ ok: false, error: { code: "upstream", message: `upstream ${res.status}` } } satisfies ApiResponse<never>, 502);
+  }
+  return new Response(res.body, { headers: { "content-type": type, "cache-control": "no-store" } });
+});
+
 // Guest cleanup (services/guest.ts): deletes data of guest ids older than GUEST_TTL_DAYS. Dry run unless ?write=true.
 // Also runs daily from scheduled() ("0 9 * * *").
 app.post("/api/admin/guest-cleanup", async (c) => {
