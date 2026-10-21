@@ -1,5 +1,37 @@
 /* Design tokens — black / white / green (UIU brand). Components read tokens, never hardcode. */
 :root {
+  /* UI refresh A "Pantry" (Jackie 2026-10-21): warm beige ground, cream cards, deep green, olive pills. */
+  --uiu-black: #1e2a22;
+  --uiu-white: #fffcf6;
+  --uiu-green: #1f4d33;
+  --uiu-green-ink: #1e2a22;
+  --uiu-surface: #fffcf6;
+  --uiu-surface-2: #e3e6cc;
+  --uiu-muted: #5e6658;
+  --uiu-red: #b3261e;
+  --uiu-yellow: #8a5a00;
+  --uiu-border: rgba(30, 42, 34, 0.1);
+  --uiu-overlay: rgba(30, 42, 34, 0.05);
+  --uiu-olive-soft: #e3e6cc;
+  --uiu-olive-ink: #3f4a1e;
+  --uiu-lime: #c9d8a8;
+  --uiu-clay-soft: #f6dccb;
+  --uiu-clay-ink: #8a3415;
+
+  --bg: #f3ede2;
+  --fg: var(--uiu-green-ink);
+  --accent: var(--uiu-green);
+  --on-accent: #f3ede2;
+  --card: var(--uiu-surface);
+
+  --radius: 20px;
+  --space: 16px;
+  --font: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Fraunces Variable", Georgia, serif;
+}
+
+/* Welcome page (/how-it-works) keeps its original look — excluded from the refresh. */
+.how-it-works-page {
   --uiu-black: #0a0a0a;
   --uiu-white: #ffffff;
   --uiu-green: #16a34a;
@@ -7,19 +39,28 @@
   --uiu-surface: #f7f7f4;
   --uiu-surface-2: #eef0ec;
   --uiu-muted: #5b6b5f;
-  --uiu-red: #dc2626;
-  --uiu-yellow: #a16207;
   --uiu-border: rgba(5, 46, 22, 0.14);
-  --uiu-overlay: rgba(5, 46, 22, 0.06);
-
   --bg: #ffffff;
   --fg: var(--uiu-green-ink);
   --accent: var(--uiu-green);
   --card: var(--uiu-surface);
-
   --radius: 14px;
-  --space: 16px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.how-it-works-page h1,
+.how-it-works-page h2 {
+  font-family: var(--font);
+  letter-spacing: normal;
 }
 
 * {
@@ -75,9 +116,10 @@ a {
 }
 
 .app-header__wordmark {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--uiu-green-ink);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
 }
 
 /* HANDOFF_auth-subscription-front-page.md Milestone 1 — persistent "How it works" link,
@@ -86,7 +128,7 @@ a {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -441,7 +483,7 @@ a {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 60px;
+  height: 64px;
   padding-bottom: env(safe-area-inset-bottom, 0px); /* standalone PWA: don't let the system gesture bar cover the tabs */
   background: var(--card);
   border-top: 1px solid var(--uiu-border);
@@ -451,16 +493,26 @@ a {
 .bottom-nav__tab {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   min-height: 44px;
   color: var(--uiu-muted);
-  padding: 8px 4px;
+  padding: 6px 2px;
+  font-size: 11px;
 }
-
+.bottom-nav__icon {
+  display: flex;
+  padding: 3px 14px;
+  border-radius: 999px;
+}
 .bottom-nav__tab--active {
   color: var(--accent);
   font-weight: 600;
+}
+.bottom-nav__tab--active .bottom-nav__icon {
+  background: var(--uiu-olive-soft);
 }
 
 /* --- Recipes tab --- */
@@ -540,7 +592,7 @@ a {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--uiu-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
   overflow: hidden;
   padding: 8px;
 }
@@ -705,7 +757,7 @@ a {
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--accent);
-  color: var(--uiu-white);
+  color: var(--on-accent);
   font-size: 12px;
   font-weight: 600;
 }
@@ -811,7 +863,7 @@ a {
 .recipes-filters__filters-button--active {
   border-color: transparent;
   background: var(--accent);
-  color: var(--uiu-white);
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -844,7 +896,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
   z-index: 15;
   cursor: pointer;
 }
@@ -883,7 +935,7 @@ a {
 .chip--active {
   border-color: transparent;
   background: var(--accent);
-  color: var(--uiu-white);
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -1736,21 +1788,136 @@ a {
 }
 
 .home-hero {
-  padding: calc(var(--space) * 1.5) var(--space);
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--uiu-surface-2), var(--uiu-surface));
-  border: 1px solid var(--uiu-border);
+  padding: 4px 0 0;
+}
+
+.home-hero__date {
+  margin: 0;
+  font-size: 13px;
+  color: var(--uiu-muted);
 }
 
 .home-hero__title {
-  margin: 0 0 6px;
-  font-size: 26px;
+  margin: 2px 0 0;
+  font-size: 30px;
+  line-height: 1.15;
 }
 
-.home-hero__subtitle {
+/* Home "This week" card (UI refresh A) */
+.home-week-card {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.home-week-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.home-week-card__title {
   margin: 0;
-  color: var(--uiu-muted);
+  font-size: 20px;
+}
+.home-week-card__more {
   font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.home-week-card__days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  text-align: center;
+}
+.home-week-card__day {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--uiu-muted);
+}
+.home-week-card__dot {
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px dashed #b9b49f;
+}
+.home-week-card__day--planned .home-week-card__dot {
+  border: none;
+  background: var(--uiu-olive-soft);
+}
+.home-week-card__day--today {
+  color: var(--accent);
+  font-weight: 700;
+}
+.home-week-card__day--today .home-week-card__dot {
+  border: none;
+  background: var(--accent);
+}
+.home-week-card__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--uiu-border);
+  padding-top: 12px;
+}
+.home-week-card__label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+.home-week-card__cost {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+}
+.home-week-card__cta {
+  flex-shrink: 0;
+  padding: 11px 16px;
+  border-radius: 999px;
+  background: var(--uiu-olive-soft);
+  color: var(--uiu-olive-ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+.home-week-card__empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--uiu-muted);
+}
+.home-impact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.home-impact__tile {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+}
+.home-impact__label {
+  font-size: 12px;
+  color: var(--uiu-muted);
+}
+.home-impact__num {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+}
+.home-impact__num--used {
+  color: var(--accent);
+}
+.home-impact__num--wasted {
+  color: var(--uiu-clay-ink);
 }
 
 .home-install-button {
@@ -1887,7 +2054,7 @@ a {
   height: 20px;
   border-radius: 50%;
   background: var(--accent);
-  color: var(--uiu-white);
+  color: var(--on-accent);
   font-size: 11px;
   font-weight: 700;
 }
@@ -1928,6 +2095,7 @@ a {
 }
 
 .home-section__label {
+  font-family: var(--font);
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1941,7 +2109,7 @@ a {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--uiu-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1979,12 +2147,12 @@ a {
   flex-direction: column;
   justify-content: flex-end;
   gap: 4px;
-  min-height: 148px;
+  min-height: 132px;
   padding: 14px;
   background: var(--card);
   border-radius: var(--radius);
-  border: 1px solid var(--uiu-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  border: none;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -2006,7 +2174,7 @@ a {
    with icon/label/hint recolored for contrast, without touching the other
    3 tiles' rules. */
 .home-quick-action--recipes {
-  background: var(--uiu-green-ink);
+  background: var(--accent);
 }
 
 /* cc_prompt_milestone1_followup_fixes_2.md Task 2 — all 4 tiles sit on a dark
@@ -2017,7 +2185,7 @@ a {
 .home-quick-action--fridge,
 .home-quick-action--shop,
 .home-quick-action--health {
-  color: var(--uiu-white);
+  color: var(--on-accent);
 }
 
 .home-quick-action--recipes .home-quick-action__hint,
@@ -2029,19 +2197,19 @@ a {
 
 .home-quick-action--fridge::before {
   background-image:
-    linear-gradient(180deg, rgba(5, 46, 22, 0.1) 0%, rgba(5, 46, 22, 0.55) 45%, rgba(5, 46, 22, 0.96) 100%),
+    linear-gradient(180deg, rgba(31, 77, 51, 0.1) 0%, rgba(31, 77, 51, 0.6) 45%, rgba(31, 77, 51, 0.97) 100%),
     url("/images/home/Fridge.jpg");
 }
 
 .home-quick-action--shop::before {
   background-image:
-    linear-gradient(180deg, rgba(5, 46, 22, 0.1) 0%, rgba(5, 46, 22, 0.55) 45%, rgba(5, 46, 22, 0.96) 100%),
+    linear-gradient(180deg, rgba(31, 77, 51, 0.1) 0%, rgba(31, 77, 51, 0.6) 45%, rgba(31, 77, 51, 0.97) 100%),
     url("/images/home/Shop.jpg");
 }
 
 .home-quick-action--health::before {
   background-image:
-    linear-gradient(180deg, rgba(5, 46, 22, 0.1) 0%, rgba(5, 46, 22, 0.55) 45%, rgba(5, 46, 22, 0.96) 100%),
+    linear-gradient(180deg, rgba(31, 77, 51, 0.1) 0%, rgba(31, 77, 51, 0.6) 45%, rgba(31, 77, 51, 0.97) 100%),
     url("/images/home/Health.jpg");
 }
 
@@ -2182,7 +2350,7 @@ a {
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--accent);
-  color: #0a0a0a;
+  color: var(--on-accent);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -2317,7 +2485,7 @@ a {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--uiu-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 
 .meal-planner-summary__stat {
@@ -2864,7 +3032,7 @@ a {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--uiu-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
 }
 
 .wizard__step h1 {
@@ -2954,7 +3122,7 @@ a {
 .wizard-chip--selected {
   border-color: var(--accent);
   background: var(--accent);
-  color: var(--uiu-black);
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -3012,7 +3180,7 @@ a {
   border-radius: 10px;
   border: none;
   background: var(--accent);
-  color: var(--uiu-black);
+  color: var(--on-accent);
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
@@ -3085,7 +3253,7 @@ a {
   border-radius: 8px;
   border: none;
   background: var(--accent);
-  color: var(--uiu-white);
+  color: var(--on-accent);
   font-weight: 600;
   cursor: pointer;
 }
@@ -3251,7 +3419,7 @@ a {
   margin-left: 8px;
   padding: 1px 7px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -3939,7 +4107,7 @@ a {
   padding: 1px 6px;
   border-radius: 999px;
   background: var(--accent);
-  color: #000;
+  color: var(--on-accent);
 }
 
 .shop-option__tag--cheap {
@@ -4104,7 +4272,7 @@ a {
   background: var(--card);
   border-radius: var(--radius);
   border: 1px solid var(--uiu-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -4501,7 +4669,7 @@ a {
 .health-coach-bubble--user {
   align-self: flex-end;
   background: var(--uiu-green);
-  color: var(--uiu-black);
+  color: var(--on-accent);
   border-bottom-right-radius: 4px;
 }
 
@@ -4702,7 +4870,7 @@ a {
   padding: 8px 14px;
   border-radius: 999px;
   background: var(--accent);
-  color: var(--uiu-black);
+  color: var(--on-accent);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -5125,7 +5293,7 @@ a {
   padding: 0 16px;
   border-radius: 999px;
   background: var(--uiu-green);
-  color: var(--uiu-green-ink);
+  color: var(--on-accent);
   font-weight: 700;
   font-size: 15px;
   text-decoration: none;
@@ -5148,13 +5316,13 @@ a {
 }
 .fridge-card__used {
   border: none;
-  background: var(--uiu-green);
-  color: var(--uiu-green-ink);
+  background: var(--uiu-olive-soft);
+  color: var(--accent);
 }
 .fridge-card__binned {
-  border: 1px solid var(--uiu-border);
-  background: var(--uiu-white);
-  color: var(--uiu-muted);
+  border: none;
+  background: var(--uiu-clay-soft);
+  color: var(--uiu-clay-ink);
 }
 .impact-card {
   background: var(--uiu-white);
@@ -5205,46 +5373,63 @@ a {
   color: var(--uiu-muted);
 }
 .use-soon-card {
-  background: var(--uiu-white);
-  border: 1px solid var(--uiu-border);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 12px 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 22px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.use-soon-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 .use-soon-card__title {
-  margin: 0 0 8px;
-  font-size: 17px;
-  color: var(--uiu-green-ink);
+  margin: 0;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--uiu-lime);
+}
+.use-soon-card__badge {
+  background: var(--uiu-clay-soft);
+  color: var(--uiu-clay-ink);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 .use-soon-card__list {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-.use-soon-card__list li {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
-  padding: 6px 0;
-  font-size: 15px;
 }
-.use-soon-card__list li + li {
-  border-top: 1px solid var(--uiu-border);
+.use-soon-card__pill {
+  background: rgba(243, 237, 226, 0.14);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 14px;
 }
 .use-soon-card__when {
-  color: var(--uiu-muted);
+  color: var(--uiu-lime);
   font-size: 13px;
-  white-space: nowrap;
-}
-.use-soon-card__when--urgent {
-  color: var(--uiu-red);
-  font-weight: 600;
 }
 .use-soon-card__link {
-  display: inline-block;
-  margin-top: 8px;
-  color: var(--uiu-green-ink);
-  font-weight: 600;
+  align-self: flex-start;
+  background: var(--uiu-lime);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 11px 16px;
+  border-radius: 999px;
 }
 
 .reminder-toggle {

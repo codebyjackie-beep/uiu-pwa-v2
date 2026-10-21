@@ -5,15 +5,19 @@ import { cookies } from "next/headers";
 import { GUEST_COOKIE } from "./lib/guestCookie";
 import { formatTotalWithIncomplete, type MealPlanSetDetail, type MealPlanSetSummary, type RecipeListPage } from "@uiu/shared";
 import { apiGet, apiPost } from "./lib/api";
+import { dayIndexLabel, todayDayIndex } from "./lib/dates";
 import { InstallButton } from "./InstallButton";
 import { OnboardingOverlay } from "./OnboardingOverlay";
 
 // The Recipes hint is filled in at render time from the live recipe total (see Home()).
+type ImpactBucket = { items: number; valueGbp: number };
+type ImpactMonth = { month: { used: ImpactBucket; wasted: ImpactBucket } };
+
 const QUICK_ACTIONS = [
-  { href: "/recipes", icon: "🍳", label: "Browse Recipes", hint: "", modifier: "recipes" },
-  { href: "/fridge", icon: "🧊", label: "Scan Fridge", hint: "Track what you've got", modifier: "fridge" },
-  { href: "/shop", icon: "🛒", label: "Shopping List", hint: "Compare supermarket prices", modifier: "shop" },
-  { href: "/health", icon: "❤️", label: "Log Health", hint: "Macros, weight, BMI", modifier: "health" },
+  { href: "/recipes", label: "Browse Recipes", hint: "", modifier: "recipes" },
+  { href: "/fridge", label: "Scan Fridge", hint: "Track what you've got", modifier: "fridge" },
+  { href: "/shop", label: "Shopping List", hint: "Compare supermarket prices", modifier: "shop" },
+  { href: "/health", label: "Log Health", hint: "Macros, weight, BMI", modifier: "health" },
 ] as const;
 
 export const dynamic = "force-dynamic";
@@ -76,93 +80,114 @@ export default async function Home() {
   const hasPlan = !!activeDetail && totalMeals > 0;
   const avgCostPerDay = activeDetail ? activeDetail.weekTotalCost / 7 : 0;
 
+  const impactRes = await apiGet<ImpactMonth>("/api/fridge-stock/impact");
+  const month = impactRes.ok ? impactRes.data.month : null;
+  const hasImpact = !!month && month.used.items + month.wasted.items > 0;
+
+  const now = new Date();
+  const ukHour = Number(new Intl.DateTimeFormat("en-GB", { hour: "numeric", hour12: false, timeZone: "Europe/London" }).format(now));
+  const dateLine = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/London" }).format(now);
+  const firstName = user?.firstName?.trim();
+  const greeting = isGuest
+    ? "Welcome"
+    : firstName
+      ? `Good ${ukHour < 12 ? "morning" : ukHour < 18 ? "afternoon" : "evening"}, ${firstName}`
+      : "Welcome back";
+  const expiredCount = expiring.filter((i) => daysLeft(i.expiresAt) < 0).length;
+  const today = todayDayIndex();
+  const plannedDays = new Set(activeDetail ? activeDetail.days.filter((d) => d.entries.length > 0).map((d) => d.dayIndex) : []);
+
   return (
     <div className="home-page">
       <OnboardingOverlay />
       <section className="home-hero">
-        <h1 className="home-hero__title">{isGuest ? "Welcome" : "Welcome back"}</h1>
-        <p className="home-hero__subtitle">
-          Plan meals, track your fridge, shop smart, and stay healthy — all in one place.
-        </p>
+        <p className="home-hero__date">{dateLine}</p>
+        <h1 className="home-hero__title">{greeting}</h1>
         <InstallButton />
       </section>
 
       {expiring.length ? (
         <section className="use-soon-card" aria-label="Use it up soon">
-          <h2 className="use-soon-card__title">Use it up soon</h2>
+          <div className="use-soon-card__head">
+            <h2 className="use-soon-card__title">Use it up soon</h2>
+            {expiredCount > 0 && <span className="use-soon-card__badge">{expiredCount} expired</span>}
+          </div>
           <ul className="use-soon-card__list">
             {expiring.map((item) => {
               const days = daysLeft(item.expiresAt);
               return (
-                <li key={item._id}>
-                  <span>{item.ingredientName}</span>
-                  <span className={days <= 0 ? "use-soon-card__when use-soon-card__when--urgent" : "use-soon-card__when"}>{whenLabel(days)}</span>
+                <li key={item._id} className="use-soon-card__pill">
+                  {item.ingredientName}
+                  {days >= 0 && <span className="use-soon-card__when"> · {whenLabel(days)}</span>}
                 </li>
               );
             })}
           </ul>
           <Link href="/fridge" className="use-soon-card__link">
-            Open fridge →
+            Cook with these
+          </Link>
+        </section>
+      ) : null}
+
+      <section className="home-week-card" aria-label="This week">
+        <div className="home-week-card__head">
+          <h2 className="home-week-card__title">This week</h2>
+          <Link href="/meal-planner" className="home-week-card__more">
+            {hasPlan ? "Open plan" : "Start planning"}
+          </Link>
+        </div>
+        {hasPlan && activeDetail ? (
+          <>
+            <ol className="home-week-card__days">
+              {[1, 2, 3, 4, 5, 6, 7].map((d) => (
+                <li
+                  key={d}
+                  className={[
+                    "home-week-card__day",
+                    plannedDays.has(d) ? "home-week-card__day--planned" : "",
+                    d === today ? "home-week-card__day--today" : "",
+                  ].join(" ")}
+                >
+                  <span>{dayIndexLabel(d)}</span>
+                  <span className="home-week-card__dot" aria-label={plannedDays.has(d) ? "meals planned" : "nothing planned"} />
+                </li>
+              ))}
+            </ol>
+            <div className="home-week-card__foot">
+              <div>
+                <p className="home-week-card__label">
+                  {activeDetail.name} · {totalMeals} meal{totalMeals === 1 ? "" : "s"} · est. basket
+                </p>
+                <p className="home-week-card__cost">{formatTotalWithIncomplete(activeDetail.weekTotalCost, activeDetail.weekCostIncomplete)}</p>
+                <p className="home-week-card__label">{formatTotalWithIncomplete(avgCostPerDay, activeDetail.weekCostIncomplete)} a day</p>
+              </div>
+              <Link href="/shop" className="home-week-card__cta">
+                Shopping list
+              </Link>
+            </div>
+          </>
+        ) : (
+          <p className="home-week-card__empty">No active meal plan yet. Build one and its cost and shopping list show up here.</p>
+        )}
+      </section>
+
+      {hasImpact && month ? (
+        <section className="home-impact" aria-label="Your impact this month">
+          <Link href="/fridge" className="home-impact__tile">
+            <span className="home-impact__label">Used this month</span>
+            <span className="home-impact__num home-impact__num--used">£{month.used.valueGbp.toFixed(2)}</span>
+            <span className="home-impact__label">{month.used.items} item{month.used.items === 1 ? "" : "s"} used up</span>
+          </Link>
+          <Link href="/fridge" className="home-impact__tile">
+            <span className="home-impact__label">Binned this month</span>
+            <span className="home-impact__num home-impact__num--wasted">£{month.wasted.valueGbp.toFixed(2)}</span>
+            <span className="home-impact__label">{month.wasted.items} item{month.wasted.items === 1 ? "" : "s"}</span>
           </Link>
         </section>
       ) : null}
 
       <section>
-        <p className="home-section__label">This week&apos;s meal plan</p>
-        <div className="home-summary-card">
-          {hasPlan ? (
-            <>
-              <h2 className="home-summary-card__title">
-                {totalMeals} meal{totalMeals === 1 ? "" : "s"} planned in {activeDetail!.name}
-              </h2>
-              <p className="home-summary-card__body">
-                See what&apos;s on the menu for the rest of the week.
-              </p>
-              <Link href="/meal-planner" className="home-summary-card__cta">
-                View plan →
-              </Link>
-            </>
-          ) : (
-            <>
-              <h2 className="home-summary-card__title">No active meal plan</h2>
-              <p className="home-summary-card__body">
-                Build a plan to get started — activate one to see it summarised here.
-              </p>
-              <Link href="/meal-planner" className="home-summary-card__cta">
-                Start planning →
-              </Link>
-            </>
-          )}
-        </div>
-      </section>
-
-      <section>
-        <p className="home-section__label">This week&apos;s cost</p>
-        <div className="home-summary-card">
-          {hasPlan && activeDetail ? (
-            <>
-              <h2 className="home-summary-card__title">{formatTotalWithIncomplete(activeDetail.weekTotalCost, activeDetail.weekCostIncomplete)}</h2>
-              <p className="home-summary-card__body">{formatTotalWithIncomplete(avgCostPerDay, activeDetail.weekCostIncomplete)} average per day</p>
-              <Link href="/meal-planner" className="home-summary-card__cta">
-                View plan →
-              </Link>
-            </>
-          ) : (
-            <>
-              <h2 className="home-summary-card__title">No cost data yet</h2>
-              <p className="home-summary-card__body">
-                Once you&apos;ve got an active meal plan, we&apos;ll total up the cost here.
-              </p>
-              <Link href="/meal-planner" className="home-summary-card__cta">
-                Start planning →
-              </Link>
-            </>
-          )}
-        </div>
-      </section>
-
-      <section>
-        <p className="home-section__label">Quick actions</p>
+        <h2 className="home-section__label">Quick actions</h2>
         <div className="home-quick-actions">
           {QUICK_ACTIONS.map((action) => (
             <Link
@@ -174,7 +199,6 @@ export default async function Home() {
                   : "home-quick-action"
               }
             >
-              <span className="home-quick-action__icon">{action.icon}</span>
               <span className="home-quick-action__label">{action.label}</span>
               <span className="home-quick-action__hint">{action.modifier === "recipes" ? recipesHint : action.hint}</span>
             </Link>

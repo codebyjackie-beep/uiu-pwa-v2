@@ -6,8 +6,8 @@ import { isSignedOutPublicPath } from "../lib/signedOutPublicPaths";
 import { useGuestGate } from "./GuestGate";
 
 const ICON_PROPS = {
-  width: 22,
-  height: 22,
+  width: 20,
+  height: 20,
   viewBox: "0 0 24 24",
   fill: "none",
   stroke: "currentColor",
@@ -79,12 +79,12 @@ function HealthIcon() {
 }
 
 const TABS = [
-  { label: "Home", href: "/", Icon: HomeIcon },
-  { label: "Meal Planner", href: "/meal-planner", Icon: MealPlannerIcon },
-  { label: "Recipes", href: "/recipes", Icon: RecipesIcon },
-  { label: "Fridge", href: "/fridge", Icon: FridgeIcon },
-  { label: "Shop", href: "/shop", Icon: ShopIcon },
-  { label: "Health", href: "/health", Icon: HealthIcon },
+  { label: "Home", short: "Home", href: "/", Icon: HomeIcon },
+  { label: "Meal Planner", short: "Plan", href: "/meal-planner", Icon: MealPlannerIcon },
+  { label: "Recipes", short: "Recipes", href: "/recipes", Icon: RecipesIcon },
+  { label: "Fridge", short: "Fridge", href: "/fridge", Icon: FridgeIcon },
+  { label: "Shop", short: "Shop", href: "/shop", Icon: ShopIcon },
+  { label: "Health", short: "Health", href: "/health", Icon: HealthIcon },
 ] as const;
 
 /* Guest mode (claude/plan_guest_mode.md): every tab is open to guests. */
@@ -98,7 +98,7 @@ export function BottomNav() {
 
   return (
     <nav className="bottom-nav">
-      {TABS.map(({ label, href, Icon }) => {
+      {TABS.map(({ label, short, href, Icon }) => {
         const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
         return (
           <Link
@@ -107,7 +107,10 @@ export function BottomNav() {
             className={active ? "bottom-nav__tab bottom-nav__tab--active" : "bottom-nav__tab"}
             aria-label={label}
           >
-            <Icon />
+            <span className="bottom-nav__icon" aria-hidden="true">
+              <Icon />
+            </span>
+            <span>{short}</span>
           </Link>
         );
       })}

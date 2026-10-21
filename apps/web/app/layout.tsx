@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
+import "@fontsource-variable/inter";
+import "@fontsource-variable/fraunces";
 import "./globals.css";
 import { AppHeader } from "./components/AppHeader";
 import { BottomNav } from "./components/BottomNav";
@@ -13,11 +15,11 @@ export const metadata: Metadata = {
   title: "UseItUp",
   description: "Plan meals, track your fridge, shop smart, stay healthy.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "UseItUp" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "UseItUp" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#f3ede2",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
