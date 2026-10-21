@@ -105,8 +105,8 @@ export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn
     };
   }, []);
 
-  // After sign-in / sign-up: move this browser's guest data into the account (new accounts only; the API decides),
-  // once per browser session.
+  // After sign-in / sign-up, once per browser session: sync the users doc (B), then move this browser's guest data into
+  // the account (new accounts only; the API decides).
   useEffect(() => {
     if (!isLoaded || !clerkSignedIn) return;
     let done = false;
@@ -117,6 +117,8 @@ export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn
     }
     if (done) return;
     void (async () => {
+      // B: make sure the users doc exists whichever page the visitor lands on after sign-in (Home also syncs; idempotent).
+      await fetch("/api/users/sync", { method: "POST" }).catch(() => null);
       const res = await fetch("/api/guest/claim", { method: "POST" }).catch(() => null);
       const body = (await res?.json().catch(() => null)) as { ok?: boolean; data?: { claimed?: boolean } } | null;
       try {
