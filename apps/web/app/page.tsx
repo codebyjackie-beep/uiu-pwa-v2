@@ -180,7 +180,7 @@ export default async function Home() {
           </Link>
           <Link href="/fridge" className="home-impact__tile">
             <span className="home-impact__label">Binned this month</span>
-            <span className="home-impact__num home-impact__num--wasted">£{month.wasted.valueGbp.toFixed(2)}</span>
+            <span className={month.wasted.items ? "home-impact__num home-impact__num--wasted" : "home-impact__num"}>£{month.wasted.valueGbp.toFixed(2)}</span>
             <span className="home-impact__label">{month.wasted.items} item{month.wasted.items === 1 ? "" : "s"}</span>
           </Link>
         </section>

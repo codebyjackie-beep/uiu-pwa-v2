@@ -11,7 +11,7 @@ async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Re
   return { res, parsed };
 }
 
-const MACRO_COLORS = { protein: "#f97316", carbs: "#3b82f6", fat: "#ec4899" } as const;
+const MACRO_COLORS = { protein: "#1f4d33", carbs: "#c58a2b", fat: "#e2a68a" } as const; // Pantry palette — differ in lightness, not hue alone
 
 const ROW_ICON_PROPS = {
   width: 18,
