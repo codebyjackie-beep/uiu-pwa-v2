@@ -26,7 +26,7 @@ self.addEventListener("push", (event) => {
     self.registration.showNotification("Use it up", {
       body: "Some food in your fridge expires soon — tap to see what to use first.",
       icon: "/icon-192.png",
-      badge: "/icon-192.png",
+      badge: "/badge-96.png", // white-on-transparent: Android paints the status-bar icon from the alpha channel only
       tag: "uiu-expiring",
       data: { url: "/fridge" },
     })
