@@ -5559,6 +5559,7 @@ a {
 .reminder-toggle__btn {
   width: 100%;
   min-height: 44px;
+  padding: 8px 16px;
   border-radius: 999px;
   border: 1px solid var(--uiu-border);
   background: var(--uiu-white);
@@ -5725,4 +5726,11 @@ a {
 }
 .meal-day__total span:last-child {
   font-weight: 700;
+}
+
+.reminder-toggle__sub {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--uiu-muted);
 }

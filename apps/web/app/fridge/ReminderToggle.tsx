@@ -88,7 +88,14 @@ export function ReminderToggle() {
         </button>
       ) : (
         <button type="button" className="reminder-toggle__btn" disabled={state === "busy"} onClick={() => void turnOn()}>
-          {state === "busy" ? "Turning on…" : isSignedIn ? "🔔 Remind me before food expires" : "🔔 Remind me before food expires (free account)"}
+          {state === "busy" ? (
+            "Turning on…"
+          ) : (
+            <>
+              🔔 Remind me before food expires
+              {isSignedIn ? null : <span className="reminder-toggle__sub">Free account</span>}
+            </>
+          )}
         </button>
       )}
       {note ? <p className="reminder-toggle__note">{note}</p> : null}
