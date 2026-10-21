@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
 import { FridgeRecipeGenModal } from "./FridgeRecipeGenModal";
 import { ImpactCard } from "./ImpactCard";
+import { ReminderToggle } from "./ReminderToggle";
 
 interface IngredientOption {
   id: string;
@@ -416,6 +417,7 @@ export function FridgePage() {
       ) : null}
 
       <ImpactCard version={impactVersion} />
+      <ReminderToggle />
 
       {error ? <p className="admin-drafts-error">{error}</p> : null}
       {loading ? <p className="admin-drafts-page__sub">Loading…</p> : null}

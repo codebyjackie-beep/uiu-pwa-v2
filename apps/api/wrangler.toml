@@ -104,6 +104,9 @@ IG_ID_AFFILIATE = "17841443611128346"
 # API_BASE_URL (apps/web/wrangler.toml) but a separate var — this one points AT this Worker,
 # that one points FROM the web Worker TO this one; happen to be the same host today.
 PUBLIC_API_BASE_URL = "https://uiu-api.codeby-jackie.workers.dev"
+# Use-it-up push reminders (src/services/webPush.ts). Public VAPID key — not a secret. The private half is the
+# Worker secret VAPID_PRIVATE_JWK (Jackie, Cloudflare dashboard; raw value: Key\vapid-private-jwk.txt).
+VAPID_PUBLIC_KEY = "BLHFEkW_19WGhDP6S1cck-xYBnLTzsIFsYKVMrkGKEid7IDTH11cL_ZvcL9nkL5bbMjlFBKxiZTYnNTYWFQN23g"
 # cc_prompt_milestone1_followup_fixes.md gap 1 — same public value as apps/web's
 # NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (apps/web/wrangler.toml). Publishable keys are designed to
 # be shipped to the browser, so duplicating it here (not a secret) is fine — src/clerkAuth.ts

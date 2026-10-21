@@ -5246,3 +5246,26 @@ a {
   color: var(--uiu-green-ink);
   font-weight: 600;
 }
+
+.reminder-toggle {
+  margin: 0 0 12px;
+}
+.reminder-toggle__btn {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--uiu-border);
+  background: var(--uiu-white);
+  color: var(--uiu-green-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.reminder-toggle__btn--on {
+  background: rgba(22, 163, 74, 0.1);
+}
+.reminder-toggle__note {
+  margin: 6px 0 12px;
+  font-size: 13px;
+  color: var(--uiu-muted);
+}

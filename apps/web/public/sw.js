@@ -19,3 +19,34 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   event.respondWith(fetch(event.request));
 });
+
+// Use-it-up reminders (apps/api services/webPush.ts): payload-less push, fixed message, tap opens /fridge.
+self.addEventListener("push", (event) => {
+  event.waitUntil(
+    self.registration.showNotification("Use it up", {
+      body: "Some food in your fridge expires soon — tap to see what to use first.",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      tag: "uiu-expiring",
+      data: { url: "/fridge" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || "/fridge";
+  event.waitUntil(
+    (async () => {
+      const wins = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      for (const w of wins) {
+        if ("focus" in w) {
+          await w.focus();
+          if ("navigate" in w) await w.navigate(url);
+          return;
+        }
+      }
+      await self.clients.openWindow(url);
+    })()
+  );
+});

@@ -34,6 +34,7 @@ import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
 import { withDb } from "./db";
+import { PUSH_SUBSCRIPTIONS, saveSubscription, sendExpiryReminders, sendPush, validSubscription, type PushSubscriptionInput } from "./services/webPush";
 import { claimGuestData, cleanupExpiredGuests, mintGuestToken, verifyGuestToken } from "./services/guest";
 import { notify, setupChat, NotifyError } from "./services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "./services/adminRollbacks";
@@ -119,6 +120,9 @@ type Bindings = {
   PRICE_REFRESH_DOCS_PER_FIRE?: string;
   // Cloud-session notifications to Jackie (services/cloudNotify.ts) — secret, dedicated bot.
   CLOUD_NOTIFY_BOT_TOKEN?: string;
+  // Use-it-up push reminders (services/webPush.ts).
+  VAPID_PUBLIC_KEY?: string;
+  VAPID_PRIVATE_JWK?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -172,6 +176,30 @@ for (const [method, path] of [
 ] as const) {
   app.on(method === "ALL" ? ["GET", "POST", "PUT", "PATCH", "DELETE"] : [method], path, guestForbidden);
 }
+
+// Use-it-up push reminders (services/webPush.ts). Signed-in users only (guests get guest_forbidden).
+app.get("/api/push/public-key", (c) => c.json({ ok: true, data: { publicKey: c.env.VAPID_PUBLIC_KEY ?? null } }));
+app.post("/api/push/subscribe", requireUser, guestForbidden, async (c) => {
+  const body = (await c.req.json().catch(() => null)) as PushSubscriptionInput | null;
+  if (!validSubscription(body)) return c.json({ ok: false, error: { code: "bad_request", message: "invalid push subscription" } } satisfies ApiResponse<never>, 400);
+  try {
+    await withDb(c.env, (db) => saveSubscription(db, c.get("clerkUserId"), body));
+    return c.json({ ok: true, data: { subscribed: true } });
+  } catch (err) {
+    console.error("[uiu-api] push subscribe error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "subscribe failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+app.post("/api/push/unsubscribe", requireUser, async (c) => {
+  const body = (await c.req.json().catch(() => null)) as { endpoint?: string } | null;
+  if (!body?.endpoint) return c.json({ ok: false, error: { code: "bad_request", message: "endpoint is required" } } satisfies ApiResponse<never>, 400);
+  try {
+    const r = await withDb(c.env, (db) => db.collection(PUSH_SUBSCRIPTIONS).deleteOne({ endpoint: body.endpoint, userId: c.get("clerkUserId") }));
+    return c.json({ ok: true, data: { removed: r.deletedCount } });
+  } catch {
+    return c.json({ ok: false, error: { code: "db_error", message: "unsubscribe failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
 
 // Guest mode: mint a stateless guest token (no DB write), and claim a guest's data into a freshly signed-up account.
 app.post("/api/guest/session", async (c) => {
@@ -418,6 +446,33 @@ app.post("/api/admin/guest-cleanup", async (c) => {
   } catch (err) {
     console.error("[uiu-api] guest cleanup error:", err instanceof Error ? err.message : String(err));
     return c.json({ ok: false, error: { code: "db_error", message: "guest cleanup failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+
+// Use-it-up reminders: dry run by default (who would get one); ?write=true sends. Daily run: hourly cron at 17:00 UTC.
+// POST /api/admin/push-test body { userId } sends one test push to that user's subscriptions.
+app.post("/api/admin/push-reminders", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  try {
+    const out = await withDb(c.env, (db) => sendExpiryReminders(c.env, db, !write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    console.error("[uiu-api] push reminders error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "push_error", message: "push reminders failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+app.post("/api/admin/push-test", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const body = (await c.req.json().catch(() => null)) as { userId?: string } | null;
+  if (!body?.userId) return c.json({ ok: false, error: { code: "bad_request", message: "userId is required" } } satisfies ApiResponse<never>, 400);
+  try {
+    const subs = await withDb(c.env, (db) => db.collection(PUSH_SUBSCRIPTIONS).find({ userId: body.userId }).toArray());
+    const statuses: number[] = [];
+    for (const s of subs) statuses.push(await sendPush(c.env, String(s.endpoint)).catch(() => -1));
+    return c.json({ ok: true, data: { subscriptions: subs.length, statuses } });
+  } catch (err) {
+    return c.json({ ok: false, error: { code: "push_error", message: err instanceof Error ? err.message : "push test failed" } } satisfies ApiResponse<never>, 502);
   }
 });
 
@@ -703,6 +758,14 @@ export default {
    */
   async scheduled(event: ScheduledEvent, env: Bindings, ctx: ExecutionContext) {
     if (event.cron === "0 * * * *") {
+      // Use-it-up push reminders once a day at 17:00 UTC (18:00 BST / 17:00 GMT).
+      if (new Date(event.scheduledTime).getUTCHours() === 17) {
+        ctx.waitUntil(
+          withDb(env, (db) => sendExpiryReminders(env, db, false))
+            .then((r) => console.log("[uiu-api] cron pushReminders:", JSON.stringify(r)))
+            .catch((err) => console.error("[uiu-api] cron pushReminders failed:", err instanceof Error ? err.message : String(err))),
+        );
+      }
       ctx.waitUntil(
         runDiagnostics(env)
           .then((result) => {
