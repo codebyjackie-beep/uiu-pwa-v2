@@ -134,7 +134,10 @@ async function evaluateJob(env: DbEnv & TelegramEnv, jobName: MonitoredJobName):
 }
 
 export async function checkCronHealth(env: DbEnv & TelegramEnv): Promise<CronHealthResult[]> {
-  const jobNames = Object.keys(JOB_EXPECTATIONS) as MonitoredJobName[];
+  // IG_AUTOMATION_PAUSED (2026-10-22): old IG accounts being deleted — don't alert on the paused IG jobs.
+  const igPaused = (env as { IG_AUTOMATION_PAUSED?: string }).IG_AUTOMATION_PAUSED === "true";
+  const IG_JOBS: MonitoredJobName[] = ["igContentAgent", "affiliateCadence", "igInsights"];
+  const jobNames = (Object.keys(JOB_EXPECTATIONS) as MonitoredJobName[]).filter((j) => !(igPaused && IG_JOBS.includes(j)));
   const results: CronHealthResult[] = [];
   for (const jobName of jobNames) {
     results.push(await evaluateJob(env, jobName));

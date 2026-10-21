@@ -95,6 +95,8 @@ PWA_DIAGNOSTICS_DIGEST_HOUR_UK = "10"
 # affiliate's own cadence is AFFILIATE_CRON_INTERVAL_DAYS in igContentAgent.ts, not this var.
 # Not a secret so Jackie can tune batch size without touching secrets.
 IG_CONTENT_BATCH_SIZE = "3"
+# Jackie 2026-10-22: old IG accounts (@useitup.app, @kura.nook) being deleted; new @useitup comes later. "true" = all IG crons skip.
+IG_AUTOMATION_PAUSED = "true"
 # IG user ids are not sensitive on their own (no auth power without the matching Page
 # Access Token secret above) — kept here so they don't need re-setting on every redeploy.
 IG_ID_UIU = "17841427988481809"

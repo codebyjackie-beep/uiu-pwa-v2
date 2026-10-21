@@ -27,11 +27,7 @@ export default async function PublicShopPage() {
           <KnLogo />
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "#f2f7f3", margin: 0 }}>Kura Nook — Kitchen Picks</h1>
           <p style={{ fontSize: 14, color: "#9cb5a6", margin: 0, maxWidth: 520 }}>
-            Kitchen &amp; cooking products we&apos;ve recommended on{" "}
-            <a href="https://www.instagram.com/kura.nook" target="_blank" rel="noreferrer" style={{ color: "#4ade80" }}>
-              @kura.nook
-            </a>
-            .
+            Kitchen &amp; cooking products we&apos;ve hand-picked.
           </p>
         </header>
 
@@ -48,14 +44,6 @@ export default async function PublicShopPage() {
             textAlign: "center",
           }}
         >
-          <a
-            href="https://www.instagram.com/kura.nook"
-            target="_blank"
-            rel="noreferrer"
-            style={{ color: "#cfe0d5", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
-          >
-            @kura.nook on Instagram
-          </a>
           <p style={{ fontSize: 11, color: "#5f7a68", marginTop: 16, lineHeight: 1.6, maxWidth: 520, marginLeft: "auto", marginRight: "auto" }}>
             #ad As an Amazon Associate, Kura Nook earns from qualifying purchases. Product links on this page are affiliate
             links — if you buy through them we may earn a small commission at no extra cost to you. We only recommend

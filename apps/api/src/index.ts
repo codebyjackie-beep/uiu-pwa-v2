@@ -106,6 +106,8 @@ type Bindings = {
   // Key\altas-cloud-api.txt (note the file's own typo, not ours).
   ATLAS_CLOUD_API_KEY: string;
   IG_CONTENT_BATCH_SIZE?: string;
+  /** "true" pauses every IG cron (token health, affiliate cadence, insights) — Jackie 2026-10-22: old @useitup.app / @kura.nook being deleted. */
+  IG_AUTOMATION_PAUSED?: string;
   // 2026-08-25 addendum — public URL of this Worker itself, used to build the branded-image
   // URL (services/igMediaStore.ts) that Instagram/shop.useitup.uk fetch. Not a secret.
   PUBLIC_API_BASE_URL: string;
@@ -870,7 +872,7 @@ export default {
       // (POST /api/admin/ig-content-batch-run, Jackie fires it herself) — this fire is now JUST the
       // IG token expiry check. Kept on its own long-standing schedule rather than folding into the
       // new affiliate cron below so retiming one doesn't retime the other.
-      ctx.waitUntil(
+      if (env.IG_AUTOMATION_PAUSED !== "true") ctx.waitUntil(
         checkIgTokenHealth(env).catch((err) => {
           console.error("[uiu-api] cron igTokenHealth failed:", err instanceof Error ? err.message : String(err));
         }),
@@ -884,6 +886,7 @@ export default {
       return;
     }
     if (event.cron === "0 8 * * *") {
+      if (env.IG_AUTOMATION_PAUSED === "true") return console.log("[uiu-api] cron affiliateCadence skipped: IG_AUTOMATION_PAUSED");
       // cc_prompt_affiliate_cadence.md, 2026-09-02 — daily fire, but runAffiliateCron only
       // actually generates once every 3 calendar days (see its own comment); other fires are a
       // cheap no-op (one Mongo read). 08:00 UTC = UK morning, deliberately ahead of the 09:00
@@ -907,6 +910,7 @@ export default {
       return;
     }
     if (event.cron === "30 * * * *") {
+      if (env.IG_AUTOMATION_PAUSED === "true") return console.log("[uiu-api] cron igInsights skipped: IG_AUTOMATION_PAUSED");
       // cc_prompt_ig_insights_tracking.md, 2026-09-07 — hourly, offset 30min from the diagnostics
       // cron so the two never fire in the same invocation. Each fire is a cheap no-op for drafts
       // whose 24h/7d window hasn't arrived yet or was already fetched (see runInsightsSnapshotCron's
