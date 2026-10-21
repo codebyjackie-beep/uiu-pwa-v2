@@ -5,6 +5,7 @@
  * Reuses buildPool()/DIETARY_FILTERS/SLOT_ORDER from mealPlanGenerator.ts
  * (DRY, per the addendum) rather than re-deriving pool eligibility here.
  */
+import type { SimilarityRecipe } from "@uiu/shared";
 import type { Document } from "mongodb";
 import type { GapMatrixCell, GapTarget, MealSlot } from "@uiu/shared";
 import { DIETARY_FILTERS, SLOT_ORDER, type PoolRecipe } from "./mealPlanGenerator";
@@ -237,5 +238,20 @@ export async function fetchExistingTitles(env: DbEnv): Promise<string[]> {
       db.collection("recipe_drafts").find({ status: "pending" }, { projection: { title: 1 } }).toArray(),
     ]);
     return [...recipeTitles, ...draftTitles].map((d) => String((d as Document).title ?? "")).filter(Boolean);
+  });
+}
+
+/** G1: public recipes + pending drafts as {title, ingredientNames} for findNearDuplicateRecipe(). */
+export async function fetchSimilarityCorpus(env: DbEnv, excludeDraftId?: unknown): Promise<SimilarityRecipe[]> {
+  return withDb(env, async (db) => {
+    const proj = { projection: { title: 1, "ingredients.name": 1 } };
+    const [recipes, drafts] = await Promise.all([
+      db.collection("recipes").find({ isPublic: true }, proj).toArray(),
+      db.collection("recipe_drafts").find((excludeDraftId ? { status: "pending", _id: { $ne: excludeDraftId } } : { status: "pending" }) as Document, proj).toArray(),
+    ]);
+    return [...recipes, ...drafts].map((d) => ({
+      title: String((d as Document).title ?? ""),
+      ingredientNames: (((d as Document).ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")),
+    }));
   });
 }

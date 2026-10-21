@@ -1356,3 +1356,75 @@ export function classifyRecipeMealTypes(recipe: {
   if (tagsLower.includes("appetizer")) result.add("appetizer");
   return result;
 }
+
+// ---------------------------------------------------------------------------
+// Recipe near-duplicate check (G1 — cc_prompt_recipe_data_cleanup.md Part 11 step 4, Jackie 2026-10-21).
+// Same rules as apps/api/scripts/part11_dedupe_dryrun_v3.cjs (the 10-10 clean-up), so new drafts are held to the
+// standard the library was cleaned to. Strong: ingredients ≥ 0.7 AND title ≥ 0.5, or same title words AND
+// ingredients ≥ 0.5. Medium: title ≥ 0.8 AND ingredients ≥ 0.4; title ≥ 0.5 with ≥ 4 shared title words AND
+// ingredients ≥ 0.4; same title words AND ingredients ≥ 0.3.
+// ---------------------------------------------------------------------------
+
+const SIM_TITLE_STOP = new Set(["a", "an", "the", "with", "and", "of", "in", "on", "for", "to", "recipe", "style", "easy", "quick", "simple", "homemade", "classic", "best"]);
+const SIM_ING_STOP = new Set(["fresh", "chopped", "diced", "sliced", "minced", "ground", "large", "small", "medium", "ripe", "frozen", "dried", "plain", "unsweetened", "optional", "extra", "virgin", "finely", "roughly", "whole", "boneless", "skinless", "raw", "cooked", "of", "a", "the", "or", "and", "to", "taste"]);
+const simSing = (w: string) => (w.length > 3 && w.endsWith("s") && !w.endsWith("ss") ? w.slice(0, -1) : w);
+
+export function recipeTitleTokens(title: string): Set<string> {
+  return new Set(
+    String(title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .split(" ")
+      .filter((w) => w && !SIM_TITLE_STOP.has(w))
+      .map(simSing),
+  );
+}
+
+export function recipeIngredientKey(name: string): string {
+  const base = String(name || "").toLowerCase().replace(/\(.*?\)/g, " ").split(",")[0] ?? "";
+  return base
+    .replace(/[^a-z ]+/g, " ")
+    .split(" ")
+    .filter((w) => w && !SIM_ING_STOP.has(w))
+    .map(simSing)
+    .sort()
+    .join(" ");
+}
+
+function simJaccard(a: Set<string>, b: Set<string>): number {
+  if (!a.size || !b.size) return 0;
+  let inter = 0;
+  for (const x of a) if (b.has(x)) inter++;
+  return inter / (a.size + b.size - inter);
+}
+
+export interface SimilarityRecipe {
+  title: string;
+  ingredientNames: string[];
+}
+export interface NearDuplicateMatch {
+  title: string;
+  rule: "strong" | "medium";
+  titleJaccard: number;
+  ingredientJaccard: number;
+}
+
+/** First recipe in `existing` that `candidate` near-duplicates, or null. */
+export function findNearDuplicateRecipe(candidate: SimilarityRecipe, existing: SimilarityRecipe[]): NearDuplicateMatch | null {
+  const ct = recipeTitleTokens(candidate.title);
+  const ci = new Set(candidate.ingredientNames.map(recipeIngredientKey).filter(Boolean));
+  const cKey = [...ct].sort().join(" ");
+  for (const e of existing) {
+    const et = recipeTitleTokens(e.title);
+    const ei = new Set(e.ingredientNames.map(recipeIngredientKey).filter(Boolean));
+    const tj = simJaccard(ct, et);
+    const ij = simJaccard(ci, ei);
+    const keyEq = cKey !== "" && cKey === [...et].sort().join(" ");
+    let shared = 0;
+    for (const x of ct) if (et.has(x)) shared++;
+    const strong = (ij >= 0.7 && tj >= 0.5) || (keyEq && ij >= 0.5);
+    const medium = (tj >= 0.8 && ij >= 0.4) || (tj >= 0.5 && shared >= 4 && ij >= 0.4) || (keyEq && ij >= 0.3);
+    if (strong || medium) return { title: e.title, rule: strong ? "strong" : "medium", titleJaccard: +tj.toFixed(2), ingredientJaccard: +ij.toFixed(2) };
+  }
+  return null;
+}

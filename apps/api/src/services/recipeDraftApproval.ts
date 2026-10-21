@@ -16,10 +16,12 @@ import { buildAliasIndex, resolve } from "./ingredientResolver";
 import { costRecipe } from "./recipeCost";
 import { computeRecipeNutrition } from "./nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "./pexels";
+import { findNearDuplicateRecipe, type NearDuplicateMatch } from "@uiu/shared";
 
 export type ApproveDraftResult =
   | { notFound: true }
   | { alreadyDecided: true }
+  | { nearDuplicate: NearDuplicateMatch }
   | { insertedId: string };
 
 export interface TriageTag {
@@ -40,6 +42,14 @@ export async function approveRecipeDraft(
   const draft = await db.collection("recipe_drafts").findOne({ _id: new ObjectId(draftId) });
   if (!draft) return { notFound: true };
   if (draft.status !== "pending") return { alreadyDecided: true };
+
+  // G1: refuse a draft that near-duplicates a public recipe (same rules as the 10-10 Part 11 clean-up).
+  const publicRecipes = await db.collection("recipes").find({ isPublic: true }, { projection: { title: 1, "ingredients.name": 1 } }).toArray();
+  const near = findNearDuplicateRecipe(
+    { title: String(draft.title ?? ""), ingredientNames: ((draft.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) },
+    publicRecipes.map((r) => ({ title: String(r.title ?? ""), ingredientNames: ((r.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) })),
+  );
+  if (near) return { nearDuplicate: near };
 
   const now = new Date().toISOString();
   const draftImageUrl = draft.imageUrl as string | null | undefined;

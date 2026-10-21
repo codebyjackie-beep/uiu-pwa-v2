@@ -13,6 +13,7 @@ import {
   buildIdeaSpecs,
   computeGapMatrix,
   fetchExistingTitles,
+  fetchSimilarityCorpus,
   findTitleMatch,
   finalizeDraftQueue,
   readDraftState,
@@ -26,7 +27,8 @@ import { draftRecipe, type OpenRouterEnv } from "../services/openrouter";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { computeRecipeNutrition } from "../services/nutritionGrams";
-import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
+import { findRecipePhoto, usedPexelsIds, type PexelsEnv } from "../services/pexels";
+import { findNearDuplicateRecipe, type SimilarityRecipe } from "@uiu/shared";
 
 export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv, PexelsEnv {
   /** wrangler.toml [vars] — how many drafts/day, tunable without a redeploy. Defaults to 20 (pre-2026-10-08 behavior) if unset. */
@@ -121,6 +123,10 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
   const existingTitles = await fetchExistingTitles(env);
   const usedTitlesThisRun = [...existingTitles];
+  // G1: near-duplicate check on the drafted recipe (title + ingredients) against public recipes + pending drafts,
+  // plus the drafts made earlier in this run. G2: one shared set of used Pexels ids for this run.
+  const similarityCorpus = await fetchSimilarityCorpus(env).catch(() => [] as SimilarityRecipe[]);
+  const usedPhotos = await usedPexelsIds(env).catch(() => new Set<string>());
 
   const { canonicalNames, aliasIndex, ingredientsMap, priceMap, quarantinedNames } = await withDb(env, async (db) => {
     const ingredientsCol = db.collection<Document>("canonical_ingredients");
@@ -195,6 +201,11 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
           console.log("[uiu-api] dedup skip (drafted):", JSON.stringify({ candidate: candidate.title, matchedTitle: draftedMatch.matchedTitle, rule: draftedMatch.rule }));
           continue; // substitute another idea next attempt, per handoff
         }
+        const near = findNearDuplicateRecipe({ title: candidate.title, ingredientNames: candidate.ingredients.map((g) => g.name) }, similarityCorpus);
+        if (near) {
+          console.log("[uiu-api] dedup skip (near-duplicate):", JSON.stringify({ candidate: candidate.title, ...near }));
+          continue; // substitute another idea next attempt
+        }
         drafted = candidate;
       } catch (err) {
         console.error("[uiu-api] OpenRouter draft failed for idea", idea.title, "attempt", attempt, err instanceof Error ? err.message : String(err));
@@ -206,6 +217,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       continue;
     }
     usedTitlesThisRun.push(drafted.title);
+    similarityCorpus.push({ title: drafted.title, ingredientNames: drafted.ingredients.map((g) => g.name) });
 
     const ingredients: RecipeIngredient[] = drafted.ingredients.map((ing) => ({
       name: ing.name,
@@ -221,7 +233,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
     // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
     // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
-    const imageUrl = await findRecipePhoto(env, drafted.title).catch(() => null);
+    const imageUrl = await findRecipePhoto(env, drafted.title, { used: usedPhotos }).catch(() => null);
 
     const draft: RecipeDraft = {
       _id: "",

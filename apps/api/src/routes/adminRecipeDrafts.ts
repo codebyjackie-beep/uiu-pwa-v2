@@ -354,6 +354,14 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       const body: ApiResponse<never> = { ok: false, error: { code: "conflict", message: "Draft is not pending" } };
       return c.json(body, 409);
     }
+    if ("nearDuplicate" in result) {
+      const m = result.nearDuplicate;
+      const body: ApiResponse<never> = {
+        ok: false,
+        error: { code: "near_duplicate", message: `Too similar to "${m.title}" (${m.rule}: title ${m.titleJaccard}, ingredients ${m.ingredientJaccard}) — reject it or edit before approving` },
+      };
+      return c.json(body, 409);
+    }
     const body: ApiResponse<{ recipeId: string }> = { ok: true, data: { recipeId: result.insertedId } };
     return c.json(body);
   } catch (err) {
