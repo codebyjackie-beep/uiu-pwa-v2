@@ -33,7 +33,8 @@ const WEIGHT_TO_G: Record<string, number> = {
 };
 
 // Real count units — carry unit meaning beyond "one of the thing."
-const COUNT_REAL_UNITS = new Set(["each", "piece", "pieces", "clove", "cloves", "stalk", "stalks", "can", "cans"]);
+// C (pending list, Jackie 2026-10-21): "count" / "unit(s)" / "egg(s)" are count units too (e.g. "6 eggs" was unpriced).
+const COUNT_REAL_UNITS = new Set(["each", "piece", "pieces", "clove", "cloves", "stalk", "stalks", "can", "cans", "count", "unit", "units", "egg", "eggs"]);
 
 // Size/filler words that mean nothing beyond "bare count" — "2 medium onion" == "2 onion".
 const COUNT_FILLER_WORDS = new Set(["medium", "large", "small", "whole", "size"]);
@@ -78,6 +79,9 @@ const PER_ITEM_UNIT_G: Record<string, Record<string, number>> = {
   loaf: { "crusty bread (e.g., small baguette)": 400 },
   patties: { "black bean burgers (store-bought or homemade)": 100 },
   buns: { "burger buns": 60 },
+  // C: bread slices — UK sliced-loaf reference weights (medium white 800 g / 22 slices ≈ 36 g); estimates, not label data.
+  slice: { bread: 36, "bread slices": 36, "grain bread": 40, "multigrain bread": 40, "sourdough bread": 50, "ciabatta bread": 30, "white bread, crusts removed": 28 },
+  slices: { bread: 36, "bread slices": 36, "grain bread": 40, "multigrain bread": 40, "sourdough bread": 50, "ciabatta bread": 30, "white bread, crusts removed": 28 },
 };
 
 export function lookupPerItemUnitG(words: string[], canonicalName: string): number | null {
@@ -145,6 +149,12 @@ export function normalizeQty(
   const classified = classifyUnit(rawUnit);
 
   if (classified.type === "unconvertible") {
+    // C: "slice(s)" stays unconvertible except where Table C has a weight for this canonical (bread).
+    const sliceG = lookupPerItemUnitG([classified.unit], canonicalDoc.canonical_name);
+    if (sliceG != null) {
+      const gValue = quantity * sliceG;
+      return { normValue: gValue, normUnit: "g", bucket: "metric", displayNote: `${quantity} ${classified.unit} ${canonicalDoc.canonical_name} (≈${Math.round(gValue)}g, Table C estimate)` };
+    }
     return { unpriceable: true, reason: "unit_unconvertible", rawUnit };
   }
   if (classified.type === "unmapped") {
