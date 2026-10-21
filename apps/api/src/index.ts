@@ -476,6 +476,53 @@ app.post("/api/admin/push-test", async (c) => {
   }
 });
 
+// DEL (privacy policy: "delete your data within 30 days"): erase every per-user doc for one user.
+//   POST /api/admin/users/delete-data  body { clerkUserId } or { email } — dry run (counts per collection).
+//   ?write=true also needs body.confirm === the resolved clerkUserId. No backup is kept on purpose (it is an erasure
+//   request). The Clerk account itself is deleted separately in the Clerk dashboard.
+app.post("/api/admin/users/delete-data", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { clerkUserId?: string; email?: string; confirm?: string } | null;
+  try {
+    const out = await withDb(c.env, async (db) => {
+      let userId = body?.clerkUserId ?? null;
+      if (!userId && body?.email) {
+        const docs = await db.collection("users").find({ email: { $regex: `^${body.email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" } }).toArray();
+        if (docs.length !== 1) return { error: `expected exactly 1 users doc for that email, found ${docs.length}` };
+        userId = String(docs[0]!.clerkUserId);
+      }
+      if (!userId || !/^[A-Za-z0-9_]+$/.test(userId)) return { error: "give clerkUserId or email" };
+      const counts: Record<string, number> = {};
+      const targets: [string, Record<string, unknown>][] = [
+        ...USERID_COLLECTIONS.map((n) => [n, { userId }] as [string, Record<string, unknown>]),
+        ["meal_plan_sequence", { _id: userId }],
+        ["users", { clerkUserId: userId }],
+        [PUSH_SUBSCRIPTIONS, { userId }],
+      ];
+      for (const [name, filter] of targets) {
+        const n = await db.collection(name).countDocuments(filter as never);
+        if (n) counts[name] = n;
+      }
+      if (!write) return { mode: "dry-run", userId, counts };
+      if (body?.confirm !== userId) return { error: "write needs confirm = the clerkUserId shown by the dry run" };
+      const deleted: Record<string, number> = {};
+      for (const [name, filter] of targets) {
+        const r = await db.collection(name).deleteMany(filter as never);
+        if (r.deletedCount) deleted[name] = r.deletedCount;
+      }
+      let left = 0;
+      for (const [name, filter] of targets) left += await db.collection(name).countDocuments(filter as never);
+      return { mode: "write", userId, deleted, left };
+    });
+    if ("error" in out) return c.json({ ok: false, error: { code: "bad_request", message: String(out.error) } } satisfies ApiResponse<never>, 400);
+    return c.json({ ok: true, data: out });
+  } catch (err) {
+    console.error("[uiu-api] delete-data error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "delete-data failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+
 // Guarded price refresh (cc_prompt_price_refresh_monthly_cron.md Part 4). Opens a run and processes the first batch.
 //   ?dryRun=true|false  — default TRUE. dryRun=false is refused unless PRICE_REFRESH_AUTO_WRITE="true" (the one kill-switch).
 //   ?names=a,b,c / ?limit=N  — testing only, dryRun=true only: restrict the run to those eligible canonicals / first N eligible.
