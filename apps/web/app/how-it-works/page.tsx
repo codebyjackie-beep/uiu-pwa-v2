@@ -28,7 +28,7 @@ const FEATURES = [
     key: "fridge",
     title: "Know what's in your fridge",
     subtitle: "Scan a receipt or snap your fridge",
-    image: { src: "/images/how-it-works/fridge.webp?v=2", width: 750, height: 1224 },
+    image: { src: "/images/how-it-works/fridge.webp?v=3", width: 750, height: 1224 },
     alt: "Fridge list of ingredients, each with a quantity and an expiry countdown",
   },
   {
