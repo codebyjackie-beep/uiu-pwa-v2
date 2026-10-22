@@ -1,7 +1,7 @@
 # Weekly MongoDB backup (Jackie 2026-10-22). Atlas M0 has no automatic backup, so this dumps the
 # database every Sunday 02:30 UTC and keeps the gzip archive as a workflow artifact for 90 days.
 # Needs repo secret MONGODB_URI_BACKUP (a read-only Atlas user is enough). Restore:
-#   mongorestore --uri "<uri>" --archive=uiu-db.archive.gz --gzip --nsInclude='<db>.*'
+#   mongorestore --uri "<uri>" --archive=uiu-db.archive.gz --gzip --nsInclude='useitup.*'
 name: db-backup
 
 on:
@@ -30,10 +30,22 @@ jobs:
           URI: ${{ secrets.MONGODB_URI_BACKUP }}
         run: |
           mkdir -p out
+          # Dump only the app database (Atlas free tier refuses admin/local); surface the error as an annotation
+          # because job logs aren't readable from cloud sessions. The URI is never echoed.
+          set +e
           docker run --rm -e URI -v "$PWD/out:/out" mongo:7 \
-            sh -c 'mongodump --uri "$URI" --archive=/out/uiu-db.archive.gz --gzip --quiet'
+            sh -c 'mongodump --uri "$URI" --db useitup --archive=/out/uiu-db.archive.gz --gzip' 2> err.txt
+          rc=$?
+          set -e
+          if [ $rc -ne 0 ]; then
+            msg=$(grep -v -i "mongodb+srv" err.txt | tail -5 | tr '\n' ' ' | cut -c1-600)
+            echo "::error::mongodump exit $rc: $msg"
+            exit 1
+          fi
+          echo "::notice::dumped $(grep -c 'done dumping' err.txt) collections"
           ls -l out
-          test "$(stat -c%s out/uiu-db.archive.gz)" -gt 10000 || { echo "::error::Backup archive is suspiciously small"; exit 1; }
+          sz=$(stat -c%s out/uiu-db.archive.gz); echo "::notice::archive $sz bytes"
+          test "$sz" -gt 10000 || { echo "::error::Backup archive is suspiciously small"; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: uiu-db-${{ github.run_id }}
