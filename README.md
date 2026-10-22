@@ -9,11 +9,21 @@ deployed entirely on Cloudflare, MongoDB Atlas for data.
 
 ## What this app does
 
-Six tabs, one loop: **Fridge** (scan what you have, with expiry dates) generates the
-**Shop** list — only what's actually missing, with supermarket price comparison. **Recipes**
-suggests dishes from what's in the fridge. **Meal Planner** turns that into a week's plan with
-cost/calorie totals. **Health** logs macros/weight against those meals. **Home** is the
-dashboard tying it together.
+UseItUp shows what in your fridge is about to go off, what to cook with it, and what every
+meal costs at UK supermarket prices. One loop across six tabs:
+
+- **Fridge** — add what you have with expiry dates; mark each item **Used** or **Binned**.
+  An Impact card counts the £ you used up vs the £ you threw away this month.
+- **Home** — "Use it up soon" list, this week's plan and cost, month impact at a glance.
+- **Recipes** — 328 public recipes, each priced per serving from UK supermarket prices;
+  "Cook with these" starts from what's in the fridge.
+- **Meal Planner** — day and week views, with cost and calorie totals.
+- **Shop** — one shopping list (restock from the fridge + your own items), estimated basket
+  and a supermarket price comparison.
+- **Health** — macros and weight logged against the meals you planned.
+
+Try it without an account (guest mode), sign up when you want it to stick. Installable as a
+PWA, with a daily expiry reminder by Web Push.
 
 Live at [useitup.uk](https://useitup.uk).
 
@@ -42,6 +52,32 @@ Why I'm foregrounding this rather than hiding it: reviewing AI-generated code �
 diff critically, reasoning about the architecture it sits in, and telling "code exists" apart
 from "code verified in production" — is a real part of how software gets built now, and it's
 the skill I'm actually claiming here.
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Frontend | Next.js (App Router) on Cloudflare Workers via `@opennextjs/cloudflare`, PWA + Web Push |
+| API | Hono on a Cloudflare Worker, TypeScript, 7 Cron Triggers (price refresh, cost precompute, reminders, clean-up, health checks) |
+| Data | MongoDB Atlas (HTTP-friendly driver, request-scoped connections) |
+| Auth | Clerk (Google + email), plus guest mode with sign-up claim |
+| Shared types | `@uiu/shared` — one source of truth for web + api |
+| Ops | GitHub Actions CI/CD on every push to `main`; Telegram alerts for failed crons |
+
+## Engineering practices
+
+- **CI/CD from the first commit** — every push to `main` runs install → typecheck → build →
+  deploy both Workers.
+- **Data changes are reversible by design** — admin data endpoints dry-run by default, write
+  only with `?write=true`, back up what they change under a batch id, and ship with a
+  rollback endpoint.
+- **Guard rails on automated writes** — the weekly recipe-cost job refuses to write when a
+  public recipe's price moves suspiciously (e.g. over £8 a serving or a drop of more than
+  half) and reports the anomalies instead.
+- **Encrypted weekly database backup** — `mongodump` every Sunday, encrypted (GPG AES-256)
+  before it leaves the runner, because this repo is public (`.github/workflows/db-backup.yml`).
+- **Secrets never in the repo** — Cloudflare / Clerk / database credentials live in GitHub and
+  Workers secrets; health data is never written to logs.
 
 ## Structure (monorepo, npm workspaces)
 
@@ -76,11 +112,10 @@ npm run dev --workspace=@uiu/web   # next dev, frontend on :3000
 ## Deploy
 
 Deployment is CI-driven (GitHub Actions → Cloudflare Workers) from day one — see
-`.github/workflows/deploy.yml`. The deploy job runs only when the two repo secrets
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are set; until then, push still runs
-install + typecheck + build so the pipeline stays green.
+`.github/workflows/deploy.yml`. Every push to `main` builds and deploys both
+Workers (secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`).
 
-Manual deploy (once Cloudflare is set up):
+Manual deploy:
 
 ```bash
 npm run deploy:api
@@ -92,3 +127,4 @@ npm run deploy:web
 - MongoDB Atlas cluster `uiu-pwa-v2` (AWS eu-west-1). The Worker uses an **HTTP-based**
   data driver (no long-lived TCP pool — Workers are request-scoped).
 - Cost engine (`recipe_cost`) logic + unit-conversion table are ported from the v1 archive.
+- Weekly encrypted backup: `.github/workflows/db-backup.yml` (see the header for restore steps).
