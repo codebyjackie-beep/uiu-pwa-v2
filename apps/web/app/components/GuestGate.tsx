@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
 /**
@@ -68,7 +68,6 @@ function AuthLink({ href, className, children }: { href: string; className: stri
 export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn: boolean; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const { isLoaded, isSignedIn: clerkSignedIn } = useAuth();
   const isSignedIn = isLoaded ? !!clerkSignedIn : serverSignedIn;
   const authResolved = isLoaded || serverSignedIn;
@@ -126,9 +125,11 @@ export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn
       } catch {
         // ignore
       }
-      if (body?.ok && body.data?.claimed) router.refresh();
+      // Client pages (e.g. Fridge) load their lists on mount — usually before the claim finished — and router.refresh()
+      // does not re-run those effects, so the moved data looked missing (Jackie test 2026-10-22). Reload once instead.
+      if (body?.ok && body.data?.claimed) window.location.reload();
     })();
-  }, [isLoaded, clerkSignedIn, router]);
+  }, [isLoaded, clerkSignedIn]);
 
   useEffect(() => {
     if (!open) return;
