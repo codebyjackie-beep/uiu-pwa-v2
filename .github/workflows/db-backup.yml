@@ -25,6 +25,16 @@ jobs:
             echo "::error::Repo secret MONGODB_URI_BACKUP is not set — add it in GitHub → Settings → Secrets and variables → Actions."
             exit 1
           fi
+      - name: Check URI shape (no secret printed)
+        env:
+          URI: ${{ secrets.MONGODB_URI_BACKUP }}
+        run: |
+          case "$URI" in mongodb+srv://*|mongodb://*) ;; *) echo "::error::URI must start with mongodb+srv://"; exit 1;; esac
+          ats=$(printf '%s' "$URI" | tr -cd '@' | wc -c)
+          [ "$ats" -eq 1 ] || { echo "::error::URI has $ats '@' characters (expected 1 — a password containing @ must be URL-encoded as %40)"; exit 1; }
+          printf '%s' "$URI" | grep -q '[[:space:]]' && { echo "::error::URI contains a space or line break"; exit 1; }
+          printf '%s' "$URI" | grep -q '[<>]' && { echo "::error::URI still contains < > placeholders"; exit 1; }
+          echo "::notice::URI shape OK"
       - name: mongodump
         env:
           URI: ${{ secrets.MONGODB_URI_BACKUP }}
@@ -39,7 +49,7 @@ jobs:
           rc=$?
           set -e
           if [ $rc -ne 0 ]; then
-            msg=$(grep -v -i -e "mongodb+srv" -e "Pull" -e "Digest" -e "Status:" -e "Pulling" -e "Waiting" -e "Download" -e "Verifying" err.txt | tail -4 | tr '\n' ' ' | cut -c1-600)
+            msg=$(sed -E 's#(mongodb(\+srv)?://)[^ ]*#\1***#g' err.txt | grep -v -e "Pull" -e "Digest" -e "Status:" -e "Pulling" -e "Waiting" -e "Download" -e "Verifying" | tail -4 | tr '\n' ' ' | cut -c1-600)
             echo "::error::mongodump exit $rc: $msg"
             exit 1
           fi
