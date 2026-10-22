@@ -1,5 +1,8 @@
 # Weekly MongoDB backup (Jackie 2026-10-22). Atlas M0 has no automatic backup, so this dumps the
 # database every Sunday 02:30 UTC and keeps the gzip archive as a workflow artifact for 90 days.
+# THIS REPO IS PUBLIC: anyone signed in to GitHub can download workflow artifacts, so the dump is
+# encrypted (gpg AES256, secret BACKUP_PASSPHRASE) before upload and the plain file never leaves the runner.
+# Decrypt: gpg --batch --passphrase '<passphrase>' -o uiu-db.archive.gz -d uiu-db.archive.gz.gpg
 # Needs repo secret MONGODB_URI_BACKUP (a read-only Atlas user is enough). Restore:
 #   mongorestore --uri "<uri>" --archive=uiu-db.archive.gz --gzip --nsInclude='useitup.*'
 name: db-backup
@@ -20,7 +23,12 @@ jobs:
       - name: Check secret
         env:
           URI: ${{ secrets.MONGODB_URI_BACKUP }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
+          if [ -z "$PASS" ] || [ ${#PASS} -lt 20 ]; then
+            echo "::error::Repo secret BACKUP_PASSPHRASE is missing or shorter than 20 characters — the repo is public, so backups are never uploaded unencrypted."
+            exit 1
+          fi
           if [ -z "$URI" ]; then
             echo "::error::Repo secret MONGODB_URI_BACKUP is not set — add it in GitHub → Settings → Secrets and variables → Actions."
             exit 1
@@ -57,8 +65,17 @@ jobs:
           ls -l out
           sz=$(stat -c%s out/uiu-db.archive.gz); echo "::notice::archive $sz bytes"
           test "$sz" -gt 10000 || { echo "::error::Backup archive is suspiciously small"; exit 1; }
+      - name: Encrypt
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          printf '%s' "$PASS" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 -o out/uiu-db.archive.gz.gpg out/uiu-db.archive.gz
+          rm -f out/uiu-db.archive.gz
+          echo "::notice::encrypted $(stat -c%s out/uiu-db.archive.gz.gpg) bytes"
       - uses: actions/upload-artifact@v4
         with:
           name: uiu-db-${{ github.run_id }}
-          path: out/uiu-db.archive.gz
+          path: out/uiu-db.archive.gz.gpg
+          if-no-files-found: error
           retention-days: 90
