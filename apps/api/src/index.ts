@@ -26,6 +26,8 @@ import { runIgContentBatch, runAffiliateCron, generateAndSendCollage, type Batch
 import { renderCollageImage } from "./services/collageImage";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { planPerItemFill, rollbackPerItemFill, writePerItemFill } from "./services/perItemFill";
+import { buildAliasIndex, resolve } from "./services/ingredientResolver";
+import { estimateValueWithCanonical } from "./services/fridgeImpact";
 import { runInsightsSnapshotCron } from "./jobs/igInsights";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
@@ -455,6 +457,22 @@ app.post("/api/admin/canonical-per-item-fill/rollback", async (c) => {
   const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
   if (!body?.batch) return c.json({ ok: false, error: { code: "bad_request", message: "batch is required" } } satisfies ApiResponse<never>, 400);
   const out = await withDb(c.env, (db) => rollbackPerItemFill(db, body.batch!));
+  return c.json({ ok: true, data: out });
+});
+
+// Read-only: why does a fridge item get / not get a £ value? (canonical match, per_item_g, price cache, normalizeQty)
+app.get("/api/admin/value-probe", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const name = c.req.query("name") ?? "";
+  const qty = Number(c.req.query("qty") ?? "1");
+  const unit = c.req.query("unit") ?? "pc";
+  const out = await withDb(c.env, async (db) => {
+    const r = resolve(name, await buildAliasIndex(db.collection("canonical_ingredients")));
+    const cn = "canonical_name" in r ? r.canonical_name : null;
+    const canon = cn ? await db.collection("canonical_ingredients").findOne({ canonical_name: cn }, { projection: { canonical_name: 1, per_item_g: 1, category: 1 } }) : null;
+    const price = cn ? await db.collection("canonical_price_cache").findOne({ canonical_name: cn }, { projection: { per_unit_metric: 1, per_unit_count: 1 } }) : null;
+    return { resolve: r, canon, price, value: estimateValueWithCanonical(canon, price, qty, unit) };
+  });
   return c.json({ ok: true, data: out });
 });
 
