@@ -39,7 +39,9 @@ export function estimateValueGbp(priceDoc: Document | null, quantity: number, un
 export function estimateValueWithCanonical(canonicalDoc: Document | null, priceDoc: Document | null, quantity: number, unit: string): number | null {
   if (!priceDoc || !(quantity > 0)) return null;
   if (canonicalDoc) {
-    const norm = normalizeQty(quantity, unit, canonicalDoc as unknown as CanonicalIngredient, priceDoc as unknown as CanonicalPriceCacheEntry);
+    // The Fridge UI stores whole items as "pc"; recipe costing only knows "each"/"piece" — map it here (Impact only, recipe costs unchanged).
+    const u = /^pcs?$/i.test(unit.trim()) ? "each" : unit;
+    const norm = normalizeQty(quantity, u, canonicalDoc as unknown as CanonicalIngredient, priceDoc as unknown as CanonicalPriceCacheEntry);
     if (!("unpriceable" in norm)) {
       const per = norm.bucket === "count" ? priceDoc.per_unit_count?.value : priceDoc.per_unit_metric?.value;
       if (typeof per === "number" && per > 0) return +(per * norm.normValue).toFixed(2);
