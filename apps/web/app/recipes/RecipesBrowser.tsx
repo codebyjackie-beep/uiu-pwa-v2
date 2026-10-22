@@ -72,7 +72,11 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
   const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
   const [sharePrefill, setSharePrefill] = useState<{ url?: string; text?: string } | null>(null);
-  const [randomTen, setRandomTen] = useState<RecipeListItem[]>(() => pickRandom(items, RANDOM_BROWSE_SIZE));
+  // Server and first client render must match (React #418): start with the first 10, shuffle after mount.
+  const [randomTen, setRandomTen] = useState<RecipeListItem[]>(() => items.slice(0, RANDOM_BROWSE_SIZE));
+  useEffect(() => {
+    setRandomTen(pickRandom(items, RANDOM_BROWSE_SIZE));
+  }, [items]);
   const [remainingToday, setRemainingToday] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
