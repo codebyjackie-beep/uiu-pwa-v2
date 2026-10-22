@@ -60,7 +60,7 @@ the skill I'm actually claiming here.
 | Frontend | Next.js (App Router) on Cloudflare Workers via `@opennextjs/cloudflare`, PWA + Web Push |
 | API | Hono on a Cloudflare Worker, TypeScript, 7 Cron Triggers (price refresh, cost precompute, reminders, clean-up, health checks) |
 | Data | MongoDB Atlas (HTTP-friendly driver, request-scoped connections) |
-| Auth | Clerk (Google + email), plus guest mode with sign-up claim |
+| Auth | Clerk, plus guest mode whose data carries over on sign-up |
 | Shared types | `@uiu/shared` — one source of truth for web + api |
 | Ops | GitHub Actions CI/CD on every push to `main`; Telegram alerts for failed crons |
 
