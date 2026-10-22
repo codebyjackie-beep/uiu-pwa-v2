@@ -1,0 +1,41 @@
+# Weekly MongoDB backup (Jackie 2026-10-22). Atlas M0 has no automatic backup, so this dumps the
+# database every Sunday 02:30 UTC and keeps the gzip archive as a workflow artifact for 90 days.
+# Needs repo secret MONGODB_URI_BACKUP (a read-only Atlas user is enough). Restore:
+#   mongorestore --uri "<uri>" --archive=uiu-db.archive.gz --gzip --nsInclude='<db>.*'
+name: db-backup
+
+on:
+  schedule:
+    - cron: "30 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check secret
+        env:
+          URI: ${{ secrets.MONGODB_URI_BACKUP }}
+        run: |
+          if [ -z "$URI" ]; then
+            echo "::error::Repo secret MONGODB_URI_BACKUP is not set — add it in GitHub → Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+      - name: mongodump
+        env:
+          URI: ${{ secrets.MONGODB_URI_BACKUP }}
+        run: |
+          mkdir -p out
+          docker run --rm -e URI -v "$PWD/out:/out" mongo:7 \
+            sh -c 'mongodump --uri "$URI" --archive=/out/uiu-db.archive.gz --gzip --quiet'
+          ls -l out
+          test "$(stat -c%s out/uiu-db.archive.gz)" -gt 10000 || { echo "::error::Backup archive is suspiciously small"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uiu-db-${{ github.run_id }}
+          path: out/uiu-db.archive.gz
+          retention-days: 90
