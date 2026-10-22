@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ApiResponse, HealthGoal, MealLogEntry, MealLogTotals, UserHealthProfile, WeightLogEntry } from "@uiu/shared";
 import { CoachChat } from "./CoachChat";
 import { BarcodeScan } from "./BarcodeScan";
+import { useGuestGate } from "../components/GuestGate";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -206,6 +207,8 @@ interface HealthViewProps {
 }
 
 export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs, initialTotals }: HealthViewProps) {
+  // Premium buttons (coach, meal photo, barcode) ask for an account first (guest -> sign-up sheet).
+  const { requireAccount } = useGuestGate();
   const [profile, setProfile] = useState(initialProfile);
   const [weightLogs, setWeightLogs] = useState(initialWeightLogs);
   const [mealLogs, setMealLogs] = useState(initialMealLogs);
@@ -578,7 +581,7 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
     <div className="health-page">
       <div className="health-card__header">
         <h1>Health</h1>
-        <button type="button" className="wizard-secondary-button" onClick={() => setCoachOpen(true)}>
+        <button type="button" className="wizard-secondary-button" onClick={() => { if (requireAccount()) setCoachOpen(true); }}>
           Ask Coach
         </button>
       </div>
@@ -772,10 +775,10 @@ export function HealthView({ initialProfile, initialWeightLogs, initialMealLogs,
           <h2>Log a meal</h2>
         </div>
         <div className="health-meal-log-buttons">
-          <button type="button" className="wizard-secondary-button" disabled={scanning} onClick={() => photoInputRef.current?.click()}>
+          <button type="button" className="wizard-secondary-button" disabled={scanning} onClick={() => { if (requireAccount()) photoInputRef.current?.click(); }}>
             {scanning ? "Analyzing…" : "Take a photo"}
           </button>
-          <button type="button" className="wizard-secondary-button" onClick={() => setBarcodeOpen(true)}>
+          <button type="button" className="wizard-secondary-button" onClick={() => { if (requireAccount()) setBarcodeOpen(true); }}>
             Scan barcode
           </button>
         </div>

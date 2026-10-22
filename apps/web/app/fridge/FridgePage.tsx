@@ -5,6 +5,7 @@ import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/share
 import { FridgeRecipeGenModal } from "./FridgeRecipeGenModal";
 import { ImpactCard } from "./ImpactCard";
 import { ReminderToggle } from "./ReminderToggle";
+import { useGuestGate } from "../components/GuestGate";
 
 interface IngredientOption {
   id: string;
@@ -86,6 +87,8 @@ function ChefHatIcon() {
 }
 
 export function FridgePage() {
+  // Premium buttons ask for an account before opening the file picker / modal (guest -> sign-up sheet).
+  const { requireAccount } = useGuestGate();
   const [items, setItems] = useState<FridgeStockItem[]>([]);
   const [impactVersion, setImpactVersion] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -208,6 +211,7 @@ export function FridgePage() {
   }
 
   function triggerScan(kind: ScanKind) {
+    if (!requireAccount()) return;
     setScanKind(kind);
     (kind === "ocr" ? ocrInputRef : photoScanInputRef).current?.click();
   }
@@ -340,7 +344,7 @@ export function FridgePage() {
           <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => triggerScan("photo-scan")} disabled={scanning}>
             <FridgeIcon /> {SCAN_LABELS["photo-scan"].button}
           </button>
-          <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => setGenModalOpen(true)}>
+          <button type="button" className="wizard-secondary-button fridge-scan-button" onClick={() => { if (requireAccount()) setGenModalOpen(true); }}>
             <ChefHatIcon /> Cook with what I have
           </button>
         </div>

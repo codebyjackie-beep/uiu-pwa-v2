@@ -6,6 +6,7 @@ import type { ApiResponse, MealPlanSetDetail, MealPlanSetSummary } from "@uiu/sh
 import { formatTotalWithIncomplete, MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { TonightSuggestion } from "./TonightSuggestion";
 import { PlanDetail } from "./PlanDetail";
+import { useGuestGate } from "../components/GuestGate";
 
 interface Props {
   initialSets: MealPlanSetSummary[];
@@ -15,6 +16,8 @@ interface Props {
  * Plan cards in a grid, each with Activate/Details/Delete. Replaces the single
  * build-card + week-board model from HANDOFF_meal-planner-plan-v2.md. */
 export function MealPlannerView({ initialSets }: Props) {
+  // The custom wizard calls the AI generator (Premium) — guests get the sign-up sheet instead of a form they cannot submit.
+  const { requireAccount } = useGuestGate();
   const [sets, setSets] = useState<MealPlanSetSummary[]>(initialSets);
   const [detailPlanId, setDetailPlanId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -220,7 +223,13 @@ export function MealPlannerView({ initialSets }: Props) {
             same defaults "Build a plan for me" uses, so it reads as "see what you'll get,
             tweak if you want" rather than a second competing main button.
             See cc_prompt_meal_plan_duplicate_investigation.md. */}
-        <Link href="/meal-planner/generate" className="meal-planner-customize-link">
+        <Link
+          href="/meal-planner/generate"
+          className="meal-planner-customize-link"
+          onClick={(e) => {
+            if (!requireAccount()) e.preventDefault();
+          }}
+        >
           Customize before building →
         </Link>
       </div>
