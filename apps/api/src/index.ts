@@ -25,6 +25,7 @@ import { sendTelegram } from "./services/telegram";
 import { runIgContentBatch, runAffiliateCron, generateAndSendCollage, type BatchSummary } from "./jobs/igContentAgent";
 import { renderCollageImage } from "./services/collageImage";
 import { checkIgTokenHealth } from "./jobs/igTokenHealth";
+import { planPerItemFill, rollbackPerItemFill, writePerItemFill } from "./services/perItemFill";
 import { runInsightsSnapshotCron } from "./jobs/igInsights";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
@@ -438,6 +439,23 @@ app.post("/api/admin/notify", async (c) => {
   } catch (err) {
     return notifyError(c, err);
   }
+});
+
+// Fill per_item_g for common whole produce (services/perItemFill.ts). Dry run unless ?write=true; rollback by batch.
+app.post("/api/admin/canonical-per-item-fill", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const write = c.req.query("write") === "true";
+  const out = await withDb(c.env, (db): Promise<unknown> =>
+    write ? writePerItemFill(db, `peritem_${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${crypto.randomUUID().slice(0, 6)}`) : planPerItemFill(db).then((plan) => ({ dryRun: true, plan })),
+  );
+  return c.json({ ok: true, data: out });
+});
+app.post("/api/admin/canonical-per-item-fill/rollback", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
+  if (!body?.batch) return c.json({ ok: false, error: { code: "bad_request", message: "batch is required" } } satisfies ApiResponse<never>, 400);
+  const out = await withDb(c.env, (db) => rollbackPerItemFill(db, body.batch!));
+  return c.json({ ok: true, data: out });
 });
 
 // Admin image proxy — lets cloud's headless screenshot runs (welcome-page phone frames) load recipe photos,
