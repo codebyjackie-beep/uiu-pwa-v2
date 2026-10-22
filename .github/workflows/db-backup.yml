@@ -32,13 +32,14 @@ jobs:
           mkdir -p out
           # Dump only the app database (Atlas free tier refuses admin/local); surface the error as an annotation
           # because job logs aren't readable from cloud sessions. The URI is never echoed.
+          docker pull -q mongo:7 >/dev/null
           set +e
           docker run --rm -e URI -v "$PWD/out:/out" mongo:7 \
             sh -c 'mongodump --uri "$URI" --db useitup --archive=/out/uiu-db.archive.gz --gzip' 2> err.txt
           rc=$?
           set -e
           if [ $rc -ne 0 ]; then
-            msg=$(grep -v -i "mongodb+srv" err.txt | tail -5 | tr '\n' ' ' | cut -c1-600)
+            msg=$(grep -v -i -e "mongodb+srv" -e "Pull" -e "Digest" -e "Status:" -e "Pulling" -e "Waiting" -e "Download" -e "Verifying" err.txt | tail -4 | tr '\n' ' ' | cut -c1-600)
             echo "::error::mongodump exit $rc: $msg"
             exit 1
           fi
