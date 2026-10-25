@@ -15,7 +15,7 @@ export default function PrivacyPage() {
 
       <h2>Who we are</h2>
       <p>
-        UseItUp (useitup.uk) is a meal planning and food-waste app run from Edinburgh, UK. If you have any question about your data, email{" "}
+        UseItUp (useitup.uk) is a meal planning and food-waste app run from the UK. If you have any question about your data, email{" "}
         <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>.
       </p>
 
