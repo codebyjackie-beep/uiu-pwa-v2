@@ -19,8 +19,10 @@ function fileToDataUrl(file: File): Promise<string> {
 }
 
 type Step = "url" | "manual-paste" | "done";
-type Mode = "link" | "photo" | "manual";
+type Mode = "link" | "photo" | "video" | "manual";
 const MAX_PHOTOS = 3;
+/** Gemini takes ~20 MB inline per request; base64 adds a third, so the file itself is capped at 14 MB (API checks too). */
+const MAX_VIDEO_BYTES = 14 * 1024 * 1024;
 
 const MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack", "dessert"];
 
@@ -46,6 +48,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const [manualTitle, setManualTitle] = useState("");
   const [manualDescription, setManualDescription] = useState("");
@@ -93,6 +96,34 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ images }),
+    });
+    setSubmitting(false);
+    if (!parsed || !parsed.ok) {
+      setError(parsed && !parsed.ok ? parsed.error.message : "Something went wrong — please try again.");
+      return;
+    }
+    if (parsed.data.needsManualPaste) {
+      setPlatform(null);
+      setStep("manual-paste");
+      return;
+    }
+    setStep("done");
+  }
+
+  async function submitVideo(file: File) {
+    if (submitting) return;
+    setError(null);
+    if (file.size > MAX_VIDEO_BYTES) {
+      setError(`That video is ${(file.size / 1024 / 1024).toFixed(1)} MB — the limit is 14 MB. Trim it to the cooking part and try again.`);
+      return;
+    }
+    setSubmitting(true);
+    const video = await fileToDataUrl(file);
+    const { parsed } = await fetchJson<{ recipeDraftId?: string; needsManualPaste?: true }>("/api/recipe-import/from-video", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // The link the user tried first (e.g. the Instagram reel) is kept as the draft's source credit.
+      body: JSON.stringify({ video, sourceUrl: url.trim() || undefined }),
     });
     setSubmitting(false);
     if (!parsed || !parsed.ok) {
@@ -196,6 +227,17 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
               </button>
               <button
                 type="button"
+                className={`chip${mode === "video" ? " chip--active" : ""}`}
+                disabled={submitting}
+                onClick={() => {
+                  setMode("video");
+                  setError(null);
+                }}
+              >
+                Upload a video
+              </button>
+              <button
+                type="button"
                 className={`chip${mode === "manual" ? " chip--active" : ""}`}
                 disabled={submitting}
                 onClick={() => {
@@ -257,6 +299,35 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
                 onClick={() => photoInputRef.current?.click()}
               >
                 {submitting ? "Analyzing…" : "Choose photo(s)"}
+              </button>
+            </>
+          ) : null}
+
+          {step === "url" && mode === "video" ? (
+            <>
+              <p className="admin-drafts-page__sub">
+                Choose a cooking video from your phone (for example a reel you saved). AI watches and listens to it,
+                in any language, and writes the recipe in English. Max 14 MB — about 1 minute.
+              </p>
+              <input
+                ref={videoInputRef}
+                type="file"
+                accept="video/mp4,video/quicktime,video/webm,video/*"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) void submitVideo(file);
+                }}
+              />
+              {error ? <p className="admin-drafts-error">{error}</p> : null}
+              <button
+                type="button"
+                className="wizard-primary-button"
+                disabled={submitting}
+                onClick={() => videoInputRef.current?.click()}
+              >
+                {submitting ? "Watching the video… (up to a minute)" : "Choose a video"}
               </button>
             </>
           ) : null}
@@ -417,8 +488,24 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
               <p className="admin-drafts-page__sub">
                 {mode === "photo"
                   ? "Couldn't read that photo clearly. Copy the recipe text and paste it below instead."
-                  : `We couldn't automatically read this link${platform ? ` (${platform})` : ""}. Copy the caption or recipe text from the app and paste it below instead.`}
+                  : mode === "video"
+                    ? "Couldn't find a recipe in that video. Copy the caption or recipe text and paste it below instead."
+                    : `We couldn't automatically read this link${platform ? ` (${platform})` : ""}. Save the video to your phone and upload it, or copy the caption and paste it below.`}
               </p>
+              {mode === "link" ? (
+                <button
+                  type="button"
+                  className="wizard-secondary-button"
+                  disabled={submitting}
+                  onClick={() => {
+                    setMode("video");
+                    setStep("url");
+                    setError(null);
+                  }}
+                >
+                  Upload the video instead
+                </button>
+              ) : null}
               <textarea
                 rows={8}
                 placeholder="Paste the recipe caption or description here…"

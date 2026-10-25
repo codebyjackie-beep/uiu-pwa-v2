@@ -212,3 +212,72 @@ export async function extractRecipeFromPhotos(env: OpenRouterVisionEnv, imageDat
     return null;
   }
 }
+
+const VIDEO_RECIPE_PROMPT =
+  "Watch and listen to this cooking video (it may be an Instagram, TikTok or YouTube clip). Write down the recipe " +
+  "it actually shows: ingredients and amounts from what is said, shown on screen (captions, text overlays) or " +
+  "clearly visible, and the steps in the order they happen. Do not invent ingredients that are not shown or " +
+  "mentioned; when an amount is not given, estimate a sensible home-cook amount. " +
+  "Regardless of what language is spoken or written (Cantonese, Mandarin, or any other language), write the " +
+  "title, description, ingredient names and steps in English (UK spelling). " +
+  `Each ingredient's "name" field MUST contain ONLY the ingredient's name — put every number and unit into ` +
+  '"quantity"/"unit". Use metric units (g, ml) or counts (pcs, tbsp, tsp). ' +
+  "Respond with ONLY a single JSON object (no markdown fences, no commentary) matching exactly this shape: " +
+  '{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ' +
+  '"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}. ' +
+  'If the video does not show a recipe, respond with {"title": "", "description": "", "ingredients": [], "steps": [], ' +
+  '"tags": [], "servings": 0, "prepTimeMinutes": 0, "cookTimeMinutes": 0}.';
+
+/** Jackie 2026-10-25 — "Upload a video": the user uploads a recipe video from their phone (e.g. a reel they
+ * saved); the video model watches + listens and drafts the recipe. Returns null (not a throw) when the video
+ * shows no usable recipe, so the caller can fall back to manual paste. */
+export async function extractRecipeFromVideo(env: OpenRouterVisionEnv, videoDataUrl: string): Promise<DraftedRecipe | null> {
+  try {
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: env.OPENROUTER_VISION_MODEL,
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: VIDEO_RECIPE_PROMPT },
+              { type: "video_url", video_url: { url: videoDataUrl } },
+            ],
+          },
+        ],
+        response_format: { type: "json_object" },
+      }),
+    });
+    if (!res.ok) {
+      console.error("[uiu-api] extractRecipeFromVideo: OpenRouter", res.status, (await res.text().catch(() => "")).slice(0, 300));
+      return null;
+    }
+    const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+    const content = json.choices?.[0]?.message?.content;
+    if (!content) return null;
+
+    const parsed = extractJson(content) as Partial<DraftedRecipe>;
+    if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < 2 || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
+      return null;
+    }
+    return {
+      title: parsed.title,
+      description: parsed.description ?? "",
+      ingredients: parsed.ingredients,
+      steps: parsed.steps,
+      tags: Array.isArray(parsed.tags) ? parsed.tags : [],
+      mealType: parsed.mealType,
+      servings: parsed.servings ?? 2,
+      prepTimeMinutes: parsed.prepTimeMinutes ?? 0,
+      cookTimeMinutes: parsed.cookTimeMinutes ?? 0,
+    };
+  } catch (err) {
+    console.error("[uiu-api] extractRecipeFromVideo failed:", err instanceof Error ? err.message : String(err));
+    return null;
+  }
+}

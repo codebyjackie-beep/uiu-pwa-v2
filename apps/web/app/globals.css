@@ -556,6 +556,7 @@ a {
 
 .recipe-import-form__tabs {
   display: flex;
+  flex-wrap: wrap; /* 4 tabs since "Upload a video" (2026-10-25) — wrap on narrow phones */
   gap: 8px;
   margin-bottom: var(--space);
 }

@@ -8,7 +8,7 @@ import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe
 import { withDb, type DbEnv } from "../db";
 import type { OpenRouterEnv } from "../services/openrouter";
 import { detectPlatform, parseRecipeFromText, tryJsonLdRecipe, tryOembedCaption, tryPinterestTargetLink, type OembedEnv } from "../services/recipeImport";
-import { extractRecipeFromPhotos, type OpenRouterVisionEnv } from "../services/openrouterVision";
+import { extractRecipeFromPhotos, extractRecipeFromVideo, type OpenRouterVisionEnv } from "../services/openrouterVision";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
@@ -340,6 +340,50 @@ recipeImportRouter.post("/from-photo", async (c) => {
   } catch (err) {
     console.error("[uiu-api] recipe-import from-photo error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to import recipe from photo" } };
+    return c.json(body, 502);
+  }
+});
+
+// Jackie 2026-10-25 — "Upload a video". Body: { video: data URL (mp4 / mov / webm / mpeg), sourceUrl? }.
+// Gemini takes inline media up to ~20 MB per request, so the decoded video is capped at 14 MB (base64 adds a third).
+const MAX_VIDEO_BYTES = 14 * 1024 * 1024;
+const VIDEO_DATA_URL = /^data:video\/(mp4|quicktime|mov|webm|mpeg);base64,/i;
+
+recipeImportRouter.post("/from-video", async (c) => {
+  const payload = await c.req.json().catch(() => null);
+  const video = payload?.video as unknown;
+  const sourceUrlRaw = typeof payload?.sourceUrl === "string" ? payload.sourceUrl.trim() : "";
+  if (typeof video !== "string" || !VIDEO_DATA_URL.test(video)) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "video must be an mp4, mov or webm file" } };
+    return c.json(body, 400);
+  }
+  const base64Length = video.length - video.indexOf(",") - 1;
+  if (base64Length * 0.75 > MAX_VIDEO_BYTES) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "too_large", message: "Video too large (max 14 MB) — trim it to the cooking part and try again" } };
+    return c.json(body, 400);
+  }
+  let sourceUrl: string | undefined;
+  try {
+    sourceUrl = sourceUrlRaw ? new URL(sourceUrlRaw).toString() : undefined;
+  } catch {
+    sourceUrl = undefined;
+  }
+  // Gemini lists QuickTime as video/mov.
+  const normalized = video.replace(/^data:video\/quicktime;/i, "data:video/mov;");
+
+  try {
+    const parsed = await extractRecipeFromVideo(c.env, normalized);
+    if (!parsed) {
+      const body: ApiResponse<{ needsManualPaste: true }> = { ok: true, data: { needsManualPaste: true } };
+      return c.json(body);
+    }
+    const ingredients: RecipeIngredient[] = parsed.ingredients.map((ing) => ({ name: ing.name, quantity: ing.quantity, unit: ing.unit }));
+    const recipeDraftId = await insertDraft(c, { ...parsed, ingredients }, sourceUrl, sourceUrl ? detectPlatform(sourceUrl) : null, "video-ai");
+    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-import from-video error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to import recipe from video" } };
     return c.json(body, 502);
   }
 });

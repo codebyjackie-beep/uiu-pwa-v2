@@ -827,7 +827,7 @@ export interface RecipeDraft {
   sourceUrl?: string;
   sourcePlatform?: "tiktok" | "instagram" | "facebook" | "pinterest" | "youtube" | null;
   /** Debug field, mirrors sourceInspiration convention — which tier actually produced this draft. */
-  importMethod?: "jsonld" | "oembed-caption" | "manual-paste" | "photo-ocr" | "fridge_generated";
+  importMethod?: "jsonld" | "oembed-caption" | "manual-paste" | "photo-ocr" | "video-ai" | "fridge_generated";
   /** Pexels photo fetched at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review UI
    * show an image before approve, and lets approve copy it straight into the new Recipe doc
    * instead of re-calling Pexels. Absent/null for older drafts created before this field existed. */
