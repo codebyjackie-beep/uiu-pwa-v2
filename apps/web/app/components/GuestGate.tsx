@@ -203,7 +203,7 @@ export function AppShell({ publicShop, children }: { publicShop: boolean; childr
   const pathname = usePathname();
   // Guest mode: the app header shows for guests too (with a Sign up button), so the padding follows the header's own rule.
   const withHeader = !publicShop && !isAppHeaderHidden(pathname);
-  return <div className={withHeader ? "app-shell app-shell--with-app-header" : "app-shell"}>{children}</div>;
+  return <main className={withHeader ? "app-shell app-shell--with-app-header" : "app-shell"}>{children}</main>;
 }
 
 /** Pages without the app header (signed-out intro / auth pages / full-screen cook mode). Shared by AppHeader and AppShell. */

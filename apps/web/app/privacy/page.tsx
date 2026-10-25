@@ -9,7 +9,7 @@ const LAST_UPDATED = "20 October 2026";
 
 export default function PrivacyPage() {
   return (
-    <main className="privacy-page">
+    <div className="privacy-page">
       <h1>Privacy policy</h1>
       <p className="privacy-page__updated">Last updated {LAST_UPDATED}</p>
 
@@ -100,6 +100,6 @@ export default function PrivacyPage() {
       <p className="privacy-page__back">
         <Link href="/">Back to UseItUp</Link>
       </p>
-    </main>
+    </div>
   );
 }

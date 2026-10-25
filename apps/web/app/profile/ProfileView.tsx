@@ -15,7 +15,7 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
   const initial = (name.trim()[0] ?? "?").toUpperCase();
 
   return (
-    <main className="profile-page">
+    <div className="profile-page">
       <section className="profile-card profile-identity">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -112,6 +112,6 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
           </div>
         </div>
       ) : null}
-    </main>
+    </div>
   );
 }
