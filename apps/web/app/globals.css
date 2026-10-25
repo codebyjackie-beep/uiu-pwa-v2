@@ -3881,6 +3881,36 @@ a {
   margin-top: 6px;
 }
 
+/* Receipt date + per-item shelf life (2026-10-25). "Keeps" sits on its own line under each row. */
+.fridge-scan-review__bought {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--uiu-black);
+}
+
+.fridge-scan-review__bought input {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--uiu-muted);
+  background: var(--uiu-white);
+  color: var(--uiu-black);
+}
+
+.fridge-scan-review__keeps {
+  grid-column: 2 / -1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--uiu-muted);
+}
+
+.fridge-scan-review__keeps input[type="number"] {
+  width: 56px;
+}
+
 /* --- Fridge AI recipe generator (HANDOFF_fridge-ai-recipe-generator.md) --- */
 
 .fridge-genmodal__list {

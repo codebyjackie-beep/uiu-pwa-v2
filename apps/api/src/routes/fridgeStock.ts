@@ -6,9 +6,9 @@ import { Hono, type Context } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
-import { estimateExpiresAt } from "../services/shelfLife";
+import { clampShelfLifeDays, estimateExpiresAt, parsePurchaseDate } from "../services/shelfLife";
 import { expiringSoon, impactSummary, logFridgeEvent, type FridgeOutcome } from "../services/fridgeImpact";
-import { scanImageForItems, type OpenRouterVisionEnv, type ScannedItem } from "../services/openrouterVision";
+import { scanImageForItems, type OpenRouterVisionEnv, type ScanResult } from "../services/openrouterVision";
 
 type FridgeStockEnv = DbEnv & OpenRouterVisionEnv;
 
@@ -41,8 +41,10 @@ async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt:
   }
   try {
     const dataUrl = await fileToDataUrl(file);
-    const items = await scanImageForItems(c.env, dataUrl, prompt);
-    const body: ApiResponse<ScannedItem[]> = { ok: true, data: items };
+    const result = await scanImageForItems(c.env, dataUrl, prompt);
+    // Keep only a plausible receipt date (last 30 days, not in the future); the client lets the user change it.
+    const purchaseDate = parsePurchaseDate(result.purchaseDate, new Date()) ? result.purchaseDate : null;
+    const body: ApiResponse<ScanResult> = { ok: true, data: { items: result.items, purchaseDate } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] fridge-stock image scan error:", err instanceof Error ? err.message : String(err));
@@ -132,6 +134,8 @@ fridgeStockRouter.post("/", async (c) => {
   const unit = payload?.unit as string | undefined;
   const source = payload?.source as string | undefined;
   const canonicalIngredientId = payload?.canonicalIngredientId as string | null | undefined;
+  // Optional (receipt / fridge scans): purchase date starts the clock, shelfLifeDays overrides the default.
+  const shelfLifeDays = clampShelfLifeDays(payload?.shelfLifeDays);
 
   if (
     typeof ingredientName !== "string" ||
@@ -163,6 +167,7 @@ fridgeStockRouter.post("/", async (c) => {
     }
 
     const now = new Date();
+    const purchasedAt = parsePurchaseDate(payload?.purchasedAt, now);
     const inserted = await withDb(c.env, async (db) => {
       if (canonicalId) {
         const canonicalDoc = await db.collection("canonical_ingredients").findOne({ _id: canonicalId });
@@ -175,7 +180,8 @@ fridgeStockRouter.post("/", async (c) => {
         quantity,
         unit: unit.trim(),
         addedAt: now.toISOString(),
-        expiresAt: estimateExpiresAt(isPantry, now),
+        purchasedAt: purchasedAt ? purchasedAt.toISOString() : null,
+        expiresAt: estimateExpiresAt(isPantry, purchasedAt ?? now, shelfLifeDays),
         expiresAtIsManualOverride: false,
         source,
         needsRestock: false,
@@ -293,6 +299,9 @@ fridgeStockRouter.delete("/:id", async (c) => {
  * scanned items for the client to review/edit, does NOT write to fridge_stock.
  * The client confirms via the normal POST / (one call per confirmed item).
  */
+/** Typical keep-times so the model's per-item estimate stays in a sane range (Jackie 2026-10-25). */
+const SHELF_LIFE_HINT = 'For each item also give "shelfLifeDays": a whole number of days it typically keeps from the day it was bought, stored the usual way in a UK home (raw meat or fish 2, mince 1, cooked meats and ham 4, salad leaves and soft berries 4, milk 7, yoghurt 10, soft cheese 7, hard cheese 28, eggs 28, bread 5, most fresh vegetables 7, carrots 21, potatoes and onions 21, apples and citrus 21, bananas 5, frozen food 180, tins, dried pasta, rice, flour, oil and spices 365). ';
+
 fridgeStockRouter.post("/ocr", (c) =>
   handleImageScan(
     c,
@@ -309,8 +318,12 @@ fridgeStockRouter.post("/ocr", (c) =>
       "toward excluding it rather than including it — a missed grocery item is far less " +
       "harmful than a toiletry ending up in a food list. " +
       "For each remaining item give its " +
-      'name and quantity if visible. Respond with ONLY a JSON array, no markdown fences, no commentary: ' +
-      '[{"name": string, "quantity": number|null}].',
+      "name and quantity if visible. " +
+      SHELF_LIFE_HINT +
+      "Also read the purchase date printed on the receipt, as YYYY-MM-DD (UK receipts print day before month, " +
+      "e.g. 23/10/26 = 2026-10-23); use null if there is no date or you cannot read it. " +
+      'Respond with ONLY a JSON object, no markdown fences, no commentary: ' +
+      '{"purchaseDate": string|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.',
   ),
 );
 
@@ -322,6 +335,8 @@ fridgeStockRouter.post("/scan-fridge", (c) =>
   handleImageScan(
     c,
     "List the distinct food items visible in this fridge photo. For each, give a short name and, if visible, " +
-      'an approximate quantity. Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null}].',
+      "an approximate quantity. " +
+      SHELF_LIFE_HINT +
+      'Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}].',
   ),
 );

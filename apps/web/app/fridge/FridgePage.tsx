@@ -16,6 +16,29 @@ interface IngredientOption {
 interface ScannedItem {
   name: string;
   quantity: number | null;
+  /** AI estimate of days the item keeps from purchase; null = server default (5 days fresh, 365 pantry). */
+  shelfLifeDays: number | null;
+}
+
+interface ScanResult {
+  items: ScannedItem[];
+  /** Receipt date (YYYY-MM-DD) when the AI could read one. */
+  purchaseDate: string | null;
+}
+
+/** Local calendar date as YYYY-MM-DD (for the "Bought on" date input). */
+function localIsoDate(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+/** "Mon 27 Oct" — when an item bought on `boughtOn` and keeping `days` days runs out. */
+function useByLabel(boughtOn: string, days: number | null): string {
+  if (!days) return "";
+  const [y, m, d] = boughtOn.split("-").map(Number);
+  const date = new Date(y!, (m ?? 1) - 1, d ?? 1);
+  date.setDate(date.getDate() + days);
+  return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 }
 
 interface ScanReviewItem extends ScannedItem {
@@ -107,6 +130,7 @@ export function FridgePage() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [reviewItems, setReviewItems] = useState<ScanReviewItem[] | null>(null);
+  const [boughtOn, setBoughtOn] = useState(() => localIsoDate(new Date()));
   const [confirming, setConfirming] = useState(false);
   const ocrInputRef = useRef<HTMLInputElement>(null);
   const photoScanInputRef = useRef<HTMLInputElement>(null);
@@ -223,18 +247,20 @@ export function FridgePage() {
     setReviewItems(null);
     const form = new FormData();
     form.append("image", file);
-    const { parsed } = await fetchJson<ScannedItem[]>(SCAN_LABELS[kind].endpoint, { method: "POST", body: form });
+    const { parsed } = await fetchJson<ScanResult>(SCAN_LABELS[kind].endpoint, { method: "POST", body: form });
     setScanning(false);
     if (!parsed || !parsed.ok) {
       setScanError(parsed && !parsed.ok ? parsed.error.message : "Scan failed, please try again.");
       return;
     }
-    if (parsed.data.length === 0) {
+    // Receipt date read by the AI starts the clock; otherwise today. The user can change it before confirming.
+    setBoughtOn(kind === "ocr" && parsed.data.purchaseDate ? parsed.data.purchaseDate : localIsoDate(new Date()));
+    if (parsed.data.items.length === 0) {
       setScanError("No items recognized in that photo. Please enter manually.");
       return;
     }
     setReviewItems(
-      parsed.data.map((item) => ({
+      parsed.data.items.map((item) => ({
         ...item,
         quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
         unit: "pc",
@@ -272,6 +298,8 @@ export function FridgePage() {
           quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
           unit: item.unit.trim(),
           source: SCAN_LABELS[scanKind].source,
+          purchasedAt: boughtOn,
+          shelfLifeDays: item.shelfLifeDays,
         }),
       });
       if (parsed && parsed.ok) addedCount += 1;
@@ -380,6 +408,16 @@ export function FridgePage() {
         <div className="fridge-scan-review">
           <h2>{scanKind ? SCAN_LABELS[scanKind].heading : "Confirm scanned items"}</h2>
           <p className="admin-drafts-page__sub">Review before adding — nothing is saved until you confirm.</p>
+          <label className="fridge-scan-review__bought">
+            <span>Bought on</span>
+            <input
+              type="date"
+              value={boughtOn}
+              max={localIsoDate(new Date())}
+              min={localIsoDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))}
+              onChange={(e) => e.target.value && setBoughtOn(e.target.value)}
+            />
+          </label>
           {reviewItems.map((item, index) => (
             <div key={index} className="fridge-scan-review__row">
               <input
@@ -407,6 +445,20 @@ export function FridgePage() {
                 onChange={(e) => updateReviewItem(index, { unit: e.target.value })}
                 placeholder="unit"
               />
+              <label className="fridge-scan-review__keeps">
+                <span>Keeps</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={365}
+                  step={1}
+                  value={item.shelfLifeDays ?? ""}
+                  onChange={(e) => updateReviewItem(index, { shelfLifeDays: e.target.value ? Math.max(1, Math.min(365, Math.round(Number(e.target.value)))) : null })}
+                  placeholder="5"
+                  aria-label={`Days ${item.name || "this item"} keeps`}
+                />
+                <span>days{item.shelfLifeDays ? ` · use by ${useByLabel(boughtOn, item.shelfLifeDays)}` : ""}</span>
+              </label>
             </div>
           ))}
           <div className="fridge-scan-review__actions">

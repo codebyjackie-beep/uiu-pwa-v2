@@ -14,6 +14,14 @@ export interface OpenRouterVisionEnv {
 export interface ScannedItem {
   name: string;
   quantity: number | null;
+  /** Model's estimate of how many days the item keeps from purchase (1–365), or null. */
+  shelfLifeDays: number | null;
+}
+
+export interface ScanResult {
+  items: ScannedItem[];
+  /** Receipt purchase date as YYYY-MM-DD when the model read one (validated by the caller), else null. */
+  purchaseDate: string | null;
 }
 
 function extractJson(text: string): unknown {
@@ -23,7 +31,7 @@ function extractJson(text: string): unknown {
   return JSON.parse(candidate);
 }
 
-export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: string, prompt: string): Promise<ScannedItem[]> {
+export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: string, prompt: string): Promise<ScanResult> {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -51,17 +59,28 @@ export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: 
   if (!content) throw new Error("OpenRouter vision response had no message content");
 
   const parsed = extractJson(content);
-  if (!Array.isArray(parsed)) throw new Error("OpenRouter vision response was not a JSON array");
+  // Receipts answer {"purchaseDate", "items": [...]}; fridge photos answer a bare array.
+  const obj = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
+  const list = Array.isArray(parsed) ? parsed : Array.isArray(obj?.items) ? (obj!.items as unknown[]) : null;
+  if (!list) throw new Error("OpenRouter vision response had no item list");
+  const purchaseDate = typeof obj?.purchaseDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(obj.purchaseDate) ? obj.purchaseDate : null;
 
-  return parsed
+  const items = list
     .map((raw): ScannedItem | null => {
       if (!raw || typeof raw !== "object") return null;
-      const name = (raw as Record<string, unknown>).name;
-      const quantity = (raw as Record<string, unknown>).quantity;
+      const r = raw as Record<string, unknown>;
+      const name = r.name;
+      const quantity = r.quantity;
+      const days = typeof r.shelfLifeDays === "number" && Number.isFinite(r.shelfLifeDays) ? Math.round(r.shelfLifeDays) : null;
       if (typeof name !== "string" || !name.trim()) return null;
-      return { name: name.trim(), quantity: typeof quantity === "number" ? quantity : null };
+      return {
+        name: name.trim(),
+        quantity: typeof quantity === "number" ? quantity : null,
+        shelfLifeDays: days !== null && days >= 1 && days <= 365 ? days : null,
+      };
     })
     .filter((item): item is ScannedItem => item !== null);
+  return { items, purchaseDate };
 }
 
 export interface MealNutritionEstimate {
