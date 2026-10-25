@@ -80,7 +80,7 @@ function HealthIcon() {
 
 const TABS = [
   { label: "Home", short: "Home", href: "/", Icon: HomeIcon },
-  { label: "Meal Planner", short: "Plan", href: "/meal-planner", Icon: MealPlannerIcon },
+  { label: "Plan (meal planner)", short: "Plan", href: "/meal-planner", Icon: MealPlannerIcon },
   { label: "Recipes", short: "Recipes", href: "/recipes", Icon: RecipesIcon },
   { label: "Fridge", short: "Fridge", href: "/fridge", Icon: FridgeIcon },
   { label: "Shop", short: "Shop", href: "/shop", Icon: ShopIcon },
