@@ -9,6 +9,7 @@ import type { DraftedRecipe } from "./openrouter";
 export interface OpenRouterVisionEnv {
   OPENROUTER_API_KEY: string;
   OPENROUTER_VISION_MODEL: string;
+  OPENROUTER_RECEIPT_MODEL?: string;
 }
 
 export interface ScannedItem {

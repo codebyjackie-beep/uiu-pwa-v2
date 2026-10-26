@@ -32,7 +32,8 @@ async function fileToDataUrl(file: File): Promise<string> {
 /** Scan one image with a prompt; throws (VisionError for model problems). Shared by the user route and /api/admin/vision-test. */
 export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: string, modelOverride?: string): Promise<ScanResult> {
   const dataUrl = await fileToDataUrl(file);
-  const result = await scanImageForItems(env, dataUrl, prompt, modelOverride);
+  const model = modelOverride ?? (prompt === RECEIPT_PROMPT ? env.OPENROUTER_RECEIPT_MODEL : undefined);
+  const result = await scanImageForItems(env, dataUrl, prompt, model);
   // Keep only a plausible receipt date (last 30 days, not in the future); the client lets the user change it.
   // The printed text wins over the model's own conversion (it once read the time 13:28 as the 13th).
   const fromText = parseReceiptDateText(result.purchaseDateText);

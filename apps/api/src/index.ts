@@ -50,6 +50,7 @@ type Bindings = {
   MONGODB_DB: string;
   OPENROUTER_MODEL: string;
   OPENROUTER_VISION_MODEL: string;
+  OPENROUTER_RECEIPT_MODEL?: string;
   // Secrets (not in repo, via `wrangler secret put`):
   //   MONGODB_URI — Atlas connection string.
   //   ADMIN_TOKEN — shared secret checked against X-Admin-Token for /api/admin/* routes.
@@ -599,7 +600,7 @@ app.post("/api/admin/vision-test", async (c) => {
   const t0 = Date.now();
   try {
     const data = await scanFile(c.env, file, RECEIPT_PROMPT, model);
-    return c.json({ ok: true, data: { ms: Date.now() - t0, bytes: file.size, type: file.type, model: model ?? c.env.OPENROUTER_VISION_MODEL, ...data } });
+    return c.json({ ok: true, data: { ms: Date.now() - t0, bytes: file.size, type: file.type, model: model ?? c.env.OPENROUTER_RECEIPT_MODEL ?? c.env.OPENROUTER_VISION_MODEL, ...data } });
   } catch (err) {
     const kind = err && typeof err === "object" && "kind" in err ? String((err as { kind: unknown }).kind) : "other";
     return c.json({ ok: false, error: { code: `vision_${kind}`, message: err instanceof Error ? err.message : String(err) }, ms: Date.now() - t0, bytes: file.size, type: file.type });

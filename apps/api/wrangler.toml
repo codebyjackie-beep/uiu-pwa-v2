@@ -83,6 +83,8 @@ OPENROUTER_MODEL = "~openai/gpt-mini-latest"
 # receipt OCR + fridge photo scan. Shares OPENROUTER_API_KEY, separate model
 # var so it can change independently of the text-drafting model above.
 OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash-lite"
+# Receipt scans only (Jackie 2026-10-26): flash got 3/5 fully-correct Costco scans vs 1/5 for flash-lite.
+OPENROUTER_RECEIPT_MODEL = "google/gemini-2.5-flash"
 # HANDOFF_pwa-diagnostics-monitor.md — coverage/digest thresholds for the diagnostics
 # cron. Jackie hasn't finalized these numbers yet (2026-08-23); these are the
 # handoff's suggested starting values, adjustable here without a code change.
