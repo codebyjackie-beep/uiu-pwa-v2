@@ -24,6 +24,8 @@ interface ScanResult {
   items: ScannedItem[];
   /** Receipt date (YYYY-MM-DD) when the AI could read one. */
   purchaseDate: string | null;
+  /** Receipts only: the item count the receipt prints vs how many we found. Null when the receipt prints none. */
+  countCheck?: { itemsSold: number; found: number } | null;
 }
 
 /** Local calendar date as YYYY-MM-DD (for the "Bought on" date input). */
@@ -32,13 +34,22 @@ function localIsoDate(d: Date): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-/** "Mon 27 Oct" — when an item bought on `boughtOn` and keeping `days` days runs out. */
+/**
+ * "Mon 27 Oct" — when an item bought on `boughtOn` and keeping `days` days runs out.
+ * Adds the year ("Mon 25 Oct 2027") only when that date falls in a different year from today.
+ */
 function useByLabel(boughtOn: string, days: number | null): string {
   if (!days) return "";
   const [y, m, d] = boughtOn.split("-").map(Number);
   const date = new Date(y!, (m ?? 1) - 1, d ?? 1);
   date.setDate(date.getDate() + days);
-  return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+  const otherYear = date.getFullYear() !== new Date().getFullYear();
+  return date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    ...(otherYear ? { year: "numeric" as const } : {}),
+  });
 }
 
 interface ScanReviewItem extends ScannedItem {
@@ -130,6 +141,7 @@ export function FridgePage() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [reviewItems, setReviewItems] = useState<ScanReviewItem[] | null>(null);
+  const [countCheck, setCountCheck] = useState<ScanResult["countCheck"]>(null);
   const [boughtOn, setBoughtOn] = useState(() => localIsoDate(new Date()));
   const [confirming, setConfirming] = useState(false);
   const ocrInputRef = useRef<HTMLInputElement>(null);
@@ -245,6 +257,7 @@ export function FridgePage() {
     setScanning(true);
     setScanError(null);
     setReviewItems(null);
+    setCountCheck(null);
     const form = new FormData();
     form.append("image", file);
     const { parsed } = await fetchJson<ScanResult>(SCAN_LABELS[kind].endpoint, { method: "POST", body: form });
@@ -267,6 +280,7 @@ export function FridgePage() {
         include: true,
       })),
     );
+    setCountCheck(parsed.data.countCheck ?? null);
   }
 
   function updateReviewItem(index: number, patch: Partial<ScanReviewItem>) {
@@ -276,6 +290,7 @@ export function FridgePage() {
   function cancelScan() {
     setScanKind(null);
     setReviewItems(null);
+    setCountCheck(null);
     setScanError(null);
   }
 
@@ -418,6 +433,13 @@ export function FridgePage() {
               onChange={(e) => e.target.value && setBoughtOn(e.target.value)}
             />
           </label>
+          {countCheck && countCheck.found !== countCheck.itemsSold ? (
+            <p className="fridge-scan-note">
+              {countCheck.found > countCheck.itemsSold
+                ? `Your receipt lists ${countCheck.itemsSold} items but we found ${countCheck.found} (including any non-food we left out). Please untick anything you didn't buy.`
+                : `Your receipt lists ${countCheck.itemsSold} items but we found ${countCheck.found}. Some may be missing — add them by hand.`}
+            </p>
+          ) : null}
           {reviewItems.map((item, index) => (
             <div key={index} className="fridge-scan-review__row">
               <input

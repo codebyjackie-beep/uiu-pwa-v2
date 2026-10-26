@@ -3883,6 +3883,12 @@ a {
 }
 
 /* Receipt date + per-item shelf life (2026-10-25). "Keeps" sits on its own line under each row. */
+.fridge-scan-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--uiu-yellow);
+}
+
 .fridge-scan-review__bought {
   display: flex;
   align-items: center;

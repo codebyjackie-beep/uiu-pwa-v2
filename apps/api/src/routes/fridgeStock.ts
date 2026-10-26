@@ -9,7 +9,7 @@ import { withDb, getMongoModule, type DbEnv } from "../db";
 import { clampShelfLifeDays, estimateExpiresAt, parsePurchaseDate, parseReceiptDateText } from "../services/shelfLife";
 import { expiringSoon, impactSummary, logFridgeEvent, type FridgeOutcome } from "../services/fridgeImpact";
 import { scanImageForItems, VisionError, type OpenRouterVisionEnv, type ScanResult } from "../services/openrouterVision";
-import { filterReceiptItems } from "../services/receiptFilter";
+import { filterReceiptItems, isDiscountLine, isNonFood } from "../services/receiptFilter";
 
 type FridgeStockEnv = DbEnv & OpenRouterVisionEnv;
 
@@ -42,10 +42,18 @@ export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: str
   // Receipts only: drop discount/coupon lines and laundry/cleaning items the model let through.
   // Fridge-photo scans (a different prompt) keep every item the model returned.
   // A count above 24 is a pack weight read as a quantity ("BLUEBERRIES 510G" → 510): treat it as 1 pack.
-  const items = (prompt === RECEIPT_PROMPT ? filterReceiptItems(result.items) : result.items).map((i) =>
+  const isReceipt = prompt === RECEIPT_PROMPT;
+  const items = (isReceipt ? filterReceiptItems(result.items) : result.items).map((i) =>
     i.quantity !== null && i.quantity > 24 ? { ...i, quantity: 1 } : i,
   );
-  return { items, purchaseDate };
+  // Receipts that print their own item total: compare it with what we found, so the user can spot an invented or missing line.
+  // Nothing is removed here; the client only shows a note. Found = kept items + non-food lines the filter dropped + non-food the model left out.
+  let countCheck: ScanResult["countCheck"] = null;
+  if (isReceipt && typeof result.itemsSold === "number") {
+    const nonFoodRemoved = result.items.filter((i) => isNonFood(i.name) && !isDiscountLine(i.name)).length;
+    countCheck = { itemsSold: result.itemsSold, found: items.length + nonFoodRemoved + (result.excludedCount ?? 0) };
+  }
+  return { items, purchaseDate, countCheck };
 }
 
 async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt: string) {
@@ -339,7 +347,7 @@ fridgeStockRouter.delete("/:id", async (c) => {
  * The client confirms via the normal POST / (one call per confirmed item).
  */
 /** Typical keep-times so the model's per-item estimate stays in a sane range (Jackie 2026-10-25). */
-const SHELF_LIFE_HINT = 'For each item also give "shelfLifeDays": a whole number of days it typically keeps from the day it was bought, stored the usual way in a UK home (raw meat or fish 2, mince 1, cooked meats and ham 4, salad leaves and soft berries 4, milk 7, yoghurt 10, soft cheese 7, hard cheese 28, eggs 28, bread 5, most fresh vegetables 7, carrots 21, potatoes and onions 21, apples and citrus 21, bananas 5, frozen food 180, tins, dried pasta, rice, flour, oil and spices 365). ';
+const SHELF_LIFE_HINT = 'For each item also give "shelfLifeDays": a whole number of days it typically keeps from the day it was bought, stored the usual way in a UK home (raw meat or fish 2, mince 1, cooked meats and ham 4, salad leaves and soft berries 4, milk 7, yoghurt 10, soft cheese 7, hard cheese 28, eggs 28, bread 5, most fresh vegetables 7, carrots 21, potatoes and onions 21, apples and citrus 21, bananas 5, frozen food 180, tins and tinned meals (e.g. tinned stew, soup, beans), dried pasta, rice, flour, oil and spices 365). ';
 
 export const RECEIPT_PROMPT =
     "Read this shopping receipt. List ONLY the food and grocery items purchased — exclude non-food " +
@@ -370,8 +378,13 @@ export const RECEIPT_PROMPT =
       '(in "13:28:12 25OCT2026" the date is "25OCT2026"; 13 is the hour, not the day). ' +
       "Also give it as \"purchaseDate\" in YYYY-MM-DD (UK receipts print day before month, e.g. 23/10/26 = 2026-10-23). " +
       "Use null for both if there is no date or you cannot read it. " +
+      'Also give "itemsSold": the total number of items the receipt itself prints (e.g. "Items Sold: 12", ' +
+      '"TOTAL NUMBER OF ITEMS SOLD = 12", "8 BALANCE DUE" means 8), or null if it prints none. ' +
+      'Also give "excludedCount": how many product lines you left out because they are not food (toiletries, ' +
+      "cleaning, etc.) — not counting discount/coupon lines. " +
+      "Only list products actually printed on the receipt; never add an item that is not there. " +
       'Respond with ONLY a JSON object, no markdown fences, no commentary: ' +
-      '{"purchaseDateText": string|null, "purchaseDate": string|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
+      '{"purchaseDateText": string|null, "purchaseDate": string|null, "itemsSold": number|null, "excludedCount": number|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
 
 fridgeStockRouter.post("/ocr", (c) => handleImageScan(c, RECEIPT_PROMPT));
 
