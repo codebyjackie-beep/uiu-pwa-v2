@@ -24,11 +24,29 @@ export interface ScanResult {
   purchaseDate: string | null;
 }
 
-function extractJson(text: string): unknown {
+/** Why a scan failed: upstream = OpenRouter HTTP error, empty = no reply text, parse = reply was not the JSON we asked for. */
+export class VisionError extends Error {
+  readonly kind: "upstream" | "empty" | "parse";
+  constructor(kind: "upstream" | "empty" | "parse", message: string) {
+    super(message);
+    this.kind = kind;
+    this.name = "VisionError";
+  }
+}
+
+export function extractJson(text: string): unknown {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
   const candidate = fenced ? fenced[1]! : trimmed;
-  return JSON.parse(candidate);
+  try {
+    return JSON.parse(candidate);
+  } catch (err) {
+    // Model added prose around the JSON: take the outermost {...} or [...] span.
+    const start = candidate.search(/[[{]/);
+    const end = Math.max(candidate.lastIndexOf("}"), candidate.lastIndexOf("]"));
+    if (start >= 0 && end > start) return JSON.parse(candidate.slice(start, end + 1));
+    throw err;
+  }
 }
 
 export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: string, prompt: string): Promise<ScanResult> {
@@ -52,17 +70,25 @@ export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: 
     }),
   });
   if (!res.ok) {
-    throw new Error(`OpenRouter vision request failed: ${res.status} ${res.statusText}`);
+    const detail = (await res.text().catch(() => "")).slice(0, 300);
+    throw new VisionError("upstream", `OpenRouter vision request failed: ${res.status} ${res.statusText} ${detail}`);
   }
-  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }>; error?: { message?: string } };
   const content = json.choices?.[0]?.message?.content;
-  if (!content) throw new Error("OpenRouter vision response had no message content");
+  if (!content) {
+    throw new VisionError("empty", `OpenRouter vision response had no message content (finish_reason=${json.choices?.[0]?.finish_reason ?? "?"}, error=${json.error?.message ?? "-"})`);
+  }
 
-  const parsed = extractJson(content);
+  let parsed: unknown;
+  try {
+    parsed = extractJson(content);
+  } catch {
+    throw new VisionError("parse", `Vision reply was not JSON: ${content.slice(0, 300)}`);
+  }
   // Receipts answer {"purchaseDate", "items": [...]}; fridge photos answer a bare array.
   const obj = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
   const list = Array.isArray(parsed) ? parsed : Array.isArray(obj?.items) ? (obj!.items as unknown[]) : null;
-  if (!list) throw new Error("OpenRouter vision response had no item list");
+  if (!list) throw new VisionError("parse", `Vision reply had no item list: ${content.slice(0, 300)}`);
   const purchaseDate = typeof obj?.purchaseDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(obj.purchaseDate) ? obj.purchaseDate : null;
 
   const items = list
@@ -122,13 +148,22 @@ export async function estimateMealNutrition(env: OpenRouterVisionEnv, imageDataU
     }),
   });
   if (!res.ok) {
-    throw new Error(`OpenRouter vision request failed: ${res.status} ${res.statusText}`);
+    const detail = (await res.text().catch(() => "")).slice(0, 300);
+    throw new VisionError("upstream", `OpenRouter vision request failed: ${res.status} ${res.statusText} ${detail}`);
   }
-  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
+  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }>; error?: { message?: string } };
   const content = json.choices?.[0]?.message?.content;
-  if (!content) throw new Error("OpenRouter vision response had no message content");
+  if (!content) {
+    throw new VisionError("empty", `OpenRouter vision response had no message content (finish_reason=${json.choices?.[0]?.finish_reason ?? "?"}, error=${json.error?.message ?? "-"})`);
+  }
 
-  const parsed = extractJson(content);
+  let parsed: unknown;
+  try {
+    parsed = extractJson(content);
+  } catch {
+    // Health data is secret-tier: never put the meal reply into an error/log line.
+    throw new VisionError("parse", "Meal vision reply was not JSON");
+  }
   if (!parsed || typeof parsed !== "object") throw new Error("OpenRouter vision response was not a JSON object");
   const raw = parsed as Record<string, unknown>;
   const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Math.max(0, v) : 0);

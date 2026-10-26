@@ -7,7 +7,7 @@ import { mealPlanRouter } from "./routes/mealPlan";
 import { mealPlanSetsRouter } from "./routes/mealPlanSets";
 import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { adminRecipesRouter } from "./routes/adminRecipes";
-import { fridgeStockRouter } from "./routes/fridgeStock";
+import { fridgeStockRouter, scanFile, RECEIPT_PROMPT } from "./routes/fridgeStock";
 import { mealSuggestionsRouter } from "./routes/mealSuggestions";
 import { favouriteRecipesRouter } from "./routes/favouriteRecipes";
 import { shopRouter } from "./routes/shop";
@@ -583,6 +583,24 @@ app.post("/api/admin/users/delete-data", async (c) => {
   } catch (err) {
     console.error("[uiu-api] delete-data error:", err instanceof Error ? err.message : String(err));
     return c.json({ ok: false, error: { code: "db_error", message: "delete-data failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+
+// Receipt-scan debugging (Jackie 2026-10-26: "Failed to analyze image" on a real receipt).
+//   POST /api/admin/vision-test  multipart { image } — runs the exact /api/fridge-stock/ocr scan and returns the
+//   result, or the real failure reason + timing instead of the generic user-facing message. Writes nothing.
+app.post("/api/admin/vision-test", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const form = await c.req.parseBody().catch(() => null);
+  const file = form?.image;
+  if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'image' file required" } } satisfies ApiResponse<never>, 400);
+  const t0 = Date.now();
+  try {
+    const data = await scanFile(c.env, file, RECEIPT_PROMPT);
+    return c.json({ ok: true, data: { ms: Date.now() - t0, bytes: file.size, type: file.type, model: c.env.OPENROUTER_VISION_MODEL, ...data } });
+  } catch (err) {
+    const kind = err && typeof err === "object" && "kind" in err ? String((err as { kind: unknown }).kind) : "other";
+    return c.json({ ok: false, error: { code: `vision_${kind}`, message: err instanceof Error ? err.message : String(err) }, ms: Date.now() - t0, bytes: file.size, type: file.type });
   }
 });
 

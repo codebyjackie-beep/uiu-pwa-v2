@@ -19,13 +19,22 @@ const VALID_SOURCES: FridgeStockSource[] = ["manual", "ocr", "shop-auto", "photo
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 async function fileToDataUrl(file: File): Promise<string> {
-  const buf = await file.arrayBuffer();
-  let binary = "";
-  const bytes = new Uint8Array(buf);
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]!);
-  const base64 = btoa(binary);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  // 32 KB chunks: byte-by-byte string building on a 5 MB phone photo burns Worker CPU for nothing.
+  const parts: string[] = [];
+  for (let i = 0; i < bytes.length; i += 0x8000) parts.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
+  const base64 = btoa(parts.join(""));
   const mime = file.type || "image/jpeg";
   return `data:${mime};base64,${base64}`;
+}
+
+/** Scan one image with a prompt; throws (VisionError for model problems). Shared by the user route and /api/admin/vision-test. */
+export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: string): Promise<ScanResult> {
+  const dataUrl = await fileToDataUrl(file);
+  const result = await scanImageForItems(env, dataUrl, prompt);
+  // Keep only a plausible receipt date (last 30 days, not in the future); the client lets the user change it.
+  const purchaseDate = parsePurchaseDate(result.purchaseDate, new Date()) ? result.purchaseDate : null;
+  return { items: result.items, purchaseDate };
 }
 
 async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt: string) {
@@ -40,11 +49,7 @@ async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt:
     return c.json(body, 400);
   }
   try {
-    const dataUrl = await fileToDataUrl(file);
-    const result = await scanImageForItems(c.env, dataUrl, prompt);
-    // Keep only a plausible receipt date (last 30 days, not in the future); the client lets the user change it.
-    const purchaseDate = parsePurchaseDate(result.purchaseDate, new Date()) ? result.purchaseDate : null;
-    const body: ApiResponse<ScanResult> = { ok: true, data: { items: result.items, purchaseDate } };
+    const body: ApiResponse<ScanResult> = { ok: true, data: await scanFile(c.env, file, prompt) };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] fridge-stock image scan error:", err instanceof Error ? err.message : String(err));
@@ -302,9 +307,7 @@ fridgeStockRouter.delete("/:id", async (c) => {
 /** Typical keep-times so the model's per-item estimate stays in a sane range (Jackie 2026-10-25). */
 const SHELF_LIFE_HINT = 'For each item also give "shelfLifeDays": a whole number of days it typically keeps from the day it was bought, stored the usual way in a UK home (raw meat or fish 2, mince 1, cooked meats and ham 4, salad leaves and soft berries 4, milk 7, yoghurt 10, soft cheese 7, hard cheese 28, eggs 28, bread 5, most fresh vegetables 7, carrots 21, potatoes and onions 21, apples and citrus 21, bananas 5, frozen food 180, tins, dried pasta, rice, flour, oil and spices 365). ';
 
-fridgeStockRouter.post("/ocr", (c) =>
-  handleImageScan(
-    c,
+export const RECEIPT_PROMPT =
     "Read this shopping receipt. List ONLY the food and grocery items purchased — exclude non-food " +
       "items entirely (e.g. toiletries, cleaning products, toothpaste, tissue/toilet paper, medicine, " +
       "pet supplies, batteries, stationery, kitchenware/homeware). If an item is ambiguous or you are " +
@@ -323,9 +326,9 @@ fridgeStockRouter.post("/ocr", (c) =>
       "Also read the purchase date printed on the receipt, as YYYY-MM-DD (UK receipts print day before month, " +
       "e.g. 23/10/26 = 2026-10-23); use null if there is no date or you cannot read it. " +
       'Respond with ONLY a JSON object, no markdown fences, no commentary: ' +
-      '{"purchaseDate": string|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.',
-  ),
-);
+      '{"purchaseDate": string|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
+
+fridgeStockRouter.post("/ocr", (c) => handleImageScan(c, RECEIPT_PROMPT));
 
 /**
  * HANDOFF_fridge-followup.md #4 — fridge photo scan. Same analysis-only,
