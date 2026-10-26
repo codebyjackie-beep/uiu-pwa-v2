@@ -51,7 +51,12 @@ export function extractJson(text: string): unknown {
   }
 }
 
-export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: string, prompt: string): Promise<ScanResult> {
+export async function scanImageForItems(
+  env: OpenRouterVisionEnv,
+  imageDataUrl: string,
+  prompt: string,
+  modelOverride?: string,
+): Promise<ScanResult> {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -59,7 +64,7 @@ export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: 
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: env.OPENROUTER_VISION_MODEL,
+      model: modelOverride ?? env.OPENROUTER_VISION_MODEL,
       messages: [
         {
           role: "user",

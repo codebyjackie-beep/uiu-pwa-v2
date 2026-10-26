@@ -30,9 +30,9 @@ async function fileToDataUrl(file: File): Promise<string> {
 }
 
 /** Scan one image with a prompt; throws (VisionError for model problems). Shared by the user route and /api/admin/vision-test. */
-export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: string): Promise<ScanResult> {
+export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: string, modelOverride?: string): Promise<ScanResult> {
   const dataUrl = await fileToDataUrl(file);
-  const result = await scanImageForItems(env, dataUrl, prompt);
+  const result = await scanImageForItems(env, dataUrl, prompt, modelOverride);
   // Keep only a plausible receipt date (last 30 days, not in the future); the client lets the user change it.
   // The printed text wins over the model's own conversion (it once read the time 13:28 as the 13th).
   const fromText = parseReceiptDateText(result.purchaseDateText);
@@ -64,6 +64,22 @@ async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt:
   } catch (err) {
     console.error("[uiu-api] fridge-stock image scan error:", err instanceof Error ? err.message : String(err));
     const kind = err instanceof VisionError ? err.kind : "other";
+    // Best-effort failure log for debugging (never the image itself).
+    try {
+      await withDb(c.env, (db) =>
+        db.collection("scan_errors").insertOne({
+          at: new Date().toISOString(),
+          userId: c.var.clerkUserId ?? null,
+          kind,
+          message: (err instanceof Error ? err.message : String(err)).slice(0, 500),
+          bytes: file.size,
+          type: file.type || null,
+          route: c.req.path,
+        }),
+      );
+    } catch {
+      // ignore: logging must not change the response
+    }
     const message =
       kind === "upstream" || kind === "empty"
         ? "The scanner didn't answer. Please try again in a moment."

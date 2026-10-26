@@ -562,6 +562,7 @@ app.post("/api/admin/users/delete-data", async (c) => {
         ["meal_plan_sequence", { _id: userId }],
         ["users", { clerkUserId: userId }],
         [PUSH_SUBSCRIPTIONS, { userId }],
+        ["scan_errors", { userId }],
       ];
       for (const [name, filter] of targets) {
         const n = await db.collection(name).countDocuments(filter as never);
@@ -594,13 +595,26 @@ app.post("/api/admin/vision-test", async (c) => {
   const form = await c.req.parseBody().catch(() => null);
   const file = form?.image;
   if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'image' file required" } } satisfies ApiResponse<never>, 400);
+  const model = c.req.query("model") || undefined;
   const t0 = Date.now();
   try {
-    const data = await scanFile(c.env, file, RECEIPT_PROMPT);
-    return c.json({ ok: true, data: { ms: Date.now() - t0, bytes: file.size, type: file.type, model: c.env.OPENROUTER_VISION_MODEL, ...data } });
+    const data = await scanFile(c.env, file, RECEIPT_PROMPT, model);
+    return c.json({ ok: true, data: { ms: Date.now() - t0, bytes: file.size, type: file.type, model: model ?? c.env.OPENROUTER_VISION_MODEL, ...data } });
   } catch (err) {
     const kind = err && typeof err === "object" && "kind" in err ? String((err as { kind: unknown }).kind) : "other";
     return c.json({ ok: false, error: { code: `vision_${kind}`, message: err instanceof Error ? err.message : String(err) }, ms: Date.now() - t0, bytes: file.size, type: file.type });
+  }
+});
+
+// Recent photo/receipt scan failures written by /api/fridge-stock/ocr and /scan-fridge (no images stored).
+app.get("/api/admin/scan-errors", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  try {
+    const docs = await withDb(c.env, (db) => db.collection("scan_errors").find({}).sort({ at: -1 }).limit(20).toArray());
+    return c.json({ ok: true, data: docs.map((d) => ({ ...d, _id: String(d._id) })) });
+  } catch (err) {
+    console.error("[uiu-api] scan-errors error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "scan-errors failed" } } satisfies ApiResponse<never>, 502);
   }
 });
 
