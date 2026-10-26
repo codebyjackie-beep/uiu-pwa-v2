@@ -40,7 +40,10 @@ export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: str
   const purchaseDate = parsePurchaseDate(candidate, new Date()) ? candidate : null;
   // Receipts only: drop discount/coupon lines and laundry/cleaning items the model let through.
   // Fridge-photo scans (a different prompt) keep every item the model returned.
-  const items = prompt === RECEIPT_PROMPT ? filterReceiptItems(result.items) : result.items;
+  // A count above 24 is a pack weight read as a quantity ("BLUEBERRIES 510G" → 510): treat it as 1 pack.
+  const items = (prompt === RECEIPT_PROMPT ? filterReceiptItems(result.items) : result.items).map((i) =>
+    i.quantity !== null && i.quantity > 24 ? { ...i, quantity: 1 } : i,
+  );
   return { items, purchaseDate };
 }
 
@@ -343,7 +346,7 @@ export const RECEIPT_PROMPT =
       "recognise — expand till abbreviations and drop store brand codes and pack sizes (e.g. " +
       '"FRAY/B MEATBL BOLOGN" = "Meatball Bolognese", "VEETEE R/GRL BSM RCE" = "Basmati Rice", ' +
       '"PORK/VEG D/LING" = "Pork & Vegetable Dumplings", "JS BRITISH S/WATRX12" = "Sparkling Water") ' +
-      "and its quantity if visible (a multipack like \"X3\" or \"12PK\" counts as that number). " +
+      "and its quantity if visible (a multipack like \"X3\" or \"12PK\" counts as that number; a weight or volume like \"510G\" or \"1KG\" is NOT a quantity — use 1). " +
       SHELF_LIFE_HINT +
       "Also read the purchase date printed on the receipt. Copy it into \"purchaseDateText\" EXACTLY as printed " +
       '(e.g. "25OCT2026", "25/10/26", "25 Oct 2026") — the date only, never the time next to it ' +
