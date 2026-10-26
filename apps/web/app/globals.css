@@ -3862,13 +3862,16 @@ a {
 
 .fridge-scan-review__row {
   display: grid;
-  grid-template-columns: auto 1fr 52px 52px;
+  grid-template-columns: auto minmax(0, 1fr) 48px 48px;
   gap: 8px;
   align-items: center;
 }
 
 .fridge-scan-review__row input[type="text"],
 .fridge-scan-review__row input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid var(--uiu-muted);
@@ -3908,13 +3911,16 @@ a {
 .fridge-scan-review__keeps {
   grid-column: 2 / -1;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  min-width: 0;
   font-size: 0.8rem;
   color: var(--uiu-muted);
 }
 
-.fridge-scan-review__keeps input[type="number"] {
+.fridge-scan-review__row .fridge-scan-review__keeps input[type="number"] {
+  flex: 0 0 56px;
   width: 56px;
 }
 
