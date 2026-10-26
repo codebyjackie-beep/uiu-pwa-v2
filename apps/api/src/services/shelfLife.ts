@@ -38,3 +38,28 @@ export function estimateExpiresAt(isPantry: boolean, startedAt: Date, shelfLifeD
   const days = shelfLifeDays ?? (isPantry ? PANTRY_SHELF_LIFE_DAYS : DEFAULT_SHELF_LIFE_DAYS);
   return new Date(startedAt.getTime() + days * DAY_MS).toISOString();
 }
+
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+/**
+ * The date exactly as printed on a receipt → "YYYY-MM-DD", or null. Parsed in code so the model can't swap in the
+ * time (Sainsbury's prints "13:28:12 25OCT2026"; the model once returned 2026-10-13). UK order: day before month.
+ * Handles 25OCT2026, 25 Oct 2026, 25-Oct-26, 25/10/2026, 25/10/26, 25.10.26, 25-10-2026, and ISO 2026-10-25.
+ */
+export function parseReceiptDateText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const t = value.trim().toLowerCase();
+  const fmt = (y: number, mo: number, d: number) => {
+    if (y < 100) y += 2000;
+    const dt = new Date(Date.UTC(y, mo - 1, d));
+    if (mo < 1 || mo > 12 || dt.getUTCDate() !== d || dt.getUTCMonth() !== mo - 1) return null;
+    return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  };
+  let m = t.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+  if (m) return fmt(Number(m[1]), Number(m[2]), Number(m[3]));
+  m = t.match(/\b(\d{1,2})[\s\-./]?([a-z]{3})[a-z]*[\s\-./,]?(\d{4}|\d{2})\b/);
+  if (m && MONTHS.includes(m[2]!)) return fmt(Number(m[3]), MONTHS.indexOf(m[2]!) + 1, Number(m[1]));
+  m = t.match(/\b(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{4}|\d{2})\b/);
+  if (m) return fmt(Number(m[3]), Number(m[2]), Number(m[1]));
+  return null;
+}

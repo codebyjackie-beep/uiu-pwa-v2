@@ -22,6 +22,8 @@ export interface ScanResult {
   items: ScannedItem[];
   /** Receipt purchase date as YYYY-MM-DD when the model read one (validated by the caller), else null. */
   purchaseDate: string | null;
+  /** The date exactly as printed (receipts only) — parsed in code by the caller. Not sent to the client. */
+  purchaseDateText?: string | null;
 }
 
 /** Why a scan failed: upstream = OpenRouter HTTP error, empty = no reply text, parse = reply was not the JSON we asked for. */
@@ -106,7 +108,8 @@ export async function scanImageForItems(env: OpenRouterVisionEnv, imageDataUrl: 
       };
     })
     .filter((item): item is ScannedItem => item !== null);
-  return { items, purchaseDate };
+  const purchaseDateText = typeof obj?.purchaseDateText === "string" ? obj.purchaseDateText.slice(0, 40) : null;
+  return { items, purchaseDate, purchaseDateText };
 }
 
 export interface MealNutritionEstimate {

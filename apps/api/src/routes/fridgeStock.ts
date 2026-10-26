@@ -6,7 +6,7 @@ import { Hono, type Context } from "hono";
 import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
-import { clampShelfLifeDays, estimateExpiresAt, parsePurchaseDate } from "../services/shelfLife";
+import { clampShelfLifeDays, estimateExpiresAt, parsePurchaseDate, parseReceiptDateText } from "../services/shelfLife";
 import { expiringSoon, impactSummary, logFridgeEvent, type FridgeOutcome } from "../services/fridgeImpact";
 import { scanImageForItems, VisionError, type OpenRouterVisionEnv, type ScanResult } from "../services/openrouterVision";
 
@@ -33,7 +33,10 @@ export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: str
   const dataUrl = await fileToDataUrl(file);
   const result = await scanImageForItems(env, dataUrl, prompt);
   // Keep only a plausible receipt date (last 30 days, not in the future); the client lets the user change it.
-  const purchaseDate = parsePurchaseDate(result.purchaseDate, new Date()) ? result.purchaseDate : null;
+  // The printed text wins over the model's own conversion (it once read the time 13:28 as the 13th).
+  const fromText = parseReceiptDateText(result.purchaseDateText);
+  const candidate = fromText ?? result.purchaseDate;
+  const purchaseDate = parsePurchaseDate(candidate, new Date()) ? candidate : null;
   return { items: result.items, purchaseDate };
 }
 
@@ -330,10 +333,13 @@ export const RECEIPT_PROMPT =
       "For each remaining item give its " +
       "name and quantity if visible. " +
       SHELF_LIFE_HINT +
-      "Also read the purchase date printed on the receipt, as YYYY-MM-DD (UK receipts print day before month, " +
-      "e.g. 23/10/26 = 2026-10-23); use null if there is no date or you cannot read it. " +
+      "Also read the purchase date printed on the receipt. Copy it into \"purchaseDateText\" EXACTLY as printed " +
+      '(e.g. "25OCT2026", "25/10/26", "25 Oct 2026") — the date only, never the time next to it ' +
+      '(in "13:28:12 25OCT2026" the date is "25OCT2026"; 13 is the hour, not the day). ' +
+      "Also give it as \"purchaseDate\" in YYYY-MM-DD (UK receipts print day before month, e.g. 23/10/26 = 2026-10-23). " +
+      "Use null for both if there is no date or you cannot read it. " +
       'Respond with ONLY a JSON object, no markdown fences, no commentary: ' +
-      '{"purchaseDate": string|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
+      '{"purchaseDateText": string|null, "purchaseDate": string|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
 
 fridgeStockRouter.post("/ocr", (c) => handleImageScan(c, RECEIPT_PROMPT));
 
