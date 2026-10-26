@@ -27,8 +27,8 @@ export interface ScanResult {
   purchaseDateText?: string | null;
   /** Receipts only: the item total the receipt prints ("Items Sold: 12"), or null. Used by the caller's count check. */
   itemsSold?: number | null;
-  /** Receipts only: how many non-food product lines the model left out. Used by the caller's count check. */
-  excludedCount?: number | null;
+  /** Receipts only: names (as printed) of non-food product lines the model left out. Used by the caller's count check. */
+  excluded?: string[];
   /** Receipts only: itemsSold vs how many items we found (after filtering). Set by the caller; null when unavailable. */
   countCheck?: { itemsSold: number; found: number } | null;
 }
@@ -123,7 +123,13 @@ export async function scanImageForItems(
   const purchaseDateText = typeof obj?.purchaseDateText === "string" ? obj.purchaseDateText.slice(0, 40) : null;
   // Counts are only trusted as whole numbers in a sane range; anything else is treated as "not printed".
   const count = (v: unknown): number | null => (Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 500 ? (v as number) : null);
-  return { items, purchaseDate, purchaseDateText, itemsSold: count(obj?.itemsSold), excludedCount: count(obj?.excludedCount) };
+  const excluded = Array.isArray(obj?.excluded)
+    ? (obj!.excluded as unknown[])
+        .filter((n): n is string => typeof n === "string" && n.trim() !== "")
+        .map((n) => n.trim().slice(0, 80))
+        .slice(0, 50)
+    : [];
+  return { items, purchaseDate, purchaseDateText, itemsSold: count(obj?.itemsSold), excluded };
 }
 
 export interface MealNutritionEstimate {

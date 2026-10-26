@@ -51,7 +51,8 @@ export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: str
   let countCheck: ScanResult["countCheck"] = null;
   if (isReceipt && typeof result.itemsSold === "number") {
     const nonFoodRemoved = result.items.filter((i) => isNonFood(i.name) && !isDiscountLine(i.name)).length;
-    countCheck = { itemsSold: result.itemsSold, found: items.length + nonFoodRemoved + (result.excludedCount ?? 0) };
+    const excludedReal = (result.excluded ?? []).filter((n) => !isDiscountLine(n)).length;
+    countCheck = { itemsSold: result.itemsSold, found: items.length + nonFoodRemoved + excludedReal };
   }
   return { items, purchaseDate, countCheck };
 }
@@ -380,11 +381,10 @@ export const RECEIPT_PROMPT =
       "Use null for both if there is no date or you cannot read it. " +
       'Also give "itemsSold": the total number of items the receipt itself prints (e.g. "Items Sold: 12", ' +
       '"TOTAL NUMBER OF ITEMS SOLD = 12", "8 BALANCE DUE" means 8), or null if it prints none. ' +
-      'Also give "excludedCount": how many product lines you left out because they are not food (toiletries, ' +
-      "cleaning, etc.) — not counting discount/coupon lines. " +
+      'Also give "excluded": the names (as printed) of product lines you left out because they are not food (toiletries, cleaning, etc.). Do not include discount, coupon, saving or negative-price lines in "excluded" (a line whose price ends in "-" or "-A"/"-Z", e.g. "4.00-A", is a discount). ' +
       "Only list products actually printed on the receipt; never add an item that is not there. " +
       'Respond with ONLY a JSON object, no markdown fences, no commentary: ' +
-      '{"purchaseDateText": string|null, "purchaseDate": string|null, "itemsSold": number|null, "excludedCount": number|null, "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
+      '{"purchaseDateText": string|null, "purchaseDate": string|null, "itemsSold": number|null, "excluded": string[], "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
 
 fridgeStockRouter.post("/ocr", (c) => handleImageScan(c, RECEIPT_PROMPT));
 
