@@ -9,6 +9,7 @@ import { withDb, getMongoModule, type DbEnv } from "../db";
 import { clampShelfLifeDays, estimateExpiresAt, parsePurchaseDate, parseReceiptDateText } from "../services/shelfLife";
 import { expiringSoon, impactSummary, logFridgeEvent, type FridgeOutcome } from "../services/fridgeImpact";
 import { scanImageForItems, VisionError, type OpenRouterVisionEnv, type ScanResult } from "../services/openrouterVision";
+import { filterReceiptItems } from "../services/receiptFilter";
 
 type FridgeStockEnv = DbEnv & OpenRouterVisionEnv;
 
@@ -37,7 +38,10 @@ export async function scanFile(env: OpenRouterVisionEnv, file: File, prompt: str
   const fromText = parseReceiptDateText(result.purchaseDateText);
   const candidate = fromText ?? result.purchaseDate;
   const purchaseDate = parsePurchaseDate(candidate, new Date()) ? candidate : null;
-  return { items: result.items, purchaseDate };
+  // Receipts only: drop discount/coupon lines and laundry/cleaning items the model let through.
+  // Fridge-photo scans (a different prompt) keep every item the model returned.
+  const items = prompt === RECEIPT_PROMPT ? filterReceiptItems(result.items) : result.items;
+  return { items, purchaseDate };
 }
 
 async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt: string) {
@@ -322,6 +326,11 @@ export const RECEIPT_PROMPT =
       "items entirely (e.g. toiletries, cleaning products, toothpaste, tissue/toilet paper, medicine, " +
       "pet supplies, batteries, stationery, kitchenware/homeware). If an item is ambiguous or you are " +
       "unsure whether it is food, leave it out rather than guessing. " +
+      "Laundry and cleaning products are never food, e.g. Fairy, Persil, Ariel, Comfort, Lenor, " +
+      "Finish, Domestos, Flash, Dettol — leave them out. " +
+      'Skip discount, coupon and saving lines — they are not items: e.g. Costco "IRC ..." (instant ' +
+      'rebate coupon) lines, "Nectar Price Saving", "Price Cut", "20% off with Lidl Plus", multibuy ' +
+      "savings. List each real product only once. " +
       'UK till receipts heavily abbreviate product names — e.g. "MOISTRSNG"=Moisturising, ' +
       '"CL"=Cleanser, "LTN"=Lotion, "SHMPOO"=Shampoo, "COND"=Conditioner, "DEO"=Deodorant, ' +
       '"TOOTHPST"=Toothpaste. Also watch for known personal-care/skincare/haircare brand ' +
@@ -330,8 +339,11 @@ export const RECEIPT_PROMPT =
       "of what follows. When a line's meaning is unclear because of abbreviation, lean " +
       "toward excluding it rather than including it — a missed grocery item is far less " +
       "harmful than a toiletry ending up in a food list. " +
-      "For each remaining item give its " +
-      "name and quantity if visible. " +
+      'For each remaining item give its "name" as a short, plain English product name a shopper would ' +
+      "recognise — expand till abbreviations and drop store brand codes and pack sizes (e.g. " +
+      '"FRAY/B MEATBL BOLOGN" = "Meatball Bolognese", "VEETEE R/GRL BSM RCE" = "Basmati Rice", ' +
+      '"PORK/VEG D/LING" = "Pork & Vegetable Dumplings", "JS BRITISH S/WATRX12" = "Sparkling Water") ' +
+      "and its quantity if visible (a multipack like \"X3\" or \"12PK\" counts as that number). " +
       SHELF_LIFE_HINT +
       "Also read the purchase date printed on the receipt. Copy it into \"purchaseDateText\" EXACTLY as printed " +
       '(e.g. "25OCT2026", "25/10/26", "25 Oct 2026") — the date only, never the time next to it ' +
