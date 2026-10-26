@@ -8,7 +8,7 @@ import type { ApiResponse, FridgeStockItem, FridgeStockSource } from "@uiu/share
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { clampShelfLifeDays, estimateExpiresAt, parsePurchaseDate } from "../services/shelfLife";
 import { expiringSoon, impactSummary, logFridgeEvent, type FridgeOutcome } from "../services/fridgeImpact";
-import { scanImageForItems, type OpenRouterVisionEnv, type ScanResult } from "../services/openrouterVision";
+import { scanImageForItems, VisionError, type OpenRouterVisionEnv, type ScanResult } from "../services/openrouterVision";
 
 type FridgeStockEnv = DbEnv & OpenRouterVisionEnv;
 
@@ -53,7 +53,14 @@ async function handleImageScan(c: Context<{ Bindings: FridgeStockEnv }>, prompt:
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] fridge-stock image scan error:", err instanceof Error ? err.message : String(err));
-    const body: ApiResponse<never> = { ok: false, error: { code: "vision_error", message: "Failed to analyze image" } };
+    const kind = err instanceof VisionError ? err.kind : "other";
+    const message =
+      kind === "upstream" || kind === "empty"
+        ? "The scanner didn't answer. Please try again in a moment."
+        : kind === "parse"
+          ? "Couldn't read that photo. Try again with the receipt flat, close up and in good light."
+          : "Failed to analyze image. Please try again.";
+    const body: ApiResponse<never> = { ok: false, error: { code: `vision_${kind}`, message } };
     return c.json(body, 502);
   }
 }
