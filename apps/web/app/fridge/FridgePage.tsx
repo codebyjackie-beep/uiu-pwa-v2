@@ -483,9 +483,10 @@ export function FridgePage() {
               </label>
             </div>
           ))}
-          <div className="fridge-scan-review__actions">
+          <div className="fridge-scan-review__add">
             <button
               type="button"
+              className="wizard-primary-button"
               disabled={confirming}
               onClick={() =>
                 setReviewItems((prev) =>
@@ -495,6 +496,8 @@ export function FridgePage() {
             >
               + Add item
             </button>
+          </div>
+          <div className="fridge-scan-review__actions">
             <button type="button" className="wizard-primary-button" disabled={confirming} onClick={confirmScan}>
               {confirming ? "Adding…" : "Confirm and add"}
             </button>

@@ -5794,3 +5794,9 @@ a {
   line-height: 1.1;
   white-space: nowrap;
 }
+
+.fridge-scan-review__add {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
