@@ -10,6 +10,8 @@ export interface OpenRouterVisionEnv {
   OPENROUTER_API_KEY: string;
   OPENROUTER_VISION_MODEL: string;
   OPENROUTER_RECEIPT_MODEL?: string;
+  /** Video recipe import only (Jackie 2026-10-27: flash-lite/flash ~1/3 reliable on video; pro ~2/3). */
+  OPENROUTER_VIDEO_MODEL?: string;
 }
 
 export interface ScannedItem {
@@ -306,7 +308,7 @@ export async function extractRecipeFromVideo(env: OpenRouterVisionEnv, videoData
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: env.OPENROUTER_VISION_MODEL,
+        model: env.OPENROUTER_VIDEO_MODEL ?? env.OPENROUTER_VISION_MODEL,
         messages: [
           {
             role: "user",
@@ -354,7 +356,7 @@ export async function diagnoseVideoRecipe(env: OpenRouterVisionEnv, videoDataUrl
     method: "POST",
     headers: { Authorization: `Bearer ${env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: model ?? env.OPENROUTER_VISION_MODEL,
+      model: model ?? env.OPENROUTER_VIDEO_MODEL ?? env.OPENROUTER_VISION_MODEL,
       messages: [{ role: "user", content: [{ type: "text", text: VIDEO_RECIPE_PROMPT }, { type: "video_url", video_url: { url: videoDataUrl } }] }],
       response_format: { type: "json_object" },
     }),
