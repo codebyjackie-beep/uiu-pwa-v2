@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { costDisplayTier, recipePerServingPrice, type ApiResponse, type FavouriteRecipe, type RecipeListItem } from "@uiu/shared";
+import {
+  costDisplayTier,
+  recipePerServingPrice,
+  type ApiResponse,
+  type FavouriteRecipe,
+  type RecipeListItem,
+  type RecipeListPage,
+} from "@uiu/shared";
 import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
 import {
   classifyMealTypes,
@@ -68,6 +75,12 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
   const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
   const [favouritesOnly, setFavouritesOnly] = useState(false);
+  // "My recipes" — the signed-in user's own private recipes (imports + manual saves), via /api/recipes?mine=true.
+  const [mineOnly, setMineOnly] = useState(false);
+  const [myRecipes, setMyRecipes] = useState<RecipeListItem[] | null>(null);
+  const [myLoading, setMyLoading] = useState(false);
+  // Bumped after a save so the My recipes list refetches even when it is already showing.
+  const [mineVersion, setMineVersion] = useState(0);
   const [favouriteIds, setFavouriteIds] = useState<Set<string>>(() => new Set());
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
   const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
@@ -112,6 +125,23 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       cancelled = true;
     };
   }, [isSignedIn]);
+
+  // Fetch the signed-in user's own recipes whenever My recipes is on (and again after a save).
+  useEffect(() => {
+    if (!mineOnly || !isSignedIn) return;
+    let cancelled = false;
+    setMyLoading(true);
+    (async () => {
+      const res = await fetch("/api/recipes?mine=true&limit=100");
+      const parsed = (await res.json().catch(() => null)) as ApiResponse<RecipeListPage> | null;
+      if (cancelled) return;
+      setMyLoading(false);
+      if (parsed?.ok) setMyRecipes(parsed.data.items);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [mineOnly, isSignedIn, mineVersion]);
 
   async function toggleFavourite(recipeId: string) {
     if (!requireAuth()) return;
@@ -183,11 +213,14 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   }
 
   const hasActiveFilters =
-    search.trim() !== "" || mealTypes.length > 0 || dietary.length > 0 || priceBuckets.length > 0 || favouritesOnly;
+    search.trim() !== "" || mealTypes.length > 0 || dietary.length > 0 || priceBuckets.length > 0 || favouritesOnly || mineOnly;
+
+  // My recipes replaces the public list as the source; every other filter applies on top of it.
+  const source = mineOnly ? myRecipes ?? [] : items;
 
   const filtered = useMemo(() => {
     const searchLower = search.trim().toLowerCase();
-    return items.filter((recipe) => {
+    return source.filter((recipe) => {
       if (favouritesOnly && !favouriteIds.has(recipe._id)) return false;
 
       if (searchLower) {
@@ -217,7 +250,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
 
       return true;
     });
-  }, [items, search, mealTypes, dietary, priceBuckets, favouritesOnly, favouriteIds]);
+  }, [source, search, mealTypes, dietary, priceBuckets, favouritesOnly, favouriteIds]);
 
   // No filters active: random 10 + Refresh (HANDOFF_recipes-page-manual-entry-and-refresh.md
   // §B). Any filter active: unchanged — show every match, no count limit
@@ -234,6 +267,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     setDietary([]);
     setPriceBuckets([]);
     setFavouritesOnly(false);
+    setMineOnly(false);
   }
 
   function clearDietaryAndPrice() {
@@ -241,7 +275,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
     setPriceBuckets([]);
   }
 
-  const mealOrFavouriteActive = favouritesOnly || mealTypes.length > 0;
+  const mealOrFavouriteActive = favouritesOnly || mineOnly || mealTypes.length > 0;
   const dietaryPriceCount = dietary.length + priceBuckets.length;
 
   return (
@@ -254,6 +288,11 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
           }}
           initialUrl={sharePrefill?.url}
           initialText={sharePrefill?.text}
+          onSaved={() => {
+            setMineVersion((v) => v + 1);
+            setMineOnly(true);
+            setFavouritesOnly(false);
+          }}
         />
       ) : null}
 
@@ -264,6 +303,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
             className={`chip${!mealOrFavouriteActive ? " chip--active" : ""}`}
             onClick={() => {
               setFavouritesOnly(false);
+              setMineOnly(false);
               setMealTypes([]);
             }}
           >
@@ -275,9 +315,23 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
             onClick={() => {
               if (!requireAuth()) return;
               setFavouritesOnly(!favouritesOnly);
+              setMineOnly(false);
             }}
           >
             ♥ Favourites
+          </button>
+          <button
+            type="button"
+            className={`chip${mineOnly ? " chip--active" : ""}`}
+            onClick={() => {
+              // Guests get the sign-up sheet: My recipes is per-account, not a guest feature.
+              if (!requireAccount()) return;
+              setMyLoading(!mineOnly);
+              setMineOnly(!mineOnly);
+              setFavouritesOnly(false);
+            }}
+          >
+            My recipes
           </button>
           {MEAL_TYPE_OPTIONS.map((opt) => (
             <button
@@ -430,7 +484,13 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
           );
         })}
 
-        {visible.length === 0 ? <p className="recipes-filters__empty">No recipes match these filters.</p> : null}
+        {visible.length === 0 && !myLoading ? (
+          <p className="recipes-filters__empty">
+            {mineOnly && source.length === 0
+              ? "No recipes of your own yet — tap Add a recipe to save one."
+              : "No recipes match these filters."}
+          </p>
+        ) : null}
       </div>
 
       {!hasActiveFilters ? (

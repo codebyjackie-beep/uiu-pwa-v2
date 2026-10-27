@@ -564,7 +564,11 @@ app.post("/api/admin/users/delete-data", async (c) => {
         ["users", { clerkUserId: userId }],
         [PUSH_SUBSCRIPTIONS, { userId }],
         ["scan_errors", { userId }],
+        // Private user recipes (imports / manual saves, 2026-10-27) + their cost docs.
+        ["recipes", { clerkUserId: userId, isPublic: { $ne: true } }],
       ];
+      const ownRecipeIds = (await db.collection("recipes").find({ clerkUserId: userId, isPublic: { $ne: true } }, { projection: { _id: 1 } }).toArray()).map((d) => d._id);
+      targets.push(["recipe_cost", { recipeId: { $in: ownRecipeIds } }]);
       for (const [name, filter] of targets) {
         const n = await db.collection(name).countDocuments(filter as never);
         if (n) counts[name] = n;

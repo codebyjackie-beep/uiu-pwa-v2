@@ -86,7 +86,17 @@ recipesRouter.get("/", async (c) => {
   const tag = c.req.query("tag");
   const q = c.req.query("q");
 
-  const filter: Document = { isPublic: true };
+  // ?mine=true → the signed-in user's private recipes (imports / manual saves) instead of the public list.
+  const mine = c.req.query("mine") === "true";
+  let filter: Document = { isPublic: true };
+  if (mine) {
+    const clerkUserId = await optionalClerkUserId(c);
+    if (!clerkUserId) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Sign in to see your recipes" } };
+      return c.json(body, 401);
+    }
+    filter = { clerkUserId };
+  }
   if (tag) filter.tags = tag;
   if (q) filter.title = { $regex: escapeRegex(q), $options: "i" };
 

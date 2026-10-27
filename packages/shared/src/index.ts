@@ -112,6 +112,10 @@ export interface Recipe {
    * lets the admin UI's "Auto-approved" filter chip find them, and lets
    * rollback_recipe_drafts_triage.cjs find exactly what one batch run created. */
   autoApprovedBatchId?: string;
+  /** Owner of a private user recipe (Clerk id). Absent on public/system recipes. */
+  clerkUserId?: string;
+  /** How a user recipe was created: "jsonld" | "oembed-caption" | "manual-paste" | "photo-ocr" | "video-ai" | "manual". */
+  importMethod?: string;
 }
 
 // ---------------------------------------------------------------------------

@@ -28,8 +28,33 @@ const MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack", "dessert"];
 
 type ManualIngredientRow = { name: string; quantity: string; unit: string };
 
+/** Mirrors ImportedDraft in apps/api/src/routes/recipeImport.ts (the import endpoints' `data.draft`). */
+type ImportedDraftShape = {
+  title: string;
+  description: string;
+  ingredients: { name: string; quantity: number; unit: string }[];
+  steps: string[];
+  tags: string[];
+  mealType?: string;
+  servings: number;
+  prepTimeMinutes: number;
+  cookTimeMinutes: number;
+  sourceUrl: string | null;
+  sourcePlatform: string | null;
+  importMethod: string;
+};
+
+type ImportedFrom = { sourceUrl: string | null; sourcePlatform: string | null; importMethod: string };
+
+/** Numeric draft field → form string; 0 means "no data", so it shows blank rather than "0". */
+function numberToFormString(n: number): string {
+  return n ? String(n) : "";
+}
+
 interface SaveFromLinkModalProps {
   onClose: () => void;
+  /** Called after a successful save to My recipes, before the done step. */
+  onSaved?: () => void;
   /** Pre-fill from a Web Share Target hand-off (HANDOFF_recipe-share-target.md) —
    * a link that was extracted server-side, ready to review/confirm. */
   initialUrl?: string;
@@ -39,7 +64,7 @@ interface SaveFromLinkModalProps {
   initialText?: string;
 }
 
-export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFromLinkModalProps) {
+export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }: SaveFromLinkModalProps) {
   const [mode, setMode] = useState<Mode>("link");
   const [step, setStep] = useState<Step>(initialText ? "manual-paste" : "url");
   const [url, setUrl] = useState(initialUrl ?? "");
@@ -59,18 +84,41 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
   const [manualServings, setManualServings] = useState("");
   const [manualPrepTime, setManualPrepTime] = useState("");
   const [manualCookTime, setManualCookTime] = useState("");
+  /** Set when the form was filled from an import draft; null for a hand-typed recipe. */
+  const [importedFrom, setImportedFrom] = useState<ImportedFrom | null>(null);
 
   const manualValid =
     manualTitle.trim() !== "" &&
     manualIngredients.some((row) => row.name.trim() !== "") &&
     manualSteps.some((s) => s.trim() !== "");
 
+  /** Import succeeded: fill the manual form from the draft so the user can fix it, then Save (POST /manual). */
+  function openDraftForReview(draft: ImportedDraftShape) {
+    setManualTitle(draft.title);
+    setManualDescription(draft.description);
+    setManualIngredients(
+      draft.ingredients.length > 0
+        ? draft.ingredients.map((ing) => ({ name: ing.name, quantity: numberToFormString(ing.quantity), unit: ing.unit }))
+        : [{ name: "", quantity: "", unit: "" }],
+    );
+    setManualSteps(draft.steps.length > 0 ? draft.steps : [""]);
+    setManualTags(draft.tags.join(", "));
+    setManualMealType(draft.mealType && MEAL_TYPE_OPTIONS.includes(draft.mealType) ? draft.mealType : "");
+    setManualServings(numberToFormString(draft.servings));
+    setManualPrepTime(numberToFormString(draft.prepTimeMinutes));
+    setManualCookTime(numberToFormString(draft.cookTimeMinutes));
+    setImportedFrom({ sourceUrl: draft.sourceUrl, sourcePlatform: draft.sourcePlatform, importMethod: draft.importMethod });
+    setMode("manual");
+    setStep("url");
+    setError(null);
+  }
+
   async function submitUrl() {
     const trimmed = url.trim();
     if (!trimmed || submitting) return;
     setError(null);
     setSubmitting(true);
-    const { parsed } = await fetchJson<{ recipeDraftId?: string; needsManualPaste?: true; platform?: string | null }>(
+    const { parsed } = await fetchJson<{ draft?: ImportedDraftShape; needsManualPaste?: true; platform?: string | null }>(
       "/api/recipe-import/from-url",
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: trimmed }) },
     );
@@ -84,7 +132,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
       setStep("manual-paste");
       return;
     }
-    setStep("done");
+    if (parsed.data.draft) openDraftForReview(parsed.data.draft);
   }
 
   async function submitPhotos(files: File[]) {
@@ -92,7 +140,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
     setError(null);
     setSubmitting(true);
     const images = await Promise.all(files.slice(0, MAX_PHOTOS).map(fileToDataUrl));
-    const { parsed } = await fetchJson<{ recipeDraftId?: string; needsManualPaste?: true }>("/api/recipe-import/from-photo", {
+    const { parsed } = await fetchJson<{ draft?: ImportedDraftShape; needsManualPaste?: true }>("/api/recipe-import/from-photo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ images }),
@@ -107,7 +155,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
       setStep("manual-paste");
       return;
     }
-    setStep("done");
+    if (parsed.data.draft) openDraftForReview(parsed.data.draft);
   }
 
   async function submitVideo(file: File) {
@@ -119,7 +167,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
     }
     setSubmitting(true);
     const video = await fileToDataUrl(file);
-    const { parsed } = await fetchJson<{ recipeDraftId?: string; needsManualPaste?: true }>("/api/recipe-import/from-video", {
+    const { parsed } = await fetchJson<{ draft?: ImportedDraftShape; needsManualPaste?: true }>("/api/recipe-import/from-video", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       // The link the user tried first (e.g. the Instagram reel) is kept as the draft's source credit.
@@ -135,7 +183,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
       setStep("manual-paste");
       return;
     }
-    setStep("done");
+    if (parsed.data.draft) openDraftForReview(parsed.data.draft);
   }
 
   async function submitManual() {
@@ -163,6 +211,10 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
         servings: manualServings ? Number(manualServings) : undefined,
         prepTimeMinutes: manualPrepTime ? Number(manualPrepTime) : undefined,
         cookTimeMinutes: manualCookTime ? Number(manualCookTime) : undefined,
+        // Only sent when the form came from an import; a hand-typed recipe omits them (API defaults to "manual").
+        sourceUrl: importedFrom?.sourceUrl ?? undefined,
+        sourcePlatform: importedFrom?.sourcePlatform ?? undefined,
+        importMethod: importedFrom?.importMethod,
       }),
     });
     setSubmitting(false);
@@ -170,6 +222,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
       setError(parsed && !parsed.ok ? parsed.error.message : "Something went wrong — please try again.");
       return;
     }
+    onSaved?.();
     setStep("done");
   }
 
@@ -178,7 +231,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
     if (!trimmed || submitting) return;
     setError(null);
     setSubmitting(true);
-    const { parsed } = await fetchJson<{ recipeDraftId: string }>("/api/recipe-import/from-text", {
+    const { parsed } = await fetchJson<{ draft: ImportedDraftShape }>("/api/recipe-import/from-text", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: trimmed, url: url.trim() || undefined, platform }),
@@ -188,7 +241,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
       setError(parsed && !parsed.ok ? parsed.error.message : "Couldn't extract a recipe from that text — please add more detail.");
       return;
     }
-    setStep("done");
+    openDraftForReview(parsed.data.draft);
   }
 
   return (
@@ -209,6 +262,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
                 disabled={submitting}
                 onClick={() => {
                   setMode("link");
+                  setImportedFrom(null);
                   setError(null);
                 }}
               >
@@ -220,6 +274,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
                 disabled={submitting}
                 onClick={() => {
                   setMode("photo");
+                  setImportedFrom(null);
                   setError(null);
                 }}
               >
@@ -231,6 +286,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
                 disabled={submitting}
                 onClick={() => {
                   setMode("video");
+                  setImportedFrom(null);
                   setError(null);
                 }}
               >
@@ -242,6 +298,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
                 disabled={submitting}
                 onClick={() => {
                   setMode("manual");
+                  setImportedFrom(null);
                   setError(null);
                 }}
               >
@@ -334,7 +391,11 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
 
           {step === "url" && mode === "manual" ? (
             <>
-              <p className="admin-drafts-page__sub">Type your own recipe in — nothing here is parsed or checked by AI.</p>
+              {importedFrom ? (
+                <p className="admin-drafts-page__sub">Check what we found and fix anything that&apos;s wrong, then Save. Only you can see this recipe.</p>
+              ) : (
+                <p className="admin-drafts-page__sub">Type your own recipe in — nothing here is parsed or checked by AI. Only you can see this recipe.</p>
+              )}
               <input
                 type="text"
                 placeholder="Title"
@@ -527,11 +588,7 @@ export function SaveFromLinkModal({ onClose, initialUrl, initialText }: SaveFrom
 
           {step === "done" ? (
             <>
-              <p className="admin-drafts-page__sub">
-                {mode === "manual"
-                  ? "Saved! Your recipe is live in Recipes."
-                  : "Added to the review queue — go to Admin → Recipe Drafts to check and approve it."}
-              </p>
+              <p className="admin-drafts-page__sub">Saved to My recipes — only you can see it.</p>
               <button type="button" className="wizard-primary-button" onClick={onClose}>
                 Done
               </button>

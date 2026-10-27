@@ -30,62 +30,38 @@ type ImportedRecipe = {
   cookTimeMinutes: number;
 };
 
-async function insertDraft(
-  c: { env: RecipeImportEnv },
+/**
+ * What the import endpoints return to the client (owner decision 2026-10-27: imports are private to the
+ * user). Nothing is written to the DB here — the user reviews/edits this in the form, then Save posts it
+ * to POST /manual, which stores the private recipe.
+ */
+export type ImportedDraft = ImportedRecipe & {
+  sourceUrl: string | null;
+  sourcePlatform: string | null;
+  importMethod: RecipeDraft["importMethod"];
+};
+
+/** Pure: shapes a parsed recipe into the client draft. No DB, no Pexels, no cost. */
+function toDraft(
   recipe: ImportedRecipe,
   sourceUrl: string | undefined,
   sourcePlatform: RecipeDraft["sourcePlatform"],
   importMethod: RecipeDraft["importMethod"],
-): Promise<string> {
-  return withDb(c.env, async (db) => {
-    const ingredientsCol = db.collection<Document>("canonical_ingredients");
-    const priceCol = db.collection<Document>("canonical_price_cache");
-    const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
-    const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
-    const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
-    const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
-    const quarantinedNames = new Set(
-      allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
-    );
-    const index = await buildAliasIndex(ingredientsCol);
-    const resolveFn = (rawName: string) => resolve(rawName, index);
-
-    const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
-    const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-
-    // Nutrition has its own gram conversion (nutritionGrams.ts) — independent of price, counts ml / pc lines.
-    const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
-
-    const costPreview: RecipeListItemCost | null =
-      cost.basket > 0 ? { basket: cost.basket, currency: "GBP", perServing: cost.perServing, adjustedCoveragePct: cost.adjustedCoveragePct } : null;
-
-    // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
-    // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
-    const imageUrl = await findRecipePhoto(c.env, recipe.title).catch(() => null);
-
-    const draft: Omit<RecipeDraft, "_id"> = {
-      title: recipe.title,
-      description: recipe.description,
-      ingredients: recipe.ingredients,
-      steps: recipe.steps,
-      tags: recipe.tags,
-      mealType: recipe.mealType,
-      servings: recipe.servings,
-      prepTimeMinutes: recipe.prepTimeMinutes,
-      cookTimeMinutes: recipe.cookTimeMinutes,
-      nutrition,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      sourceInspiration: sourceUrl ?? "",
-      costPreview,
-      sourceUrl,
-      sourcePlatform,
-      importMethod,
-      imageUrl,
-    };
-    const result = await db.collection("recipe_drafts").insertOne(draft as unknown as Document);
-    return result.insertedId.toString();
-  });
+): ImportedDraft {
+  return {
+    title: recipe.title,
+    description: recipe.description,
+    ingredients: recipe.ingredients,
+    steps: recipe.steps,
+    tags: recipe.tags,
+    mealType: recipe.mealType,
+    servings: recipe.servings,
+    prepTimeMinutes: recipe.prepTimeMinutes,
+    cookTimeMinutes: recipe.cookTimeMinutes,
+    sourceUrl: sourceUrl ?? null,
+    sourcePlatform: sourcePlatform ?? null,
+    importMethod,
+  };
 }
 
 recipeImportRouter.post("/from-url", async (c) => {
@@ -118,8 +94,8 @@ recipeImportRouter.post("/from-url", async (c) => {
     }
 
     if (jsonLd) {
-      const recipeDraftId = await insertDraft(c, jsonLd, normalizedUrl, platform, "jsonld");
-      const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+      const draft = toDraft(jsonLd, normalizedUrl, platform, "jsonld");
+      const body: ApiResponse<{ draft: ImportedDraft }> = { ok: true, data: { draft } };
       return c.json(body);
     }
 
@@ -129,8 +105,8 @@ recipeImportRouter.post("/from-url", async (c) => {
       const parsed = await parseRecipeFromText(c.env, caption.text);
       if (parsed) {
         const ingredients: RecipeIngredient[] = parsed.ingredients.map((ing) => ({ name: ing.name, quantity: ing.quantity, unit: ing.unit }));
-        const recipeDraftId = await insertDraft(c, { ...parsed, ingredients }, normalizedUrl, platform, "oembed-caption");
-        const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+        const draft = toDraft({ ...parsed, ingredients }, normalizedUrl, platform, "oembed-caption");
+        const body: ApiResponse<{ draft: ImportedDraft }> = { ok: true, data: { draft } };
         return c.json(body);
       }
     }
@@ -167,8 +143,8 @@ recipeImportRouter.post("/from-text", async (c) => {
       return c.json(body, 422);
     }
     const ingredients: RecipeIngredient[] = parsed.ingredients.map((ing) => ({ name: ing.name, quantity: ing.quantity, unit: ing.unit }));
-    const recipeDraftId = await insertDraft(c, { ...parsed, ingredients }, url, platform, "manual-paste");
-    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    const draft = toDraft({ ...parsed, ingredients }, url, platform, "manual-paste");
+    const body: ApiResponse<{ draft: ImportedDraft }> = { ok: true, data: { draft } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] recipe-import from-text error:", err instanceof Error ? err.message : String(err));
@@ -180,12 +156,11 @@ recipeImportRouter.post("/from-text", async (c) => {
 const MAX_PHOTOS = 3;
 
 /**
- * HANDOFF_recipes-page-manual-entry-and-refresh.md §A (corrected 2026-08-12 — see
- * HANDOFF_recipes-page-manual-entry-and-refresh.md §A revision): a hand-typed recipe is
- * final the moment the user hits Save — it never enters recipe_drafts / the admin approve
- * queue. Inserts straight into `recipes` (mirrors adminRecipeDrafts.ts's approve handler:
- * best-effort Pexels image, isPublic true, source "manual_entry") and computes recipe_cost
- * in the same request. No AI/LLM call anywhere in this path.
+ * Save a user's recipe: hand-typed, or an import the user reviewed/edited in the form (link / text /
+ * photo / video). The recipe is PRIVATE to the signed-in user (owner decision 2026-10-27): isPublic false,
+ * owned by `clerkUserId`, and it never enters recipe_drafts or the admin approve queue. Inserts into
+ * `recipes` with a best-effort Pexels image and computes recipe_cost in the same request. No AI/LLM call
+ * anywhere in this path.
  */
 recipeImportRouter.post("/manual", async (c) => {
   const payload = await c.req.json().catch(() => null);
@@ -221,6 +196,13 @@ recipeImportRouter.post("/manual", async (c) => {
   }
 
   const p = payload as Record<string, unknown>;
+  const sourceUrlRaw = typeof p.sourceUrl === "string" ? p.sourceUrl.trim() : "";
+  const sourceUrl = sourceUrlRaw && sourceUrlRaw.length <= 500 && /^https?:\/\//i.test(sourceUrlRaw) ? sourceUrlRaw : undefined;
+  const sourcePlatform = typeof p.sourcePlatform === "string" && p.sourcePlatform.trim() && p.sourcePlatform.length <= 40 ? p.sourcePlatform.trim() : null;
+  const MANUAL_IMPORT_METHODS = ["jsonld", "oembed-caption", "manual-paste", "photo-ocr", "video-ai"] as const;
+  const importMethod = (MANUAL_IMPORT_METHODS as readonly string[]).includes(p.importMethod as string)
+    ? (p.importMethod as (typeof MANUAL_IMPORT_METHODS)[number])
+    : "manual";
   const recipe: ImportedRecipe = {
     title: title.trim(),
     description: typeof p.description === "string" ? p.description : "",
@@ -259,8 +241,9 @@ recipeImportRouter.post("/manual", async (c) => {
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: recipe.title,
         description: recipe.description,
-        isPublic: true,
+        isPublic: false,
         userId: null,
+        clerkUserId: c.var.clerkUserId,
         ingredients: recipe.ingredients,
         steps: recipe.steps,
         tags: recipe.tags,
@@ -269,9 +252,10 @@ recipeImportRouter.post("/manual", async (c) => {
         cookTimeMinutes: recipe.cookTimeMinutes,
         imageUrl: imageUrl ?? "",
         nutrition,
-        source: "manual_entry",
-        sourcePlatform: null,
-        sourceUrl: undefined,
+        source: importMethod === "manual" ? "manual_entry" : "user_import",
+        sourcePlatform,
+        sourceUrl,
+        importMethod,
         collectionIds: [],
         isFavorite: false,
         viewCount: 0,
@@ -334,8 +318,8 @@ recipeImportRouter.post("/from-photo", async (c) => {
       return c.json(body);
     }
     const ingredients: RecipeIngredient[] = parsed.ingredients.map((ing) => ({ name: ing.name, quantity: ing.quantity, unit: ing.unit }));
-    const recipeDraftId = await insertDraft(c, { ...parsed, ingredients }, undefined, null, "photo-ocr");
-    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    const draft = toDraft({ ...parsed, ingredients }, undefined, null, "photo-ocr");
+    const body: ApiResponse<{ draft: ImportedDraft }> = { ok: true, data: { draft } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] recipe-import from-photo error:", err instanceof Error ? err.message : String(err));
@@ -378,8 +362,8 @@ recipeImportRouter.post("/from-video", async (c) => {
       return c.json(body);
     }
     const ingredients: RecipeIngredient[] = parsed.ingredients.map((ing) => ({ name: ing.name, quantity: ing.quantity, unit: ing.unit }));
-    const recipeDraftId = await insertDraft(c, { ...parsed, ingredients }, sourceUrl, sourceUrl ? detectPlatform(sourceUrl) : null, "video-ai");
-    const body: ApiResponse<{ recipeDraftId: string }> = { ok: true, data: { recipeDraftId } };
+    const draft = toDraft({ ...parsed, ingredients }, sourceUrl, sourceUrl ? detectPlatform(sourceUrl) : null, "video-ai");
+    const body: ApiResponse<{ draft: ImportedDraft }> = { ok: true, data: { draft } };
     return c.json(body);
   } catch (err) {
     console.error("[uiu-api] recipe-import from-video error:", err instanceof Error ? err.message : String(err));
