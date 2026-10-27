@@ -52,6 +52,7 @@ type Bindings = {
   OPENROUTER_MODEL: string;
   OPENROUTER_VISION_MODEL: string;
   OPENROUTER_RECEIPT_MODEL?: string;
+  OPENROUTER_VIDEO_MODEL?: string;
   // Secrets (not in repo, via `wrangler secret put`):
   //   MONGODB_URI — Atlas connection string.
   //   ADMIN_TOKEN — shared secret checked against X-Admin-Token for /api/admin/* routes.
