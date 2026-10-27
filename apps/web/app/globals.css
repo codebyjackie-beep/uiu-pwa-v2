@@ -3881,6 +3881,8 @@ a {
 
 .fridge-scan-review__actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
   margin-top: 6px;
 }
@@ -5795,8 +5797,3 @@ a {
   white-space: nowrap;
 }
 
-.fridge-scan-review__add {
-  display: flex;
-  justify-content: center;
-  margin: 12px 0;
-}
