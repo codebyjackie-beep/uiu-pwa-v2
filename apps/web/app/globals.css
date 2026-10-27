@@ -3881,10 +3881,18 @@ a {
 
 .fridge-scan-review__actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   gap: 10px;
   margin-top: 6px;
+}
+.fridge-scan-review__actions > button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.fridge-scan-review__cancel {
+  margin-top: 10px;
+}
+.fridge-scan-review__cancel > button {
+  width: 100%;
 }
 
 /* Receipt date + per-item shelf life (2026-10-25). "Keeps" sits on its own line under each row. */

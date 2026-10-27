@@ -499,7 +499,9 @@ export function FridgePage() {
             >
               + Add item
             </button>
-            <button type="button" onClick={cancelScan} disabled={confirming}>
+          </div>
+          <div className="fridge-scan-review__cancel">
+            <button type="button" className="wizard-secondary-button" onClick={cancelScan} disabled={confirming}>
               Cancel
             </button>
           </div>
