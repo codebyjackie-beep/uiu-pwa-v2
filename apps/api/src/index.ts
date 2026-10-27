@@ -9,6 +9,7 @@ import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { adminRecipesRouter } from "./routes/adminRecipes";
 import { fridgeStockRouter, scanFile, RECEIPT_PROMPT } from "./routes/fridgeStock";
 import { diagnoseVideoRecipe, transcribeVideo } from "./services/openrouterVision";
+import { parseRecipeFromText } from "./services/recipeImport";
 import { mealSuggestionsRouter } from "./routes/mealSuggestions";
 import { favouriteRecipesRouter } from "./routes/favouriteRecipes";
 import { shopRouter } from "./routes/shop";
@@ -647,6 +648,34 @@ app.post("/api/admin/video-transcribe-test", async (c) => {
   const t0 = Date.now();
   const out = await transcribeVideo(c.env, dataUrl, c.req.query("model") || undefined);
   return c.json({ ok: out.ok, data: { ms: Date.now() - t0, model: c.req.query("model") || c.env.OPENROUTER_VIDEO_MODEL || c.env.OPENROUTER_VISION_MODEL, ...out } });
+});
+
+// Two-step video import test (2026-10-27): transcribe (?transcribeModel=, default flash) → existing text parser.
+app.post("/api/admin/video-recipe-test", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const form = await c.req.parseBody().catch(() => null);
+  const file = form?.video;
+  if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'video' file required" } } satisfies ApiResponse<never>, 400);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const parts: string[] = [];
+  for (let i = 0; i < bytes.length; i += 0x8000) parts.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
+  const dataUrl = `data:${file.type || "video/mp4"};base64,${btoa(parts.join(""))}`;
+  const t0 = Date.now();
+  const tr = await transcribeVideo(c.env, dataUrl, c.req.query("transcribeModel") || "google/gemini-2.5-flash");
+  const t1 = Date.now();
+  if (!tr.ok) return c.json({ ok: false, stage: "transcribe", status: tr.status, body: tr.text, ms: t1 - t0 });
+  const recipe = await parseRecipeFromText(c.env, tr.text);
+  return c.json({
+    ok: true,
+    data: {
+      transcribeMs: t1 - t0,
+      parseMs: Date.now() - t1,
+      transcriptChars: tr.text.length,
+      recipe: recipe
+        ? { title: recipe.title, ingredients: recipe.ingredients.length, steps: recipe.steps.length, ingredientList: recipe.ingredients.map((i) => `${i.quantity} ${i.unit} ${i.name}`.trim()), stepsList: recipe.steps }
+        : null,
+    },
+  });
 });
 
 // Recent photo/receipt scan failures written by /api/fridge-stock/ocr and /scan-fridge (no images stored).
