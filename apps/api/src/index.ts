@@ -664,13 +664,17 @@ app.post("/api/admin/video-recipe-test", async (c) => {
   const tr = await transcribeVideo(c.env, dataUrl, c.req.query("transcribeModel") || "google/gemini-2.5-flash");
   const t1 = Date.now();
   if (!tr.ok) return c.json({ ok: false, stage: "transcribe", status: tr.status, body: tr.text, ms: t1 - t0 });
-  const recipe = await parseRecipeFromText(c.env, tr.text);
+  const dbg: { raw?: string; reason?: string } = {};
+  const recipe = await parseRecipeFromText(c.env, tr.text, dbg);
   return c.json({
     ok: true,
     data: {
       transcribeMs: t1 - t0,
       parseMs: Date.now() - t1,
       transcriptChars: tr.text.length,
+      transcript: tr.text,
+      parserReason: dbg.reason ?? null,
+      parserRaw: (dbg.raw ?? "").slice(0, 3000),
       recipe: recipe
         ? { title: recipe.title, ingredients: recipe.ingredients.length, steps: recipe.steps.length, ingredientList: recipe.ingredients.map((i) => `${i.quantity} ${i.unit} ${i.name}`.trim()), stepsList: recipe.steps }
         : null,

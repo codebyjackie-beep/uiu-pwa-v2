@@ -297,7 +297,7 @@ const MIN_INGREDIENTS = 2;
  * different prompt shape (parse existing text, not invent a new dish). Returns null
  * (not throw) when the call fails or the parsed result looks too thin to be a real
  * recipe (HANDOFF §0: "材料/步驟太短/太空" -> treat as failure, fall to Tier 3). */
-export async function parseRecipeFromText(env: OpenRouterEnv, text: string): Promise<DraftedRecipe | null> {
+export async function parseRecipeFromText(env: OpenRouterEnv, text: string, debug?: { raw?: string; reason?: string }): Promise<DraftedRecipe | null> {
   const trimmed = text.trim();
   if (!trimmed) return null;
   try {
@@ -334,16 +334,18 @@ export async function parseRecipeFromText(env: OpenRouterEnv, text: string): Pro
         response_format: { type: "json_object" },
       }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) { if (debug) debug.reason = `http ${res.status}`; return null; }
     const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     const content = json.choices?.[0]?.message?.content;
-    if (!content) return null;
+    if (debug) debug.raw = content ?? "";
+    if (!content) { if (debug) debug.reason = "empty"; return null; }
 
     const fenced = content.trim().match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
     const candidate = fenced ? fenced[1]! : content.trim();
     const parsed = JSON.parse(candidate) as Partial<DraftedRecipe>;
 
     if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < MIN_INGREDIENTS || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
+      if (debug) debug.reason = `gate: title=${!!parsed.title} ing=${Array.isArray(parsed.ingredients) ? parsed.ingredients.length : "x"} steps=${Array.isArray(parsed.steps) ? parsed.steps.length : "x"}`;
       return null;
     }
 
@@ -359,6 +361,7 @@ export async function parseRecipeFromText(env: OpenRouterEnv, text: string): Pro
       cookTimeMinutes: parsed.cookTimeMinutes ?? 0,
     };
   } catch (err) {
+    if (debug) debug.reason = `exception: ${err instanceof Error ? err.message : String(err)}`;
     console.error("[uiu-api] parseRecipeFromText failed:", err instanceof Error ? err.message : String(err));
     return null;
   }
