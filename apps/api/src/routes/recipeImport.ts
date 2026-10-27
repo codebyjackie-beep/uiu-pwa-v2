@@ -356,7 +356,12 @@ recipeImportRouter.post("/from-video", async (c) => {
   const normalized = video.replace(/^data:video\/quicktime;/i, "data:video/mov;");
 
   try {
-    const parsed = await extractRecipeFromVideo(c.env, normalized);
+    // The vision model fails often on video (5xx from the provider, or a reply missing ingredients/steps — tested
+    // 2026-10-27: 2 of 3 runs failed on the same reel). Try up to 3 times before asking the user to paste instead.
+    let parsed: Awaited<ReturnType<typeof extractRecipeFromVideo>> = null;
+    for (let attempt = 1; attempt <= 3 && !parsed; attempt++) {
+      parsed = await extractRecipeFromVideo(c.env, normalized);
+    }
     if (!parsed) {
       const body: ApiResponse<{ needsManualPaste: true }> = { ok: true, data: { needsManualPaste: true } };
       return c.json(body);
