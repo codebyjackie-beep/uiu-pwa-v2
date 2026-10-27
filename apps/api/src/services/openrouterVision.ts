@@ -383,3 +383,31 @@ export async function diagnoseVideoRecipe(env: OpenRouterVisionEnv, videoDataUrl
   const ok = !!parsed.title && ings >= 2 && steps > 0;
   return { stage: ok ? "ok" : "fails-gate", finish, title: parsed.title ?? null, ingredients: ings, steps, keys: Object.keys(parsed) };
 }
+
+/** Step 1 of the ReciMe-style split (test 2026-10-27): transcribe only — speech + on-screen text, no recipe logic. */
+export async function transcribeVideo(env: OpenRouterVisionEnv, videoDataUrl: string, model?: string): Promise<{ ok: boolean; text: string; finish: string | null; status?: number }> {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: model ?? env.OPENROUTER_VIDEO_MODEL ?? env.OPENROUTER_VISION_MODEL,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text:
+                "Transcribe this video. Part 1: every word spoken, verbatim, in the language it is spoken (keep Cantonese as Cantonese, do not translate), with rough timestamps. " +
+                "Part 2: all on-screen text (ingredient names, quantities, steps), exactly as shown. Plain text only, no commentary, no JSON.",
+            },
+            { type: "video_url", video_url: { url: videoDataUrl } },
+          ],
+        },
+      ],
+    }),
+  });
+  if (!res.ok) return { ok: false, text: (await res.text().catch(() => "")).slice(0, 300), finish: null, status: res.status };
+  const json = (await res.json()) as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> };
+  return { ok: true, text: json.choices?.[0]?.message?.content ?? "", finish: json.choices?.[0]?.finish_reason ?? null };
+}

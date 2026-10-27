@@ -8,7 +8,7 @@ import { mealPlanSetsRouter } from "./routes/mealPlanSets";
 import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { adminRecipesRouter } from "./routes/adminRecipes";
 import { fridgeStockRouter, scanFile, RECEIPT_PROMPT } from "./routes/fridgeStock";
-import { diagnoseVideoRecipe } from "./services/openrouterVision";
+import { diagnoseVideoRecipe, transcribeVideo } from "./services/openrouterVision";
 import { mealSuggestionsRouter } from "./routes/mealSuggestions";
 import { favouriteRecipesRouter } from "./routes/favouriteRecipes";
 import { shopRouter } from "./routes/shop";
@@ -631,6 +631,21 @@ app.post("/api/admin/video-test", async (c) => {
   } catch (err) {
     return c.json({ ok: false, error: { code: "video_test", message: err instanceof Error ? err.message : String(err) }, ms: Date.now() - t0 });
   }
+});
+
+// Video transcription test (2026-10-27): speech + on-screen text only. ?model= overrides. Writes nothing.
+app.post("/api/admin/video-transcribe-test", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const form = await c.req.parseBody().catch(() => null);
+  const file = form?.video;
+  if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'video' file required" } } satisfies ApiResponse<never>, 400);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const parts: string[] = [];
+  for (let i = 0; i < bytes.length; i += 0x8000) parts.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
+  const dataUrl = `data:${file.type || "video/mp4"};base64,${btoa(parts.join(""))}`;
+  const t0 = Date.now();
+  const out = await transcribeVideo(c.env, dataUrl, c.req.query("model") || undefined);
+  return c.json({ ok: out.ok, data: { ms: Date.now() - t0, model: c.req.query("model") || c.env.OPENROUTER_VIDEO_MODEL || c.env.OPENROUTER_VISION_MODEL, ...out } });
 });
 
 // Recent photo/receipt scan failures written by /api/fridge-stock/ocr and /scan-fridge (no images stored).
