@@ -347,3 +347,37 @@ export async function extractRecipeFromVideo(env: OpenRouterVisionEnv, videoData
     return null;
   }
 }
+
+/** Diagnostics for /api/admin/video-test: the same call as extractRecipeFromVideo, but says WHY it gave up. */
+export async function diagnoseVideoRecipe(env: OpenRouterVisionEnv, videoDataUrl: string, model?: string): Promise<Record<string, unknown>> {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: model ?? env.OPENROUTER_VISION_MODEL,
+      messages: [{ role: "user", content: [{ type: "text", text: VIDEO_RECIPE_PROMPT }, { type: "video_url", video_url: { url: videoDataUrl } }] }],
+      response_format: { type: "json_object" },
+    }),
+  });
+  const raw = await res.text();
+  if (!res.ok) return { stage: "http", status: res.status, body: raw.slice(0, 400) };
+  let json: { choices?: Array<{ message?: { content?: string }; finish_reason?: string }>; error?: unknown };
+  try {
+    json = JSON.parse(raw);
+  } catch {
+    return { stage: "envelope", body: raw.slice(0, 300) };
+  }
+  const content = json.choices?.[0]?.message?.content ?? "";
+  const finish = json.choices?.[0]?.finish_reason ?? null;
+  if (!content) return { stage: "empty", finish, error: json.error ?? null };
+  let parsed: Partial<DraftedRecipe>;
+  try {
+    parsed = extractJson(content) as Partial<DraftedRecipe>;
+  } catch {
+    return { stage: "not-json", finish, head: content.slice(0, 300) };
+  }
+  const ings = Array.isArray(parsed.ingredients) ? parsed.ingredients.length : -1;
+  const steps = Array.isArray(parsed.steps) ? parsed.steps.length : -1;
+  const ok = !!parsed.title && ings >= 2 && steps > 0;
+  return { stage: ok ? "ok" : "fails-gate", finish, title: parsed.title ?? null, ingredients: ings, steps, keys: Object.keys(parsed) };
+}

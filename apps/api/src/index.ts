@@ -8,6 +8,7 @@ import { mealPlanSetsRouter } from "./routes/mealPlanSets";
 import { adminRecipeDraftsRouter } from "./routes/adminRecipeDrafts";
 import { adminRecipesRouter } from "./routes/adminRecipes";
 import { fridgeStockRouter, scanFile, RECEIPT_PROMPT } from "./routes/fridgeStock";
+import { diagnoseVideoRecipe } from "./services/openrouterVision";
 import { mealSuggestionsRouter } from "./routes/mealSuggestions";
 import { favouriteRecipesRouter } from "./routes/favouriteRecipes";
 import { shopRouter } from "./routes/shop";
@@ -608,6 +609,27 @@ app.post("/api/admin/vision-test", async (c) => {
   } catch (err) {
     const kind = err && typeof err === "object" && "kind" in err ? String((err as { kind: unknown }).kind) : "other";
     return c.json({ ok: false, error: { code: `vision_${kind}`, message: err instanceof Error ? err.message : String(err) }, ms: Date.now() - t0, bytes: file.size, type: file.type });
+  }
+});
+
+// Video-import debugging (Jackie 2026-10-27: "couldn't find a recipe in this video"). Multipart { video }; writes nothing.
+//   ?model=<openrouter model id> overrides the vision model for a comparison.
+app.post("/api/admin/video-test", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const form = await c.req.parseBody().catch(() => null);
+  const file = form?.video;
+  if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'video' file required" } } satisfies ApiResponse<never>, 400);
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const parts: string[] = [];
+  for (let i = 0; i < bytes.length; i += 0x8000) parts.push(String.fromCharCode(...bytes.subarray(i, i + 0x8000)));
+  const mime = file.type && file.type !== "application/octet-stream" ? file.type : "video/mp4";
+  const dataUrl = `data:${mime};base64,${btoa(parts.join(""))}`;
+  const t0 = Date.now();
+  try {
+    const out = await diagnoseVideoRecipe(c.env, dataUrl, c.req.query("model") || undefined);
+    return c.json({ ok: true, data: { ms: Date.now() - t0, bytes: file.size, mime, ...out } });
+  } catch (err) {
+    return c.json({ ok: false, error: { code: "video_test", message: err instanceof Error ? err.message : String(err) }, ms: Date.now() - t0 });
   }
 });
 
