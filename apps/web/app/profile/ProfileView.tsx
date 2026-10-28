@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ApiResponse, MyPlan } from "@uiu/shared";
 import { useClerk } from "@clerk/nextjs";
 import { useInstallPrompt } from "../lib/useInstallPrompt";
 
@@ -11,6 +12,19 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
   const { openUserProfile, signOut } = useClerk();
   const { canInstall, promptInstall } = useInstallPrompt();
   const [signingOut, setSigningOut] = useState(false);
+  const [plan, setPlan] = useState<MyPlan | null>(null);
+  useEffect(() => {
+    fetch("/api/me/plan", { cache: "no-store" })
+      .then((r) => r.json() as Promise<ApiResponse<MyPlan>>)
+      .then((j) => {
+        if (j.ok) setPlan(j.data);
+      })
+      .catch(() => {});
+  }, []);
+  const isPremium = plan?.plan === "premium";
+  const isTrial = plan?.plan === "trial";
+  const trialDays = plan?.trialEndsAt ? Math.max(0, Math.ceil((Date.parse(plan.trialEndsAt) - Date.now()) / 86_400_000)) : null;
+  const planTitle = isPremium ? "Premium" : isTrial ? "Free trial" : "Free plan";
   const initial = (name.trim()[0] ?? "?").toUpperCase();
 
   return (
@@ -33,17 +47,21 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
 
       <section className="profile-card profile-plan">
         <div className="profile-plan__head">
-          <h2 className="profile-section-title">Free plan</h2>
-          <span className="profile-plan__badge">Current</span>
+          <h2 className="profile-section-title">{planTitle}</h2>
+          <span className="profile-plan__badge">{plan ? "Current" : "…"}</span>
         </div>
-        <p className="profile-plan__lead">Premium will unlock:</p>
-        <ul className="profile-plan__list">
-          {PREMIUM_FEATURES.map((f) => (
-            <li key={f}>{f}</li>
-          ))}
-        </ul>
+        {isPremium ? <p className="profile-plan__lead">You have all Premium features.</p> : null}
+        {isTrial && trialDays !== null ? <p className="profile-plan__lead">{trialDays} day{trialDays === 1 ? "" : "s"} left of your free trial.</p> : null}
+        {!isPremium ? <p className="profile-plan__lead">Premium will unlock:</p> : null}
+        {!isPremium ? (
+          <ul className="profile-plan__list">
+            {PREMIUM_FEATURES.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        ) : null}
         <Link href="/premium" className="wizard-primary-button profile-plan__upgrade">
-          Upgrade to Premium
+          {isPremium ? "Manage plan" : "Upgrade to Premium"}
         </Link>
       </section>
 
