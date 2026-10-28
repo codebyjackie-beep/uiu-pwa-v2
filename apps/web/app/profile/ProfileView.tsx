@@ -10,7 +10,6 @@ const PREMIUM_FEATURES = ["AI Nutrition Coach", "AI meal plan wizard", "Barcode 
 export function ProfileView({ name, email, imageUrl, memberSince }: { name: string; email: string; imageUrl: string | null; memberSince: string | null }) {
   const { openUserProfile, signOut } = useClerk();
   const { canInstall, promptInstall } = useInstallPrompt();
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const initial = (name.trim()[0] ?? "?").toUpperCase();
 
@@ -43,9 +42,9 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
             <li key={f}>{f}</li>
           ))}
         </ul>
-        <button type="button" className="wizard-primary-button profile-plan__upgrade" onClick={() => setUpgradeOpen(true)}>
+        <Link href="/premium" className="wizard-primary-button profile-plan__upgrade">
           Upgrade to Premium
-        </button>
+        </Link>
       </section>
 
       <section className="profile-card profile-settings" aria-label="Settings">
@@ -90,28 +89,6 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
         </ul>
       </section>
 
-      {upgradeOpen ? (
-        <div className="meal-planner-modal-overlay" onClick={() => setUpgradeOpen(false)}>
-          <div className="meal-planner-modal" role="dialog" aria-modal="true" aria-labelledby="upgrade-title" onClick={(e) => e.stopPropagation()}>
-            <div className="meal-planner-modal__header">
-              <h3 id="upgrade-title" className="meal-planner-modal__title">
-                Premium is coming soon
-              </h3>
-              <button type="button" className="meal-planner-modal__close" aria-label="Close" onClick={() => setUpgradeOpen(false)}>
-                ×
-              </button>
-            </div>
-            <div className="meal-planner-modal__body">
-              <p className="profile-upgrade__text">
-                We&apos;re still building Premium. Everything you use today stays free, and nothing will change on your account without you choosing it.
-              </p>
-              <button type="button" className="wizard-primary-button profile-plan__upgrade" onClick={() => setUpgradeOpen(false)}>
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
