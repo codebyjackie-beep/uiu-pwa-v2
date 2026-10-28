@@ -89,7 +89,7 @@ export default function PrivacyPage() {
       <h2>Where it is stored and for how long</h2>
       <p>
         Your data is stored in the EU (Ireland). We keep it while you have an account. If you ask us to delete your account, we delete your data
-        within 30 days, except payment records, which we keep for the period UK tax law requires.
+        within 30 days, except payment records, which we keep for 6 years to meet UK tax record rules.
       </p>
 
       <h2>Your rights</h2>
