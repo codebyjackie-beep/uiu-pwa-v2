@@ -130,8 +130,9 @@ export function ShopPage() {
       setToast("Failed to add, please try again.");
       return;
     }
-    setManualItems((prev) => [...prev, parsed.data]);
     setManualText("");
+    // The POST response has no price (prices are attached on GET), so reload the list to show the price straight away.
+    await loadManual();
   }
 
   async function toggleManualItem(item: ShoppingListItem) {
