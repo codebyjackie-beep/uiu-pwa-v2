@@ -1270,6 +1270,52 @@ export interface UiuUser {
 }
 
 // ---------------------------------------------------------------------------
+// Premium / Milestone 3 (Jackie 2026-10-28): £2.99/month or £24.99/year, 7-day reverse
+// trial (no card), monthly limits per AI feature. Limits reset on the 1st of each UTC month.
+// ---------------------------------------------------------------------------
+
+/** Metered Premium features. `null` limit = Premium-only but not metered (no AI cost). */
+export type PremiumFeature =
+  | "video_import"
+  | "receipt_scan"
+  | "coach"
+  | "fridge_recipe"
+  | "ai_other"
+  | "meal_plan_wizard"
+  | "barcode";
+
+export const PREMIUM_LIMITS: Record<PremiumFeature, number | null> = {
+  video_import: 10,
+  receipt_scan: 10,
+  coach: 100,
+  fridge_recipe: 30,
+  ai_other: 100, // meal photo, fridge photo, recipe import link/text/photo
+  meal_plan_wizard: null,
+  barcode: null,
+};
+
+export const PREMIUM_TRIAL_DAYS = 7;
+
+export type PlanKind = "free" | "trial" | "premium";
+
+export interface FeatureUsage {
+  used: number;
+  limit: number | null;
+}
+
+export interface MyPlan {
+  plan: PlanKind;
+  /** false until Jackie turns PREMIUM_ENFORCE on — then free users are blocked and limits apply. */
+  enforced: boolean;
+  trialEndsAt: ISODate | null;
+  /** End of the paid period (renewal date, or access end after cancelling). */
+  premiumUntil: ISODate | null;
+  /** First moment of next UTC month, when usage counts reset. */
+  usageResetsAt: ISODate;
+  usage: Record<PremiumFeature, FeatureUsage>;
+}
+
+// ---------------------------------------------------------------------------
 // Meal-type classification — single source of truth for the Recipes page chips/badges (web)
 // and the meal-plan generator's slot eligibility (api). Previously hand-copied in both places
 // ("kept identical on purpose"); cc_prompt_recipe_data_cleanup.md Part 10 found them drifting.

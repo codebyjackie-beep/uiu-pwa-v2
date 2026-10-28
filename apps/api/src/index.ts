@@ -45,6 +45,11 @@ import { claimGuestData, cleanupExpiredGuests, mintGuestToken, verifyGuestToken 
 import { notify, setupChat, NotifyError } from "./services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "./services/adminRollbacks";
 import { openManualRun, maybeStartScheduledRun, processPriceRefresh, getRun } from "./jobs/priceRefresh";
+import { AI_USAGE, getMyPlan, installOpenRouterMeter, premiumGate, type PremiumEnv } from "./services/premium";
+import type { PremiumFeature } from "@uiu/shared";
+
+// Milestone 3: per-request OpenRouter cost capture for the Premium usage meter (services/premium.ts).
+installOpenRouterMeter();
 
 /** Bindings declared in wrangler.toml ([vars]) + secrets set out-of-band. */
 type Bindings = {
@@ -118,6 +123,10 @@ type Bindings = {
   // 2026-08-25 addendum — public URL of this Worker itself, used to build the branded-image
   // URL (services/igMediaStore.ts) that Instagram/shop.useitup.uk fetch. Not a secret.
   PUBLIC_API_BASE_URL: string;
+  /** Milestone 3: "true" = block free users + apply monthly limits. Anything else = record usage only. */
+  PREMIUM_ENFORCE?: string;
+  /** Milestone 3: comma-separated Clerk user ids always treated as Premium. */
+  PREMIUM_COMP_USER_IDS?: string;
   // cc_prompt_milestone1_followup_fixes.md gap 1 — same public value as apps/web's
   // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, used by src/clerkAuth.ts to find Clerk's JWKS endpoint.
   CLERK_PUBLISHABLE_KEY: string;
@@ -186,6 +195,37 @@ for (const [method, path] of [
 ] as const) {
   app.on(method === "ALL" ? ["GET", "POST", "PUT", "PATCH", "DELETE"] : [method], path, guestForbidden);
 }
+
+// Milestone 3 (Jackie 2026-10-28): plan + monthly limits per feature (services/premium.ts). Runs after
+// guestForbidden. PREMIUM_ENFORCE != "true" → never blocks, only records usage + OpenRouter cost.
+for (const [path, feature] of [
+  ["/api/recipe-import/from-video", "video_import"],
+  ["/api/fridge-stock/ocr", "receipt_scan"],
+  ["/api/health/coach", "coach"],
+  ["/api/recipes/generate-from-fridge", "fridge_recipe"],
+  ["/api/health/meal-logs", "ai_other"],
+  ["/api/fridge-stock/scan-fridge", "ai_other"],
+  ["/api/recipe-import/from-url", "ai_other"],
+  ["/api/recipe-import/from-text", "ai_other"],
+  ["/api/recipe-import/from-photo", "ai_other"],
+  ["/api/meal-plan/generate", "meal_plan_wizard"],
+  ["/api/health/meal-logs/barcode", "barcode"],
+] as const satisfies readonly (readonly [string, PremiumFeature])[]) {
+  app.post(path, premiumGate(feature) as never);
+}
+
+app.get("/api/me/plan", requireUser, async (c) => {
+  if (c.get("isGuest")) {
+    return c.json({ ok: false, error: { code: "guest_forbidden", message: "Sign up free to see your plan" } }, 403);
+  }
+  try {
+    const data = await getMyPlan(c.env as unknown as PremiumEnv, c.get("clerkUserId"));
+    return c.json({ ok: true, data } satisfies ApiResponse<typeof data>);
+  } catch (err) {
+    console.error("[uiu-api] me/plan error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "Failed to load plan" } } satisfies ApiResponse<never>, 502);
+  }
+});
 
 // Use-it-up push reminders (services/webPush.ts). Signed-in users only (guests get guest_forbidden).
 app.get("/api/push/public-key", (c) => c.json({ ok: true, data: { publicKey: c.env.VAPID_PUBLIC_KEY ?? null } }));
@@ -310,6 +350,49 @@ function remapError(c: any, err: unknown, where: string) {
   return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
 }
 const UNAUTH_ADMIN: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
+
+// Milestone 3: read-only AI usage + cost report from ai_usage (services/premium.ts).
+//   GET /api/admin/ai-usage?month=YYYY-MM (default current UTC month) → per-feature calls/uses/cost
+//   (sum, avg per use) and per-user totals, so pricing/limits can be checked against real numbers.
+app.get("/api/admin/ai-usage", async (c) => {
+  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
+  const month = /^\d{4}-\d{2}$/.test(c.req.query("month") ?? "") ? (c.req.query("month") as string) : new Date().toISOString().slice(0, 7);
+  try {
+    const out = await withDb(c.env, async (db) => {
+      const col = db.collection(AI_USAGE);
+      const byFeature = await col
+        .aggregate([
+          { $match: { month } },
+          {
+            $group: {
+              _id: "$feature",
+              requests: { $sum: 1 },
+              countedUses: { $sum: { $cond: ["$counted", 1, 0] } },
+              openrouterCalls: { $sum: "$calls" },
+              costUsd: { $sum: "$costUsd" },
+              maxCostUsd: { $max: "$costUsd" },
+            },
+          },
+          { $addFields: { avgCostPerRequestUsd: { $divide: ["$costUsd", "$requests"] } } },
+          { $sort: { costUsd: -1 } },
+        ])
+        .toArray();
+      const byUser = await col
+        .aggregate([
+          { $match: { month } },
+          { $group: { _id: "$userId", requests: { $sum: 1 }, costUsd: { $sum: "$costUsd" } } },
+          { $sort: { costUsd: -1 } },
+          { $limit: 50 },
+        ])
+        .toArray();
+      return { month, byFeature, byUser };
+    });
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    console.error("[uiu-api] ai-usage report error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "ai-usage report failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
 
 app.post("/api/admin/clerk-remap", async (c) => {
   if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);

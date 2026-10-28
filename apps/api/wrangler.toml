@@ -101,6 +101,10 @@ PWA_DIAGNOSTICS_DIGEST_HOUR_UK = "10"
 IG_CONTENT_BATCH_SIZE = "3"
 # Jackie 2026-10-22: old IG accounts (@useitup.app, @kura.nook) being deleted; new @useitup comes later. "true" = all IG crons skip.
 IG_AUTOMATION_PAUSED = "true"
+# Milestone 3 (Jackie 2026-10-28, services/premium.ts): "true" = free users blocked from Premium features
+# + monthly limits enforced. Anything else = nothing blocked, usage + OpenRouter cost still recorded in ai_usage.
+# Stays "false" until Stripe (Phase B) is live. PREMIUM_COMP_USER_IDS (optional) = Clerk ids always Premium.
+PREMIUM_ENFORCE = "false"
 # IG user ids are not sensitive on their own (no auth power without the matching Page
 # Access Token secret above) — kept here so they don't need re-setting on every redeploy.
 IG_ID_UIU = "17841427988481809"
