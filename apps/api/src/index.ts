@@ -35,6 +35,7 @@ import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { usersRouter } from "./routes/users";
+import { billingRouter } from "./routes/billing";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "./services/clerkRemap";
@@ -301,6 +302,9 @@ app.route("/api/favourite-recipes", favouriteRecipesRouter);
 app.route("/api/shop", shopRouter);
 app.route("/api/shopping-list", shoppingListRouter);
 app.route("/api/users", usersRouter);
+// Milestone 3 Phase B (Jackie 2026-10-28): Stripe Checkout / Portal / webhook (routes/billing.ts). Webhook is
+// signature-verified inside the router, so it is intentionally not behind requireUser.
+app.route("/api/billing", billingRouter);
 app.route("/api/health", healthRouter);
 app.route("/api/recipe-import", recipeImportRouter);
 app.route("/api/recipe-browse", recipeBrowseStateRouter);

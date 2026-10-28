@@ -64,6 +64,9 @@ fallthrough = true
 #                       never fetched directly (robots.txt blocks it site-wide).
 #   AMAZON_ASSOCIATE_TAG  Jackie's Amazon.co.uk Associates Tracking ID: kuranook2026-21.
 #                       Raw value: Key\Amazon Associates Account.txt.
+#   STRIPE_SECRET_KEY     Milestone 3 Phase B. sk_test_… until launch, then sk_live_…. Raw value from Stripe
+#                       Dashboard → Developers → API keys (never pasted into chat or committed).
+#   STRIPE_WEBHOOK_SECRET  whsec_… from the Stripe webhook endpoint pointing at /api/billing/webhook.
 #   ATLAS_CLOUD_API_KEY  cc_prompt_atlas_cloud_bg.md (2026-09-02) — Atlas Cloud unified
 #                       inference API key, used for AI-generated IG post background images
 #                       (services/atlasCloudImage.ts). Raw value: Key\altas-cloud-api.txt
@@ -105,6 +108,12 @@ IG_AUTOMATION_PAUSED = "true"
 # + monthly limits enforced. Anything else = nothing blocked, usage + OpenRouter cost still recorded in ai_usage.
 # Stays "false" until Stripe (Phase B) is live. PREMIUM_COMP_USER_IDS (optional) = Clerk ids always Premium.
 PREMIUM_ENFORCE = "false"
+# Milestone 3 Phase B: Stripe prices (price_… ids are not secret). CURRENTLY TEST-MODE ids (Jackie 2026-10-28,
+# Stripe sandbox). Swap to the live-mode ids at launch, together with the sk_live_ STRIPE_SECRET_KEY.
+STRIPE_PRICE_MONTHLY = "price_1UVdTnFKJ1rQtw89tvniXXr6"  # £2.99 / month
+STRIPE_PRICE_YEARLY = "price_1UVdU6FKJ1rQtw89fOCSnBye"  # £24.99 / year
+# Where Stripe Checkout / Billing Portal send the user back to.
+WEB_BASE_URL = "https://useitup.uk"
 # IG user ids are not sensitive on their own (no auth power without the matching Page
 # Access Token secret above) — kept here so they don't need re-setting on every redeploy.
 IG_ID_UIU = "17841427988481809"
