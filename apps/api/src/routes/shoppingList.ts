@@ -3,6 +3,7 @@
  * Not tied to canonical_ingredients — no price match in V1. Deletable outright (unlike
  * fridge_stock, a manual item doesn't need a history trail once bought).
  */
+import { nameCandidates } from "../services/shoppingListNames";
 import { Hono } from "hono";
 import type { Db, Document, ObjectId as ObjectIdType } from "mongodb";
 import type {
@@ -132,8 +133,13 @@ async function loadOnListTexts(db: Db, userId: string): Promise<Set<string>> {
 
 /** Part A — canonical_name for free text via the ingredient resolver: exact or alias hit only, never the fuzzy fallback. */
 export async function resolveCanonicalExact(db: Db, text: string): Promise<string | null> {
-  const r = resolve(text, await buildAliasIndex(db.collection("canonical_ingredients")));
-  return "canonical_name" in r && r.method === "exact" ? r.canonical_name : null;
+  const index = await buildAliasIndex(db.collection("canonical_ingredients"));
+  // Shopping-list only: try brand-stripped / "soya"→"soy" spellings too (services/shoppingListNames.ts). Still exact matches only.
+  for (const candidate of nameCandidates(text)) {
+    const r = resolve(candidate, index);
+    if ("canonical_name" in r && r.method === "exact") return r.canonical_name;
+  }
+  return null;
 }
 
 shoppingListRouter.get("/", async (c) => {
