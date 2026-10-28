@@ -10,6 +10,7 @@ import { AppHeader } from "./components/AppHeader";
 import { BottomNav } from "./components/BottomNav";
 import { AppShell, GuestBanner, GuestGateProvider } from "./components/GuestGate";
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
+import { PremiumGate } from "./components/PremiumGate";
 import { SiteFooter } from "./components/SiteFooter";
 
 export const metadata: Metadata = {
@@ -64,6 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {!isPublicShop && <GuestBanner />}
               {children}
             </AppShell>
+            {!isPublicShop && <PremiumGate />}
             {!isPublicShop && <SiteFooter />}
             {!isPublicShop && <BottomNav />}
           </GuestGateProvider>
