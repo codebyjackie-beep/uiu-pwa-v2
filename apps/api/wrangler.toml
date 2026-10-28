@@ -106,8 +106,9 @@ IG_CONTENT_BATCH_SIZE = "3"
 IG_AUTOMATION_PAUSED = "true"
 # Milestone 3 (Jackie 2026-10-28, services/premium.ts): "true" = free users blocked from Premium features
 # + monthly limits enforced. Anything else = nothing blocked, usage + OpenRouter cost still recorded in ai_usage.
-# Stays "false" until Stripe (Phase B) is live. PREMIUM_COMP_USER_IDS (optional) = Clerk ids always Premium.
-PREMIUM_ENFORCE = "false"
+# Turned on 2026-10-28 (Jackie) after Stripe Phase B + the upgrade prompt (C2). Reverting to anything but "true" is the kill switch.
+# PREMIUM_COMP_USER_IDS (optional) = Clerk ids always Premium.
+PREMIUM_ENFORCE = "true"
 # Milestone 3 Phase B: Stripe prices (price_… ids are not secret). CURRENTLY TEST-MODE ids (Jackie 2026-10-28,
 # Stripe sandbox). Swap to the live-mode ids at launch, together with the sk_live_ STRIPE_SECRET_KEY.
 STRIPE_PRICE_MONTHLY = "price_1UVdTnFKJ1rQtw89tvniXXr6"  # £2.99 / month
