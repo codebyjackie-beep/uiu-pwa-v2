@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Privacy policy · UseItUp" };
 
 /** cc_prompt_meal_grid_profile.md Part PP — public privacy policy (Google Auth Platform branding needs the link).
  * Processors listed are the ones the code actually calls with user data (checked 2026-10-20). */
-const LAST_UPDATED = "20 October 2026";
+const LAST_UPDATED = "28 October 2026";
 
 export default function PrivacyPage() {
   return (
@@ -36,6 +36,14 @@ export default function PrivacyPage() {
           <strong>Photos you upload</strong> (a meal, a receipt or your fridge): sent for analysis, then discarded. We keep the result (for
           example the list of items or the nutrition estimate), not the photo.
         </li>
+        <li>
+          <strong>Premium subscription:</strong> if you subscribe, your plan status, when your access runs until, and an ID that links your
+          account to your Stripe customer record. We never see or store your card details; Stripe takes them directly.
+        </li>
+        <li>
+          <strong>Usage counts:</strong> how many AI requests you make each month, so we can apply Premium limits, and the cost of each request,
+          so we can keep the service running.
+        </li>
       </ul>
 
       <h2>Using UseItUp as a guest</h2>
@@ -60,6 +68,11 @@ export default function PrivacyPage() {
           <strong>MongoDB Atlas</strong> — our database.
         </li>
         <li>
+          <strong>Stripe</strong> — takes Premium payments and manages subscriptions. It receives your email address and the plan you choose,
+          and handles your card details itself. Stripe may process data outside the UK and EU under its own safeguards; see{" "}
+          <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">stripe.com/privacy</a>.
+        </li>
+        <li>
           <strong>OpenRouter</strong> — routes AI requests to the model providers (including Google Gemini for photos). Used for photo
           analysis, recipe import and the nutrition coach.
         </li>
@@ -76,7 +89,7 @@ export default function PrivacyPage() {
       <h2>Where it is stored and for how long</h2>
       <p>
         Your data is stored in the EU (Ireland). We keep it while you have an account. If you ask us to delete your account, we delete your data
-        within 30 days.
+        within 30 days, except payment records, which we keep for the period UK tax law requires.
       </p>
 
       <h2>Your rights</h2>
@@ -88,7 +101,8 @@ export default function PrivacyPage() {
       <h2>Cookies</h2>
       <p>
         We only use the cookies needed to keep you signed in (set by Clerk) and, if you use the app as a guest, one cookie
-        holding your temporary guest ID. There are no analytics or advertising cookies.
+        holding your temporary guest ID. There are no analytics or advertising cookies. When you pay, Stripe&apos;s checkout page sets its
+        own cookies for payment security.
       </p>
 
       <h2>Amazon links</h2>
