@@ -11,12 +11,12 @@ import { findRecipePhoto, usedPexelsIds, type PexelsEnv } from "../services/pexe
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { approveRecipeDraft, rejectRecipeDraft } from "../services/recipeDraftApproval";
+import { requireAdmin } from "../adminAuth";
 
 export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
 
-function checkAdminToken(token: string | undefined, expected: string): boolean {
-  return !!token && token === expected;
-}
+// Every route in this router is admin-only (adminAuth.ts).
+adminRecipeDraftsRouter.use("*", requireAdmin);
 
 const VALID_STATUSES: RecipeDraftStatus[] = ["pending", "approved", "rejected"];
 
@@ -32,10 +32,6 @@ function toRecipeDraft(doc: Document): RecipeDraft {
 
 /** `?status=` optional, defaults to "pending" (backward-compatible with the pre-existing behaviour). Pass "all" for every status. */
 adminRecipeDraftsRouter.get("/", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const statusParam = c.req.query("status") ?? "pending";
   if (statusParam !== "all" && !VALID_STATUSES.includes(statusParam as RecipeDraftStatus)) {
     const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: `status must be one of: all, ${VALID_STATUSES.join(", ")}` } };
@@ -55,10 +51,6 @@ adminRecipeDraftsRouter.get("/", async (c) => {
 
 /** Edit a still-pending draft's content. Rejects (404/409) once the draft has been approved/rejected — those are final. */
 adminRecipeDraftsRouter.patch("/:id", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
   if (!ObjectId.isValid(id)) {
@@ -123,10 +115,6 @@ adminRecipeDraftsRouter.patch("/:id", async (c) => {
  * nothing is written back to `recipe_drafts` or any other collection.
  */
 adminRecipeDraftsRouter.get("/:id/cost-lines", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
   if (!ObjectId.isValid(id)) {
@@ -224,10 +212,6 @@ interface BackfillTagsAndImagesSummary {
  * title/description/ingredients/steps/servings/prepTimeMinutes/cookTimeMinutes (Jackie's explicit
  * scope decision — she'd already reviewed some drafts' ingredients and didn't want them replaced). */
 adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const write = c.req.query("write") === "true";
   const limit = Math.max(1, Number(c.req.query("limit")) || 50);
   const afterIdParam = c.req.query("afterId");
@@ -316,10 +300,6 @@ adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
 });
 
 adminRecipeDraftsRouter.post("/run", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const write = c.req.query("write") === "true";
   try {
     const summary = await dailyRecipeDraft(c.env, !write);
@@ -333,10 +313,6 @@ adminRecipeDraftsRouter.post("/run", async (c) => {
 });
 
 adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
   if (!ObjectId.isValid(id)) {
@@ -372,10 +348,6 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
 });
 
 adminRecipeDraftsRouter.post("/:id/reject", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
   if (!ObjectId.isValid(id)) {

@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { API_VERSION, type ApiResponse, type HealthCheck } from "@uiu/shared";
 import { guestForbidden, requireClerkAuth, requireUser } from "./clerkAuth";
+import { requireAdmin } from "./adminAuth";
 import { recipesRouter } from "./routes/recipes";
 import { mealPlanRouter } from "./routes/mealPlan";
 import { mealPlanSetsRouter } from "./routes/mealPlanSets";
@@ -290,6 +291,9 @@ app.get("/api/version", (c) => {
   return c.json(body);
 });
 
+// Every /api/admin/* route (inline below + admin sub-routers) needs X-Admin-Token — one gate, not 53 copies.
+app.use("/api/admin/*", requireAdmin);
+
 app.route("/api/recipes", recipesRouter);
 app.route("/api/recipes", fridgeRecipeGenRouter);
 app.route("/api/meal-plan", mealPlanRouter);
@@ -319,11 +323,6 @@ app.route("/api/ig-media", igMediaRouter);
 // path for the first-ever populate (the Cron Trigger stays disabled until
 // that's verified; see wrangler.toml).
 app.post("/api/admin/recompute-costs", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const write = c.req.query("write") === "true";
   try {
     // ?allow=<recipeId>,<recipeId> — reviewed gate anomalies that may be written anyway (still reported, flagged allowed).
@@ -344,22 +343,16 @@ app.post("/api/admin/recompute-costs", async (c) => {
 //   POST /api/admin/clerk-remap/rollback        body { batch } — dry run; ?write=true restores.
 //   POST /api/admin/clerk-remap/scratch-verify  body as above with fake user_TEST_ new ids — copies the 12 collections
 //        to a scratch DB, write + rollback there, snapshot diff, drops it. Prod is only read.
-function adminDenied(c: { req: { header(n: string): string | undefined }; env: Bindings }): boolean {
-  const token = c.req.header("X-Admin-Token");
-  return !token || token !== c.env.ADMIN_TOKEN;
-}
 function remapError(c: any, err: unknown, where: string) {
   if (err instanceof RemapInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
   console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
   return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
 }
-const UNAUTH_ADMIN: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
 
 // Milestone 3: read-only AI usage + cost report from ai_usage (services/premium.ts).
 //   GET /api/admin/ai-usage?month=YYYY-MM (default current UTC month) → per-feature calls/uses/cost
 //   (sum, avg per use) and per-user totals, so pricing/limits can be checked against real numbers.
 app.get("/api/admin/ai-usage", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const month = /^\d{4}-\d{2}$/.test(c.req.query("month") ?? "") ? (c.req.query("month") as string) : new Date().toISOString().slice(0, 7);
   try {
     const out = await withDb(c.env, async (db) => {
@@ -399,7 +392,6 @@ app.get("/api/admin/ai-usage", async (c) => {
 });
 
 app.post("/api/admin/clerk-remap", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const input = (await c.req.json().catch(() => null)) as RemapInput | null;
   try {
@@ -416,7 +408,6 @@ app.post("/api/admin/clerk-remap", async (c) => {
 });
 
 app.post("/api/admin/clerk-remap/rollback", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
   try {
@@ -428,7 +419,6 @@ app.post("/api/admin/clerk-remap/rollback", async (c) => {
 });
 
 app.post("/api/admin/clerk-remap/scratch-verify", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const input = (await c.req.json().catch(() => null)) as RemapInput | null;
   try {
     const out = await scratchVerify(c.env, input ?? {});
@@ -442,7 +432,6 @@ app.post("/api/admin/clerk-remap/scratch-verify", async (c) => {
 // "test_clerk_id_" are accepted; refused if any per-user collection still references the id. Default dry run;
 // ?write=true copies the doc to clerk_remap_backups (batch "seeddelete_<id>") and then deletes it.
 app.post("/api/admin/users/delete-seed", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const body = (await c.req.json().catch(() => null)) as { clerkUserId?: string } | null;
   const id = body?.clerkUserId ?? "";
@@ -482,7 +471,6 @@ function rollbackError(c: any, err: unknown, where: string) {
 }
 
 app.post("/api/admin/price-refresh/rollback", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const body = (await c.req.json().catch(() => null)) as { batch?: string; verifyRunId?: string } | null;
   try {
@@ -494,7 +482,6 @@ app.post("/api/admin/price-refresh/rollback", async (c) => {
 });
 
 app.post("/api/admin/recipe-cost/rollback", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
   try {
@@ -514,7 +501,6 @@ function notifyError(c: any, err: unknown) {
   return c.json({ ok: false, error: { code: "notify_error", message: "notify failed" } } satisfies ApiResponse<never>, 502);
 }
 app.post("/api/admin/notify/setup", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   try {
     const out = await withDb(c.env, (db) => setupChat(c.env, db));
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
@@ -523,7 +509,6 @@ app.post("/api/admin/notify/setup", async (c) => {
   }
 });
 app.post("/api/admin/notify", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const body = (await c.req.json().catch(() => null)) as { text?: string } | null;
   if (!body?.text?.trim()) return c.json({ ok: false, error: { code: "bad_request", message: "text is required" } } satisfies ApiResponse<never>, 400);
   try {
@@ -536,7 +521,6 @@ app.post("/api/admin/notify", async (c) => {
 
 // Fill per_item_g for common whole produce (services/perItemFill.ts). Dry run unless ?write=true; rollback by batch.
 app.post("/api/admin/canonical-per-item-fill", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const out = await withDb(c.env, (db): Promise<unknown> =>
     write ? writePerItemFill(db, `peritem_${new Date().toISOString().slice(0, 10).replace(/-/g, "")}_${crypto.randomUUID().slice(0, 6)}`) : planPerItemFill(db).then((plan) => ({ dryRun: true, plan })),
@@ -544,7 +528,6 @@ app.post("/api/admin/canonical-per-item-fill", async (c) => {
   return c.json({ ok: true, data: out });
 });
 app.post("/api/admin/canonical-per-item-fill/rollback", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const body = (await c.req.json().catch(() => null)) as { batch?: string } | null;
   if (!body?.batch) return c.json({ ok: false, error: { code: "bad_request", message: "batch is required" } } satisfies ApiResponse<never>, 400);
   const out = await withDb(c.env, (db) => rollbackPerItemFill(db, body.batch!));
@@ -553,7 +536,6 @@ app.post("/api/admin/canonical-per-item-fill/rollback", async (c) => {
 
 // Read-only: why does a fridge item get / not get a £ value? (canonical match, per_item_g, price cache, normalizeQty)
 app.get("/api/admin/value-probe", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const name = c.req.query("name") ?? "";
   const qty = Number(c.req.query("qty") ?? "1");
   const unit = c.req.query("unit") ?? "pc";
@@ -571,7 +553,6 @@ app.get("/api/admin/value-probe", async (c) => {
 // which the cloud sandbox can't fetch directly. Admin-token only; recipe image hosts only; read-only.
 const IMAGE_PROXY_HOSTS = new Set(["images.pexels.com", "img.spoonacular.com", "www.themealdb.com"]);
 app.get("/api/admin/image-proxy", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   let target: URL;
   try {
     target = new URL(c.req.query("url") ?? "");
@@ -592,7 +573,6 @@ app.get("/api/admin/image-proxy", async (c) => {
 // Guest cleanup (services/guest.ts): deletes data of guest ids older than GUEST_TTL_DAYS. Dry run unless ?write=true.
 // Also runs daily from scheduled() ("0 9 * * *").
 app.post("/api/admin/guest-cleanup", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   try {
     const out = await withDb(c.env, (db) => cleanupExpiredGuests(db, write));
@@ -606,7 +586,6 @@ app.post("/api/admin/guest-cleanup", async (c) => {
 // Use-it-up reminders: dry run by default (who would get one); ?write=true sends. Daily run: hourly cron at 17:00 UTC.
 // POST /api/admin/push-test body { userId } sends one test push to that user's subscriptions.
 app.post("/api/admin/push-reminders", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   try {
     const out = await withDb(c.env, (db) => sendExpiryReminders(c.env, db, !write));
@@ -617,7 +596,6 @@ app.post("/api/admin/push-reminders", async (c) => {
   }
 });
 app.post("/api/admin/push-test", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const body = (await c.req.json().catch(() => null)) as { userId?: string } | null;
   if (!body?.userId) return c.json({ ok: false, error: { code: "bad_request", message: "userId is required" } } satisfies ApiResponse<never>, 400);
   try {
@@ -635,7 +613,6 @@ app.post("/api/admin/push-test", async (c) => {
 //   ?write=true also needs body.confirm === the resolved clerkUserId. No backup is kept on purpose (it is an erasure
 //   request). The Clerk account itself is deleted separately in the Clerk dashboard.
 app.post("/api/admin/users/delete-data", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const write = c.req.query("write") === "true";
   const body = (await c.req.json().catch(() => null)) as { clerkUserId?: string; email?: string; confirm?: string } | null;
   try {
@@ -686,7 +663,6 @@ app.post("/api/admin/users/delete-data", async (c) => {
 //   POST /api/admin/vision-test  multipart { image } — runs the exact /api/fridge-stock/ocr scan and returns the
 //   result, or the real failure reason + timing instead of the generic user-facing message. Writes nothing.
 app.post("/api/admin/vision-test", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const form = await c.req.parseBody().catch(() => null);
   const file = form?.image;
   if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'image' file required" } } satisfies ApiResponse<never>, 400);
@@ -704,7 +680,6 @@ app.post("/api/admin/vision-test", async (c) => {
 // Video-import debugging (Jackie 2026-10-27: "couldn't find a recipe in this video"). Multipart { video }; writes nothing.
 //   ?model=<openrouter model id> overrides the vision model for a comparison.
 app.post("/api/admin/video-test", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const form = await c.req.parseBody().catch(() => null);
   const file = form?.video;
   if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'video' file required" } } satisfies ApiResponse<never>, 400);
@@ -724,7 +699,6 @@ app.post("/api/admin/video-test", async (c) => {
 
 // Video transcription test (2026-10-27): speech + on-screen text only. ?model= overrides. Writes nothing.
 app.post("/api/admin/video-transcribe-test", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const form = await c.req.parseBody().catch(() => null);
   const file = form?.video;
   if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'video' file required" } } satisfies ApiResponse<never>, 400);
@@ -739,7 +713,6 @@ app.post("/api/admin/video-transcribe-test", async (c) => {
 
 // Two-step video import test (2026-10-27): transcribe (?transcribeModel=, default flash) → existing text parser.
 app.post("/api/admin/video-recipe-test", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const form = await c.req.parseBody().catch(() => null);
   const file = form?.video;
   if (!(file instanceof File)) return c.json({ ok: false, error: { code: "bad_request", message: "multipart 'video' file required" } } satisfies ApiResponse<never>, 400);
@@ -771,7 +744,6 @@ app.post("/api/admin/video-recipe-test", async (c) => {
 
 // Recent photo/receipt scan failures written by /api/fridge-stock/ocr and /scan-fridge (no images stored).
 app.get("/api/admin/scan-errors", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   try {
     const docs = await withDb(c.env, (db) => db.collection("scan_errors").find({}).sort({ at: -1 }).limit(20).toArray());
     return c.json({ ok: true, data: docs.map((d) => ({ ...d, _id: String(d._id) })) });
@@ -783,7 +755,6 @@ app.get("/api/admin/scan-errors", async (c) => {
 
 // TheMealDB publish review (services/publishCandidates.ts) — read-only dry run, writes nothing.
 app.get("/api/admin/recipes-publish-review", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
   const source = c.req.query("source") ?? "themealdb";
   try {
     const out = await withDb(c.env, (db) => reviewPublishCandidates(db, source));
@@ -801,11 +772,6 @@ app.get("/api/admin/recipes-publish-review", async (c) => {
 // The remaining batches are fetched by the "15 * * * *" cron (<= 25 docs per fire); POST /api/admin/price-refresh/step
 // processes one more batch by hand; GET /api/admin/price-refresh[?runId=&results=true] reads a run doc.
 app.post("/api/admin/price-refresh", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const dryRun = c.req.query("dryRun") !== "false";
   const names = (c.req.query("names") ?? "").split(",").map((n) => n.trim()).filter(Boolean);
   const limit = Number.parseInt(c.req.query("limit") ?? "", 10);
@@ -830,11 +796,6 @@ app.post("/api/admin/price-refresh", async (c) => {
   }
 });
 app.post("/api/admin/price-refresh/step", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     return c.json({ ok: true, data: await processPriceRefresh(c.env) });
   } catch (err) {
@@ -843,11 +804,6 @@ app.post("/api/admin/price-refresh/step", async (c) => {
   }
 });
 app.get("/api/admin/price-refresh", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const run = await getRun(c.env, c.req.query("runId") ?? null, c.req.query("results") === "true");
     return c.json({ ok: true, data: run });
@@ -860,11 +816,6 @@ app.get("/api/admin/price-refresh", async (c) => {
 // Post-populate sanity check — lets Jackie confirm a write landed without
 // opening the Atlas UI. Same auth as the route above.
 app.get("/api/admin/recipe-cost-stats", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const stats = await recipeCostStats(c.env);
     const body: ApiResponse<RecipeCostStats> = { ok: true, data: stats };
@@ -883,11 +834,6 @@ app.get("/api/admin/recipe-cost-stats", async (c) => {
 //                        testing a deliberately-lowered coverage threshold.
 //   ?forceDigest=true  — bypass the "is it 10am UK" gate, sends the OpenRouter summary now.
 app.post("/api/admin/pwa-diagnostics-run", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const result = await runDiagnostics(c.env, {
       forceAlert: c.req.query("forceAlert") === "true",
@@ -905,11 +851,6 @@ app.post("/api/admin/pwa-diagnostics-run", async (c) => {
 // Sends a fixed test message — confirms the Telegram secrets/bot/chat are
 // wired correctly without touching diagnostics state or coverage checks.
 app.post("/api/admin/pwa-diagnostics-test-telegram", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     await sendTelegram(c.env, "🔧 UIU PWA diagnostics — test message. If you can read this, the bot/chat wiring works.");
     const body: ApiResponse<{ sent: true }> = { ok: true, data: { sent: true } };
@@ -927,11 +868,6 @@ app.post("/api/admin/pwa-diagnostics-test-telegram", async (c) => {
 // Approve/Reject buttons. There is no dry-run flag here: every draft is real content sent
 // for review, but nothing gets published to Instagram until a human taps Approve.
 app.post("/api/admin/ig-content-batch-run", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const summary = await runIgContentBatch(c.env);
     const body: ApiResponse<BatchSummary> = { ok: true, data: summary };
@@ -947,11 +883,6 @@ app.post("/api/admin/ig-content-batch-run", async (c) => {
 // (normally fires from scheduled() at "0 8 * * *"). Exists so the calendar-day gate can be
 // verified without waiting 3 real days: fire this repeatedly and read `ran`/`reason` back.
 app.post("/api/admin/ig-affiliate-cron-run", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const result = await runAffiliateCron(c.env);
     const body: ApiResponse<{ ran: boolean; reason: string; daysSinceLast: number | null; draftId: string | null }> = {
@@ -971,11 +902,6 @@ app.post("/api/admin/ig-affiliate-cron-run", async (c) => {
 // verified without waiting for the real clock — fire this against a draft whose publishedAt is
 // already >=24h/>=7d in the past and read the summary counts back.
 app.post("/api/admin/ig-insights-cron-run", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const result = await runInsightsSnapshotCron(c.env);
     const body: ApiResponse<typeof result> = { ok: true, data: result };
@@ -992,11 +918,6 @@ app.post("/api/admin/ig-insights-cron-run", async (c) => {
 // useitup.uk/shop-affiliate. Manual-trigger only for V1 (confirmed with Jackie): not wired into
 // the runIgContentBatch cron interleave.
 app.post("/api/admin/ig-content/collage", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const draftId = await generateAndSendCollage(c.env);
     const body: ApiResponse<{ draftId: string | null }> = { ok: true, data: { draftId: draftId ? draftId.toHexString() : null } };
@@ -1014,11 +935,6 @@ app.post("/api/admin/ig-content/collage", async (c) => {
 // to get those (curl it with a real product/theme payload, save the response body as a .png)
 // without spamming the review chat for every layout tweak.
 app.post("/api/admin/ig-content/collage-preview", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const payload = await c.req.json<{ headline: string; subtitle: string; products: Array<{ imageUrl: string; productName: string; benefitLine: string }> }>();
     const png = await renderCollageImage(payload);
@@ -1033,11 +949,6 @@ app.post("/api/admin/ig-content/collage-preview", async (c) => {
 // Manual trigger for the IG token health check — confirms the Telegram alert path works
 // and lets Jackie check expiry on demand without waiting for the cron.
 app.post("/api/admin/ig-token-health-run", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     await checkIgTokenHealth(c.env);
     const body: ApiResponse<{ checked: true }> = { ok: true, data: { checked: true } };

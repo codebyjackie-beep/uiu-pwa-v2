@@ -12,12 +12,12 @@ import type { Document, ObjectId as ObjectIdType } from "mongodb";
 import { ingredientTextGuard, type ApiResponse, type Recipe } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
+import { requireAdmin } from "../adminAuth";
 
 export const adminRecipesRouter = new Hono<{ Bindings: DbEnv & { ADMIN_TOKEN: string } & PexelsEnv }>();
 
-function checkAdminToken(token: string | undefined, expected: string): boolean {
-  return !!token && token === expected;
-}
+// Every route in this router is admin-only (adminAuth.ts).
+adminRecipesRouter.use("*", requireAdmin);
 
 /** Same field set the recipe-drafts edit form exposes, minus fields that don't apply to a
  * live recipe (status/createdAt/sourceInspiration/gapTarget/costPreview are draft-only). */
@@ -37,10 +37,6 @@ function toRecipe(doc: Document): Recipe {
 /** List, for the admin/recipes picker page. Deliberately minimal — title/tags/id only,
  * same underlying collection the public /api/recipes list reads. */
 adminRecipesRouter.get("/", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const docs = await withDb(c.env, (db) =>
       db.collection("recipes").find({}, { projection: { title: 1, tags: 1, createdAt: 1, imageUrl: 1 } }).sort({ title: 1 }).toArray(),
@@ -64,10 +60,6 @@ adminRecipesRouter.get("/", async (c) => {
 });
 
 adminRecipesRouter.get("/:id", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
   if (!ObjectId.isValid(id)) {
@@ -92,10 +84,6 @@ adminRecipesRouter.get("/:id", async (c) => {
 /** Edit a live recipe's content in place. Always `updateOne` against the existing _id —
  * never insertOne, never touches _id — so meal_plans/recipe_cost recipeId references stay valid. */
 adminRecipesRouter.patch("/:id", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const { ObjectId } = await getMongoModule();
   const id = c.req.param("id");
   if (!ObjectId.isValid(id)) {
@@ -182,10 +170,6 @@ function sleep(ms: number): Promise<void> {
  * imageUrl (mostly pre-dating aa594e5, the Pexels launch commit). Same dry-run/write
  * convention as /api/admin/recompute-costs. No retry-with-different-keyword on a miss (V1). */
 adminRecipesRouter.post("/backfill-images", async (c) => {
-  if (!checkAdminToken(c.req.header("X-Admin-Token"), c.env.ADMIN_TOKEN)) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const write = c.req.query("write") === "true";
   const skipIds = new Set(
     (c.req.query("skipIds") ?? "")
