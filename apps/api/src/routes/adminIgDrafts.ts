@@ -8,6 +8,7 @@ import type { ApiResponse } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { retryDraft, rejectDraft, accountFor, type IgContentDraft } from "../jobs/igContentAgent";
 import { scrapeProductImage, searchProductImageByAsin } from "../services/serper";
+import { requireAdmin } from "../adminAuth";
 
 type VerifyBindings = DbEnv & {
   ADMIN_TOKEN: string;
@@ -28,6 +29,9 @@ type VerifyBindings = DbEnv & {
 
 export const adminIgDraftsRouter = new Hono<{ Bindings: VerifyBindings }>();
 
+// Every route in this router is admin-only (adminAuth.ts).
+adminIgDraftsRouter.use("*", requireAdmin);
+
 function toIgDraft(doc: Document): Omit<IgContentDraft, "_id"> & { _id: string } {
   return { ...(doc as unknown as IgContentDraft), _id: String(doc._id) };
 }
@@ -41,11 +45,6 @@ function toIgDraft(doc: Document): Omit<IgContentDraft, "_id"> & { _id: string }
  * because the wrong token has no permission on that media node.
  */
 adminIgDraftsRouter.get("/verify-media", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const docs = await withDb(c.env, (db) =>
       db.collection("ig_content_drafts").find({ status: "approved", publishedMediaId: { $exists: true } }).sort({ createdAt: -1 }).toArray(),
@@ -93,11 +92,6 @@ adminIgDraftsRouter.get("/verify-media", async (c) => {
 
 /** Retries a publish_failed draft (e.g. after the 9007-race fix) without waiting for a Telegram tap on a stale message. */
 adminIgDraftsRouter.post("/:id/retry", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const { ObjectId } = await getMongoModule();
     const draftId = new ObjectId(c.req.param("id"));
@@ -113,11 +107,6 @@ adminIgDraftsRouter.post("/:id/retry", async (c) => {
 
 /** Rejects a pending draft without waiting for a Telegram tap (e.g. a known-bad pre-fix draft still sitting in the review channel). Mirrors the ig:reject webhook path, including regeneration of a replacement. */
 adminIgDraftsRouter.post("/:id/reject", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const { ObjectId } = await getMongoModule();
     const draftId = new ObjectId(c.req.param("id"));
@@ -148,11 +137,6 @@ adminIgDraftsRouter.post("/:id/reject", async (c) => {
  * bug in igContentAgent.ts's recordAffiliateProductUse call, without re-touching already-correct rows.
  */
 adminIgDraftsRouter.post("/backfill-product-images", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const payload = await c.req.json().catch(() => null);
     const force = payload?.force === true;
@@ -234,11 +218,6 @@ function hookLengthBucket(hook: string): string {
  * excludes that per the prompt) — just a sorted JSON report for a human to read and decide from.
  */
 adminIgDraftsRouter.get("/insights-report", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   try {
     const docs = await withDb(c.env, (db) => db.collection("ig_content_drafts").find({ insights7d: { $exists: true } }).toArray());
     const rows: InsightsRow[] = docs.map((d) => ({
@@ -275,11 +254,6 @@ adminIgDraftsRouter.get("/insights-report", async (c) => {
 });
 
 adminIgDraftsRouter.get("/", async (c) => {
-  const token = c.req.header("X-Admin-Token");
-  if (!token || token !== c.env.ADMIN_TOKEN) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "unauthorized", message: "Missing or invalid X-Admin-Token" } };
-    return c.json(body, 401);
-  }
   const statusParam = c.req.query("status");
   const filter = statusParam && statusParam !== "all" ? { status: statusParam } : {};
   try {
