@@ -450,12 +450,12 @@ export function RecipeDraftsAdmin() {
               </p>
 
               {d.triage ? (
-                <p className="admin-drafts-triage">
+                <p className={`admin-drafts-triage ${d.triage.action === "auto_approve" ? "admin-drafts-triage--approved" : "admin-drafts-triage--rejected"}`}>
                   {d.triage.action === "auto_approve" ? "✅ Auto-approved" : "🚫 Auto-rejected"} (batch {d.triage.batchId}): {d.triage.reasons.join("; ")}
                 </p>
               ) : null}
               {d.status === "rejected" && d.rejectedReason && !d.triage ? (
-                <p className="admin-drafts-triage">Reject reason: {d.rejectedReason}</p>
+                <p className="admin-drafts-triage admin-drafts-triage--rejected">Reject reason: {d.rejectedReason}</p>
               ) : null}
 
               {expanded ? (

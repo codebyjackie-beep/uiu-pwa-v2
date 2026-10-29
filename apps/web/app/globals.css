@@ -3583,11 +3583,20 @@ a {
 .admin-drafts-triage {
   margin: 4px 0 0;
   font-size: 12px;
-  color: var(--uiu-muted);
-  background: var(--accent);
+  /* Was muted text on --accent (dark green) = 1.6:1 contrast, unreadable. Soft bg + ink text ≥ 6:1. */
+  color: var(--uiu-green-ink);
+  background: var(--uiu-surface-2);
   border-radius: 6px;
   padding: 4px 8px;
   display: inline-block;
+}
+.admin-drafts-triage--rejected {
+  color: var(--uiu-clay-ink);
+  background: var(--uiu-clay-soft);
+}
+.admin-drafts-triage--approved {
+  color: var(--uiu-olive-ink);
+  background: var(--uiu-olive-soft);
 }
 
 .admin-drafts-edit-form {
