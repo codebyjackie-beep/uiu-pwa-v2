@@ -3580,6 +3580,35 @@ a {
   cursor: pointer;
 }
 
+.admin-triage-panel {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px var(--space);
+  margin-bottom: var(--space);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin-triage-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+.admin-triage-panel__plan ul {
+  margin: 4px 0;
+  padding-left: 20px;
+}
+.admin-triage-panel__plan details {
+  font-size: 13px;
+  margin: 4px 0;
+}
+.admin-triage-panel__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .admin-drafts-triage {
   margin: 4px 0 0;
   font-size: 12px;

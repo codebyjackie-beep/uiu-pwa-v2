@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ApiResponse, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeDraftStatus } from "@uiu/shared";
 import { MealTagPicker } from "../_shared/MealTagPicker";
+import { TriagePanel } from "./TriagePanel";
 
 type Session = "loading" | "authed" | "anon";
 
@@ -365,6 +366,8 @@ export function RecipeDraftsAdmin() {
           </button>
         ))}
       </div>
+
+      <TriagePanel onChanged={() => void loadDrafts(fetchStatus)} />
 
       {toast ? <p className="admin-drafts-toast">{toast}</p> : null}
       {listError ? <p className="admin-drafts-error">{listError}</p> : null}
