@@ -609,6 +609,14 @@ app.get("/api/admin/ig-caption-probe", async (c) => {
       ogDescriptionLength: desc?.length ?? null,
       ogDescriptionPreview: desc ? desc.slice(0, 60) : null,
       hasJsonLd: /application\/ld\+json/i.test(html),
+      ogTagCount: (html.match(/property=["']og:/gi) ?? []).length,
+      metaNameDescription: meta("description") !== null || /<meta[^>]+name=["']description["']/i.test(html),
+      hasEdgeMediaCaption: html.includes("edge_media_to_caption"),
+      hasCaptionKey: html.includes('"caption"'),
+      captionKeyPreview: (() => {
+        const i = html.indexOf('"caption"');
+        return i >= 0 ? html.slice(i, i + 60) : null;
+      })(),
     },
   });
 });
