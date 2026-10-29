@@ -20,6 +20,10 @@ function fileToDataUrl(file: File): Promise<string> {
 
 type Step = "url" | "manual-paste" | "done";
 type Mode = "link" | "photo" | "video" | "manual";
+/** Launch (Jackie 2026-10-29): link + video import are hidden until video import reaches 80% on a 10-reel test set.
+ * Photo + Manually stay. Flip to true to bring back "Paste a link" and "Upload a video" (code kept, not deleted). */
+export const LINK_IMPORT_ENABLED = false;
+
 const MAX_PHOTOS = 3;
 /** Gemini takes ~20 MB inline per request; base64 adds a third, so the file itself is capped at 14 MB (API checks too). */
 const MAX_VIDEO_BYTES = 14 * 1024 * 1024;
@@ -65,9 +69,9 @@ interface SaveFromLinkModalProps {
 }
 
 export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }: SaveFromLinkModalProps) {
-  const [mode, setMode] = useState<Mode>("link");
+  const [mode, setMode] = useState<Mode>(LINK_IMPORT_ENABLED ? "link" : "manual");
   const [step, setStep] = useState<Step>(initialText ? "manual-paste" : "url");
-  const [url, setUrl] = useState(initialUrl ?? "");
+  const [url, setUrl] = useState(LINK_IMPORT_ENABLED ? (initialUrl ?? "") : "");
   const [pastedText, setPastedText] = useState(initialText ?? "");
   const [platform, setPlatform] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -256,18 +260,20 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
         <div className="meal-planner-modal__body recipe-import-form">
           {step === "url" ? (
             <div className="recipe-import-form__tabs">
-              <button
-                type="button"
-                className={`chip${mode === "link" ? " chip--active" : ""}`}
-                disabled={submitting}
-                onClick={() => {
-                  setMode("link");
-                  setImportedFrom(null);
-                  setError(null);
-                }}
-              >
-                Paste a link
-              </button>
+              {LINK_IMPORT_ENABLED ? (
+                <button
+                  type="button"
+                  className={`chip${mode === "link" ? " chip--active" : ""}`}
+                  disabled={submitting}
+                  onClick={() => {
+                    setMode("link");
+                    setImportedFrom(null);
+                    setError(null);
+                  }}
+                >
+                  Paste a link
+                </button>
+              ) : null}
               <button
                 type="button"
                 className={`chip${mode === "photo" ? " chip--active" : ""}`}
@@ -280,18 +286,20 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
               >
                 Take a photo
               </button>
-              <button
-                type="button"
-                className={`chip${mode === "video" ? " chip--active" : ""}`}
-                disabled={submitting}
-                onClick={() => {
-                  setMode("video");
-                  setImportedFrom(null);
-                  setError(null);
-                }}
-              >
-                Upload a video
-              </button>
+              {LINK_IMPORT_ENABLED ? (
+                <button
+                  type="button"
+                  className={`chip${mode === "video" ? " chip--active" : ""}`}
+                  disabled={submitting}
+                  onClick={() => {
+                    setMode("video");
+                    setImportedFrom(null);
+                    setError(null);
+                  }}
+                >
+                  Upload a video
+                </button>
+              ) : null}
               <button
                 type="button"
                 className={`chip${mode === "manual" ? " chip--active" : ""}`}

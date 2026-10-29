@@ -567,65 +567,6 @@ app.get("/api/admin/value-probe", async (c) => {
   return c.json({ ok: true, data: out });
 });
 
-// Read-only probe (2026-10-29): can the Worker read an Instagram reel's caption from its public page?
-// Returns status + which meta tags exist + their length. Never returns the full HTML. Admin-token only; instagram.com only.
-app.get("/api/admin/ig-caption-probe", async (c) => {
-  if (adminDenied(c)) return c.json(UNAUTH_ADMIN, 401);
-  const raw = c.req.query("url") ?? "";
-  let target: URL;
-  try {
-    target = new URL(raw);
-  } catch {
-    return c.json({ ok: false, error: { code: "bad_request", message: "url required" } }, 400);
-  }
-  if (target.hostname !== "www.instagram.com" && target.hostname !== "instagram.com") {
-    return c.json({ ok: false, error: { code: "bad_request", message: "instagram.com only" } }, 400);
-  }
-  // variant=embed → IG's public embed page for the same reel (diagnostic: some reels carry caption HTML there).
-  const variant = c.req.query("variant") ?? "page";
-  const fetchUrl = variant === "embed"
-    ? `https://www.instagram.com${target.pathname.replace(/\/?$/, "/")}embed/captioned/`
-    : target.toString();
-  const res = await fetch(fetchUrl, {
-    redirect: "follow",
-    headers: {
-      "User-Agent": "Mozilla/5.0 (Linux; Android 14; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36",
-      "Accept-Language": "en-GB,en;q=0.9",
-      Accept: "text/html,application/xhtml+xml",
-    },
-  });
-  const html = await res.text();
-  const meta = (prop: string) => {
-    const m = html.match(new RegExp(`<meta[^>]+property=["']${prop}["'][^>]*content=["']([^"']*)["']`, "i"))
-      ?? html.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+property=["']${prop}["']`, "i"));
-    return m ? m[1] : null;
-  };
-  const desc = meta("og:description");
-  const title = meta("og:title");
-  return c.json({
-    ok: true,
-    data: {
-      httpStatus: res.status,
-      finalHost: new URL(res.url).hostname,
-      finalPath: new URL(res.url).pathname.slice(0, 40),
-      htmlBytes: html.length,
-      hasLoginWall: /log in|sign up|loginForm/i.test(html) && !desc,
-      ogTitleLength: title?.length ?? null,
-      ogDescriptionLength: desc?.length ?? null,
-      ogDescriptionPreview: desc ? desc.slice(0, 60) : null,
-      hasJsonLd: /application\/ld\+json/i.test(html),
-      ogTagCount: (html.match(/property=["']og:/gi) ?? []).length,
-      metaNameDescription: meta("description") !== null || /<meta[^>]+name=["']description["']/i.test(html),
-      hasEdgeMediaCaption: html.includes("edge_media_to_caption"),
-      hasCaptionKey: html.includes('"caption"'),
-      captionKeyPreview: (() => {
-        const i = html.indexOf('"caption"');
-        return i >= 0 ? html.slice(i, i + 60) : null;
-      })(),
-    },
-  });
-});
-
 // Admin image proxy — lets cloud's headless screenshot runs (welcome-page phone frames) load recipe photos,
 // which the cloud sandbox can't fetch directly. Admin-token only; recipe image hosts only; read-only.
 const IMAGE_PROXY_HOSTS = new Set(["images.pexels.com", "img.spoonacular.com", "www.themealdb.com"]);
