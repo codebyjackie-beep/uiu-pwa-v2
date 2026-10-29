@@ -12,6 +12,7 @@ import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { approveRecipeDraft, rejectRecipeDraft } from "../services/recipeDraftApproval";
 import { requireAdmin } from "../adminAuth";
+import { APPLY_CHUNK_MAX, applyTriageChunk, isValidBatchId, newBatchId, planTriage, rollbackTriageBatch } from "../services/recipeDraftTriage";
 
 export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
 
@@ -370,5 +371,62 @@ adminRecipeDraftsRouter.post("/:id/reject", async (c) => {
     console.error("[uiu-api] recipe-drafts reject error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to reject draft" } };
     return c.json(body, 502);
+  }
+});
+
+// ---------------------------------------------------------------------------------------------
+// Auto-triage from the admin UI (services/recipeDraftTriage.ts). Same rules + same approve/reject
+// functions as scripts/triage_recipe_drafts.cjs, but runs inside the Worker (which reaches Atlas).
+//   POST /triage/plan      read-only: counts, reasons, samples, id lists
+//   POST /triage/apply     body { ids: string[] (≤10), batchId?: string } — omit batchId on the first chunk
+//   POST /triage/rollback  body { batchId, write?: boolean } — dry-run unless write === true
+// ---------------------------------------------------------------------------------------------
+function triageError(c: any, where: string, err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
+  console.error(`[uiu-api] recipe-drafts ${where} error:`, message);
+  if (message.startsWith("sanity gate")) {
+    return c.json({ ok: false, error: { code: "sanity_gate", message } } satisfies ApiResponse<never>, 409);
+  }
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+
+adminRecipeDraftsRouter.post("/triage/plan", async (c) => {
+  try {
+    const plan = await withDb(c.env, (db) => planTriage(db));
+    return c.json({ ok: true, data: plan } satisfies ApiResponse<typeof plan>);
+  } catch (err) {
+    return triageError(c, "triage plan", err);
+  }
+});
+
+adminRecipeDraftsRouter.post("/triage/apply", async (c) => {
+  const body = (await c.req.json().catch(() => null)) as { ids?: unknown; batchId?: unknown } | null;
+  const ids = Array.isArray(body?.ids) ? body!.ids.filter((x): x is string => typeof x === "string" && /^[0-9a-f]{24}$/.test(x)) : [];
+  if (ids.length === 0 || ids.length > APPLY_CHUNK_MAX || ids.length !== (body?.ids as unknown[]).length) {
+    return c.json({ ok: false, error: { code: "bad_request", message: `ids must be 1-${APPLY_CHUNK_MAX} draft ids` } } satisfies ApiResponse<never>, 400);
+  }
+  if (body?.batchId !== undefined && !isValidBatchId(body.batchId)) {
+    return c.json({ ok: false, error: { code: "bad_request", message: "invalid batchId" } } satisfies ApiResponse<never>, 400);
+  }
+  const batchId = isValidBatchId(body?.batchId) ? body!.batchId : newBatchId();
+  try {
+    const result = await withDb(c.env, (db) => applyTriageChunk(db, c.env, ids, batchId));
+    return c.json({ ok: true, data: result } satisfies ApiResponse<typeof result>);
+  } catch (err) {
+    return triageError(c, "triage apply", err);
+  }
+});
+
+adminRecipeDraftsRouter.post("/triage/rollback", async (c) => {
+  const body = (await c.req.json().catch(() => null)) as { batchId?: unknown; write?: unknown } | null;
+  if (!isValidBatchId(body?.batchId)) {
+    return c.json({ ok: false, error: { code: "bad_request", message: "invalid batchId" } } satisfies ApiResponse<never>, 400);
+  }
+  const batchId = body!.batchId as string;
+  try {
+    const result = await withDb(c.env, (db) => rollbackTriageBatch(db, batchId, body?.write === true));
+    return c.json({ ok: true, data: result } satisfies ApiResponse<typeof result>);
+  } catch (err) {
+    return triageError(c, "triage rollback", err);
   }
 });

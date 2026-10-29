@@ -60,7 +60,7 @@ for (const [f, base] of mounts) {
   for (const m of src(f).matchAll(re)) routes.push({ method: m[1].toUpperCase(), path: base + (m[2] === "/" ? "" : m[2]) });
 }
 
-const EXPECTED_ROUTES = 53; // 36 inline (index.ts → routes/admin.ts) + 7 recipe-drafts + 4 recipes + 6 ig-drafts
+const EXPECTED_ROUTES = 56; // 36 inline (routes/admin.ts) + 10 recipe-drafts (incl. 3 triage) + 4 recipes + 6 ig-drafts
 check("route count", routes.length === EXPECTED_ROUTES, `found ${routes.length}, expected ${EXPECTED_ROUTES}`);
 
 // --- fire each route at the real app (wrangler dev) ---
