@@ -89,8 +89,12 @@ const version = await call("/api/version");
 check("GET /api/version stays public", version.status === 200, `got ${version.status}`);
 
 // --- a valid token gets past the gate (handler runs; with no DB it may 4xx/5xx, but never 401) ---
-const authed = await call("/api/admin/ai-usage?month=bad", { headers: { "X-Admin-Token": TOKEN } });
-check("valid token passes gate", authed.status !== 401, `got ${authed.status}`);
+// --- a valid token reaches the handler: every GET admin route must exist (no 404) and pass the gate (no 401).
+// GET only, so nothing writes or sends; with no DB the handler may 4xx/5xx/time out — that's fine here.
+for (const r of routes.filter((x) => x.method === "GET")) {
+  const res = await call(r.path.replace(/:(\w+)/g, "000000000000000000000000"), { headers: { "X-Admin-Token": TOKEN } });
+  check(`GET ${r.path} (valid token)`, res.status !== 401 && res.status !== 404, `got ${res.status}`);
+}
 
 console.log(`${routes.length} admin routes × 2 unauth cases checked`);
 if (failures) {
