@@ -581,7 +581,12 @@ app.get("/api/admin/ig-caption-probe", async (c) => {
   if (target.hostname !== "www.instagram.com" && target.hostname !== "instagram.com") {
     return c.json({ ok: false, error: { code: "bad_request", message: "instagram.com only" } }, 400);
   }
-  const res = await fetch(target.toString(), {
+  // variant=embed → IG's public embed page for the same reel (diagnostic: some reels carry caption HTML there).
+  const variant = c.req.query("variant") ?? "page";
+  const fetchUrl = variant === "embed"
+    ? `https://www.instagram.com${target.pathname.replace(/\/?$/, "/")}embed/captioned/`
+    : target.toString();
+  const res = await fetch(fetchUrl, {
     redirect: "follow",
     headers: {
       "User-Agent": "Mozilla/5.0 (Linux; Android 14; SM-S921B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36",
