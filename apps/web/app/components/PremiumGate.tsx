@@ -153,7 +153,7 @@ export function PremiumGate() {
         </div>
         <div className="meal-planner-modal__body">
           {gate.kind === "premium_required" ? (
-            <p>Upgrade to UseItUp Premium to use AI Nutrition Coach, the meal plan wizard, barcode scanning, photo imports and more. Your first 7 days are free.</p>
+            <p>Upgrade to UseItUp Premium to use AI Nutrition Coach, the meal plan wizard, barcode scanning, photo imports and more.{plan && !plan.trialEndsAt ? " Your first 7 days are free." : ""}</p>
           ) : (
             <p>
               {gate.message}
