@@ -93,6 +93,8 @@ export function nextMonthStart(now: Date): Date {
 interface UserPlanFields {
   trialEndsAt?: string | null;
   premiumUntil?: string | null;
+  stripeCancelAtPeriodEnd?: boolean | null;
+  stripeSubscriptionStatus?: string | null;
 }
 
 function compIds(env: PremiumEnv): Set<string> {
@@ -123,7 +125,7 @@ async function loadPlanFields(db: Db, userId: string, enforced: boolean, now: Da
   }
   return (await users.findOne(
     { clerkUserId: userId },
-    { projection: { trialEndsAt: 1, premiumUntil: 1 } },
+    { projection: { trialEndsAt: 1, premiumUntil: 1, stripeCancelAtPeriodEnd: 1, stripeSubscriptionStatus: 1 } },
   )) as UserPlanFields | null;
 }
 
@@ -153,6 +155,7 @@ export async function getMyPlan(env: PremiumEnv, userId: string, now = new Date(
     enforced,
     trialEndsAt: fields?.trialEndsAt ?? null,
     premiumUntil: fields?.premiumUntil ?? null,
+    cancelAtPeriodEnd: Boolean(fields?.stripeCancelAtPeriodEnd) && fields?.stripeSubscriptionStatus !== "canceled",
     usageResetsAt: nextMonthStart(now).toISOString(),
     usage,
   };

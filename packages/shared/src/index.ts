@@ -1310,6 +1310,8 @@ export interface MyPlan {
   trialEndsAt: ISODate | null;
   /** End of the paid period (renewal date, or access end after cancelling). */
   premiumUntil: ISODate | null;
+  /** true once the Stripe subscription is set to end at the period end (user cancelled; access runs to premiumUntil). */
+  cancelAtPeriodEnd?: boolean;
   /** First moment of next UTC month, when usage counts reset. */
   usageResetsAt: ISODate;
   usage: Record<PremiumFeature, FeatureUsage>;

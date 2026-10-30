@@ -168,6 +168,9 @@ export interface StripeSubscription {
   customer: string;
   status: string;
   metadata?: Record<string, string>;
+  /** true / a cancel_at date = the user cancelled and the subscription ends at the period end. */
+  cancel_at_period_end?: boolean;
+  cancel_at?: number | null;
   /** Pre-2025 API versions. */
   current_period_end?: number;
   /** Newer API versions moved the period onto each item. */

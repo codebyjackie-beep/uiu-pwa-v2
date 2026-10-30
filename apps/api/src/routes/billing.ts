@@ -117,6 +117,7 @@ async function applySubscription(env: BillingEnv, sub: StripeSubscription): Prom
     stripeCustomerId: sub.customer,
     stripeSubscriptionId: sub.id,
     stripeSubscriptionStatus: sub.status,
+    stripeCancelAtPeriodEnd: Boolean(sub.cancel_at_period_end || sub.cancel_at),
   };
   const update: Record<string, unknown> = { $set: set };
   if (isAccessGranting(sub) && periodEnd) {

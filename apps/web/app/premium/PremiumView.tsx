@@ -78,7 +78,15 @@ export function PremiumView() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("checkout") === "success") setJustPaid(true);
+    if (params.get("checkout") === "success") {
+      setJustPaid(true);
+      // One-shot notice: drop the param so a reload does not show "Thanks for subscribing" again.
+      try {
+        window.history.replaceState(null, "", window.location.pathname);
+      } catch {
+        // history API blocked: the notice just stays until the next navigation
+      }
+    }
     void loadPlan();
   }, [loadPlan]);
 
@@ -130,7 +138,9 @@ export function PremiumView() {
         {plan ? (
           <>
             <p className={styles.planName}>{isPremium ? "Premium" : isTrial ? "Free trial" : "Free"}</p>
-            {isPremium && accessUntil ? <p className={styles.muted}>Access until {accessUntil}</p> : null}
+            {isPremium && accessUntil ? (
+              <p className={styles.muted}>{plan.cancelAtPeriodEnd ? `Cancelled — access until ${accessUntil}` : `Renews on ${accessUntil}`}</p>
+            ) : null}
             {isTrial && trialDays !== null ? (
               <p className={styles.muted}>
                 {trialDays > 0 ? `${trialDays} day${trialDays === 1 ? "" : "s"} left of your free trial. No card needed.` : "Your free trial has ended."}
