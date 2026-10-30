@@ -24,6 +24,8 @@ import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "..
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
 import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
 import { PerUnitCountInputError, rollbackPerUnitCount, setPerUnitCount } from "../services/perUnitCountSet";
+import { eraseUserData, UserDeletionInputError } from "../services/userDeletion";
+import type { StripeEnv } from "../services/stripe";
 import { AI_USAGE } from "../services/premium";
 import { requireAdmin } from "../adminAuth";
 import type { Bindings } from "../bindings";
@@ -600,6 +602,22 @@ adminRouter.post("/canonical-price/per-unit-count/rollback", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return perUnitCountError(c, err, "per-unit-count rollback");
+  }
+});
+
+// Manual erasure (services/userDeletion.ts) — same code the Clerk user.deleted webhook runs. Dry run unless ?write=true.
+// Deletes the user's personal data, keeps billing records; cancels an active Stripe subscription first.
+//   POST /api/admin/user-deletion  body { clerkUserId }
+adminRouter.post("/user-deletion", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { clerkUserId?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => eraseUserData(db, c.env as unknown as StripeEnv, body?.clerkUserId, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    if (err instanceof UserDeletionInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+    console.error("[uiu-api] user-deletion error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "user-deletion failed" } } satisfies ApiResponse<never>, 502);
   }
 });
 

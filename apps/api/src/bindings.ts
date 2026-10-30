@@ -77,6 +77,9 @@ export type Bindings = {
   // cc_prompt_milestone1_followup_fixes.md gap 1 — same public value as apps/web's
   // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, used by src/clerkAuth.ts to find Clerk's JWKS endpoint.
   CLERK_PUBLISHABLE_KEY: string;
+  //   CLERK_WEBHOOK_SECRET — OPTIONAL, whsec_… signing secret of the Clerk webhook endpoint (/api/webhooks/clerk, user.deleted).
+  //     Unset -> the endpoint answers 503 and nothing is deleted.
+  CLERK_WEBHOOK_SECRET?: string;
   // cc_prompt_price_refresh_monthly_cron.md — guarded Serper price refresh (jobs/priceRefresh.ts).
   //   PRICE_REFRESH_SCHEDULE — "monthly" (default) | "weekly" | "daily"; when a scheduled run is opened.
   //   PRICE_REFRESH_AUTO_WRITE — must be exactly "true" for any run to write; "false" (default) = every run is a dry-run.

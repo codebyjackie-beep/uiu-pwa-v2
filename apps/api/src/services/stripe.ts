@@ -57,7 +57,7 @@ export function flattenParams(input: Record<string, unknown>, prefix = ""): [str
   return out;
 }
 
-async function stripeRequest<T>(env: StripeEnv, method: "GET" | "POST", path: string, params?: Record<string, unknown>): Promise<T> {
+async function stripeRequest<T>(env: StripeEnv, method: "GET" | "POST" | "DELETE", path: string, params?: Record<string, unknown>): Promise<T> {
   const key = env.STRIPE_SECRET_KEY;
   if (!key) throw new StripeError("Stripe is not configured", 503);
   const init: RequestInit = {
@@ -124,6 +124,21 @@ export async function createPortalSession(env: StripeEnv, customerId: string, we
   });
   if (!portal.url) throw new StripeError("Stripe returned no portal URL", 502);
   return portal.url;
+}
+
+/**
+ * Cancel a subscription immediately, no refund (account deleted). Already gone / already cancelled = success.
+ * Other errors throw, so the caller can fail the webhook and let the sender retry before any data is deleted.
+ */
+export async function cancelSubscriptionNow(env: StripeEnv, subscriptionId: string): Promise<"cancelled" | "already_gone"> {
+  if (!/^sub_[A-Za-z0-9]+$/.test(subscriptionId)) throw new StripeError("bad subscription id", 400);
+  try {
+    await stripeRequest(env, "DELETE", `/subscriptions/${subscriptionId}`);
+    return "cancelled";
+  } catch (err) {
+    if (err instanceof StripeError && err.status === 404) return "already_gone";
+    throw err;
+  }
 }
 
 // ---------------------------------------------------------------------------
