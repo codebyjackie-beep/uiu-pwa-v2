@@ -16,7 +16,9 @@
  */
 import type { Db, Document } from "mongodb";
 import {
+  findNearDuplicateRecipe,
   ingredientNameLooksLikeFragment,
+  type SimilarityRecipe,
   type CanonicalIngredient,
   type CanonicalPriceCacheEntry,
   type Recipe,
@@ -49,6 +51,8 @@ interface Evaluated {
   adjustedCoveragePct: number;
   imageUrl?: string;
   tags?: string[];
+  /** needs_review already set by an earlier run — no need to send it through apply again. */
+  alreadyFlagged?: boolean;
 }
 
 export interface TriagePlan {
@@ -117,8 +121,15 @@ export function passesApproveGate(e: { adjustedCoveragePct: number; calories: nu
 export async function evaluatePendingDrafts(db: Db): Promise<Evaluated[]> {
   const [pendingDocs, liveRecipes] = await Promise.all([
     db.collection("recipe_drafts").find({ status: "pending" }).toArray(),
-    db.collection("recipes").find({}, { projection: { title: 1 } }).toArray(),
+    db.collection("recipes").find({}, { projection: { title: 1, isPublic: 1, "ingredients.name": 1 } }).toArray(),
   ]);
+  const toSim = (d: Document): SimilarityRecipe => ({
+    title: String(d.title ?? ""),
+    ingredientNames: ((d.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i?.name ?? "")),
+  });
+  // Same corpus approveRecipeDraft() checks against (public recipes); approve candidates are added
+  // as they are accepted below, so two similar drafts don't both get planned as approve.
+  const similarityCorpus: SimilarityRecipe[] = liveRecipes.filter((r) => r.isPublic === true).map(toSim);
   const ingredientsCol = db.collection<Document>("canonical_ingredients");
   const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
   const allPriceDocs = (await db.collection("canonical_price_cache").find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
@@ -173,10 +184,19 @@ export async function evaluatePendingDrafts(db: Db): Promise<Evaluated[]> {
       adjustedCoveragePct: Math.round(r.cost.adjustedCoveragePct * 10) / 10,
       imageUrl: r.draft.imageUrl,
       tags: r.draft.tags,
+      alreadyFlagged: (r.draft as unknown as { needs_review?: boolean }).needs_review === true,
     };
     if (r.reasons.length) return { ...base, verdict: "reject" as const, reasons: r.reasons };
     if (r.lineCoverage < NUTRITION_COVERAGE_MIN) return { ...base, verdict: "needs_review" as const, reasons: [`nutritionLineCoverage:${r.lineCoverage}`] };
     if (passesApproveGate({ adjustedCoveragePct: r.cost.adjustedCoveragePct, calories: r.calories, steps: r.steps, ingredients: r.ingredients, mealType: r.draft.mealType })) {
+      // Would pass every rule but approveRecipeDraft() would refuse it as a near-duplicate
+      // (2026-10-29 run: 117 of 224 stuck in pending this way) -> reject, tagged, rollback-able.
+      const sim = toSim(r.draft as unknown as Document);
+      const near = findNearDuplicateRecipe(sim, similarityCorpus);
+      if (near) {
+        return { ...base, verdict: "reject" as const, reasons: [`near_duplicate:${near.rule}:${near.title}`] };
+      }
+      similarityCorpus.push(sim);
       return { ...base, verdict: "approve_candidate" as const, reasons: ["auto_approve: all rules passed"] };
     }
     return { ...base, verdict: "pending" as const, reasons: [] };
@@ -203,7 +223,7 @@ export async function planTriage(db: Db): Promise<TriagePlan> {
     ids: {
       approve_candidate: by("approve_candidate").map((e) => e.id),
       reject: by("reject").map((e) => e.id),
-      needs_review: by("needs_review").map((e) => e.id),
+      needs_review: by("needs_review").filter((e) => !e.alreadyFlagged).map((e) => e.id),
     },
     note: "approve_candidate still needs a working image at apply time; any without one stays pending.",
   };
@@ -297,7 +317,12 @@ export async function applyTriageChunk(db: Db, env: PexelsEnv, ids: string[], ba
       await db.collection("recipe_drafts").updateOne({ _id: new ObjectId(id), status: "pending" }, { $set: set });
       const r = await approveRecipeDraft(db, env, id, { batchId, reasons: e.reasons });
       if ("insertedId" in r) out.approved.push(id);
-      else out.stayedPending.push({ id, reason: "nearDuplicate" in r ? "near_duplicate" : "alreadyDecided" in r ? "already_decided" : "not_found" });
+      else if ("nearDuplicate" in r) {
+        const reasons = [`near_duplicate:${r.nearDuplicate.rule}:${r.nearDuplicate.title}`];
+        const rr = await rejectRecipeDraft(db, id, { rejectedReason: reasons.join("; "), triage: { batchId, reasons } });
+        if ("ok" in rr) out.rejected.push(id);
+        else out.stayedPending.push({ id, reason: "near_duplicate" });
+      } else out.stayedPending.push({ id, reason: "alreadyDecided" in r ? "already_decided" : "not_found" });
     } else {
       out.stayedPending.push({ id, reason: "rules_not_met" });
     }
