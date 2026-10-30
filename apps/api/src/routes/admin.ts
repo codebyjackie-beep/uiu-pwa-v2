@@ -24,7 +24,6 @@ import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "..
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
 import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
 import { PerUnitCountInputError, rollbackPerUnitCount, setPerUnitCount } from "../services/perUnitCountSet";
-import { endCanceledAccess, setTestTrialEnd, TestTrialInputError } from "../services/testTrial";
 import { AI_USAGE } from "../services/premium";
 import { requireAdmin } from "../adminAuth";
 import type { Bindings } from "../bindings";
@@ -601,37 +600,6 @@ adminRouter.post("/canonical-price/per-unit-count/rollback", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return perUnitCountError(c, err, "per-unit-count rollback");
-  }
-});
-
-// M3 test helper (services/testTrial.ts): move a trial-only TEST account's users.trialEndsAt. Dry run unless ?write=true.
-//   POST /api/admin/test-trial  body { clerkUserId, inDays: 3 | -1 }  or  { clerkUserId, trialEndsAt: "<ISO>" }
-// Refuses any user with premiumUntil / a Stripe customer. Returns the previous value (restoreWith).
-adminRouter.post("/test-trial", async (c) => {
-  const write = c.req.query("write") === "true";
-  const body = (await c.req.json().catch(() => null)) as { clerkUserId?: unknown; inDays?: unknown; trialEndsAt?: unknown } | null;
-  try {
-    const out = await withDb(c.env, (db) => setTestTrialEnd(db, body, write));
-    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
-  } catch (err) {
-    if (err instanceof TestTrialInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
-    console.error("[uiu-api] test-trial error:", err instanceof Error ? err.message : String(err));
-    return c.json({ ok: false, error: { code: "db_error", message: "test-trial failed" } } satisfies ApiResponse<never>, 502);
-  }
-});
-
-// One-off reconcile (services/testTrial.ts endCanceledAccess): stripeSubscriptionStatus "canceled" but premiumUntil still in the future.
-//   POST /api/admin/test-trial/end-canceled  body { clerkUserId }   dry run unless ?write=true
-adminRouter.post("/test-trial/end-canceled", async (c) => {
-  const write = c.req.query("write") === "true";
-  const body = (await c.req.json().catch(() => null)) as { clerkUserId?: unknown } | null;
-  try {
-    const out = await withDb(c.env, (db) => endCanceledAccess(db, body, write));
-    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
-  } catch (err) {
-    if (err instanceof TestTrialInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
-    console.error("[uiu-api] end-canceled error:", err instanceof Error ? err.message : String(err));
-    return c.json({ ok: false, error: { code: "db_error", message: "end-canceled failed" } } satisfies ApiResponse<never>, 502);
   }
 });
 
