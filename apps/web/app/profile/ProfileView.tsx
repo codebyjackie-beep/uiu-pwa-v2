@@ -24,7 +24,8 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
   const isPremium = plan?.plan === "premium";
   const isTrial = plan?.plan === "trial";
   const trialDays = plan?.trialEndsAt ? Math.max(0, Math.ceil((Date.parse(plan.trialEndsAt) - Date.now()) / 86_400_000)) : null;
-  const planTitle = isPremium ? "Premium" : isTrial ? "Free trial" : "Free plan";
+  // Until /api/me/plan answers, say nothing about the plan — a paying user must not see "Free plan" flash up.
+  const planTitle = !plan ? "Your plan" : isPremium ? "Premium" : isTrial ? "Free trial" : "Free plan";
   const initial = (name.trim()[0] ?? "?").toUpperCase();
 
   return (
@@ -52,8 +53,8 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
         </div>
         {isPremium ? <p className="profile-plan__lead">You have all Premium features.</p> : null}
         {isTrial && trialDays !== null ? <p className="profile-plan__lead">{trialDays} day{trialDays === 1 ? "" : "s"} left of your free trial.</p> : null}
-        {!isPremium ? <p className="profile-plan__lead">Premium will unlock:</p> : null}
-        {!isPremium ? (
+        {plan && !isPremium ? <p className="profile-plan__lead">Premium will unlock:</p> : null}
+        {plan && !isPremium ? (
           <ul className="profile-plan__list">
             {PREMIUM_FEATURES.map((f) => (
               <li key={f}>{f}</li>
@@ -61,7 +62,7 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
           </ul>
         ) : null}
         <Link href="/premium" className="wizard-primary-button profile-plan__upgrade">
-          {isPremium ? "Manage plan" : "Upgrade to Premium"}
+          {!plan ? "View plan" : isPremium ? "Manage plan" : "Upgrade to Premium"}
         </Link>
       </section>
 

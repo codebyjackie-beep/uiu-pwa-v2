@@ -135,6 +135,19 @@ async function applySubscription(env: BillingEnv, sub: StripeSubscription): Prom
   });
 }
 
+/**
+ * A deleted subscription ends access NOW. premiumUntil otherwise only moves forward, so an immediate cancel (Stripe
+ * dashboard, refund, chargeback) used to leave the user Premium until the old period end (M3 B3 test, 2026-10-30).
+ * Only the user's CURRENT subscription is cut — an old sub deleted after a re-subscribe must not end the new one.
+ * For a normal end-of-period cancel the deleted event arrives at the period end, so this is a no-op.
+ */
+async function endAccessNow(env: BillingEnv, sub: StripeSubscription): Promise<void> {
+  const nowIso = new Date().toISOString();
+  await withDb(env, (db) =>
+    db.collection(USERS).updateOne({ stripeCustomerId: sub.customer, stripeSubscriptionId: sub.id, premiumUntil: { $gt: nowIso } }, { $set: { premiumUntil: nowIso } }),
+  );
+}
+
 billingRouter.post("/webhook", async (c) => {
   const secret = c.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) return c.json({ ok: false }, 503);
@@ -171,9 +184,14 @@ billingRouter.post("/webhook", async (c) => {
       }
       case "customer.subscription.created":
       case "customer.subscription.updated":
-      case "customer.subscription.deleted":
         await applySubscription(c.env, ev.data.object as unknown as StripeSubscription);
         break;
+      case "customer.subscription.deleted": {
+        const sub = ev.data.object as unknown as StripeSubscription;
+        await applySubscription(c.env, sub);
+        await endAccessNow(c.env, sub);
+        break;
+      }
       default:
         break;
     }
