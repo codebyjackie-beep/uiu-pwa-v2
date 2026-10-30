@@ -84,7 +84,7 @@ a {
 
 .app-shell {
   min-height: 100vh;
-  padding-bottom: calc(72px + 28px + env(safe-area-inset-bottom, 0px)); /* clears the fixed bottom nav + site-footer strip, incl. gesture-nav safe area */
+  padding-bottom: 16px; /* the bottom-nav clearance now lives in .site-footer (it is the last block in the page flow) */
 }
 
 /* cc_prompt_account_header_to_app_header.md — reserves space so the fixed .app-header
@@ -122,21 +122,17 @@ a {
   color: var(--accent);
 }
 
-/* HANDOFF_auth-subscription-front-page.md Milestone 1 — persistent "How it works" link,
-   a thin strip sitting just above the fixed bottom nav so it's reachable while signed in too. */
+/* HANDOFF_auth-subscription-front-page.md Milestone 1 — persistent "How it works" link.
+   Jackie 2026-10-30: no longer a fixed strip above the bottom nav (it ate ~10% of the screen on every tab);
+   it is now the last block of the page and shows when you scroll to the end. The bottom padding clears the
+   fixed bottom nav (64px + safe area) so the links are never hidden behind it. */
 .site-footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-  background: var(--uiu-surface);
+  gap: 16px;
+  padding: 14px 0 calc(64px + 16px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--uiu-border);
-  z-index: 9;
 }
 
 .site-footer__link {
@@ -519,10 +515,10 @@ a {
 
 .recipes-page {
   padding: var(--space);
-  /* cc_prompt_recipe_data_cleanup.md Part 5 — .app-shell only clears the bottom nav (100px); the
-     "+" FAB sits 116–172px above the bottom, so without this the last card's ♥ scrolls to rest
-     underneath it. 72px = FAB top (172px) − app-shell clearance (100px), plus a 16px gap. */
-  padding-bottom: calc(var(--space) + 88px);
+  /* cc_prompt_recipe_data_cleanup.md Part 5 — the "+" FAB sits 80–136px above the bottom and .app-shell
+     only adds 16px, so without this the last card's ♥ scrolls to rest underneath it.
+     120px = FAB top (136px) − app-shell padding (16px), plus a 16px gap. */
+  padding-bottom: calc(var(--space) + 120px);
   max-width: 640px;
   margin: 0 auto;
 }
@@ -931,7 +927,7 @@ a {
 .recipes-fab {
   position: fixed;
   right: max(16px, calc((100vw - 640px) / 2 + 16px));
-  bottom: calc(72px + 28px + 16px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(64px + 16px + env(safe-area-inset-bottom, 0px)); /* 16px above the fixed bottom nav (the footer strip no longer sits there) */
   width: 56px;
   height: 56px;
   border-radius: 50%;
