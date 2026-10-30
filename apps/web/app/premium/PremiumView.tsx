@@ -141,7 +141,8 @@ export function PremiumView() {
         ) : null}
       </section>
 
-      {plan ? (
+      {/* Free users have no AI allowance — showing "0 / 100" bars read as 100 free uses (Jackie 2026-10-30). */}
+      {plan && (isPremium || isTrial) ? (
         <section className={styles.card} aria-labelledby="usage">
           <h2 id="usage" className={styles.sectionTitle}>
             This month
