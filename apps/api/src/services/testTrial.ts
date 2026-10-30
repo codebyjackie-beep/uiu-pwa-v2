@@ -45,3 +45,22 @@ export async function setTestTrialEnd(db: Db, body: { clerkUserId?: unknown; inD
     restoreWith: { clerkUserId, trialEndsAt: before },
   };
 }
+
+/**
+ * One-off reconcile (2026-10-30): a user whose Stripe subscription is `canceled` but whose `premiumUntil` is still in the
+ * future (left over from before billing.ts cut access on `customer.subscription.deleted`). Sets premiumUntil to now.
+ * One clerkUserId per call; dry run unless `write`; returns the previous value.
+ */
+export async function endCanceledAccess(db: Db, body: { clerkUserId?: unknown } | null, write: boolean, now = new Date()) {
+  const clerkUserId = typeof body?.clerkUserId === "string" ? body.clerkUserId.trim() : "";
+  if (!/^user_[A-Za-z0-9]{10,60}$/.test(clerkUserId)) throw new TestTrialInputError("clerkUserId must be a Clerk user id (user_...)");
+  const users = db.collection<Document>("users");
+  const doc = await users.findOne({ clerkUserId }, { projection: { email: 1, premiumUntil: 1, stripeSubscriptionStatus: 1, stripeSubscriptionId: 1 } });
+  if (!doc) throw new TestTrialInputError(`no users doc for ${clerkUserId}`);
+  if (doc.stripeSubscriptionStatus !== "canceled") throw new TestTrialInputError(`refusing: stripeSubscriptionStatus is "${String(doc.stripeSubscriptionStatus ?? "none")}", not "canceled"`);
+  const before = typeof doc.premiumUntil === "string" ? doc.premiumUntil : null;
+  const nowIso = now.toISOString();
+  if (!before || before <= nowIso) return { write, clerkUserId, email: doc.email ?? null, changed: false, reason: "premiumUntil already in the past or unset", before };
+  if (write) await users.updateOne({ clerkUserId, stripeSubscriptionStatus: "canceled" }, { $set: { premiumUntil: nowIso } });
+  return { write, clerkUserId, email: doc.email ?? null, changed: write, wouldChange: !write, before, after: nowIso, restoreWith: { premiumUntil: before } };
+}
