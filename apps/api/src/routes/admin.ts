@@ -22,6 +22,7 @@ import { cleanupExpiredGuests } from "../services/guest";
 import { notify, setupChat, NotifyError } from "../services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "../services/adminRollbacks";
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
+import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
 import { AI_USAGE } from "../services/premium";
 import { requireAdmin } from "../adminAuth";
 import type { Bindings } from "../bindings";
@@ -528,6 +529,46 @@ adminRouter.get("/price-refresh", async (c) => {
   } catch (err) {
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: err instanceof Error ? err.message : String(err) } };
     return c.json(body, 502);
+  }
+});
+
+// Price-refresh override list (services/priceRefreshOverrides.ts). A canonical with an override row is never refreshed
+// (keep_old / skip), so its price goes stale. Dry run unless ?write=true; remove returns the rows so they can be re-added.
+//   GET  /api/admin/price-refresh/overrides                    list every override + the date of its current price
+//   POST /api/admin/price-refresh/overrides/remove  body { names: ["mango"] }                          (max 10 names)
+//   POST /api/admin/price-refresh/overrides/add     body { name, decision: "keep_old"|"skip", note? }  (undo of remove)
+// Removing a row writes no price — the canonical just becomes eligible for the next refresh run / ?names= dry run.
+function overrideError(c: any, err: unknown, where: string) {
+  if (err instanceof OverrideInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+adminRouter.get("/price-refresh/overrides", async (c) => {
+  try {
+    const out = await withDb(c.env, (db) => listOverrides(db));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return overrideError(c, err, "price-refresh overrides list");
+  }
+});
+adminRouter.post("/price-refresh/overrides/remove", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { names?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => removeOverrides(db, body?.names, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return overrideError(c, err, "price-refresh overrides remove");
+  }
+});
+adminRouter.post("/price-refresh/overrides/add", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { name?: unknown; decision?: unknown; note?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => addOverride(db, body, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return overrideError(c, err, "price-refresh overrides add");
   }
 });
 
