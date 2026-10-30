@@ -538,6 +538,12 @@ a {
   font-size: 14px;
 }
 
+/* The modal body is a min-height:0 flex column, so on a short phone screen every child was allowed to shrink —
+   the manual form's Description textarea collapsed to a ~25px sliver (Jackie 2026-10-30). Children keep their size; the body scrolls. */
+.recipe-import-form > * {
+  flex-shrink: 0;
+}
+
 .recipe-import-form input,
 .recipe-import-form textarea {
   padding: 10px 12px;
