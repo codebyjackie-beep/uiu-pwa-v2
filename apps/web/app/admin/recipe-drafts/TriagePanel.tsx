@@ -48,7 +48,7 @@ const CHUNK = 10;
 
 const LABEL: Record<Verdict, string> = {
   approve_candidate: "會 approve（要相 load 到）",
-  reject: "會 reject",
+  reject: "會 reject（包括同現有 recipe 太似）",
   needs_review: "營養數唔可信 → Needs review",
   pending: "唔夠條件 → 留 pending 人手睇",
 };
@@ -90,7 +90,7 @@ export function TriagePanel({ onChanged }: { onChanged: () => void }) {
       `確認執行？\n\n` +
       `• 最多 approve ${plan.counts.approve_candidate} 條（相 load 唔到嘅會留 pending）\n` +
       `• reject ${plan.counts.reject} 條\n` +
-      `• 標記 Needs review ${plan.counts.needs_review} 條\n\n` +
+      `• 新標記 Needs review ${plan.ids.needs_review.length} 條（之前已標記嘅唔使再做）\n\n` +
       `全部會標同一個 batch，之後可以一撳撤回。`;
     if (!window.confirm(msg)) return;
 
