@@ -23,6 +23,7 @@ import { notify, setupChat, NotifyError } from "../services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "../services/adminRollbacks";
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
 import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
+import { PerUnitCountInputError, rollbackPerUnitCount, setPerUnitCount } from "../services/perUnitCountSet";
 import { AI_USAGE } from "../services/premium";
 import { requireAdmin } from "../adminAuth";
 import type { Bindings } from "../bindings";
@@ -569,6 +570,36 @@ adminRouter.post("/price-refresh/overrides/add", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return overrideError(c, err, "price-refresh overrides add");
+  }
+});
+
+// Set per_unit_count (£ per piece) on a canonical_price_cache doc (services/perUnitCountSet.ts). Dry run unless ?write=true.
+//   POST /api/admin/canonical-price/per-unit-count           body { name, value, unit: "each", n?, note? }  — prior value backed up (puc-* batch)
+//   POST /api/admin/canonical-price/per-unit-count/rollback  body { batch }
+// Afterwards run POST /api/admin/recompute-costs (dry run first).
+function perUnitCountError(c: any, err: unknown, where: string) {
+  if (err instanceof PerUnitCountInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+adminRouter.post("/canonical-price/per-unit-count", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as Record<string, unknown> | null;
+  try {
+    const out = await withDb(c.env, (db) => setPerUnitCount(db, body, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return perUnitCountError(c, err, "per-unit-count set");
+  }
+});
+adminRouter.post("/canonical-price/per-unit-count/rollback", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => rollbackPerUnitCount(db, body?.batch, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return perUnitCountError(c, err, "per-unit-count rollback");
   }
 });
 
