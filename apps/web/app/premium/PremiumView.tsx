@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import type { ApiResponse, MyPlan, PremiumFeature } from "@uiu/shared";
 import styles from "./premium.module.css";
 
@@ -217,7 +218,13 @@ export function PremiumView() {
               </button>
             ))}
           </div>
-          <p className={styles.muted}>Cancel any time. Payments are handled securely by Stripe.</p>
+          <p className={styles.muted}>
+            Cancel any time. Payments are handled securely by Stripe. By subscribing you agree to our{" "}
+            <Link href="/terms" className={styles.termsLink}>
+              Terms
+            </Link>
+            .
+          </p>
         </section>
       )}
 

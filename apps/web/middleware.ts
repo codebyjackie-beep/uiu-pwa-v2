@@ -17,6 +17,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/how-it-works",
   "/privacy",
+  "/terms",
   // cc_prompt_guest_browse.md Part B — guests may browse Recipes (list, detail, cook mode).
   // /recipes/share-target stays gated: isShareTarget below overrides this.
   "/recipes",

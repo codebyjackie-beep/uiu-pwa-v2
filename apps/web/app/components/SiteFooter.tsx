@@ -58,6 +58,9 @@ export function SiteFooter() {
       <Link href="/privacy" className="site-footer__link">
         Privacy
       </Link>
+      <Link href="/terms" className="site-footer__link">
+        Terms
+      </Link>
       <a href={feedbackHref(pathname, device, installed)} className="site-footer__link">
         Feedback
       </a>
