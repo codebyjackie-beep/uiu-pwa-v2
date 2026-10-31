@@ -55,8 +55,9 @@ export default function TermsPage() {
 
       <h2>Refunds</h2>
       <p>
-        You can ask for a refund within 14 days of subscribing. Email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a> from the
-        address on your account and we will refund your payment. This does not affect your legal rights.
+        You can ask for a refund within 14 days of your first payment. Email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>{" "}
+        from the address on your account and we will refund that payment. Renewals, including yearly renewals, are not refunded, so cancel
+        before the renewal date if you do not want to continue. This does not affect your legal rights.
       </p>
 
       <h2>Food, nutrition and price information</h2>
