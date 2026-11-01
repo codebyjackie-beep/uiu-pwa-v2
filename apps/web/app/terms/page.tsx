@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Terms of service · UseItUp" };
 
 /** cc_prompt_terms_page.md — public terms. Content limited to what Jackie confirmed on 2026-10-31
  * (prices, 7-day trial, end-of-period cancellation, 14-day refund, contact, England and Wales). Reuses the privacy-page styles. */
-const LAST_UPDATED = "31 October 2026";
+const LAST_UPDATED = "1 November 2026";
 
 export default function TermsPage() {
   return (
@@ -55,9 +55,9 @@ export default function TermsPage() {
 
       <h2>Refunds</h2>
       <p>
-        You can ask for a refund within 14 days of your first payment. Email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>{" "}
-        from the address on your account and we will refund that payment. Renewals, including yearly renewals, are not refunded, so cancel
-        before the renewal date if you do not want to continue. This does not affect your legal rights.
+        You can ask for a refund within 14 days of your first payment, and within 14 days of any yearly renewal payment. Monthly renewals are
+        not refunded; cancel any time to stop the next one. Email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a> from the
+        address on your account and we will refund that payment. This does not affect your legal rights.
       </p>
 
       <h2>Food, nutrition and price information</h2>
