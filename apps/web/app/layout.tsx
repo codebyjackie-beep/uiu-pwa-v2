@@ -39,6 +39,8 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
   },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "UseItUp" },
+  // Pinterest business account: claim useitup.uk (renders <meta name="p:domain_verify">).
+  other: { "p:domain_verify": "3df1554a48d017076c9122fd4ea4d7c7" },
 };
 
 export const viewport: Viewport = {
