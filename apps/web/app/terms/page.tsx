@@ -78,6 +78,8 @@ export default function TermsPage() {
       <h2>Governing law</h2>
       <p>
         These terms are governed by the law of the part of the UK where you live: Scotland, England and Wales, or Northern Ireland.
+        If you live outside the UK, the law of England and Wales applies, but this does not remove consumer protections you have
+        under the law where you live.
       </p>
 
       <p className="privacy-page__back">
