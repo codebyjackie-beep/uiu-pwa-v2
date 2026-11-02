@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Terms of service · UseItUp" };
 
 /** cc_prompt_terms_page.md — public terms. Content limited to what Jackie confirmed on 2026-10-31
  * (prices, 7-day trial, end-of-period cancellation, 14-day refund, contact, England and Wales). Reuses the privacy-page styles. */
-const LAST_UPDATED = "1 November 2026";
+const LAST_UPDATED = "2 November 2026";
 
 export default function TermsPage() {
   return (
@@ -76,7 +76,9 @@ export default function TermsPage() {
       <p>We may update these terms. The date at the top shows when they last changed.</p>
 
       <h2>Governing law</h2>
-      <p>These terms are governed by the law of England and Wales.</p>
+      <p>
+        These terms are governed by the law of the part of the UK where you live: Scotland, England and Wales, or Northern Ireland.
+      </p>
 
       <p className="privacy-page__back">
         <Link href="/">Back to UseItUp</Link>
