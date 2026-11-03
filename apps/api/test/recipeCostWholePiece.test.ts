@@ -1,8 +1,8 @@
 /**
  * Whole-piece slice rule — standalone assertion script (no vitest/jest in this repo). Run with:
- *   npx tsx apps/api/src/services/recipeCost.wholePiece.test.ts
+ *   npx tsx apps/api/test/recipeCostWholePiece.test.ts
  */
-import { normalizeQty } from "./recipeCost";
+import { normalizeQty } from "../src/services/recipeCost";
 
 let fails = 0;
 const ok = (c: boolean, m: string) => { if (!c) { fails++; console.error("FAIL", m); } else console.log("ok  ", m); };
