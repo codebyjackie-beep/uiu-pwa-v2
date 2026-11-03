@@ -16,6 +16,8 @@ interface IngredientOption {
 interface ScannedItem {
   name: string;
   quantity: number | null;
+  /** Unit the AI read (pc/bag/tin/…); null/absent = "pc". */
+  unit?: string | null;
   /** AI estimate of days the item keeps from purchase; null = server default (5 days fresh, 365 pantry). */
   shelfLifeDays: number | null;
 }
@@ -276,7 +278,7 @@ export function FridgePage() {
       parsed.data.items.map((item) => ({
         ...item,
         quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
-        unit: "pc",
+        unit: item.unit?.trim() || "pc",
         include: true,
       })),
     );

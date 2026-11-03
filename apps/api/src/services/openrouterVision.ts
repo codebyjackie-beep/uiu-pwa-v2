@@ -14,9 +14,14 @@ export interface OpenRouterVisionEnv {
   OPENROUTER_VIDEO_MODEL?: string;
 }
 
+/** Units the scan prompts may return. Anything else is dropped to null so the client falls back to "pc". */
+export const SCAN_UNITS = ["pc", "bag", "tin", "pack", "bottle", "g", "kg", "ml", "l"] as const;
+
 export interface ScannedItem {
   name: string;
   quantity: number | null;
+  /** Packaging/measure the model read (one of SCAN_UNITS), or null = client defaults to "pc". */
+  unit: string | null;
   /** Model's estimate of how many days the item keeps from purchase (1–365), or null. */
   shelfLifeDays: number | null;
 }
@@ -113,11 +118,14 @@ export async function scanImageForItems(
       const r = raw as Record<string, unknown>;
       const name = r.name;
       const quantity = r.quantity;
+      const rawUnit = typeof r.unit === "string" ? r.unit.trim().toLowerCase() : "";
+      const unit = (SCAN_UNITS as readonly string[]).includes(rawUnit) ? rawUnit : null;
       const days = typeof r.shelfLifeDays === "number" && Number.isFinite(r.shelfLifeDays) ? Math.round(r.shelfLifeDays) : null;
       if (typeof name !== "string" || !name.trim()) return null;
       return {
         name: name.trim(),
         quantity: typeof quantity === "number" ? quantity : null,
+        unit,
         shelfLifeDays: days !== null && days >= 1 && days <= 365 ? days : null,
       };
     })
