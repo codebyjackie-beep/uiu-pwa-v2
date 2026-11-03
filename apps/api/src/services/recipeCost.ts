@@ -84,6 +84,9 @@ const PER_ITEM_UNIT_G: Record<string, Record<string, number>> = {
   slices: { bread: 36, "bread slices": 36, "grain bread": 40, "multigrain bread": 40, "sourdough bread": 50, "ciabatta bread": 30, "white bread, crusts removed": 28 },
 };
 
+/** Canonicals whose "slice(s)" lines are priced as one whole piece (see normalizeQty). */
+export const WHOLE_PIECE_SLICE_CANONICALS = new Set(["tomato slices"]);
+
 export function lookupPerItemUnitG(words: string[], canonicalName: string): number | null {
   for (const word of words) {
     const table = PER_ITEM_UNIT_G[word];
@@ -154,6 +157,11 @@ export function normalizeQty(
     if (sliceG != null) {
       const gValue = quantity * sliceG;
       return { normValue: gValue, normUnit: "g", bucket: "metric", displayNote: `${quantity} ${classified.unit} ${canonicalDoc.canonical_name} (≈${Math.round(gValue)}g, Table C estimate)` };
+    }
+    // Whole-piece rule (Jackie 2026-11-03): nobody can buy "4 slices of tomato" — you buy a whole tomato.
+    // A slice line on these canonicals is priced as ONE whole piece (per_unit_count) regardless of the slice count.
+    if (WHOLE_PIECE_SLICE_CANONICALS.has(canonicalDoc.canonical_name) && priceDoc?.per_unit_count?.value != null) {
+      return { normValue: 1, normUnit: "pc", bucket: "count", displayNote: `${quantity} ${classified.unit} ${canonicalDoc.canonical_name} (priced as 1 whole piece — you buy it whole)` };
     }
     return { unpriceable: true, reason: "unit_unconvertible", rawUnit };
   }
