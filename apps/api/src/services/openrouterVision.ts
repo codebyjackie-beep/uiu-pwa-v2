@@ -374,7 +374,7 @@ export async function diagnoseVideoRecipe(env: OpenRouterVisionEnv, videoDataUrl
   });
   const raw = await res.text();
   if (!res.ok) return { stage: "http", status: res.status, body: raw.slice(0, 400) };
-  let json: { choices?: Array<{ message?: { content?: string }; finish_reason?: string }>; error?: unknown; usage?: unknown; model?: string };
+  let json: { choices?: Array<{ message?: { content?: string }; finish_reason?: string }>; error?: unknown };
   try {
     json = JSON.parse(raw);
   } catch {
@@ -392,8 +392,7 @@ export async function diagnoseVideoRecipe(env: OpenRouterVisionEnv, videoDataUrl
   const ings = Array.isArray(parsed.ingredients) ? parsed.ingredients.length : -1;
   const steps = Array.isArray(parsed.steps) ? parsed.steps.length : -1;
   const ok = !!parsed.title && ings >= 2 && steps > 0;
-  // TEMP (2026-11-04 model comparison, Jackie approved): full recipe + usage so accuracy can be scored. Revert after the test.
-  return { stage: ok ? "ok" : "fails-gate", finish, title: parsed.title ?? null, ingredients: ings, steps, keys: Object.keys(parsed), recipe: parsed, usage: json.usage ?? null, servedModel: json.model ?? null };
+  return { stage: ok ? "ok" : "fails-gate", finish, title: parsed.title ?? null, ingredients: ings, steps, keys: Object.keys(parsed) };
 }
 
 /** Step 1 of the ReciMe-style split (test 2026-10-27): transcribe only — speech + on-screen text, no recipe logic. */
