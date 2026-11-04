@@ -351,7 +351,10 @@ fridgeStockRouter.delete("/:id", async (c) => {
 const UNIT_HINT =
   'For each item also give "unit": exactly one of pc, bag, tin, pack, bottle, g, kg, ml, l — how it is sold or held ' +
   '(bagged salad or spinach = bag, canned tomatoes or beans = tin, a multipack or tray = pack, a loose apple = pc, ' +
-  'milk or oil in a bottle = bottle). Use null if unsure. ';
+  'milk or oil in a bottle = bottle). "quantity" is how many of that unit: when the receipt or pack gives a count of individual pieces ' +
+  '(8 bagels, 10 ginger pieces, 12 dumplings) use that count with "pc", and a multipack of drinks like "12X500" (12 bottles of 500ml) is 12 with "bottle" — ' +
+  'use "pack" only for the number of packs bought (usually 1). ' +
+  'Use null if unsure. ';
 
 const SHELF_LIFE_HINT = 'For each item also give "shelfLifeDays": a whole number of days it typically keeps from the day it was bought, stored the usual way in a UK home (raw meat or fish 2, mince 1, cooked meats and ham 4, salad leaves and soft berries 4, milk 7, yoghurt 10, soft cheese 7, hard cheese 28, eggs 28, bread 5, most fresh vegetables 7, carrots 21, potatoes and onions 21, apples and citrus 21, bananas 5, frozen food 180, tins and tinned meals (e.g. tinned stew, soup, beans), dried pasta, rice, flour, oil and spices 365). ';
 
