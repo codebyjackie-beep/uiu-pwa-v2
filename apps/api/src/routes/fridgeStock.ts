@@ -367,7 +367,11 @@ export const RECEIPT_PROMPT =
       "Finish, Domestos, Flash, Dettol — leave them out. " +
       'Skip discount, coupon and saving lines — they are not items: e.g. Costco "IRC ..." (instant ' +
       'rebate coupon) lines, "Nectar Price Saving", "Price Cut", "20% off with Lidl Plus", multibuy ' +
-      "savings. List each real product only once. " +
+      'savings. An "IRC ..." line always sits right under the product it discounts and is NEVER an item, ' +
+      'even when it names a product (e.g. "IRC BIBIGO PORK &" is a coupon, not a second product). ' +
+      "Only list products that are actually printed as a line on the receipt — never add, guess or infer an " +
+      "item that is not printed, even a product you would expect with the others. " +
+      "List each real product only once. " +
       'UK till receipts heavily abbreviate product names — e.g. "MOISTRSNG"=Moisturising, ' +
       '"CL"=Cleanser, "LTN"=Lotion, "SHMPOO"=Shampoo, "COND"=Conditioner, "DEO"=Deodorant, ' +
       '"TOOTHPST"=Toothpaste. Also watch for known personal-care/skincare/haircare brand ' +
