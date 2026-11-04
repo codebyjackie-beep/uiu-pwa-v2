@@ -523,22 +523,28 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
                   </option>
                 ))}
               </select>
+              <p className="admin-drafts-page__sub">Servings</p>
               <input
                 type="number"
+                aria-label="Servings"
                 placeholder="Servings (default 2)"
                 value={manualServings}
                 disabled={submitting}
                 onChange={(e) => setManualServings(e.target.value)}
               />
+              <p className="admin-drafts-page__sub">Prep (min)</p>
               <input
                 type="number"
+                aria-label="Prep time in minutes"
                 placeholder="Prep time (mins, default 0)"
                 value={manualPrepTime}
                 disabled={submitting}
                 onChange={(e) => setManualPrepTime(e.target.value)}
               />
+              <p className="admin-drafts-page__sub">Cook (min)</p>
               <input
                 type="number"
+                aria-label="Cook time in minutes"
                 placeholder="Cook time (mins, default 0)"
                 value={manualCookTime}
                 disabled={submitting}
