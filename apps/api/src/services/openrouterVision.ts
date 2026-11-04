@@ -119,7 +119,10 @@ export async function scanImageForItems(
       const name = r.name;
       const quantity = r.quantity;
       const rawUnit = typeof r.unit === "string" ? r.unit.trim().toLowerCase() : "";
-      const unit = (SCAN_UNITS as readonly string[]).includes(rawUnit) ? rawUnit : null;
+      const parsedUnit = (SCAN_UNITS as readonly string[]).includes(rawUnit) ? rawUnit : null;
+      // "8PK" / "12PK" on a till line is a piece count, not 8 packs — the model sometimes returns "8 pack".
+      // Buying 6+ packs of one product is rare, so treat it as pieces. The user can still edit it on the review screen.
+      const unit = parsedUnit === "pack" && typeof quantity === "number" && quantity >= 6 ? "pc" : parsedUnit;
       const days = typeof r.shelfLifeDays === "number" && Number.isFinite(r.shelfLifeDays) ? Math.round(r.shelfLifeDays) : null;
       if (typeof name !== "string" || !name.trim()) return null;
       return {
