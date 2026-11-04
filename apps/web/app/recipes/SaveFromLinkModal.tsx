@@ -20,9 +20,9 @@ function fileToDataUrl(file: File): Promise<string> {
 
 type Step = "url" | "manual-paste" | "done";
 type Mode = "link" | "photo" | "video" | "manual";
-/** Launch (Jackie 2026-10-29): link + video import are hidden until video import reaches 80% on a 10-reel test set.
- * Photo + Manually stay. Flip to true to bring back "Paste a link" and "Upload a video" (code kept, not deleted). */
-export const LINK_IMPORT_ENABLED = false;
+/** Jackie 2026-10-29 hid link + video import until video import reached 80% on a 10-reel test set.
+ * 2026-11-04: gemini-4-argon scored 113/115 ingredients on that set, so Jackie turned both back on. */
+export const LINK_IMPORT_ENABLED = true;
 
 const MAX_PHOTOS = 3;
 /** Gemini takes ~20 MB inline per request; base64 adds a third, so the file itself is capped at 14 MB (API checks too). */
