@@ -111,7 +111,7 @@ export default function PrivacyPage() {
 
       <h2>Amazon links</h2>
       <p>
-        Some kitchen product links (Kitchen Picks) are Amazon affiliate links. As an Amazon Associate we earn from qualifying purchases. Amazon
+        Some kitchen and home product links (Kitchen & Home Picks) are Amazon affiliate links. As an Amazon Associate we earn from qualifying purchases. Amazon
         handles anything you do on its site under its own privacy notice.
       </p>
 

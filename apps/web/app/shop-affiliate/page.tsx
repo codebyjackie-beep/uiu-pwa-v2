@@ -2,7 +2,7 @@ import type { AffiliateProduct } from "@uiu/shared";
 import { apiGet } from "../lib/api";
 import ShopAffiliateGrid from "./ShopAffiliateGrid";
 
-export const metadata = { title: "Kitchen Picks · UseItUp" };
+export const metadata = { title: "Kitchen & Home Picks · UseItUp" };
 
 /**
  * 2026-08-31 brand merge (Jackie: drop the standalone Kura Nook site/account) — this replaces
@@ -17,7 +17,7 @@ export default async function ShopAffiliatePage() {
 
   return (
     <div className="shop-page">
-      <h1>Kitchen Picks</h1>
+      <h1>Kitchen & Home Picks</h1>
       <p className="admin-drafts-page__sub">
         Products we&apos;ve recommended on Instagram.{" "}
         <span style={{ color: "var(--uiu-muted)" }}>#ad — as an Amazon Associate we earn from qualifying purchases.</span>
