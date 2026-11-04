@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Privacy policy · UseItUp" };
 
 /** cc_prompt_meal_grid_profile.md Part PP — public privacy policy (Google Auth Platform branding needs the link).
  * Processors listed are the ones the code actually calls with user data (checked 2026-10-20). */
-const LAST_UPDATED = "28 October 2026";
+const LAST_UPDATED = "4 November 2026";
 
 export default function PrivacyPage() {
   return (
@@ -17,6 +17,10 @@ export default function PrivacyPage() {
       <p>
         UseItUp (useitup.uk) is a meal planning and food-waste app run from the UK. If you have any question about your data, email{" "}
         <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>.
+      </p>
+      <p>
+        Postal address: UseItUp, 3F1 Third floor, 3 Hill Street, Edinburgh EH2 3JP, United Kingdom. Postal address only, not open to
+        visitors, no returns.
       </p>
 
       <h2>What we collect</h2>

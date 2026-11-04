@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Terms of service · UseItUp" };
 
 /** cc_prompt_terms_page.md — public terms. Content limited to what Jackie confirmed on 2026-10-31
  * (prices, 7-day trial, end-of-period cancellation, 14-day refund, contact, England and Wales). Reuses the privacy-page styles. */
-const LAST_UPDATED = "1 November 2026";
+const LAST_UPDATED = "4 November 2026";
 
 export default function TermsPage() {
   return (
@@ -17,6 +17,10 @@ export default function TermsPage() {
       <p>
         UseItUp (useitup.uk) is a meal planning and food-waste app run from the UK. These terms cover your use of the app and of UseItUp
         Premium. Questions? Email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>.
+      </p>
+      <p>
+        Postal address: UseItUp, 3F1 Third floor, 3 Hill Street, Edinburgh EH2 3JP, United Kingdom. Postal address only, not open to
+        visitors, no returns.
       </p>
 
       <h2>Your account</h2>
