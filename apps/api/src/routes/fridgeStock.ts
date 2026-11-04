@@ -348,6 +348,11 @@ fridgeStockRouter.delete("/:id", async (c) => {
  * The client confirms via the normal POST / (one call per confirmed item).
  */
 /** Typical keep-times so the model's per-item estimate stays in a sane range (Jackie 2026-10-25). */
+const UNIT_HINT =
+  'For each item also give "unit": exactly one of pc, bag, tin, pack, bottle, g, kg, ml, l — how it is sold or held ' +
+  '(bagged salad or spinach = bag, canned tomatoes or beans = tin, a multipack or tray = pack, a loose apple = pc, ' +
+  'milk or oil in a bottle = bottle). Use null if unsure. ';
+
 const SHELF_LIFE_HINT = 'For each item also give "shelfLifeDays": a whole number of days it typically keeps from the day it was bought, stored the usual way in a UK home (raw meat or fish 2, mince 1, cooked meats and ham 4, salad leaves and soft berries 4, milk 7, yoghurt 10, soft cheese 7, hard cheese 28, eggs 28, bread 5, most fresh vegetables 7, carrots 21, potatoes and onions 21, apples and citrus 21, bananas 5, frozen food 180, tins and tinned meals (e.g. tinned stew, soup, beans), dried pasta, rice, flour, oil and spices 365). ';
 
 export const RECEIPT_PROMPT =
@@ -373,6 +378,7 @@ export const RECEIPT_PROMPT =
       '"FRAY/B MEATBL BOLOGN" = "Meatball Bolognese", "VEETEE R/GRL BSM RCE" = "Basmati Rice", ' +
       '"PORK/VEG D/LING" = "Pork & Vegetable Dumplings", "JS BRITISH S/WATRX12" = "Sparkling Water") ' +
       "and its quantity if visible (a multipack like \"X3\" or \"12PK\" counts as that number; a weight or volume like \"510G\" or \"1KG\" is NOT a quantity — use 1). " +
+      UNIT_HINT +
       SHELF_LIFE_HINT +
       "Also read the purchase date printed on the receipt. Copy it into \"purchaseDateText\" EXACTLY as printed " +
       '(e.g. "25OCT2026", "25/10/26", "25 Oct 2026") — the date only, never the time next to it ' +
@@ -384,7 +390,7 @@ export const RECEIPT_PROMPT =
       'Also give "excluded": one entry per line you left out because it is not food (toiletries, cleaning, etc.), as {"name": string (as printed), "price": number} where price is that line\'s printed total, NEGATIVE when the price is printed with a trailing or leading "-" (e.g. "4.00-A" or "-0.50" is -4.00 / -0.50). ' +
       "Only list products actually printed on the receipt; never add an item that is not there. " +
       'Respond with ONLY a JSON object, no markdown fences, no commentary: ' +
-      '{"purchaseDateText": string|null, "purchaseDate": string|null, "itemsSold": number|null, "excluded": [{"name": string, "price": number|null}], "items": [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}]}.';
+      '{"purchaseDateText": string|null, "purchaseDate": string|null, "itemsSold": number|null, "excluded": [{"name": string, "price": number|null}], "items": [{"name": string, "quantity": number|null, "unit": string|null, "shelfLifeDays": number|null}]}.';
 
 fridgeStockRouter.post("/ocr", (c) => handleImageScan(c, RECEIPT_PROMPT));
 
@@ -397,7 +403,8 @@ fridgeStockRouter.post("/scan-fridge", (c) =>
     c,
     "List the distinct food items visible in this fridge photo. For each, give a short name and, if visible, " +
       "an approximate quantity. " +
+      UNIT_HINT +
       SHELF_LIFE_HINT +
-      'Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null, "shelfLifeDays": number|null}].',
+      'Respond with ONLY a JSON array, no markdown fences, no commentary: [{"name": string, "quantity": number|null, "unit": string|null, "shelfLifeDays": number|null}].',
   ),
 );
