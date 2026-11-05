@@ -9,7 +9,7 @@
  *   STRIPE_SECRET_KEY      sk_test_… until launch, then sk_live_… (wrangler secret put).
  *   STRIPE_WEBHOOK_SECRET  whsec_… from the Stripe webhook endpoint (wrangler secret put).
  * Vars (non-secret, apps/api/wrangler.toml):
- *   STRIPE_PRICE_MONTHLY / STRIPE_PRICE_YEARLY  price_… ids (test ids now, live ids at launch).
+ *   STRIPE_PRICE_MONTHLY / STRIPE_PRICE_YEARLY  price_… ids, LIVE ids in wrangler.toml [vars].
  *   WEB_BASE_URL                                where Checkout / Portal send the user back to.
  */
 
