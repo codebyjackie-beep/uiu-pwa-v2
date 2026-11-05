@@ -383,7 +383,7 @@ export function ShopPage() {
       </section>
 
       <section className="shop-section">
-        <h2>Kitchen Picks</h2>
+        <h2>Kitchen &amp; Home Picks</h2>
         <p className="admin-drafts-page__sub">Products we&apos;ve recommended on Instagram.</p>
 
         {kitchenPicks.length > 0 ? (
@@ -399,7 +399,7 @@ export function ShopPage() {
         ) : null}
 
         <Link href="/shop-affiliate" className="wizard-secondary-button">
-          Browse Kitchen Picks
+          Browse Kitchen &amp; Home Picks
         </Link>
       </section>
     </div>
