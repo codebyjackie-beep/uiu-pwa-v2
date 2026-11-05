@@ -240,7 +240,7 @@ export function MealPlannerView({ initialSets }: Props) {
       ) : null}
       {limitMessage ? <p className="meal-planner-plan-card__empty">{limitMessage}</p> : null}
 
-      <TonightSuggestion />
+      <TonightSuggestion onAdded={refetchSets} />
 
       {detailPlanId ? (
         <div className="meal-planner-modal-overlay" onClick={() => setDetailPlanId(null)}>
