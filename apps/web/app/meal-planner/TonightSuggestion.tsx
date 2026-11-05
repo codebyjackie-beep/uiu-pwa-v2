@@ -8,7 +8,7 @@ import { CoveragePrice } from "../components/CoveragePrice";
 import { todayDayIndex } from "../lib/dates";
 import { isNutritionUnavailable, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
-const MY_PLAN_NAME = "My Plan";
+const TODAYS_PLAN_NAME = "Today's Plan";
 
 const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
   { value: "breakfast", label: "Breakfast" },
@@ -52,8 +52,8 @@ export function TonightSuggestion() {
 
   /**
    * The plan to add into. No active plan (Jackie 2026-11-05: "Add to today's plan" looked dead) → reuse an
-   * existing "My Plan" card or create an empty one (skipGenerate, no AI), then activate it. Named "My Plan" so it
-   * is easy to tell apart from "Build a plan for me" cards ("Weekly Plan N"). Returns an error text instead.
+   * existing "Today's Plan" card or create an empty one (skipGenerate, no AI), then activate it. Named "Today's Plan" (Jackie
+   * 2026-11-05) to match the button and stay apart from "Build a plan for me" cards ("Weekly Plan N"). Returns an error text instead.
    */
   async function resolvePlanId(): Promise<{ planId: string } | { error: string }> {
     const setsRes = await fetch("/api/meal-plan-sets");
@@ -62,12 +62,12 @@ export function TonightSuggestion() {
     const active = setsParsed.data.find((s) => s.isActive);
     if (active) return { planId: active._id };
 
-    let planId = setsParsed.data.find((s) => s.name === MY_PLAN_NAME)?._id;
+    let planId = setsParsed.data.find((s) => s.name === TODAYS_PLAN_NAME)?._id;
     if (!planId) {
       const createRes = await fetch("/api/meal-plan-sets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: MY_PLAN_NAME, skipGenerate: true }),
+        body: JSON.stringify({ name: TODAYS_PLAN_NAME, skipGenerate: true }),
       });
       const created = (await createRes.json()) as ApiResponse<MealPlanSetSummary>;
       if (!created.ok) {
