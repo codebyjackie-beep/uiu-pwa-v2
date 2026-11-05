@@ -72,14 +72,16 @@ billingRouter.post("/checkout", requireUser, guestForbidden, async (c) => {
   const userId = c.get("clerkUserId");
   try {
     const user = await withDb(c.env, (db) =>
-      db.collection(USERS).findOne({ clerkUserId: userId }, { projection: { stripeCustomerId: 1, stripeSubscriptionStatus: 1, premiumUntil: 1 } }),
+      db.collection(USERS).findOne({ clerkUserId: userId }, { projection: { stripeCustomerId: 1, stripeSubscriptionStatus: 1, premiumUntil: 1, email: 1 } }),
     );
     if (!user) return failure(c, 409, "sync_required", "Sign in again to finish setup");
 
     const url = await createCheckoutSession(c.env, {
       userId,
       priceId,
-      email: c.get("clerkTokenEmail") ?? null,
+      // The Clerk session token has no email claim today, so fall back to the synced users.email
+      // (Jackie 2026-11-05: Stripe Checkout email box was empty).
+      email: c.get("clerkTokenEmail") ?? (typeof user.email === "string" && user.email ? user.email : null),
       customerId: (user.stripeCustomerId as string | undefined) ?? null,
       webBaseUrl: webBase(c.env),
     });
