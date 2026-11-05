@@ -910,7 +910,8 @@ export interface MealSuggestion {
 }
 
 export interface MealSuggestionsResponse {
-  mealType: MealSlot;
+  /** null for matchOnly=1 (any meal type). */
+  mealType: MealSlot | null;
   suggestions: MealSuggestion[];
 }
 

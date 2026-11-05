@@ -1,6 +1,8 @@
 import type { ApiResponse, RecipeListItem, RecipeListPage } from "@uiu/shared";
 import { apiGet } from "../lib/api";
+import { Suspense } from "react";
 import RecipesBrowser from "./RecipesBrowser";
+import { FridgeMatches } from "./FridgeMatches";
 
 export const metadata = { title: "Recipes · UseItUp" };
 
@@ -118,6 +120,11 @@ export default async function RecipesPage() {
         <h1>Recipes</h1>
         <p>{total} recipes</p>
       </div>
+
+      {/* Only renders for /recipes?cook=soon (Home "Cook with these"); client-side so the cached list above is untouched. */}
+      <Suspense fallback={null}>
+        <FridgeMatches />
+      </Suspense>
 
       <RecipesBrowser items={items} />
     </div>

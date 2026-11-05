@@ -123,9 +123,17 @@ export default async function Home() {
               );
             })}
           </ul>
-          <Link href="/fridge" className="use-soon-card__link">
-            Cook with these
-          </Link>
+          {/* Jackie 2026-11-05: "Cook with these" should open recipes that use these items, not the Fridge page.
+              Expired items are not cooked with (food safety), so a card with only expired items points to the Fridge. */}
+          {expiring.length > expiredCount ? (
+            <Link href="/recipes?cook=soon" className="use-soon-card__link">
+              Cook with these
+            </Link>
+          ) : (
+            <Link href="/fridge" className="use-soon-card__link">
+              Check your fridge
+            </Link>
+          )}
         </section>
       ) : null}
 

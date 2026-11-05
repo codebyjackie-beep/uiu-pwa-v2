@@ -21,7 +21,7 @@ const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
  * widget (HANDOFF_tonight-suggestion.md). Purely additive to the existing week
  * board below it: no shared state, its own fetch, its own optional "add to
  * today's plan" action via the existing POST /api/meal-plan route. */
-export function TonightSuggestion() {
+export function TonightSuggestion({ onAdded }: { onAdded?: () => void } = {}) {
   const router = useRouter();
   const [mealType, setMealType] = useState<MealSlot>("dinner");
   const [loading, setLoading] = useState(false);
@@ -101,6 +101,9 @@ export function TonightSuggestion() {
       const parsed = (await res.json()) as ApiResponse<unknown>;
       if (parsed.ok) {
         setAddedIds((prev) => new Set(prev).add(recipeId));
+        // The plan cards above live in client state (MealPlannerView), which router.refresh() does not reset —
+        // a newly created "Today's Plan" did not appear (Jackie 2026-11-05). Ask the parent to refetch.
+        onAdded?.();
         router.refresh();
       } else {
         setAddMessage({ recipeId, text: "Couldn't add this recipe — please try again." });
