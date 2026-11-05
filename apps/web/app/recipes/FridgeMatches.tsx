@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { ApiResponse, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
 import { CoveragePrice } from "../components/CoveragePrice";
+import { AddToTodayButton } from "../components/AddToTodayButton";
 
 /**
  * /recipes?cook=soon — opened from Home "Use it up soon" → "Cook with these" (Jackie 2026-11-05).
@@ -85,6 +86,7 @@ export function FridgeMatches() {
                   <p className="tonight-suggestion__match">Uses {s.matchedFridgeItems.join(", ")}</p>
                 </div>
               </Link>
+              <AddToTodayButton recipeId={s.recipeId} />
             </div>
           ))}
         </div>

@@ -14,7 +14,7 @@ const VALID_MEAL_TYPES: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 /** Same >=80% "reliable price" threshold as the Recipes page's three-state price badge. */
 const COVERAGE_THRESHOLD = 80;
 const TOP_N = 5;
-const MATCH_ONLY_TOP_N = 10;
+const MATCH_ONLY_TOP_N = 5; // Jackie 2026-11-05: max 5 on /recipes?cook=soon
 
 /** 2026-08-06 handoff: match candidate recipe ingredients against fridge_stock by
  * expiry urgency — closer to expiring scores higher. */
