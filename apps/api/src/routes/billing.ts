@@ -7,7 +7,9 @@
  *
  * Premium access is written ONLY by the webhook, as `users.premiumUntil` (max of what Stripe says).
  * planKind() in services/premium.ts already reads that field, so nothing else changes for the gate.
- * Access is never shortened here: cancelling keeps Premium until the period Stripe already paid for.
+ * Cancelling keeps Premium until the period Stripe already paid for. Two things end access NOW: a deleted
+ * subscription, and any refund (full or partial — Jackie 2026-11-05: a refund means the user is leaving), which
+ * also cancels the Stripe subscription so it cannot renew and re-grant Premium.
  */
 import { Hono } from "hono";
 import type { ApiResponse } from "@uiu/shared";
@@ -15,6 +17,7 @@ import { withDb, type DbEnv } from "../db";
 import { guestForbidden, requireUser } from "../clerkAuth";
 import {
   StripeError,
+  cancelSubscriptionNow,
   createCheckoutSession,
   createPortalSession,
   isAccessGranting,
@@ -149,6 +152,27 @@ async function endAccessNow(env: BillingEnv, sub: StripeSubscription): Promise<v
   );
 }
 
+/**
+ * A refund (full or partial) ends Premium NOW and cancels the user's current subscription immediately, so it cannot
+ * renew. Keyed on the Stripe customer. The cancel fires customer.subscription.deleted, which is then a no-op here.
+ * Throws on a Stripe error so the webhook returns 500 and Stripe retries.
+ */
+async function endAccessForRefund(env: BillingEnv, customerId: string): Promise<void> {
+  const nowIso = new Date().toISOString();
+  const user = await withDb(env, async (db) => {
+    const users = db.collection(USERS);
+    const doc = await users.findOne({ stripeCustomerId: customerId }, { projection: { stripeSubscriptionId: 1 } });
+    if (doc) await users.updateOne({ stripeCustomerId: customerId, premiumUntil: { $gt: nowIso } }, { $set: { premiumUntil: nowIso } });
+    return doc;
+  });
+  if (!user) {
+    console.error("[uiu-api] stripe refund with no matching user:", customerId);
+    return;
+  }
+  const subId = typeof user.stripeSubscriptionId === "string" ? user.stripeSubscriptionId : "";
+  if (subId) await cancelSubscriptionNow(env, subId);
+}
+
 billingRouter.post("/webhook", async (c) => {
   const secret = c.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) return c.json({ ok: false }, 503);
@@ -193,12 +217,21 @@ billingRouter.post("/webhook", async (c) => {
         await endAccessNow(c.env, sub);
         break;
       }
+      case "charge.refunded": {
+        const ch = ev.data.object as { customer?: unknown; amount_refunded?: unknown };
+        if (typeof ch.customer === "string" && Number(ch.amount_refunded) > 0) {
+          await endAccessForRefund(c.env, ch.customer);
+        }
+        break;
+      }
       default:
         break;
     }
     return c.json({ ok: true });
   } catch (err) {
-    // 500 → Stripe retries the event later.
+    // 500 → Stripe retries the event later. Drop the idempotency record first, otherwise the retry is
+    // treated as a duplicate and the work is never done. Every handler above is safe to run twice.
+    await withDb(c.env, (db) => db.collection(STRIPE_EVENTS).deleteOne({ _id: ev.id as never })).catch(() => undefined);
     console.error("[uiu-api] stripe webhook error:", ev.type, err instanceof Error ? err.message : String(err));
     return c.json({ ok: false, error: { code: "server_error" } }, 500);
   }
