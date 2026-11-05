@@ -4,12 +4,14 @@ import {
   isStockLikeName,
   STOCK_PRICED_LABEL,
   type RecipeDetail,
+  type MealSlot,
   type RecipeDetailCostLine,
 } from "@uiu/shared";
 import { apiGet } from "../../lib/api";
 import { PricesChecked } from "../../components/PricesChecked";
 import { RecipeAddToList } from "./RecipeAddToList";
 import { RecipeFavouriteButton } from "./RecipeFavouriteButton";
+import { AddToTodayButton } from "../../components/AddToTodayButton";
 import {
   costPendingLabel,
   dietaryBadges,
@@ -25,6 +27,11 @@ function lineFor(recipe: RecipeDetail, ingredient: RecipeDetail["ingredients"][n
   return recipe.cost?.lines.find(
     (l) => l.rawName === ingredient.name && l.quantity === ingredient.quantity && l.rawUnit === ingredient.unit,
   );
+}
+
+function slotFromBadge(badge: string | null): MealSlot {
+  const v = badge?.toLowerCase();
+  return v === "breakfast" || v === "lunch" || v === "dinner" || v === "snack" ? v : "dinner";
 }
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -64,6 +71,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         <h1 className="recipe-detail__title">{recipe.title}</h1>
         <RecipeFavouriteButton recipeId={id} />
       </div>
+
+      {/* Jackie 2026-11-05: add straight from the recipe; meal defaults to the recipe's own meal type. */}
+      <AddToTodayButton recipeId={id} defaultSlot={slotFromBadge(mealBadge)} />
 
       {recipe.steps.length > 0 && (
         <Link href={`/recipes/${id}/cook`} className="recipe-detail__cook-cta">

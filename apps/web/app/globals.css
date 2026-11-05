@@ -5845,3 +5845,21 @@ a {
   white-space: nowrap;
 }
 
+
+/* Add to today's plan with meal picker (Jackie 2026-11-05) — Recipes fridge matches + recipe detail. */
+.add-to-today {
+  margin-top: var(--space);
+}
+.add-to-today__row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.add-to-today__select {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 7.5rem;
+}
+.add-to-today__button {
+  flex: 1 1 auto;
+}

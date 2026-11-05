@@ -3,12 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ApiResponse, MealPlanSetSummary, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
+import type { ApiResponse, MealSlot, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
 import { CoveragePrice } from "../components/CoveragePrice";
-import { todayDayIndex } from "../lib/dates";
+import { addRecipeToTodaysPlan } from "../lib/todaysPlan";
 import { isNutritionUnavailable, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
-
-const TODAYS_PLAN_NAME = "Today's Plan";
 
 const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
   { value: "breakfast", label: "Breakfast" },
@@ -50,66 +48,20 @@ export function TonightSuggestion({ onAdded }: { onAdded?: () => void } = {}) {
     }
   }
 
-  /**
-   * The plan to add into. No active plan (Jackie 2026-11-05: "Add to today's plan" looked dead) → reuse an
-   * existing "Today's Plan" card or create an empty one (skipGenerate, no AI), then activate it. Named "Today's Plan" (Jackie
-   * 2026-11-05) to match the button and stay apart from "Build a plan for me" cards ("Weekly Plan N"). Returns an error text instead.
-   */
-  async function resolvePlanId(): Promise<{ planId: string } | { error: string }> {
-    const setsRes = await fetch("/api/meal-plan-sets");
-    const setsParsed = (await setsRes.json()) as ApiResponse<MealPlanSetSummary[]>;
-    if (!setsParsed.ok) return { error: "Couldn't load your plans — please try again." };
-    const active = setsParsed.data.find((s) => s.isActive);
-    if (active) return { planId: active._id };
-
-    let planId = setsParsed.data.find((s) => s.name === TODAYS_PLAN_NAME)?._id;
-    if (!planId) {
-      const createRes = await fetch("/api/meal-plan-sets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: TODAYS_PLAN_NAME, skipGenerate: true }),
-      });
-      const created = (await createRes.json()) as ApiResponse<MealPlanSetSummary>;
-      if (!created.ok) {
-        return created.error.code === "plan_limit_reached"
-          ? { error: "You already have the maximum number of plans — activate or delete one first." }
-          : { error: "Couldn't create a plan — please try again." };
-      }
-      planId = created.data._id;
-    }
-    const actRes = await fetch(`/api/meal-plan-sets/${planId}/activate`, { method: "POST" });
-    const act = (await actRes.json()) as ApiResponse<unknown>;
-    if (!act.ok) return { error: "Couldn't start your plan — please try again." };
-    return { planId };
-  }
-
   async function addToToday(recipeId: string) {
     setAddingId(recipeId);
     setAddMessage(null);
     try {
-      const plan = await resolvePlanId();
-      if ("error" in plan) {
-        setAddMessage({ recipeId, text: plan.error });
+      const result = await addRecipeToTodaysPlan(recipeId, mealType);
+      if ("error" in result) {
+        setAddMessage({ recipeId, text: result.error });
         return;
       }
-
-      const res = await fetch("/api/meal-plan", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: plan.planId, dayIndex: todayDayIndex(), mealSlot: mealType, recipeId }),
-      });
-      const parsed = (await res.json()) as ApiResponse<unknown>;
-      if (parsed.ok) {
-        setAddedIds((prev) => new Set(prev).add(recipeId));
-        // The plan cards above live in client state (MealPlannerView), which router.refresh() does not reset —
-        // a newly created "Today's Plan" did not appear (Jackie 2026-11-05). Ask the parent to refetch.
-        onAdded?.();
-        router.refresh();
-      } else {
-        setAddMessage({ recipeId, text: "Couldn't add this recipe — please try again." });
-      }
-    } catch {
-      setAddMessage({ recipeId, text: "Couldn't add this recipe — please try again." });
+      setAddedIds((prev) => new Set(prev).add(recipeId));
+      // The plan cards above live in client state (MealPlannerView), which router.refresh() does not reset —
+      // a newly created "Today's Plan" did not appear (Jackie 2026-11-05). Ask the parent to refetch.
+      onAdded?.();
+      router.refresh();
     } finally {
       setAddingId(null);
     }
