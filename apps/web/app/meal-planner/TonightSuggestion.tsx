@@ -8,6 +8,8 @@ import { CoveragePrice } from "../components/CoveragePrice";
 import { todayDayIndex } from "../lib/dates";
 import { isNutritionUnavailable, NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
 
+const MY_PLAN_NAME = "My Plan";
+
 const MEAL_TYPE_OPTIONS: { value: MealSlot; label: string }[] = [
   { value: "breakfast", label: "Breakfast" },
   { value: "lunch", label: "Lunch" },
@@ -28,7 +30,8 @@ export function TonightSuggestion() {
   const [addingId, setAddingId] = useState<string | null>(null);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState(true);
-  const [noActivePlan, setNoActivePlan] = useState(false);
+  // Shown under the card that was tapped, so the user sees why nothing was added.
+  const [addMessage, setAddMessage] = useState<{ recipeId: string; text: string } | null>(null);
 
   async function fetchSuggestions() {
     setLoading(true);
@@ -47,28 +50,63 @@ export function TonightSuggestion() {
     }
   }
 
+  /**
+   * The plan to add into. No active plan (Jackie 2026-11-05: "Add to today's plan" looked dead) → reuse an
+   * existing "My Plan" card or create an empty one (skipGenerate, no AI), then activate it. Named "My Plan" so it
+   * is easy to tell apart from "Build a plan for me" cards ("Weekly Plan N"). Returns an error text instead.
+   */
+  async function resolvePlanId(): Promise<{ planId: string } | { error: string }> {
+    const setsRes = await fetch("/api/meal-plan-sets");
+    const setsParsed = (await setsRes.json()) as ApiResponse<MealPlanSetSummary[]>;
+    if (!setsParsed.ok) return { error: "Couldn't load your plans — please try again." };
+    const active = setsParsed.data.find((s) => s.isActive);
+    if (active) return { planId: active._id };
+
+    let planId = setsParsed.data.find((s) => s.name === MY_PLAN_NAME)?._id;
+    if (!planId) {
+      const createRes = await fetch("/api/meal-plan-sets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: MY_PLAN_NAME, skipGenerate: true }),
+      });
+      const created = (await createRes.json()) as ApiResponse<MealPlanSetSummary>;
+      if (!created.ok) {
+        return created.error.code === "plan_limit_reached"
+          ? { error: "You already have the maximum number of plans — activate or delete one first." }
+          : { error: "Couldn't create a plan — please try again." };
+      }
+      planId = created.data._id;
+    }
+    const actRes = await fetch(`/api/meal-plan-sets/${planId}/activate`, { method: "POST" });
+    const act = (await actRes.json()) as ApiResponse<unknown>;
+    if (!act.ok) return { error: "Couldn't start your plan — please try again." };
+    return { planId };
+  }
+
   async function addToToday(recipeId: string) {
     setAddingId(recipeId);
-    setNoActivePlan(false);
+    setAddMessage(null);
     try {
-      const setsRes = await fetch("/api/meal-plan-sets");
-      const setsParsed = (await setsRes.json()) as ApiResponse<MealPlanSetSummary[]>;
-      const activePlan = setsParsed.ok ? setsParsed.data.find((s) => s.isActive) : undefined;
-      if (!activePlan) {
-        setNoActivePlan(true);
+      const plan = await resolvePlanId();
+      if ("error" in plan) {
+        setAddMessage({ recipeId, text: plan.error });
         return;
       }
 
       const res = await fetch("/api/meal-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: activePlan._id, dayIndex: todayDayIndex(), mealSlot: mealType, recipeId }),
+        body: JSON.stringify({ planId: plan.planId, dayIndex: todayDayIndex(), mealSlot: mealType, recipeId }),
       });
       const parsed = (await res.json()) as ApiResponse<unknown>;
       if (parsed.ok) {
         setAddedIds((prev) => new Set(prev).add(recipeId));
         router.refresh();
+      } else {
+        setAddMessage({ recipeId, text: "Couldn't add this recipe — please try again." });
       }
+    } catch {
+      setAddMessage({ recipeId, text: "Couldn't add this recipe — please try again." });
     } finally {
       setAddingId(null);
     }
@@ -108,11 +146,6 @@ export function TonightSuggestion() {
       </div>
 
       {error ? <p className="tonight-suggestion__status">Couldn&apos;t load suggestions — please try again.</p> : null}
-      {noActivePlan ? (
-        <p className="tonight-suggestion__status">
-          No active plan yet — build and activate a plan first, then come back to add this.
-        </p>
-      ) : null}
       {suggestions && suggestions.length === 0 ? (
         <p className="tonight-suggestion__status">No recipes found for {mealType} right now.</p>
       ) : null}
@@ -160,8 +193,13 @@ export function TonightSuggestion() {
                 disabled={addingId === s.recipeId || addedIds.has(s.recipeId)}
                 onClick={() => addToToday(s.recipeId)}
               >
-                {addedIds.has(s.recipeId) ? "Added ✓" : "Add to today's plan"}
+                {addingId === s.recipeId ? "Adding…" : addedIds.has(s.recipeId) ? "Added ✓" : "Add to today's plan"}
               </button>
+              {addMessage?.recipeId === s.recipeId ? (
+                <p className="tonight-suggestion__status" role="status">
+                  {addMessage.text}
+                </p>
+              ) : null}
             </div>
           ))}
         </div>
