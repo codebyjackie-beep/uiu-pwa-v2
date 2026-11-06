@@ -52,7 +52,8 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
   const [selectedDay, setSelectedDay] = useState<number>(() => todayDayIndex());
 
   const dayByIndex = new Map(days.map((d) => [d.dayIndex, d]));
-  const averageDayCost = weekTotalCost / 7;
+  // Per planned day, not /7 — a one-day "Today's Plan" showed £0.44/day for a £3.09 meal (Jackie 2026-11-06).
+  const averageDayCost = weekTotalCost / Math.max(1, days.filter((d) => d.entries.length > 0).length);
 
   useEffect(() => {
     let cancelled = false;

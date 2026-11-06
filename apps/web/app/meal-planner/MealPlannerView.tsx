@@ -21,8 +21,6 @@ export function MealPlannerView({ initialSets }: Props) {
   const [sets, setSets] = useState<MealPlanSetSummary[]>(initialSets);
   const [detailPlanId, setDetailPlanId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [limitMessage, setLimitMessage] = useState<string | null>(null);
   const [duplicating, setDuplicating] = useState(false);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
@@ -30,27 +28,6 @@ export function MealPlannerView({ initialSets }: Props) {
     const res = await fetch("/api/meal-plan-sets");
     const parsed = (await res.json()) as ApiResponse<MealPlanSetSummary[]>;
     if (parsed.ok) setSets(parsed.data);
-  }
-
-  async function buildPlan() {
-    setCreating(true);
-    setLimitMessage(null);
-    try {
-      const res = await fetch("/api/meal-plan-sets", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const parsed = (await res.json()) as ApiResponse<MealPlanSetSummary>;
-      if (parsed.ok) {
-        setSets((prev) => [...prev, parsed.data]);
-        setDetailPlanId(parsed.data._id);
-      } else if (parsed.error.code === "plan_limit_reached") {
-        setLimitMessage(parsed.error.message);
-      }
-    } finally {
-      setCreating(false);
-    }
   }
 
   /** Plans aren't tied to dates (Day 1–7), so this is "copy previous week": a new empty card (monotonic
@@ -153,11 +130,11 @@ export function MealPlannerView({ initialSets }: Props) {
                 <span className="meal-planner-stat-row__label">Meals</span>
               </div>
               <div className="meal-planner-stat-row__stat">
-                <span className="meal-planner-stat-row__value">{formatTotalWithIncomplete(set.weekTotalCost / 7, set.weekCostIncomplete)}</span>
+                <span className="meal-planner-stat-row__value">{formatTotalWithIncomplete(set.weekTotalCost / Math.max(1, set.daysPlanned), set.weekCostIncomplete)}</span>
                 <span className="meal-planner-stat-row__label">£/day</span>
               </div>
               <div className="meal-planner-stat-row__stat">
-                <span className="meal-planner-stat-row__value">{Math.round(set.weekTotalCalories / 7)}</span>
+                <span className="meal-planner-stat-row__value">{Math.round(set.weekTotalCalories / Math.max(1, set.daysPlanned))}</span>
                 <span className="meal-planner-stat-row__label">cal/day</span>
               </div>
             </div>
@@ -216,29 +193,29 @@ export function MealPlannerView({ initialSets }: Props) {
       </div>
 
       <div className="meal-planner-build-card__actions">
-        <button type="button" className="wizard-primary-button" disabled={creating || atLimit} onClick={buildPlan}>
-          {creating ? "Building…" : "Build a plan for me"}
-        </button>
-        {/* Secondary, low-visual-weight entry to the 9-step wizard — pre-filled with the
-            same defaults "Build a plan for me" uses, so it reads as "see what you'll get,
-            tweak if you want" rather than a second competing main button.
-            See cc_prompt_meal_plan_duplicate_investigation.md. */}
-        <Link
-          href="/meal-planner/generate"
-          className="meal-planner-customize-link"
-          onClick={(e) => {
-            if (!requireAccount()) e.preventDefault();
-          }}
-        >
-          Customize before building →
-        </Link>
+        {/* Jackie 2026-11-06: "Build a plan for me" removed — it ran the same generator with the same defaults as the
+            wizard, so it was a duplicate. The wizard (pre-filled) is now the one main entry, "Plan my week". */}
+        {atLimit ? (
+          <button type="button" className="wizard-primary-button" disabled>
+            Plan my week
+          </button>
+        ) : (
+          <Link
+            href="/meal-planner/generate"
+            className="wizard-primary-button"
+            onClick={(e) => {
+              if (!requireAccount()) e.preventDefault();
+            }}
+          >
+            Plan my week
+          </Link>
+        )}
       </div>
       {atLimit ? (
         <p className="meal-planner-plan-card__empty">
           You&apos;ve got {MEAL_PLAN_SET_LIMIT} plans already — delete one before building another.
         </p>
       ) : null}
-      {limitMessage ? <p className="meal-planner-plan-card__empty">{limitMessage}</p> : null}
 
       <TonightSuggestion onAdded={refetchSets} />
 

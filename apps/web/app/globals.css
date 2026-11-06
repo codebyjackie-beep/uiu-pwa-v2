@@ -3246,6 +3246,10 @@ a {
   text-align: center;
 }
 
+a.wizard-primary-button {
+  text-decoration: none;
+}
+
 .wizard-primary-button:disabled {
   opacity: 0.5;
   cursor: default;
