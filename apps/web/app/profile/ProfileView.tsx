@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ApiResponse, MyPlan } from "@uiu/shared";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { useInstallPrompt } from "../lib/useInstallPrompt";
 
 const PREMIUM_FEATURES = ["AI Nutrition Coach", "AI meal plan wizard", "Barcode scan", "Fridge photo & receipt scan"];
@@ -13,6 +13,31 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
   const { canInstall, promptInstall } = useInstallPrompt();
   const [signingOut, setSigningOut] = useState(false);
   const [plan, setPlan] = useState<MyPlan | null>(null);
+  const { user } = useUser();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const closeDelete = () => {
+    if (deleting) return;
+    setDeleteOpen(false);
+    setDeleteText("");
+    setDeleteError(null);
+  };
+  // Clerk deletes the account; its user.deleted webhook (apps/api routes/clerkWebhook.ts) then erases our data
+  // and cancels any Stripe subscription. Needs "Allow users to delete their account" on for this user in Clerk.
+  const deleteAccount = async () => {
+    if (!user || deleteText.trim() !== "DELETE") return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await user.delete();
+      window.location.assign("/how-it-works");
+    } catch {
+      setDeleting(false);
+      setDeleteError("We couldn't delete your account. Please try again, or email useitup.uk@gmail.com and we'll do it for you.");
+    }
+  };
   useEffect(() => {
     fetch("/api/me/plan", { cache: "no-store" })
       .then((r) => r.json() as Promise<ApiResponse<MyPlan>>)
@@ -105,9 +130,60 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
               <span>{signingOut ? "Signing out…" : "Sign out"}</span>
             </button>
           </li>
+          <li>
+            <button type="button" className="profile-settings__row profile-settings__row--danger" onClick={() => setDeleteOpen(true)}>
+              <span>Delete account</span>
+            </button>
+          </li>
         </ul>
       </section>
 
+      {deleteOpen ? (
+        <div className="meal-planner-modal-overlay" onClick={closeDelete}>
+          <div className="meal-planner-modal" role="dialog" aria-modal="true" aria-labelledby="delete-account-title" onClick={(e) => e.stopPropagation()}>
+            <div className="meal-planner-modal__header">
+              <h3 id="delete-account-title" className="meal-planner-modal__title">Delete your account?</h3>
+              <button type="button" className="meal-planner-modal__close" aria-label="Close" onClick={closeDelete}>
+                ×
+              </button>
+            </div>
+            <div className="meal-planner-modal__body">
+              <p>This can&apos;t be undone. We will delete your fridge, meal plans, shopping list, saved and private recipes, and health data.</p>
+              <p>
+                {isPremium || isTrial
+                  ? "Your Premium subscription ends straight away, with no refund for the rest of this period."
+                  : "If you have a Premium subscription, it ends straight away, with no refund."}{" "}
+                We keep payment records for 6 years, as UK tax rules require.
+              </p>
+              <label className="profile-delete__label" htmlFor="delete-account-confirm">
+                Type <strong>DELETE</strong> to confirm
+              </label>
+              <input
+                id="delete-account-confirm"
+                className="profile-delete__input"
+                value={deleteText}
+                onChange={(e) => setDeleteText(e.target.value)}
+                autoComplete="off"
+                autoCapitalize="characters"
+                disabled={deleting}
+              />
+              {deleteError ? (
+                <p className="profile-delete__error" role="alert">
+                  {deleteError}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                className="profile-delete__confirm"
+                disabled={deleting || deleteText.trim() !== "DELETE"}
+                onClick={() => void deleteAccount()}
+              >
+                {deleting ? "Deleting…" : "Delete my account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
