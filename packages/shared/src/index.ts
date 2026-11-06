@@ -580,6 +580,8 @@ export interface MealPlanSetSummary {
   weekTotalProtein: number;
   weekTotalCarbs: number;
   weekTotalFat: number;
+  /** Distinct days with at least one meal — the divisor for £/day and cal/day (not a fixed 7). */
+  daysPlanned: number;
   previewByDay: { dayIndex: number; recipeTitle: string }[];
 }
 

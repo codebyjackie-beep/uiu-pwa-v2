@@ -90,6 +90,7 @@ function toSummary(setDoc: Document, entries: SummaryEntry[]): MealPlanSetSummar
     weekTotalProtein: entries.reduce((sum, e) => sum + (e.recipe.protein ?? 0), 0),
     weekTotalCarbs: entries.reduce((sum, e) => sum + (e.recipe.carbs ?? 0), 0),
     weekTotalFat: entries.reduce((sum, e) => sum + (e.recipe.fat ?? 0), 0),
+    daysPlanned: new Set(entries.map((e) => e.dayIndex)).size,
     previewByDay,
   };
 }
