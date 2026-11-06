@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ApiResponse, MyPlan } from "@uiu/shared";
-import { useClerk, useUser } from "@clerk/nextjs";
+import { useClerk, useReverification, useUser } from "@clerk/nextjs";
+import { isReverificationCancelledError } from "@clerk/nextjs/errors";
 import { useInstallPrompt } from "../lib/useInstallPrompt";
 
 const PREMIUM_FEATURES = ["AI Nutrition Coach", "AI meal plan wizard", "Barcode scan", "Fridge photo & receipt scan"];
@@ -26,15 +27,21 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
   };
   // Clerk deletes the account; its user.deleted webhook (apps/api routes/clerkWebhook.ts) then erases our data
   // and cancels any Stripe subscription. Needs "Allow users to delete their account" on for this user in Clerk.
+  // Clerk treats delete as a sensitive action (sign-in / reverification within 10 min), so wrap it in
+  // useReverification: it shows Clerk's verify modal when needed, then retries the delete.
+  const deleteUser = useReverification(() => user!.delete());
   const deleteAccount = async () => {
     if (!user || deleteText.trim() !== "DELETE") return;
     setDeleting(true);
     setDeleteError(null);
     try {
-      await user.delete();
+      await deleteUser();
       window.location.assign("/how-it-works");
-    } catch {
+    } catch (err) {
       setDeleting(false);
+      if (isReverificationCancelledError(err)) return; // user closed the verify modal — nothing to report
+      const code = (err as { errors?: { code?: string }[] })?.errors?.[0]?.code ?? (err as { code?: string })?.code ?? "unknown";
+      console.error("[uiu] delete account failed:", code);
       setDeleteError("We couldn't delete your account. Please try again, or email useitup.uk@gmail.com and we'll do it for you.");
     }
   };
@@ -150,9 +157,11 @@ export function ProfileView({ name, email, imageUrl, memberSince }: { name: stri
             <div className="meal-planner-modal__body">
               <p>This can&apos;t be undone. We will delete your fridge, meal plans, shopping list, saved and private recipes, and health data.</p>
               <p>
-                {isPremium || isTrial
-                  ? "Your Premium subscription ends straight away, with no refund for the rest of this period."
-                  : "If you have a Premium subscription, it ends straight away, with no refund."}{" "}
+                {isPremium
+                  ? "Your Premium subscription ends straight away, with no refund for the rest of this period. "
+                  : isTrial
+                    ? "Your free trial ends straight away. "
+                    : ""}
                 We keep payment records for 6 years, as UK tax rules require.
               </p>
               <label className="profile-delete__label" htmlFor="delete-account-confirm">
