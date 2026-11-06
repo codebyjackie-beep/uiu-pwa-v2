@@ -61,8 +61,8 @@ export default async function Home() {
   const [setsRes, recipeCountRes, expiringRes] = await Promise.all([
     apiGet<MealPlanSetSummary[]>("/api/meal-plan-sets"),
     apiGet<RecipeListPage>("/api/recipes?limit=1"),
-    // Use-it-up (research_rminder_competitors.md #1): fridge items expiring within 3 days.
-    apiGet<{ _id: string; ingredientName: string; expiresAt: string }[]>("/api/fridge-stock/expiring?days=3"),
+    // Use-it-up (research_rminder_competitors.md #1): fridge items expiring within 7 days (Jackie 2026-11-06: 3 was too narrow — fresh food is usually 5–7 days).
+    apiGet<{ _id: string; ingredientName: string; expiresAt: string }[]>("/api/fridge-stock/expiring?days=7"),
   ]);
   const expiring = expiringRes.ok ? expiringRes.data.slice(0, 5) : [];
   // No hard-coded fallback number: if the total can't be fetched, drop the count entirely.

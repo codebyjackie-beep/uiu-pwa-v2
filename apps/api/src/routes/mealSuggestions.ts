@@ -27,11 +27,11 @@ function expiryWeight(expiresAt: string, now: Date): number {
 
 mealSuggestionsRouter.get("/", async (c) => {
   // matchOnly=1 (Jackie 2026-11-05, Home "Cook with these" → /recipes?cook=soon): any meal type, only fridge items
-  // expiring within `days` (default 3, same window as the Home card, expired items excluded for food safety), and
+  // expiring within `days` (default 7, same window as the Home card, expired items excluded for food safety), and
   // only recipes that use at least one of them — no random filler.
   const matchOnly = c.req.query("matchOnly") === "1";
-  const daysParam = Number(c.req.query("days") ?? "3");
-  const windowDays = Number.isFinite(daysParam) && daysParam > 0 && daysParam <= 30 ? daysParam : 3;
+  const daysParam = Number(c.req.query("days") ?? "7");
+  const windowDays = Number.isFinite(daysParam) && daysParam > 0 && daysParam <= 30 ? daysParam : 7;
   const rawMealType = c.req.query("mealType") as MealSlot | undefined;
   const mealType = rawMealType && VALID_MEAL_TYPES.includes(rawMealType) ? rawMealType : undefined;
   if (!mealType && (!matchOnly || rawMealType)) {
