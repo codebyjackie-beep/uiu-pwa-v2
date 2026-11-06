@@ -29,6 +29,7 @@ import { buildAliasIndex, resolve } from "./ingredientResolver";
 import { costRecipe } from "./recipeCost";
 import { computeRecipeNutrition } from "./nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "./pexels";
+import type { OpenRouterEnv } from "./openrouter";
 import { approveRecipeDraft, rejectRecipeDraft } from "./recipeDraftApproval";
 
 export const SANITY_MAX_AUTO_APPROVE = 600;
@@ -272,7 +273,7 @@ export interface ApplyChunkResult {
  * server's, not the client's; ids that are no longer pending (already decided, or changed
  * verdict) are reported in stayedPending instead of being touched.
  */
-export async function applyTriageChunk(db: Db, env: PexelsEnv, ids: string[], batchId: string): Promise<ApplyChunkResult> {
+export async function applyTriageChunk(db: Db, env: PexelsEnv & Partial<OpenRouterEnv>, ids: string[], batchId: string): Promise<ApplyChunkResult> {
   const { ObjectId } = await getMongoModule();
   const all = await evaluatePendingDrafts(db);
   const byId = new Map(all.map((e) => [e.id, e]));
@@ -315,7 +316,15 @@ export async function applyTriageChunk(db: Db, env: PexelsEnv, ids: string[], ba
       const set: Record<string, unknown> = { tags: cleanTags(e.tags) };
       if (imageUrl !== e.imageUrl) set.imageUrl = imageUrl;
       await db.collection("recipe_drafts").updateOne({ _id: new ObjectId(id), status: "pending" }, { $set: set });
-      const r = await approveRecipeDraft(db, env, id, { batchId, reasons: e.reasons });
+      let r: Awaited<ReturnType<typeof approveRecipeDraft>>;
+      try {
+        r = await approveRecipeDraft(db, env, id, { batchId, reasons: e.reasons });
+      } catch (err) {
+        // AI same-dish check failed (or another approve error) — keep it pending, never publish unchecked.
+        console.error("[uiu-api] triage approve error:", err instanceof Error ? err.message : String(err));
+        out.stayedPending.push({ id, reason: "approve_error" });
+        continue;
+      }
       if ("insertedId" in r) out.approved.push(id);
       else if ("nearDuplicate" in r) {
         const reasons = [`near_duplicate:${r.nearDuplicate.rule}:${r.nearDuplicate.title}`];

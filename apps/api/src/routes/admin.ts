@@ -17,6 +17,7 @@ import { runInsightsSnapshotCron } from "../jobs/igInsights";
 import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, RemapInputError, USERID_COLLECTIONS, type RemapInput } from "../services/clerkRemap";
 import { withDb } from "../db";
 import { reviewPublishCandidates } from "../services/publishCandidates";
+import { evalSameDish, restoreWithdrawn, RecipeWithdrawInputError, withdrawRecipes } from "../services/recipeWithdraw";
 import { PUSH_SUBSCRIPTIONS, sendExpiryReminders, sendPush } from "../services/webPush";
 import { cleanupExpiredGuests } from "../services/guest";
 import { notify, setupChat, NotifyError } from "../services/cloudNotify";
@@ -618,6 +619,46 @@ adminRouter.post("/user-deletion", async (c) => {
     if (err instanceof UserDeletionInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
     console.error("[uiu-api] user-deletion error:", err instanceof Error ? err.message : String(err));
     return c.json({ ok: false, error: { code: "db_error", message: "user-deletion failed" } } satisfies ApiResponse<never>, 502);
+  }
+});
+
+// Duplicate-recipe clean-up (services/recipeWithdraw.ts). Hides, never deletes. Dry run unless ?write=true.
+//   POST /api/admin/recipes/withdraw          body { ids: [hex…≤200], reason: "duplicate-2026-11-06b" }
+//   POST /api/admin/recipes/restore-withdrawn body { reason }
+//   POST /api/admin/recipes/same-dish-eval    body { ids: [hex…≤10] }  — read-only AI same-dish check
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- same shape as perUnitCountError
+const withdrawError = (c: any, err: unknown, what: string) => {
+  if (err instanceof RecipeWithdrawInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${what} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${what} failed` } } satisfies ApiResponse<never>, 502);
+};
+adminRouter.post("/recipes/withdraw", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { ids?: unknown; reason?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => withdrawRecipes(db, body?.ids, body?.reason, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return withdrawError(c, err, "recipes/withdraw");
+  }
+});
+adminRouter.post("/recipes/restore-withdrawn", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { reason?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => restoreWithdrawn(db, body?.reason, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return withdrawError(c, err, "recipes/restore-withdrawn");
+  }
+});
+adminRouter.post("/recipes/same-dish-eval", async (c) => {
+  const body = (await c.req.json().catch(() => null)) as { ids?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => evalSameDish(db, c.env, body?.ids));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return withdrawError(c, err, "recipes/same-dish-eval");
   }
 });
 
