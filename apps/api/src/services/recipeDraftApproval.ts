@@ -17,6 +17,8 @@ import { costRecipe } from "./recipeCost";
 import { computeRecipeNutrition } from "./nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "./pexels";
 import { findNearDuplicateRecipe, type NearDuplicateMatch } from "@uiu/shared";
+import type { OpenRouterEnv } from "./openrouter";
+import { findSameDishLLM } from "./sameDish";
 
 export type ApproveDraftResult =
   | { notFound: true }
@@ -34,7 +36,7 @@ export interface TriageTag {
  * absent for a plain human-click approve (keeps that path's docs untagged, as before). */
 export async function approveRecipeDraft(
   db: Db,
-  env: PexelsEnv,
+  env: PexelsEnv & Partial<OpenRouterEnv>,
   draftId: string,
   triage?: TriageTag,
 ): Promise<ApproveDraftResult> {
@@ -45,11 +47,13 @@ export async function approveRecipeDraft(
 
   // G1: refuse a draft that near-duplicates a public recipe (same rules as the 10-10 Part 11 clean-up).
   const publicRecipes = await db.collection("recipes").find({ isPublic: true }, { projection: { title: 1, "ingredients.name": 1 } }).toArray();
-  const near = findNearDuplicateRecipe(
-    { title: String(draft.title ?? ""), ingredientNames: ((draft.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) },
-    publicRecipes.map((r) => ({ title: String(r.title ?? ""), ingredientNames: ((r.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) })),
-  );
+  const candidateSim = { title: String(draft.title ?? ""), ingredientNames: ((draft.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) };
+  const publicSim = publicRecipes.map((r) => ({ title: String(r.title ?? ""), ingredientNames: ((r.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) }));
+  const near = findNearDuplicateRecipe(candidateSim, publicSim);
   if (near) return { nearDuplicate: near };
+  // AI same-dish check (services/sameDish.ts) — catches renamed duplicates the token rules miss. Throws on API failure.
+  const sameDish = await findSameDishLLM(env, candidateSim, publicSim);
+  if (sameDish) return { nearDuplicate: sameDish };
 
   const now = new Date().toISOString();
   const draftImageUrl = draft.imageUrl as string | null | undefined;

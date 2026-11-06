@@ -1459,9 +1459,32 @@ export interface SimilarityRecipe {
 }
 export interface NearDuplicateMatch {
   title: string;
-  rule: "strong" | "medium";
+  /** "same_dish" = the AI same-dish check (apps/api services/sameDish.ts), added 2026-11-06 after 159 renamed
+   * duplicates got past the token rules (title/ingredient overlap was only 0.1–0.4 on many of them). */
+  rule: "strong" | "medium" | "same_dish";
   titleJaccard: number;
   ingredientJaccard: number;
+}
+
+/** Title / ingredient Jaccard between two recipes (same tokenising as findNearDuplicateRecipe). */
+export function recipeSimilarityScores(a: SimilarityRecipe, b: SimilarityRecipe): { titleJaccard: number; ingredientJaccard: number } {
+  const ai = new Set(a.ingredientNames.map(recipeIngredientKey).filter(Boolean));
+  const bi = new Set(b.ingredientNames.map(recipeIngredientKey).filter(Boolean));
+  return { titleJaccard: simJaccard(recipeTitleTokens(a.title), recipeTitleTokens(b.title)), ingredientJaccard: simJaccard(ai, bi) };
+}
+
+/** The `n` recipes in `existing` most like `candidate` (title + ingredient Jaccard), best first — the shortlist the
+ * AI same-dish check looks at. On the 2026-11-06 duplicate set, top 8 contained the real original for 159/159. */
+export function rankSimilarRecipes<T extends SimilarityRecipe>(candidate: SimilarityRecipe, existing: T[], n = 8): T[] {
+  return existing
+    .map((e) => {
+      const s = recipeSimilarityScores(candidate, e);
+      return { e, score: s.titleJaccard + s.ingredientJaccard };
+    })
+    .filter((x) => x.score > 0)
+    .sort((x, y) => y.score - x.score)
+    .slice(0, n)
+    .map((x) => x.e);
 }
 
 /** First recipe in `existing` that `candidate` near-duplicates, or null. */
