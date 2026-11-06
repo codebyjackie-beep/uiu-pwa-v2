@@ -116,6 +116,10 @@ export interface Recipe {
   clerkUserId?: string;
   /** How a user recipe was created: "jsonld" | "oembed-caption" | "manual-paste" | "photo-ocr" | "video-ai" | "manual". */
   importMethod?: string;
+  /** Why a recipe was taken out of the public library (e.g. "duplicate-2026-11-06b", "fridge-duplicate"). */
+  withdrawnReason?: string;
+  /** Title of the public recipe this one duplicates (fridge-generated duplicates, 2026-11-06). */
+  duplicateOf?: string;
 }
 
 // ---------------------------------------------------------------------------

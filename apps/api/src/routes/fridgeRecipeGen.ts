@@ -16,6 +16,8 @@ import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe
 import { withDb, type DbEnv } from "../db";
 import type { OpenRouterEnv } from "../services/openrouter";
 import { generateRecipeFromFridge } from "../services/fridgeRecipeGen";
+import { findNearDuplicateRecipe } from "@uiu/shared";
+import { findSameDishLLM } from "../services/sameDish";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { computeRecipeNutrition } from "../services/nutritionGrams";
@@ -125,15 +127,32 @@ fridgeRecipeGenRouter.post("/save-fridge-recipe", async (c) => {
       // Nutrition has its own gram conversion (nutritionGrams.ts) — independent of price, counts ml / pc lines.
       const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
 
-      // Save straight into `recipes` as a live, public recipe — Jackie's 2026-08-20 request
+      // Duplicate check (Jackie 2026-11-06): same G1 + AI same-dish check as draft approval. A duplicate is still
+      // saved for this user (owner-only via clerkUserId — recipes.ts lets the owner open a non-public recipe), it
+      // just isn't added to the public library. If the AI check errors, save privately too: never publish unchecked.
+      const toSim = (d: Document) => ({ title: String(d.title ?? ""), ingredientNames: ((d.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) });
+      const publicSim = (await db.collection("recipes").find({ isPublic: true }, { projection: { title: 1, "ingredients.name": 1 } }).toArray()).map(toSim);
+      const candidateSim = { title: recipe.title, ingredientNames: recipe.ingredients.map((i) => String(i.name ?? "")) };
+      let duplicateOf: string | null = findNearDuplicateRecipe(candidateSim, publicSim)?.title ?? null;
+      if (!duplicateOf) {
+        try {
+          duplicateOf = (await findSameDishLLM(c.env, candidateSim, publicSim))?.title ?? null;
+        } catch (err) {
+          console.error("[uiu-api] save-fridge-recipe same-dish check failed:", err instanceof Error ? err.message : String(err));
+          duplicateOf = "(same-dish check unavailable)";
+        }
+      }
+
+      // Otherwise save straight into `recipes` as a live, public recipe — Jackie's 2026-08-20 request
       // to skip the recipe_drafts/admin-approve review step for fridge-generated recipes.
       const imageUrl = await findRecipePhoto(c.env, recipe.title).catch(() => null);
       const now = new Date().toISOString();
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: recipe.title,
         description: recipe.description,
-        isPublic: true,
+        isPublic: duplicateOf === null,
         userId: null,
+        ...(duplicateOf !== null ? { clerkUserId: c.get("clerkUserId"), withdrawnReason: "fridge-duplicate", duplicateOf } : {}),
         ingredients: recipe.ingredients,
         steps: recipe.steps,
         tags: recipe.tags,
