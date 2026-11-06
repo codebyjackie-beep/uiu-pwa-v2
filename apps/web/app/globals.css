@@ -5489,6 +5489,43 @@ a.wizard-primary-button {
 .profile-settings__row--danger {
   color: var(--uiu-red);
 }
+.profile-delete__label {
+  display: block;
+  margin: 16px 0 6px;
+  font-size: 14px;
+}
+.profile-delete__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid var(--uiu-muted);
+  background: var(--card);
+  color: var(--fg);
+  border-radius: 8px;
+}
+.profile-delete__error {
+  margin: 10px 0 0;
+  color: var(--uiu-red);
+  font-size: 14px;
+}
+.profile-delete__confirm {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--uiu-red);
+  color: var(--uiu-white);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.profile-delete__confirm:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .profile-upgrade__text {
   margin: 0 0 16px;
   font-size: 15px;

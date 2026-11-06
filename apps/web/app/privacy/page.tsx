@@ -98,7 +98,7 @@ export default function PrivacyPage() {
 
       <h2>Your rights</h2>
       <p>
-        Under UK GDPR you can ask to see, correct, delete or export your data. Email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>{" "}
+        Under UK GDPR you can ask to see, correct, delete or export your data. You can delete your account yourself in Profile → Delete account. Or email <a href="mailto:useitup.uk@gmail.com">useitup.uk@gmail.com</a>{" "}
         and we will reply within one month. You can also complain to the Information Commissioner&apos;s Office (ico.org.uk).
       </p>
 
