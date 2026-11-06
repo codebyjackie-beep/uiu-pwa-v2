@@ -9,7 +9,7 @@ import { AddToTodayButton } from "../components/AddToTodayButton";
 
 /**
  * /recipes?cook=soon — opened from Home "Use it up soon" → "Cook with these" (Jackie 2026-11-05).
- * Lists existing recipes that use fridge items expiring within 3 days (no AI, no quota). Living in the URL means
+ * Lists existing recipes that use fridge items expiring within 7 days (no AI, no quota). Living in the URL means
  * going back from a recipe shows the same list again.
  */
 export function FridgeMatches() {
@@ -24,7 +24,7 @@ export function FridgeMatches() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/meal-suggestions?matchOnly=1&days=3");
+        const res = await fetch("/api/meal-suggestions?matchOnly=1&days=7");
         const parsed = (await res.json()) as ApiResponse<MealSuggestionsResponse>;
         if (cancelled) return;
         setState(parsed.ok ? { status: "done", items: parsed.data.suggestions } : { status: "error" });
