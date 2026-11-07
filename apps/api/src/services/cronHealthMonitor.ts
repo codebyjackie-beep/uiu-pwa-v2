@@ -13,7 +13,7 @@ import type { Document } from "mongodb";
 import { withDb, type DbEnv } from "../db";
 import { sendTelegram, type TelegramEnv } from "./telegram";
 
-export type MonitoredJobName = "igContentAgent" | "affiliateCadence" | "dailyRecipeDraft" | "pwaDiagnostics" | "igInsights";
+export type MonitoredJobName = "igContentAgent" | "affiliateCadence" | "dailyRecipeDraft" | "dailyAutoTriage" | "pwaDiagnostics" | "igInsights";
 
 interface CronRunLogDoc {
   jobName: MonitoredJobName;
@@ -45,6 +45,7 @@ const JOB_EXPECTATIONS: Record<MonitoredJobName, { maxIntervalMinutes: number }>
   igContentAgent: { maxIntervalMinutes: 24 * 60 + 60 }, // daily 09:00 UTC + 1h buffer (token-health check only, 2026-09-02)
   affiliateCadence: { maxIntervalMinutes: 24 * 60 + 60 }, // fires daily 08:00 UTC (even on its own no-op days it still calls recordCronRun)
   dailyRecipeDraft: { maxIntervalMinutes: 24 * 60 + 60 }, // 2026-10-08: fires once/day 07:00 UTC (event.cron "0 7 * * *"), was every 3h
+  dailyAutoTriage: { maxIntervalMinutes: 24 * 60 + 60 }, // 2026-11-07: right after dailyRecipeDraft, 07:00 UTC; records a run even while AUTO_TRIAGE_CRON is off
   pwaDiagnostics: { maxIntervalMinutes: 60 + 15 }, // hourly
   igInsights: { maxIntervalMinutes: 60 + 15 }, // hourly (offset :30 from pwaDiagnostics)
 };

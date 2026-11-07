@@ -373,7 +373,6 @@ export default {
           .then(() => dailyAutoTriage(env))
           .then((t) => {
             console.log("[uiu-api] cron dailyAutoTriage:", JSON.stringify(t));
-            if (!t.enabled) return;
             return recordCronRun(env, { jobName: "dailyAutoTriage", ok: true, itemsProcessed: t.approved + t.rejected + t.needsReview }).catch(() => {});
           })
           .catch((err) => {
