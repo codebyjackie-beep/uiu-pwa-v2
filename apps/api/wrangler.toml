@@ -111,7 +111,7 @@ IG_AUTOMATION_PAUSED = "true"
 PREMIUM_ENFORCE = "true"
 # Jackie 2026-11-07: "true" = the 07:00 UTC cron auto-triages up to 10 pending recipe drafts after generating
 # (jobs/dailyAutoTriage.ts; approve still runs the AI same-dish check). Anything else = off (admin button only).
-AUTO_TRIAGE_CRON = "false"
+AUTO_TRIAGE_CRON = "true"
 # Milestone 3 Phase B: Stripe prices (price_… ids are not secret). LIVE-mode ids (Jackie 2026-11-05).
 # Must live HERE, not as Worker secrets: every deploy re-applies these [vars] and overwrote the live secrets
 # with the old sandbox ids → checkout "No such price" (found 2026-11-05). Sandbox ids were
