@@ -20,6 +20,7 @@ import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts } from "./jobs/precomputeRecipeCosts";
 import { anomalyAlertText } from "./jobs/recipeCostGate";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
+import { dailyAutoTriage } from "./jobs/dailyAutoTriage";
 import { runDiagnostics } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
 import { runAffiliateCron } from "./jobs/igContentAgent";
@@ -367,6 +368,18 @@ export default {
             const errorMessage = err instanceof Error ? err.message : String(err);
             console.error("[uiu-api] cron dailyRecipeDraft failed:", errorMessage);
             return recordCronRun(env, { jobName: "dailyRecipeDraft", ok: false, errorMessage }).catch(() => {});
+          })
+          // Then auto-triage pending drafts (jobs/dailyAutoTriage.ts) — no-op unless AUTO_TRIAGE_CRON = "true".
+          .then(() => dailyAutoTriage(env))
+          .then((t) => {
+            console.log("[uiu-api] cron dailyAutoTriage:", JSON.stringify(t));
+            if (!t.enabled) return;
+            return recordCronRun(env, { jobName: "dailyAutoTriage", ok: true, itemsProcessed: t.approved + t.rejected + t.needsReview }).catch(() => {});
+          })
+          .catch((err) => {
+            const errorMessage = err instanceof Error ? err.message : String(err);
+            console.error("[uiu-api] cron dailyAutoTriage failed:", errorMessage);
+            return recordCronRun(env, { jobName: "dailyAutoTriage", ok: false, errorMessage }).catch(() => {});
           }),
       );
       return;
