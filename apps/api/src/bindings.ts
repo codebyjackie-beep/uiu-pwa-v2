@@ -40,7 +40,7 @@ export type Bindings = {
   PWA_DIAGNOSTICS_DIGEST_HOUR_UK?: string;
   // HANDOFF_ig-marketing-affiliate-agent-design.md — IG Content Agent secrets
   // (IG_ID_UIU / IG_ID_AFFILIATE are [vars], not secrets — see wrangler.toml):
-  //   IG_TOKEN_UIU — Page Access Token for @useitup.app.
+  //   IG_TOKEN_UIU — System User token (uiu-publisher, never expires) for @useitup.uk (2026-11-07).
   //   IG_TOKEN_AFFILIATE — same for @kura.nook. Never mixed with the UIU token —
   //     draft.targetAccount picks which pair is used, never inferred.
   //   TELEGRAM_BOT_TOKEN_IG / TELEGRAM_CHAT_ID_IG — a SEPARATE bot from

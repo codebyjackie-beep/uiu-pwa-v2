@@ -134,7 +134,7 @@ const HOOK_BODY_CTA_INSTRUCTIONS =
   "and NO product packaging/labels. Do NOT include hashtags anywhere — they are added separately by code.";
 
 const ORGANIC_SYSTEM_PROMPT =
-  "You are writing one Instagram feed post for @useitup.app, a UK healthy-eating / meal-planning / " +
+  "You are writing one Instagram feed post for @useitup.uk, a UK healthy-eating / meal-planning / " +
   "food-waste-reduction app. Tone: warm, practical, food-and-kitchen focused — recipe ideas, cooking " +
   "tips, fridge/food-waste tips, meal-prep encouragement. Never mention any product recommendation, " +
   "purchase link, or Amazon — this account is organic content only. You will be told which content " +
@@ -175,7 +175,7 @@ export async function generateOrganicDraft(
  * is built — this prompt only shapes *what's suggested*, it is not the enforcement point.
  */
 const AFFILIATE_IDEA_SYSTEM_PROMPT =
-  "You suggest ONE product to recommend on an Amazon UK affiliate Instagram account (@useitup.app), " +
+  "You suggest ONE product to recommend on an Amazon UK affiliate Instagram account (@useitup.uk), " +
   "aimed at people who care about their home — kitchen, furniture, home decor/improvement, garden, " +
   "pets, or household tools. Prioritise kitchen/cooking/food-storage products when a good idea fits, " +
   "but furniture, home organisation, garden, pet, and tool products are equally valid — do not limit " +
@@ -209,7 +209,7 @@ async function suggestAffiliateProduct(env: OpenRouterEnv, recentProductNames: s
 
 const AFFILIATE_CAPTION_SYSTEM_PROMPT =
   "You write ONE Instagram feed post recommending a specific product, for an Amazon UK affiliate " +
-  "account (@useitup.app) focused on home life — kitchen, furniture, home decor/improvement, garden, " +
+  "account (@useitup.uk) focused on home life — kitchen, furniture, home decor/improvement, garden, " +
   "pets, and household tools. Tone: genuine, helpful, practical — explain why the product is useful " +
   "for the home, in whichever of those areas it fits. Do NOT include any disclosure text or a link " +
   "yourself (both appended separately). " +
@@ -328,7 +328,7 @@ export async function generateAffiliateDraft(
  */
 const AFFILIATE_COLLAGE_SYSTEM_PROMPT =
   "You plan ONE multi-product Instagram catalog post for an Amazon UK affiliate account " +
-  "(@useitup.app) focused on home life — kitchen, furniture, home decor/improvement, garden, pets, " +
+  "(@useitup.uk) focused on home life — kitchen, furniture, home decor/improvement, garden, pets, " +
   "and household tools. You will be given a theme; suggest specific, commonly-sold product types " +
   "that fit it (e.g. \"stainless steel mixing bowls set\", not a vague category like \"kitchen tools\") " +
   "so each can be found by a product search. Respond with ONLY a JSON object: " +

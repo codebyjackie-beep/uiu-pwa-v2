@@ -46,8 +46,8 @@ fallthrough = true
 #   CLOUDFLARE_API_TOKEN  OPTIONAL. HANDOFF_pwa-diagnostics-monitor.md — read-only Workers
 #   CLOUDFLARE_ACCOUNT_ID  scope, used only so the daily digest can mention the latest deploy.
 #                       Unset -> that one info-level line is just omitted, nothing else breaks.
-#   IG_TOKEN_UIU        HANDOFF_ig-marketing-affiliate-agent-design.md — Page Access Token
-#                       for @useitup.app. Raw value: Key\ig_token_useitup.txt. (IG_ID_UIU
+#   IG_TOKEN_UIU        2026-11-07: System User token (uiu-publisher, never expires)
+#                       for @useitup.uk. Raw value: Key\ig_token_useitup_2026-11.txt.txt. (IG_ID_UIU
 #                       itself is not sensitive — it's a [vars] entry below.)
 #   IG_TOKEN_AFFILIATE  Same for @kura.nook. Raw value: Key\ig_token_kuranook.txt. NEVER
 #                       used interchangeably with the UIU token — draft.targetAccount picks
@@ -122,7 +122,7 @@ STRIPE_PRICE_YEARLY = "price_1UWl9eFac8GaqZTuFEV0B1w3"  # £24.99 / year
 WEB_BASE_URL = "https://useitup.uk"
 # IG user ids are not sensitive on their own (no auth power without the matching Page
 # Access Token secret above) — kept here so they don't need re-setting on every redeploy.
-IG_ID_UIU = "17841427988481809"
+IG_ID_UIU = "17841462616551997"  # @useitup.uk (2026-11-07; old @useitup.app was 17841427988481809)
 IG_ID_AFFILIATE = "17841443611128346"
 # 2026-08-25 addendum — this Worker's own public URL, used to build the branded-image URL
 # (services/igMediaStore.ts) Instagram/shop.useitup.uk fetch. Same value as apps/web's
