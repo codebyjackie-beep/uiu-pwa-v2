@@ -10,6 +10,7 @@
  */
 import { rankSimilarRecipes, recipeSimilarityScores, type NearDuplicateMatch, type SimilarityRecipe } from "@uiu/shared";
 import type { OpenRouterEnv } from "./openrouter";
+import { compatibleMainProteins } from "./mainProtein";
 
 export const SAME_DISH_SHORTLIST = 8;
 
@@ -49,7 +50,9 @@ export async function findSameDishLLM(
   corpus: SimilarityRecipe[],
 ): Promise<(NearDuplicateMatch & { reason: string }) | null> {
   if (!env.OPENROUTER_API_KEY || !env.OPENROUTER_MODEL) return null;
-  const shortlist = rankSimilarRecipes(candidate, corpus, SAME_DISH_SHORTLIST);
+  // Hard rule (services/mainProtein.ts): recipes whose main proteins clearly differ are never the same dish, so those recipes never reach the model.
+  const sameProtein = corpus.filter((r) => compatibleMainProteins(candidate, r));
+  const shortlist = rankSimilarRecipes(candidate, sameProtein, SAME_DISH_SHORTLIST);
   if (shortlist.length === 0) return null;
 
   let content: string | undefined;
