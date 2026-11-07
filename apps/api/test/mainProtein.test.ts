@@ -2,7 +2,7 @@
  * Pure-rule tests for services/mainProtein.ts. Run with:
  *   npx tsx apps/api/test/mainProtein.test.ts
  */
-import { compatibleMainProteins, mainProteins } from "../src/services/mainProtein";
+import { compatibleMainBases, compatibleMainProteins, mainBases, mainProteins } from "../src/services/mainProtein";
 
 let failures = 0;
 function eq(name: string, actual: unknown, expected: unknown) {
@@ -26,6 +26,12 @@ eq("two veg frittatas → comparable", compatibleMainProteins(r("Veg Frittata", 
 eq("two prawn biryanis → comparable", compatibleMainProteins(r("Prawn Biryani", ["prawns", "rice"]), r("Shrimp Biryani", ["king prawns", "basmati rice"])), true);
 eq("overlapping seafood → comparable", compatibleMainProteins(r("Stew", ["prawns", "cod"]), r("Stew", ["prawns", "scallops", "cod"])), true);
 eq("chicken vs turkey → not comparable", compatibleMainProteins(r("Chicken Sloppy Joes", ["chicken"]), r("Turkey Sloppy Joes", ["turkey mince"])), false);
+
+eq("sweet potato is not potato", mainBases("Sweet Potato Gnocchi"), ["sweet potato"]);
+eq("chickpea vs sweet potato gnocchi → not comparable", compatibleMainBases({ title: "Herbed Chickpea Gnocchi" }, { title: "Lemon-Herb Sweet Potato Gnocchi" }), false);
+eq("mushroom vs quinoa-chickpea crepes → not comparable", compatibleMainBases({ title: "Buckwheat Crêpes with Mushroom Cream" }, { title: "Quinoa-Corn Crepes with Chickpea Filling" }), false);
+eq("one title without a base → comparable", compatibleMainBases({ title: "Spring Meadow Frittata" }, { title: "Mushroom Frittata" }), true);
+eq("same base → comparable", compatibleMainBases({ title: "Prawn Rice Bowl" }, { title: "Shrimp and Rice Bowl" }), true);
 
 if (failures) {
   console.error(`${failures} failure(s)`);
