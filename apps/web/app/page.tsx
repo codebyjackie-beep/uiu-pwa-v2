@@ -78,7 +78,6 @@ export default async function Home() {
 
   const totalMeals = activeDetail ? activeDetail.days.reduce((sum, day) => sum + day.entries.length, 0) : 0;
   const hasPlan = !!activeDetail && totalMeals > 0;
-  const avgCostPerDay = activeDetail ? activeDetail.weekTotalCost / 7 : 0;
 
   const impactRes = await apiGet<ImpactMonth>("/api/fridge-stock/impact");
   const month = impactRes.ok ? impactRes.data.month : null;
@@ -96,6 +95,8 @@ export default async function Home() {
   const expiredCount = expiring.filter((i) => daysLeft(i.expiresAt) < 0).length;
   const today = todayDayIndex();
   const plannedDays = new Set(activeDetail ? activeDetail.days.filter((d) => d.entries.length > 0).map((d) => d.dayIndex) : []);
+  // £/day over the days that have meals (same rule as MealPlannerView, #26) — not a fixed 7.
+  const avgCostPerDay = activeDetail ? activeDetail.weekTotalCost / Math.max(1, plannedDays.size) : 0;
 
   return (
     <div className="home-page">
@@ -167,7 +168,7 @@ export default async function Home() {
                   {activeDetail.name} · {totalMeals} meal{totalMeals === 1 ? "" : "s"} · est. basket
                 </p>
                 <p className="home-week-card__cost">{formatTotalWithIncomplete(activeDetail.weekTotalCost, activeDetail.weekCostIncomplete)}</p>
-                <p className="home-week-card__label">{formatTotalWithIncomplete(avgCostPerDay, activeDetail.weekCostIncomplete)} a day</p>
+                <p className="home-week-card__label">{formatTotalWithIncomplete(avgCostPerDay, activeDetail.weekCostIncomplete)} a day{plannedDays.size < 7 ? ` · ${plannedDays.size} day${plannedDays.size === 1 ? "" : "s"} planned` : ""}</p>
               </div>
               <Link href="/shop" className="home-week-card__cta">
                 Shopping list
