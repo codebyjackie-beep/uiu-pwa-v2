@@ -71,7 +71,7 @@ async function checkOne(env: IgTokenHealthEnv, label: string, token: string, las
 
 export async function checkIgTokenHealth(env: IgTokenHealthEnv): Promise<void> {
   const state = await readState(env);
-  const uiu = await checkOne(env, "UIU account (useitup.app)", env.IG_TOKEN_UIU, state.lastWarnedUiu);
+  const uiu = await checkOne(env, "UIU account (useitup.uk)", env.IG_TOKEN_UIU, state.lastWarnedUiu);
   const affiliate = await checkOne(env, "Affiliate account (kura.nook)", env.IG_TOKEN_AFFILIATE, state.lastWarnedAffiliate);
   if (uiu.warned || affiliate.warned) {
     await saveState(env, { lastWarnedUiu: uiu.nextLastWarned, lastWarnedAffiliate: affiliate.nextLastWarned });

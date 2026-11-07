@@ -37,16 +37,16 @@ interface Palette {
 }
 
 /**
- * 2026-09-01: both accounts now publish to the single @useitup.app account (2026-08-31 brand
+ * 2026-09-01: both accounts now publish to the single @useitup.uk account (2026-08-31 brand
  * merge, accountFor() in jobs/igContentAgent.ts) — this used to say "@kura.nook" with the KN
  * logo watermark and never got updated when the account was retired. Fixed here (found while
  * building the collage renderer, which must not inherit the stale branding).
  */
 const PALETTES: Record<BrandAccount, Palette> = {
-  uiu: { overlay: "#0a0a0a", accent: "#16a34a", text: "#ffffff", handle: "@useitup.app" },
+  uiu: { overlay: "#0a0a0a", accent: "#16a34a", text: "#ffffff", handle: "@useitup.uk" },
   // Distinct brighter green so affiliate posts are still visually distinguishable from organic
   // ones in-feed, even though both post to the same account now.
-  affiliate: { overlay: "#0a0a0a", accent: "#22c55e", text: "#ffffff", handle: "@useitup.app" },
+  affiliate: { overlay: "#0a0a0a", accent: "#22c55e", text: "#ffffff", handle: "@useitup.uk" },
 };
 
 export function bytesToBase64(bytes: Uint8Array): string {
