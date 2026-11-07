@@ -55,3 +55,39 @@ export function compatibleMainProteins(a: { title: string; ingredientNames: stri
   if (pa.length === 0 && pb.length === 0) return true;
   return pa.some((p) => pb.includes(p));
 }
+
+/**
+ * Main base from the TITLE (Jackie 2026-11-07, keepers eval round 2: chickpea gnocchi ≈ sweet potato gnocchi,
+ * mushroom crêpes ≈ quinoa-chickpea crêpes). Title only — ingredient lists mention rice / beans in passing.
+ * Checked on the 159 hidden duplicates: costs 2 more (kimchi rice vs kimchi noodles, mung bean vs chickpea curry).
+ */
+const BASES: Array<[string, RegExp]> = [
+  ["sweet potato", /\bsweet[- ]potato(es)?\b/],
+  ["potato", /(?<!sweet[- ])\bpotato(es)?\b/],
+  ["chickpea", /\bchickpeas?\b/],
+  ["lentil", /\blentils?\b/],
+  ["bean", /\bbeans?\b/],
+  ["rice", /\brice\b/],
+  ["pasta", /\b(pasta|spaghetti|penne|linguine|fusilli|orzo|macaroni|rigatoni|tagliatelle)\b/],
+  ["noodle", /\bnoodles?\b/],
+  ["quinoa", /\bquinoa\b/],
+  ["mushroom", /\bmushrooms?\b/],
+  ["cauliflower", /\bcauliflower\b/],
+  ["squash", /\b(pumpkin|squash)\b/],
+  ["aubergine", /\b(aubergine|eggplant)\b/],
+  ["polenta", /\bpolenta\b/],
+  ["couscous", /\bcouscous\b/],
+];
+
+export function mainBases(title: string): string[] {
+  const t = title.toLowerCase();
+  return BASES.filter(([, re]) => re.test(t)).map(([name]) => name);
+}
+
+/** False only when both titles name a main base and they share none (chickpea gnocchi vs sweet potato gnocchi). */
+export function compatibleMainBases(a: { title: string }, b: { title: string }): boolean {
+  const pa = mainBases(a.title);
+  const pb = mainBases(b.title);
+  if (pa.length === 0 || pb.length === 0) return true;
+  return pa.some((p) => pb.includes(p));
+}
