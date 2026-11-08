@@ -7,7 +7,6 @@ import {
   recipePerServingPrice,
   type ApiResponse,
   type FavouriteRecipe,
-  type RecipeListItem,
   type RecipeListPage,
 } from "@uiu/shared";
 import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
@@ -21,19 +20,7 @@ import {
 import { CoveragePrice } from "../components/CoveragePrice";
 import { useGuestGate } from "../components/GuestGate";
 import { SaveFromLinkModal } from "./SaveFromLinkModal";
-
-const RANDOM_BROWSE_SIZE = 10;
-
-/** Fisher-Yates, front-end only (HANDOFF_recipes-page-manual-entry-and-refresh.md §B) —
- * no backend sampling endpoint needed since page.tsx already fetches the full ~250-item set. */
-function pickRandom<T>(items: T[], count: number): T[] {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy.slice(0, count);
-}
+import { cardImageUrl, pickRandom, RANDOM_BROWSE_SIZE, type BrowseRecipe } from "../lib/recipeBrowse";
 
 const MEAL_TYPE_OPTIONS: { key: FilterMealType; label: string }[] = [
   { key: "breakfast", label: "Breakfast" },
@@ -57,7 +44,7 @@ const DIETARY_OPTIONS: { key: FilterDietary; label: string }[] = [
 
 /** prep + cook, cc_prompt_recipe-list-redesign-and-cook-mode.md Part A §1 — 0 means
  * "no time data", not "instant", so the meta row omits it entirely rather than showing "0 min". */
-function totalTimeMinutes(recipe: RecipeListItem): number {
+function totalTimeMinutes(recipe: BrowseRecipe): number {
   return (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
 }
 
@@ -65,7 +52,7 @@ function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 }
 
-export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
+export default function RecipesBrowser({ items, initialRandom }: { items: BrowseRecipe[]; initialRandom: BrowseRecipe[] }) {
   // Guests (cc_prompt_guest_browse.md Part B) never call the auth-only endpoints below
   // (/api/favourite-recipes, /api/recipe-browse/*): favourites open the sign-up sheet instead,
   // and the random-10 refresh runs on local state with no daily cap.
@@ -77,7 +64,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [favouritesOnly, setFavouritesOnly] = useState(false);
   // "My recipes" — the signed-in user's own private recipes (imports + manual saves), via /api/recipes?mine=true.
   const [mineOnly, setMineOnly] = useState(false);
-  const [myRecipes, setMyRecipes] = useState<RecipeListItem[] | null>(null);
+  const [myRecipes, setMyRecipes] = useState<BrowseRecipe[] | null>(null);
   const [myLoading, setMyLoading] = useState(false);
   // Bumped after a save so the My recipes list refetches even when it is already showing.
   const [mineVersion, setMineVersion] = useState(0);
@@ -85,11 +72,10 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
   const [saveFromLinkOpen, setSaveFromLinkOpen] = useState(false);
   const [sharePrefill, setSharePrefill] = useState<{ url?: string; text?: string } | null>(null);
-  // Server and first client render must match (React #418): start with the first 10, shuffle after mount.
-  const [randomTen, setRandomTen] = useState<RecipeListItem[]>(() => items.slice(0, RANDOM_BROWSE_SIZE));
-  useEffect(() => {
-    setRandomTen(pickRandom(items, RANDOM_BROWSE_SIZE));
-  }, [items]);
+  // Perf (Lighthouse mobile 54, LCP 4.9 s): the random 10 are now picked on the server (page.tsx) and passed in, so
+  // server and first client render match (React #418) WITHOUT the old post-mount reshuffle — that swap replaced every
+  // card image right after hydration, so the LCP image only started loading once JS had run.
+  const [randomTen, setRandomTen] = useState<BrowseRecipe[]>(initialRandom);
   const [remainingToday, setRemainingToday] = useState<number | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
@@ -433,7 +419,7 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       ) : null}
 
       <div className="recipe-list">
-        {visible.map((recipe) => {
+        {visible.map((recipe, index) => {
           const mealBadge = mealTypeBadge(recipe, mealTypes);
           const totalMin = totalTimeMinutes(recipe);
           const isFavourite = favouriteIds.has(recipe._id);
@@ -441,7 +427,17 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
             <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card recipe-card--browse">
               {recipe.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img className="recipe-card__image" src={recipe.imageUrl} alt="" />
+                <img
+                  className="recipe-card__image"
+                  src={cardImageUrl(recipe.imageUrl)}
+                  alt=""
+                  width={640}
+                  height={168}
+                  // first card is the LCP element on phones; the rest load as they scroll in
+                  loading={index < 2 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                  decoding="async"
+                />
               ) : (
                 <div className="recipe-card__image" />
               )}
