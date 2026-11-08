@@ -2,6 +2,7 @@ import type { ApiResponse, RecipeListItem, RecipeListPage } from "@uiu/shared";
 import { apiGet } from "../lib/api";
 import { Suspense } from "react";
 import RecipesBrowser from "./RecipesBrowser";
+import { pickRandom, RANDOM_BROWSE_SIZE, toBrowseRecipe } from "../lib/recipeBrowse";
 import { FridgeMatches } from "./FridgeMatches";
 
 export const metadata = { title: "Recipes · UseItUp" };
@@ -112,7 +113,10 @@ export default async function RecipesPage() {
     );
   }
 
-  const { items, total } = all;
+  const { total } = all;
+  const items = all.items.map(toBrowseRecipe);
+  // Picked per request on the server so the first paint already shows the final 10 (see RecipesBrowser).
+  const initialRandom = pickRandom(items, RANDOM_BROWSE_SIZE);
 
   return (
     <div className="recipes-page">
@@ -126,7 +130,7 @@ export default async function RecipesPage() {
         <FridgeMatches />
       </Suspense>
 
-      <RecipesBrowser items={items} />
+      <RecipesBrowser items={items} initialRandom={initialRandom} />
     </div>
   );
 }
