@@ -1,0 +1,78 @@
+# One-off backup of the OLD Atlas M0 cluster "UseItUp" before Jackie deletes it (decision 2026-11-07).
+# Same steps as db-backup.yml (encrypted with BACKUP_PASSPHRASE, artifact kept 90 days) but reads repo secret
+# MONGODB_URI_OLD and lists the cluster's databases first so nothing is missed. Run from Actions -> db-backup-old
+# -> Run workflow. Delete this file + the MONGODB_URI_OLD secret after the old cluster is gone.
+# Decrypt: gpg --batch --passphrase '<passphrase>' -o old.tar.gz -d old-atlas.archive.gz.gpg ; tar xzf old.tar.gz  (-> dump/<db>/...; restore: mongorestore --uri "<uri>" dump/)
+name: db-backup-old
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check secret
+        env:
+          URI: ${{ secrets.MONGODB_URI_OLD }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$PASS" ] || [ ${#PASS} -lt 20 ]; then
+            echo "::error::Repo secret BACKUP_PASSPHRASE is missing or shorter than 20 characters — the repo is public, so backups are never uploaded unencrypted."
+            exit 1
+          fi
+          if [ -z "$URI" ]; then
+            echo "::error::Repo secret MONGODB_URI_OLD is not set — add it in GitHub → Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+      - name: Check URI shape (no secret printed)
+        env:
+          URI: ${{ secrets.MONGODB_URI_OLD }}
+        run: |
+          case "$URI" in mongodb+srv://*|mongodb://*) ;; *) echo "::error::URI must start with mongodb+srv://"; exit 1;; esac
+          ats=$(printf '%s' "$URI" | tr -cd '@' | wc -c)
+          [ "$ats" -eq 1 ] || { echo "::error::URI has $ats '@' characters (expected 1 — a password containing @ must be URL-encoded as %40)"; exit 1; }
+          printf '%s' "$URI" | grep -q '[[:space:]]' && { echo "::error::URI contains a space or line break"; exit 1; }
+          printf '%s' "$URI" | grep -q '[<>]' && { echo "::error::URI still contains < > placeholders"; exit 1; }
+          echo "::notice::URI shape OK"
+      - name: mongodump
+        env:
+          URI: ${{ secrets.MONGODB_URI_OLD }}
+        run: |
+          mkdir -p out
+          # Dump only the app database (Atlas free tier refuses admin/local); surface the error as an annotation
+          # because job logs aren't readable from cloud sessions. The URI is never echoed.
+          docker pull -q mongo:7 >/dev/null
+          set +e
+          docker run --rm -e URI -v "$PWD/out:/out" mongo:7 \
+            sh -c 'for d in $(mongosh "$URI" --quiet --eval "db.adminCommand({listDatabases:1,nameOnly:true}).databases.map(x=>x.name).filter(n=>![\"admin\",\"local\",\"config\"].includes(n)).join(\" \")"); do echo "DB $d" >&2; mongodump --uri "$URI" --db "$d" --out=/out/dump || exit 1; done; cd /out && tar czf uiu-db.archive.gz dump && rm -rf dump' 2> err.txt
+          rc=$?
+          set -e
+          if [ $rc -ne 0 ]; then
+            msg=$(sed -E 's#(mongodb(\+srv)?://)[^ ]*#\1***#g' err.txt | grep -v -e "Pull" -e "Digest" -e "Status:" -e "Pulling" -e "Waiting" -e "Download" -e "Verifying" | tail -4 | tr '\n' ' ' | cut -c1-600)
+            echo "::error::mongodump exit $rc: $msg"
+            exit 1
+          fi
+          echo "::notice::databases: $(grep '^DB ' err.txt | cut -c4- | tr '\n' ' ')"
+          echo "::notice::dumped $(grep -c 'done dumping' err.txt) collections"
+          ls -l out
+          sz=$(stat -c%s out/uiu-db.archive.gz); echo "::notice::archive $sz bytes"
+          test "$sz" -gt 10000 || { echo "::error::Backup archive is suspiciously small"; exit 1; }
+      - name: Encrypt
+        env:
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          printf '%s' "$PASS" | gpg --batch --yes --pinentry-mode loopback --passphrase-fd 0 \
+            --symmetric --cipher-algo AES256 -o out/old-atlas.archive.gz.gpg out/uiu-db.archive.gz
+          rm -f out/uiu-db.archive.gz
+          echo "::notice::encrypted $(stat -c%s out/old-atlas.archive.gz.gpg) bytes"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: old-atlas-${{ github.run_id }}
+          path: out/old-atlas.archive.gz.gpg
+          if-no-files-found: error
+          retention-days: 90
