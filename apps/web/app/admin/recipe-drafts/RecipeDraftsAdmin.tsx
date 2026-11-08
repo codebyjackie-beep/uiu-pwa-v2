@@ -269,6 +269,68 @@ export function RecipeDraftsAdmin() {
     setToast(ok ? (action === "approve" ? "已 approve，已加入 recipes。" : "已 reject。") : `${action} 失敗，請重試。`);
   }
 
+  /** Triage overrides (apps/api services/recipeDraftOverride.ts): always dry-run first, show
+   * what will happen, then write only after a second confirm. */
+  async function override(d: RecipeDraft, action: "reopen" | "force-approve") {
+    let note: string | undefined;
+    if (action === "force-approve") {
+      const input = window.prompt(`強制 approve「${d.title}」會跳過重複菜／same-dish 檢查。
+請寫原因（必填，最少 5 個字）：`);
+      if (input === null) return;
+      note = input.trim();
+      if (note.length < 5) {
+        setToast("原因最少 5 個字。");
+        return;
+      }
+    }
+    const url = `/api/admin/recipe-drafts/${d._id}/${action}`;
+    const init = (): RequestInit => ({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ note }),
+    });
+    setDecidingId(d._id);
+    try {
+      const dry = await fetchJson<Record<string, unknown>>(url, init());
+      if (dry.res.status === 401) {
+        setSession("anon");
+        setSessionNotice("Session 已過期，請重新登入。");
+        return;
+      }
+      if (!dry.parsed || !dry.parsed.ok) {
+        setToast(`${action} dry-run 失敗：${dry.parsed && !dry.parsed.ok ? dry.parsed.error.message : "請重試"}`);
+        return;
+      }
+      const data = dry.parsed.data as {
+        entry?: { previousRejectedReason?: string };
+        skippedChecks?: { nearDuplicate: { title: string } | null; sameDish: { title: string } | null | "check_failed" };
+      };
+      let msg: string;
+      if (action === "reopen") {
+        msg = `重開「${d.title}」做 pending？
+原本 reject 原因：${data.entry?.previousRejectedReason ?? "（冇記錄）"}`;
+      } else {
+        const sc = data.skippedChecks;
+        const sd = sc?.sameDish === "check_failed" ? "（檢查失敗）" : sc?.sameDish ? `似「${sc.sameDish.title}」` : "冇";
+        msg = `強制 approve「${d.title}」？
+跳過嘅檢查而家話：
+· 重複菜規則：${sc?.nearDuplicate ? `似「${sc.nearDuplicate.title}」` : "冇"}
+· AI same-dish：${sd}
+原因：${note}`;
+      }
+      if (!window.confirm(msg)) return;
+      const wet = await fetchJson<Record<string, unknown>>(`${url}?write=true`, init());
+      if (!wet.parsed || !wet.parsed.ok) {
+        setToast(`${action} 失敗：${wet.parsed && !wet.parsed.ok ? wet.parsed.error.message : "請重試"}`);
+        return;
+      }
+      setDrafts((prev) => prev.filter((x) => x._id !== d._id));
+      setToast(action === "reopen" ? "已重開，喺 Pending 搵返。" : "已強制 approve，已加入 recipes。");
+    } finally {
+      setDecidingId(null);
+    }
+  }
+
   function toggleSelect(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -527,6 +589,16 @@ export function RecipeDraftsAdmin() {
                   ) : (
                     <span className="admin-drafts-card__sub">狀態：{d.status}</span>
                   )}
+                  {d.status === "pending" ? (
+                    <button type="button" className="wizard-secondary-button" disabled={decidingId === d._id} onClick={() => override(d, "force-approve")}>
+                      強制 approve
+                    </button>
+                  ) : null}
+                  {d.status === "rejected" ? (
+                    <button type="button" className="wizard-secondary-button" disabled={decidingId === d._id} onClick={() => override(d, "reopen")}>
+                      重開
+                    </button>
+                  ) : null}
                 </div>
               ) : null}
             </div>

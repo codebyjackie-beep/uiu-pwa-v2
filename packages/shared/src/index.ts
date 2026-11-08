@@ -850,6 +850,11 @@ export interface RecipeDraft {
    * auto-reject) — batchId groups everything one run did so rollback_recipe_drafts_triage.cjs
    * can undo exactly one run; reasons is the human-readable rule list that fired. */
   triage?: { batchId: string; action: "auto_approve" | "auto_reject"; reasons: string[]; at: ISODate };
+  /** Admin reopen log (POST /:id/reopen, 2026-11-08): each entry = one rejected → pending, with the
+   * original reject reason / triage record that the reopen cleared. */
+  reopenHistory?: Array<{ at: ISODate; by: string; note?: string; previousStatus: "rejected"; previousRejectedReason?: string; previousTriage?: RecipeDraft["triage"] }>;
+  /** Set when approved via POST /:id/force-approve — near-duplicate + same-dish checks were skipped. */
+  forceApproved?: { by: string; note: string; at: ISODate; recipeId: string };
 }
 
 /** One cell of the 4 (meal slot) x 10 (DIETARY_FILTERS key) gap matrix. */
