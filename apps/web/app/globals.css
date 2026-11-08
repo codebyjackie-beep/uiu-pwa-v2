@@ -724,13 +724,13 @@ a {
 }
 
 .recipe-card--browse .recipe-card__favourite {
-  top: 12px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  border: none;
+  top: 10px;
+  right: 10px;
+  width: 44px; /* M4: 44px touch target (was 40px) */
+  height: 44px;
+  border: 1px solid var(--uiu-border);
   background: var(--uiu-white);
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .recipe-card__description {
@@ -876,6 +876,17 @@ a {
   padding: 0 var(--space);
 }
 
+/* M4: right-edge fade = "there is more, swipe" hint; removed once scrolled to the end. */
+.recipes-filters__chiprow {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+}
+
+.recipes-filters__chiprow--at-end {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 .recipes-filters__chiprow::-webkit-scrollbar {
   display: none;
 }
@@ -934,13 +945,16 @@ a {
   position: fixed;
   right: max(16px, calc((100vw - 640px) / 2 + 16px));
   bottom: calc(64px + 16px + env(safe-area-inset-bottom, 0px)); /* 16px above the fixed bottom nav (the footer strip no longer sits there) */
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  /* M4 (Jackie 10-29): "+" alone was unclear — now a labelled pill "+ Add recipe". */
+  height: 48px;
+  padding: 0 18px 0 14px;
+  gap: 6px;
+  border-radius: 999px;
   border: none;
   background: var(--accent);
   color: var(--on-accent);
-  font-size: 28px;
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -948,6 +962,11 @@ a {
   box-shadow: none;
   z-index: 15;
   cursor: pointer;
+}
+
+.recipes-fab__plus {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .recipes-filters__group {
@@ -1054,8 +1073,8 @@ a {
 .recipe-detail__favourite {
   flex-shrink: 0;
   margin-top: var(--space);
-  width: 36px;
-  height: 36px;
+  width: 44px; /* M4: 44px touch target (was 36px) */
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--uiu-border);
   background: var(--card);
