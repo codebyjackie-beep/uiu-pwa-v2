@@ -33,6 +33,8 @@ export interface DraftPromptInput {
   canonicalNames: string[];
   /** Set only for gap-target drafts — must be explicitly enforced in both the instructions and the required tags[]. */
   gapConstraint?: { slot: string; dietary: string };
+  /** Titles of existing public recipes / pending drafts most similar to the idea — the model must not write any of these dishes again. */
+  avoidDishes?: string[];
 }
 
 function buildPrompt(input: DraftPromptInput): string {
@@ -41,6 +43,14 @@ function buildPrompt(input: DraftPromptInput): string {
     `Write one wholly original recipe inspired by the dish idea "${input.dishIdea}". ` +
       `Do not copy, translate, or closely paraphrase any reference text — write it fresh.`,
   );
+  if (input.avoidDishes && input.avoidDishes.length > 0) {
+    lines.push(
+      `These dishes ALREADY exist in our library. Do NOT write any of them again, not even renamed or with a different ` +
+        `garnish, sauce or spice — if the idea is too close to one of them, change the main protein, main vegetable or ` +
+        `the format (e.g. crepe -> traybake, salad -> soup) so it is clearly a different dish: ` +
+        `${input.avoidDishes.join("; ")}.`,
+    );
+  }
   if (input.cuisineHint) lines.push(`Cuisine direction: ${input.cuisineHint}.`);
   if (input.dietHint) lines.push(`Dietary direction: ${input.dietHint}.`);
   if (input.gapConstraint) {

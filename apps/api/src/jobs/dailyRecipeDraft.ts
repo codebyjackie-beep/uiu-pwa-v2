@@ -28,7 +28,11 @@ import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { computeRecipeNutrition } from "../services/nutritionGrams";
 import { findRecipePhoto, usedPexelsIds, type PexelsEnv } from "../services/pexels";
-import { findNearDuplicateRecipe, type SimilarityRecipe } from "@uiu/shared";
+import { findNearDuplicateRecipe, rankSimilarRecipes, type SimilarityRecipe } from "@uiu/shared";
+import { findSameDishLLM } from "../services/sameDish";
+
+/** How many similar existing titles go into the draft prompt's "do not write these" list. */
+const AVOID_DISHES_IN_PROMPT = 15;
 
 export interface DailyRecipeDraftEnv extends DbEnv, SpoonacularEnv, OpenRouterEnv, PexelsEnv {
   /** wrangler.toml [vars] — how many drafts/day, tunable without a redeploy. Defaults to 20 (pre-2026-10-08 behavior) if unset. */
@@ -160,6 +164,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     // 2026-08-05 as part of the subrequest-cap fix (each attempt costs up to
     // 2 subrequests; 3 attempts * BATCH_SIZE(3) keeps a single invocation
     // well under Cloudflare's 50 subrequest cap — see BATCH_SIZE comment).
+    // 2026-11-08: + 1 same-dish check call per attempt → worst case 3 specs * 3 attempts * 4 + 3 Pexels = 39 < 50.
     let idea: { title: string; summary: string } | null = null;
     let drafted: Awaited<ReturnType<typeof draftRecipe>> | null = null;
 
@@ -189,8 +194,12 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       if (!idea) continue;
 
       try {
+        // 2026-11-08: the first auto-triage rejected 9/10 drafts as same_dish (salmon crêpe drafted 3x in 10 days).
+        // Tell the model which similar dishes already exist (public + pending + this run) so it steers away up front.
+        const avoidDishes = rankSimilarRecipes({ title: idea.title, ingredientNames: [] }, similarityCorpus, AVOID_DISHES_IN_PROMPT).map((r) => r.title);
         const candidate = await draftRecipe(env, {
           dishIdea: idea.title,
+          avoidDishes,
           cuisineHint: spec.kind === "rotation" ? spec.cuisine : undefined,
           dietHint: spec.kind === "rotation" ? spec.diet : undefined,
           canonicalNames,
@@ -204,6 +213,17 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
         const near = findNearDuplicateRecipe({ title: candidate.title, ingredientNames: candidate.ingredients.map((g) => g.name) }, similarityCorpus);
         if (near) {
           console.log("[uiu-api] dedup skip (near-duplicate):", JSON.stringify({ candidate: candidate.title, ...near }));
+          continue; // substitute another idea next attempt
+        }
+        // Same AI same-dish check auto-triage uses (services/sameDish.ts), so renamed repeats never reach the queue.
+        // On API failure keep the draft — auto-triage re-checks before anything goes public.
+        const candidateSim = { title: candidate.title, ingredientNames: candidate.ingredients.map((g) => g.name) };
+        const sameDish = await findSameDishLLM(env, candidateSim, similarityCorpus).catch((err) => {
+          console.error("[uiu-api] same-dish check failed (draft kept):", candidate.title, err instanceof Error ? err.message : String(err));
+          return null;
+        });
+        if (sameDish) {
+          console.log("[uiu-api] dedup skip (same-dish):", JSON.stringify({ candidate: candidate.title, ...sameDish }));
           continue; // substitute another idea next attempt
         }
         drafted = candidate;
