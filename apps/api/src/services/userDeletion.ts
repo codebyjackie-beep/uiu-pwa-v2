@@ -42,7 +42,9 @@ export async function eraseUserData(db: Db, env: StripeEnv, clerkUserIdInput: un
 
   const targets: { collection: string; filter: Document }[] = [
     ...USERID_COLLECTIONS.map((c) => ({ collection: c, filter: { userId: clerkUserId } })),
-    { collection: "recipes", filter: { userId: clerkUserId } },
+    // User-saved recipes store the owner in `clerkUserId` (routes/recipeImport.ts, fridgeRecipeGen.ts); `userId` is null
+    // on them — the old { userId } filter matched nothing (found 2026-11-08). Never touches public recipes.
+    { collection: "recipes", filter: { clerkUserId, isPublic: { $ne: true } } },
     { collection: "push_subscriptions", filter: { userId: clerkUserId } },
   ];
 
@@ -65,6 +67,9 @@ export async function eraseUserData(db: Db, env: StripeEnv, clerkUserIdInput: un
 
   if (subActive && sub) result.stripeResult = await cancelSubscriptionNow(env, sub);
 
+  // Cost docs of the user's own recipes go with them (recipe_cost.recipeId is the recipe's ObjectId).
+  const ownRecipeIds = (await db.collection("recipes").find({ clerkUserId, isPublic: { $ne: true } }, { projection: { _id: 1 } }).toArray()).map((d) => d._id);
+  if (ownRecipeIds.length) result.deleted.recipe_cost = (await db.collection("recipe_cost").deleteMany({ recipeId: { $in: ownRecipeIds } })).deletedCount ?? 0;
   for (const t of targets) result.deleted[t.collection] = (await db.collection(t.collection).deleteMany(t.filter)).deletedCount ?? 0;
 
   if (userDoc) {

@@ -3,9 +3,9 @@
  * same convention as fridgeStock.ts (user-facing, single-user app).
  */
 import { Hono } from "hono";
-import type { Document } from "mongodb";
+import type { Db, Document } from "mongodb";
 import type { ApiResponse, CanonicalIngredient, CanonicalPriceCacheEntry, Recipe, RecipeCost, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeListItemCost } from "@uiu/shared";
-import { withDb, type DbEnv } from "../db";
+import { getMongoModule, withDb, type DbEnv } from "../db";
 import type { OpenRouterEnv } from "../services/openrouter";
 import { detectPlatform, parseRecipeFromText, tryJsonLdRecipe, tryOembedCaption, tryPinterestTargetLink, type OembedEnv } from "../services/recipeImport";
 import { extractRecipeFromPhotos, extractRecipeFromVideo, type OpenRouterVisionEnv } from "../services/openrouterVision";
@@ -162,47 +162,30 @@ const MAX_PHOTOS = 3;
  * `recipes` with a best-effort Pexels image and computes recipe_cost in the same request. No AI/LLM call
  * anywhere in this path.
  */
-recipeImportRouter.post("/manual", async (c) => {
-  const payload = await c.req.json().catch(() => null);
-  if (!payload || typeof payload !== "object") {
-    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "JSON body required" } };
-    return c.json(body, 400);
-  }
-  const title = (payload as Record<string, unknown>).title;
-  const ingredientsRaw = (payload as Record<string, unknown>).ingredients;
-  const stepsRaw = (payload as Record<string, unknown>).steps;
-  if (typeof title !== "string" || !title.trim()) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "title is required" } };
-    return c.json(body, 400);
-  }
-  if (!Array.isArray(ingredientsRaw) || ingredientsRaw.length === 0) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "ingredients (at least 1) is required" } };
-    return c.json(body, 400);
-  }
+type ParsedRecipeInput =
+  | { ok: true; recipe: ImportedRecipe; p: Record<string, unknown> }
+  | { ok: false; message: string };
+
+/** Validation shared by POST /manual and PUT /:id (owner edit). */
+function parseRecipeInput(payload: unknown): ParsedRecipeInput {
+  if (!payload || typeof payload !== "object") return { ok: false, message: "JSON body required" };
+  const p = payload as Record<string, unknown>;
+  const title = p.title;
+  const ingredientsRaw = p.ingredients;
+  const stepsRaw = p.steps;
+  if (typeof title !== "string" || !title.trim()) return { ok: false, message: "title is required" };
+  if (!Array.isArray(ingredientsRaw) || ingredientsRaw.length === 0) return { ok: false, message: "ingredients (at least 1) is required" };
   if (!Array.isArray(stepsRaw) || stepsRaw.length === 0 || !stepsRaw.every((s) => typeof s === "string" && s.trim())) {
-    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "steps (at least 1 non-empty) is required" } };
-    return c.json(body, 400);
+    return { ok: false, message: "steps (at least 1 non-empty) is required" };
   }
   const ingredients: RecipeIngredient[] = [];
   for (const raw of ingredientsRaw) {
     const name = (raw as Record<string, unknown>)?.name;
-    if (typeof name !== "string" || !name.trim()) {
-      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "Every ingredient needs a non-empty name" } };
-      return c.json(body, 400);
-    }
+    if (typeof name !== "string" || !name.trim()) return { ok: false, message: "Every ingredient needs a non-empty name" };
     const quantity = Number((raw as Record<string, unknown>).quantity) || 0;
     const unit = typeof (raw as Record<string, unknown>).unit === "string" ? ((raw as Record<string, unknown>).unit as string) : "";
     ingredients.push({ name, quantity, unit });
   }
-
-  const p = payload as Record<string, unknown>;
-  const sourceUrlRaw = typeof p.sourceUrl === "string" ? p.sourceUrl.trim() : "";
-  const sourceUrl = sourceUrlRaw && sourceUrlRaw.length <= 500 && /^https?:\/\//i.test(sourceUrlRaw) ? sourceUrlRaw : undefined;
-  const sourcePlatform = typeof p.sourcePlatform === "string" && p.sourcePlatform.trim() && p.sourcePlatform.length <= 40 ? p.sourcePlatform.trim() : null;
-  const MANUAL_IMPORT_METHODS = ["jsonld", "oembed-caption", "manual-paste", "photo-ocr", "video-ai"] as const;
-  const importMethod = (MANUAL_IMPORT_METHODS as readonly string[]).includes(p.importMethod as string)
-    ? (p.importMethod as (typeof MANUAL_IMPORT_METHODS)[number])
-    : "manual";
   const recipe: ImportedRecipe = {
     title: title.trim(),
     description: typeof p.description === "string" ? p.description : "",
@@ -214,6 +197,61 @@ recipeImportRouter.post("/manual", async (c) => {
     prepTimeMinutes: Number(p.prepTimeMinutes) || 0,
     cookTimeMinutes: Number(p.cookTimeMinutes) || 0,
   };
+  return { ok: true, recipe, p };
+}
+
+/** Cost + nutrition for a user recipe, computed exactly like the import save (shared by /manual and PUT /:id). */
+async function computeCostAndNutrition(db: Db, recipe: ImportedRecipe, now: string) {
+  const ingredientsCol = db.collection<Document>("canonical_ingredients");
+  const priceCol = db.collection<Document>("canonical_price_cache");
+  const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
+  const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
+  const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
+  const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
+  const quarantinedNames = new Set(
+    allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
+  );
+  const index = await buildAliasIndex(ingredientsCol);
+  const resolveFn = (rawName: string) => resolve(rawName, index);
+
+  const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
+  const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
+  const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
+
+  const costFields: Omit<RecipeCost, "_id" | "recipeId"> = {
+    basket: cost.basket,
+    currency: cost.currency,
+    coveragePct: cost.coveragePct,
+    adjustedCoveragePct: cost.adjustedCoveragePct,
+    totalLines: cost.totalLines,
+    priceableCount: cost.priceableCount,
+    adjustedTotal: cost.adjustedTotal,
+    adjustedPriceable: cost.adjustedPriceable,
+    pantryLineCount: cost.pantryLineCount,
+    junkLineCount: cost.junkLineCount,
+    perServing: cost.perServing,
+    lines: cost.lines as unknown as RecipeCostLine[],
+    unpriceableReasons: cost.unpriceableReasons,
+    computedAt: now,
+    priceCacheStamp: 0,
+  };
+  return { nutrition, costFields };
+}
+
+recipeImportRouter.post("/manual", async (c) => {
+  const parsedInput = parseRecipeInput(await c.req.json().catch(() => null));
+  if (!parsedInput.ok) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: parsedInput.message } };
+    return c.json(body, 400);
+  }
+  const { recipe, p } = parsedInput;
+  const sourceUrlRaw = typeof p.sourceUrl === "string" ? p.sourceUrl.trim() : "";
+  const sourceUrl = sourceUrlRaw && sourceUrlRaw.length <= 500 && /^https?:\/\//i.test(sourceUrlRaw) ? sourceUrlRaw : undefined;
+  const sourcePlatform = typeof p.sourcePlatform === "string" && p.sourcePlatform.trim() && p.sourcePlatform.length <= 40 ? p.sourcePlatform.trim() : null;
+  const MANUAL_IMPORT_METHODS = ["jsonld", "oembed-caption", "manual-paste", "photo-ocr", "video-ai"] as const;
+  const importMethod = (MANUAL_IMPORT_METHODS as readonly string[]).includes(p.importMethod as string)
+    ? (p.importMethod as (typeof MANUAL_IMPORT_METHODS)[number])
+    : "manual";
 
   try {
     const recipeId = await withDb(c.env, async (db) => {
@@ -221,22 +259,7 @@ recipeImportRouter.post("/manual", async (c) => {
       // Best-effort — never fail the save on a Pexels error (same convention as the drafts approve flow).
       const imageUrl = await findRecipePhoto(c.env, recipe.title).catch(() => null);
 
-      const ingredientsCol = db.collection<Document>("canonical_ingredients");
-      const priceCol = db.collection<Document>("canonical_price_cache");
-      const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
-      const ingredientsMap = new Map(allIngredientDocs.map((d) => [d.canonical_name, d]));
-      const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
-      const priceMap = new Map(allPriceDocs.map((d) => [d.canonical_name, d]));
-      const quarantinedNames = new Set(
-        allIngredientDocs.filter((d) => d.quarantine === true).map((d) => d.canonical_name.toLowerCase().trim()),
-      );
-      const index = await buildAliasIndex(ingredientsCol);
-      const resolveFn = (rawName: string) => resolve(rawName, index);
-
-      const costInput = { ingredients: recipe.ingredients, servings: recipe.servings } as unknown as Recipe;
-      const cost = costRecipe(costInput, resolveFn, ingredientsMap, priceMap, quarantinedNames);
-
-      const { nutrition } = computeRecipeNutrition(recipe.ingredients, recipe.servings, resolveFn, ingredientsMap);
+      const { nutrition, costFields } = await computeCostAndNutrition(db, recipe, now);
 
       const recipeDoc: Omit<Recipe, "_id"> = {
         title: recipe.title,
@@ -267,24 +290,7 @@ recipeImportRouter.post("/manual", async (c) => {
       };
       const insertResult = await db.collection("recipes").insertOne(recipeDoc as unknown as Document);
 
-      const recipeCostDoc: Omit<RecipeCost, "_id"> = {
-        recipeId: insertResult.insertedId.toString(),
-        basket: cost.basket,
-        currency: cost.currency,
-        coveragePct: cost.coveragePct,
-        adjustedCoveragePct: cost.adjustedCoveragePct,
-        totalLines: cost.totalLines,
-        priceableCount: cost.priceableCount,
-        adjustedTotal: cost.adjustedTotal,
-        adjustedPriceable: cost.adjustedPriceable,
-        pantryLineCount: cost.pantryLineCount,
-        junkLineCount: cost.junkLineCount,
-        perServing: cost.perServing,
-        lines: cost.lines as unknown as RecipeCostLine[],
-        unpriceableReasons: cost.unpriceableReasons,
-        computedAt: now,
-        priceCacheStamp: 0,
-      };
+      const recipeCostDoc: Omit<RecipeCost, "_id"> = { recipeId: insertResult.insertedId.toString(), ...costFields };
       await db.collection("recipe_cost").insertOne({ ...recipeCostDoc, recipeId: insertResult.insertedId } as unknown as Document);
 
       return insertResult.insertedId.toString();
@@ -373,6 +379,105 @@ recipeImportRouter.post("/from-video", async (c) => {
   } catch (err) {
     console.error("[uiu-api] recipe-import from-video error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to import recipe from video" } };
+    return c.json(body, 502);
+  }
+});
+
+
+/**
+ * Jackie 2026-11-07 — a user edits or deletes a recipe they saved (imports + manual saves are private, owned via
+ * `clerkUserId`). Public library recipes and other users' recipes get the same 404 as a missing id.
+ */
+async function findOwnedRecipe(db: Db, id: string, clerkUserId: string) {
+  const { ObjectId } = await getMongoModule();
+  if (!ObjectId.isValid(id)) return null;
+  const doc = await db.collection("recipes").findOne({ _id: new ObjectId(id) });
+  if (!doc || doc.isPublic === true || doc.clerkUserId !== clerkUserId) return null;
+  return doc;
+}
+
+recipeImportRouter.put("/:id", async (c) => {
+  const parsedInput = parseRecipeInput(await c.req.json().catch(() => null));
+  if (!parsedInput.ok) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: parsedInput.message } };
+    return c.json(body, 400);
+  }
+  const { recipe } = parsedInput;
+  try {
+    const result = await withDb(c.env, async (db) => {
+      const doc = await findOwnedRecipe(db, c.req.param("id"), c.var.clerkUserId);
+      if (!doc) return null;
+      const now = new Date().toISOString();
+      const { nutrition, costFields } = await computeCostAndNutrition(db, recipe, now);
+      await db.collection("recipes").updateOne(
+        { _id: doc._id },
+        {
+          $set: {
+            title: recipe.title,
+            description: recipe.description,
+            ingredients: recipe.ingredients,
+            steps: recipe.steps,
+            tags: recipe.tags,
+            servings: recipe.servings,
+            prepTimeMinutes: recipe.prepTimeMinutes,
+            cookTimeMinutes: recipe.cookTimeMinutes,
+            mealType: recipe.mealType,
+            nutrition,
+            updatedAt: now,
+          },
+        },
+      );
+      await db.collection("recipe_cost").updateOne(
+        { recipeId: doc._id },
+        { $set: { ...costFields, recipeId: doc._id } },
+        { upsert: true },
+      );
+      return { recipeId: String(doc._id) };
+    });
+    if (!result) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<{ recipeId: string }> = { ok: true, data: result };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-import update error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to update recipe" } };
+    return c.json(body, 502);
+  }
+});
+
+recipeImportRouter.delete("/:id", async (c) => {
+  try {
+    const result = await withDb(c.env, async (db) => {
+      const userId = c.var.clerkUserId;
+      const doc = await findOwnedRecipe(db, c.req.param("id"), userId);
+      if (!doc) return "not_found" as const;
+      // A meal plan entry pointing at a deleted recipe would break that plan — ask the user to swap it out first.
+      const inPlans = await db.collection("meal_plans").countDocuments({ userId, recipeId: doc._id });
+      if (inPlans > 0) return { inPlans } as const;
+      await db.collection("recipe_cost").deleteMany({ recipeId: doc._id });
+      await db.collection("favourite_recipes").deleteMany({ userId, recipeId: doc._id });
+      await db.collection("recipes").deleteOne({ _id: doc._id, clerkUserId: userId });
+      return "deleted" as const;
+    });
+    if (result === "not_found") {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Recipe not found" } };
+      return c.json(body, 404);
+    }
+    if (result !== "deleted") {
+      const n = result.inPlans;
+      const body: ApiResponse<never> = {
+        ok: false,
+        error: { code: "in_use", message: `This recipe is in your meal plan (${n} meal${n === 1 ? "" : "s"}). Swap or remove it there first, then delete it.` },
+      };
+      return c.json(body, 409);
+    }
+    const body: ApiResponse<{ deleted: true }> = { ok: true, data: { deleted: true } };
+    return c.json(body);
+  } catch (err) {
+    console.error("[uiu-api] recipe-import delete error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "internal_error", message: "Failed to delete recipe" } };
     return c.json(body, 502);
   }
 });

@@ -11,6 +11,7 @@ import { apiGet } from "../../lib/api";
 import { PricesChecked } from "../../components/PricesChecked";
 import { RecipeAddToList } from "./RecipeAddToList";
 import { RecipeFavouriteButton } from "./RecipeFavouriteButton";
+import { RecipeOwnerActions } from "./RecipeOwnerActions";
 import { AddToTodayButton } from "../../components/AddToTodayButton";
 import {
   costPendingLabel,
@@ -71,6 +72,9 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
         <h1 className="recipe-detail__title">{recipe.title}</h1>
         <RecipeFavouriteButton recipeId={id} />
       </div>
+
+      {/* Jackie 2026-11-07: the API only returns a non-public recipe to its owner, so non-public = "mine". */}
+      {recipe.isPublic === false ? <RecipeOwnerActions recipe={recipe} /> : null}
 
       {/* Jackie 2026-11-05: add straight from the recipe; meal defaults to the recipe's own meal type. */}
       <AddToTodayButton recipeId={id} defaultSlot={slotFromBadge(mealBadge)} />
