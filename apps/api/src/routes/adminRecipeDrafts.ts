@@ -12,6 +12,7 @@ import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { approveRecipeDraft, rejectRecipeDraft } from "../services/recipeDraftApproval";
 import { requireAdmin } from "../adminAuth";
+import { forceApproveRecipeDraft, parseBy, parseNote, reopenRecipeDraft } from "../services/recipeDraftOverride";
 import { APPLY_CHUNK_MAX, applyTriageChunk, isValidBatchId, newBatchId, planTriage, rollbackTriageBatch } from "../services/recipeDraftTriage";
 
 export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
@@ -371,6 +372,58 @@ adminRecipeDraftsRouter.post("/:id/reject", async (c) => {
     console.error("[uiu-api] recipe-drafts reject error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to reject draft" } };
     return c.json(body, 502);
+  }
+});
+
+// ---------------------------------------------------------------------------------------------
+// Triage overrides (services/recipeDraftOverride.ts). Both dry-run unless ?write=true.
+//   POST /:id/reopen         body { by?, note? }   rejected → pending (keeps original reason in reopenHistory)
+//   POST /:id/force-approve  body { by?, note }    pending → approved, skips near-duplicate + same-dish checks
+// ---------------------------------------------------------------------------------------------
+function overrideStatusError(c: any, result: { notFound: true } | { wrongStatus: string }, expected: string) {
+  if ("notFound" in result) {
+    return c.json({ ok: false, error: { code: "not_found", message: "Draft not found" } } satisfies ApiResponse<never>, 404);
+  }
+  return c.json({ ok: false, error: { code: "conflict", message: `Draft status is "${result.wrongStatus}", expected "${expected}"` } } satisfies ApiResponse<never>, 409);
+}
+
+adminRecipeDraftsRouter.post("/:id/reopen", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    return c.json({ ok: false, error: { code: "bad_request", message: "Invalid draft id" } } satisfies ApiResponse<never>, 400);
+  }
+  const payload = ((await c.req.json().catch(() => null)) ?? {}) as Record<string, unknown>;
+  const parsedNote = parseNote(payload.note, false);
+  if ("error" in parsedNote) return c.json({ ok: false, error: { code: "bad_request", message: parsedNote.error } } satisfies ApiResponse<never>, 400);
+  const write = c.req.query("write") === "true";
+  try {
+    const result = await withDb(c.env, (db) => reopenRecipeDraft(db, id, { by: parseBy(payload.by), note: parsedNote.note, write }));
+    if ("notFound" in result || "wrongStatus" in result) return overrideStatusError(c, result, "rejected");
+    return c.json({ ok: true, data: result } satisfies ApiResponse<typeof result>);
+  } catch (err) {
+    console.error("[uiu-api] recipe-drafts reopen error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "Failed to reopen draft" } } satisfies ApiResponse<never>, 502);
+  }
+});
+
+adminRecipeDraftsRouter.post("/:id/force-approve", async (c) => {
+  const { ObjectId } = await getMongoModule();
+  const id = c.req.param("id");
+  if (!ObjectId.isValid(id)) {
+    return c.json({ ok: false, error: { code: "bad_request", message: "Invalid draft id" } } satisfies ApiResponse<never>, 400);
+  }
+  const payload = ((await c.req.json().catch(() => null)) ?? {}) as Record<string, unknown>;
+  const parsedNote = parseNote(payload.note, true);
+  if ("error" in parsedNote) return c.json({ ok: false, error: { code: "bad_request", message: parsedNote.error } } satisfies ApiResponse<never>, 400);
+  const write = c.req.query("write") === "true";
+  try {
+    const result = await withDb(c.env, (db) => forceApproveRecipeDraft(db, c.env, id, { by: parseBy(payload.by), note: parsedNote.note!, write }));
+    if ("notFound" in result || "wrongStatus" in result) return overrideStatusError(c, result, "pending");
+    return c.json({ ok: true, data: result } satisfies ApiResponse<typeof result>);
+  } catch (err) {
+    console.error("[uiu-api] recipe-drafts force-approve error:", err instanceof Error ? err.message : String(err));
+    return c.json({ ok: false, error: { code: "db_error", message: "Failed to force-approve draft" } } satisfies ApiResponse<never>, 502);
   }
 });
 

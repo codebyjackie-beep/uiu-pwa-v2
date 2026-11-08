@@ -31,6 +31,14 @@ export interface TriageTag {
   reasons: string[];
 }
 
+/** Admin "force-approve" record (services/recipeDraftOverride.ts). When passed to approveRecipeDraft,
+ * the near-duplicate + AI same-dish checks are skipped and this record is stored on the draft. */
+export interface ForceApproveTag {
+  by: string;
+  note: string;
+  at: string;
+}
+
 /** Identical to adminRecipeDrafts.ts's old inline POST /:id/approve body. `triage`, when passed,
  * tags the new `recipes` doc with autoApprovedBatchId and the draft with a `triage` record —
  * absent for a plain human-click approve (keeps that path's docs untagged, as before). */
@@ -39,6 +47,7 @@ export async function approveRecipeDraft(
   env: PexelsEnv & Partial<OpenRouterEnv>,
   draftId: string,
   triage?: TriageTag,
+  force?: ForceApproveTag,
 ): Promise<ApproveDraftResult> {
   const { ObjectId } = await getMongoModule();
   const draft = await db.collection("recipe_drafts").findOne({ _id: new ObjectId(draftId) });
@@ -46,14 +55,17 @@ export async function approveRecipeDraft(
   if (draft.status !== "pending") return { alreadyDecided: true };
 
   // G1: refuse a draft that near-duplicates a public recipe (same rules as the 10-10 Part 11 clean-up).
-  const publicRecipes = await db.collection("recipes").find({ isPublic: true }, { projection: { title: 1, "ingredients.name": 1 } }).toArray();
-  const candidateSim = { title: String(draft.title ?? ""), ingredientNames: ((draft.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) };
-  const publicSim = publicRecipes.map((r) => ({ title: String(r.title ?? ""), ingredientNames: ((r.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) }));
-  const near = findNearDuplicateRecipe(candidateSim, publicSim);
-  if (near) return { nearDuplicate: near };
-  // AI same-dish check (services/sameDish.ts) — catches renamed duplicates the token rules miss. Throws on API failure.
-  const sameDish = await findSameDishLLM(env, candidateSim, publicSim);
-  if (sameDish) return { nearDuplicate: sameDish };
+  // Skipped only for an admin force-approve (a human already judged it is not the same dish).
+  if (!force) {
+    const publicRecipes = await db.collection("recipes").find({ isPublic: true }, { projection: { title: 1, "ingredients.name": 1 } }).toArray();
+    const candidateSim = { title: String(draft.title ?? ""), ingredientNames: ((draft.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) };
+    const publicSim = publicRecipes.map((r) => ({ title: String(r.title ?? ""), ingredientNames: ((r.ingredients as { name?: string }[] | undefined) ?? []).map((i) => String(i.name ?? "")) }));
+    const near = findNearDuplicateRecipe(candidateSim, publicSim);
+    if (near) return { nearDuplicate: near };
+    // AI same-dish check (services/sameDish.ts) — catches renamed duplicates the token rules miss. Throws on API failure.
+    const sameDish = await findSameDishLLM(env, candidateSim, publicSim);
+    if (sameDish) return { nearDuplicate: sameDish };
+  }
 
   const now = new Date().toISOString();
   const draftImageUrl = draft.imageUrl as string | null | undefined;
@@ -139,6 +151,7 @@ export async function approveRecipeDraft(
       $set: {
         status: "approved",
         ...(triage ? { triage: { batchId: triage.batchId, action: "auto_approve" as const, reasons: triage.reasons, at: now } } : {}),
+        ...(force ? { forceApproved: { ...force, recipeId: insertResult.insertedId.toString() } } : {}),
       },
     },
   );
