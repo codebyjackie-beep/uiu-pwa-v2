@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { computeShoppingListMix, computeShoppingListStoreTotals, formatPricesChecked, isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
+import { computeShoppingListMix, computeShoppingListStoreTotals, formatPricesChecked, formatShoppingQuantity, isStockLikeName, PANTRY_STAPLE_LABEL, STOCK_PRICED_LABEL } from "@uiu/shared";
 import type {
   AffiliateProduct,
   ApiResponse,
@@ -285,7 +285,10 @@ export function ShopPage() {
                   <label className="shop-manual-item__check">
                     <input type="checkbox" checked={item.checked} onChange={() => toggleManualItem(item)} />
                     <span className="shop-manual-item__body">
-                      <span className="shop-manual-item__text">{item.text}</span>
+                      <span className="shop-manual-item__text">
+                        {item.text}
+                        {formatShoppingQuantity(item.quantity, item.unit) ? <span className="shop-manual-item__qty"> · {formatShoppingQuantity(item.quantity, item.unit)}</span> : null}
+                      </span>
                       {best && prices ? (
                         <>
                           <span className="shop-manual-item__price">{optionSummary(best)}</span>

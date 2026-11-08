@@ -968,6 +968,49 @@ export interface ShoppingListItem {
   canonicalName?: string | null;
   /** Part B — GET /api/shopping-list only: every qualified product price for the canonical; null = no canonical / no listing. */
   prices?: ShoppingListItemPrices | null;
+  /** 購物清單方案 1 — total amount to buy, in `unit`. null / absent = no amount (manual items, and every item saved before this). */
+  quantity?: number | null;
+  /** g | ml | pc, or the recipe's raw unit when it didn't convert (e.g. "tbsp"). null / absent = no amount. */
+  unit?: string | null;
+  /** Which meal-plan entries this line came from and how much each one needs. Present (non-empty) only on items added from a
+   * meal plan — those are the only items the swap / delete sync touches. quantity = sum of sources[].qty. */
+  sources?: ShoppingListItemSource[];
+}
+
+/** One meal-plan entry's share of a shopping-list line. */
+export interface ShoppingListItemSource {
+  planId: ObjectIdHex;
+  entryId: ObjectIdHex;
+  qty: number;
+}
+
+/** "500 g", "1.5 kg", "250 ml", "1.2 L", "3" (pc), "2 tbsp". "" when there's no amount to show. */
+export function formatShoppingQuantity(quantity: number | null | undefined, unit: string | null | undefined): string {
+  if (typeof quantity !== "number" || !Number.isFinite(quantity) || quantity <= 0) return "";
+  const trim = (n: number) => String(Math.round(n * 100) / 100);
+  if (unit === "g") return quantity >= 1000 ? `${trim(quantity / 1000)} kg` : `${Math.round(quantity)} g`;
+  if (unit === "ml") return quantity >= 1000 ? `${trim(quantity / 1000)} L` : `${Math.round(quantity)} ml`;
+  if (!unit || unit === "pc") return trim(quantity);
+  return `${trim(quantity)} ${unit}`;
+}
+
+/** 購物清單方案 1 — POST /api/shopping-list/from-plan: add the ticked ingredients of one meal plan, with amounts. */
+export interface ShoppingListFromPlanRequest {
+  planId: ObjectIdHex;
+  /** The ingredients the user ticked — same shape as the sheet's rows. Matched to recipe_cost lines by canonicalName (else name). */
+  ingredients: ShoppingListFromIngredientRequest[];
+}
+
+export interface ShoppingListFromPlanResult {
+  ingredientName: string;
+  /** added = new line(s); merged = amount added to an existing plan line; already_on_list = a manual line with this name exists (left alone). */
+  status: "added" | "merged" | "already_on_list";
+}
+
+export interface ShoppingListFromPlanResponse {
+  results: ShoppingListFromPlanResult[];
+  added: number;
+  merged: number;
 }
 
 /** cc_prompt_shopping_list_price_compare.md Part B — one supermarket product that could satisfy a shopping-list line. */
@@ -1110,6 +1153,9 @@ export type ShoppingListFromIngredientResponse =
  * recipe "Add to shopping list" sheet uses for its default ticks. Same order as the request. */
 export interface ShoppingListCheckRequest {
   ingredients: ShoppingListFromIngredientRequest[];
+  /** 購物清單方案 1 — set by the meal plan's "Create shopping list": a line this plan added only counts as onList when it already
+   * covers every entry of the plan that needs the ingredient (so a newly added meal still gets merged in). Manual lines always count. */
+  planId?: ObjectIdHex;
 }
 
 export interface ShoppingListCheckResult {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { formatTotalWithIncomplete, MEAL_PLAN_SET_LIMIT, type ApiResponse, type MealPlanSetDetail, type ShoppingListFromIngredientResponse } from "@uiu/shared";
+import { formatTotalWithIncomplete, MEAL_PLAN_SET_LIMIT, type ApiResponse, type MealPlanSetDetail, type ShoppingListFromPlanResponse } from "@uiu/shared";
 import { MealPlannerBoard } from "./MealPlannerBoard";
 import { AddToListSheet } from "../recipes/[id]/RecipeAddToList";
 import { NUTRITION_NOT_AVAILABLE } from "../lib/recipeDisplay";
@@ -134,13 +134,15 @@ export function PlanDetail({ planId, onBack, onDuplicate, duplicating, atPlanLim
   async function addToShop(item: AggregatedIngredient) {
     setItemStatus((prev) => new Map(prev).set(item.key, "pending"));
     try {
-      const res = await fetch("/api/shopping-list/from-ingredient", {
+      // 購物清單方案 1 — same path as "Create shopping list": amount + which meals it came from.
+      const res = await fetch("/api/shopping-list/from-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ingredientName: item.rawName, canonicalName: item.canonicalName }),
+        body: JSON.stringify({ planId, ingredients: [{ ingredientName: capitalizeFirst(item.rawName), canonicalName: item.canonicalName }] }),
       });
-      const parsed = (await res.json()) as ApiResponse<ShoppingListFromIngredientResponse>;
-      setItemStatus((prev) => new Map(prev).set(item.key, parsed.ok && parsed.data.merged ? "merged" : "added"));
+      const parsed = (await res.json()) as ApiResponse<ShoppingListFromPlanResponse>;
+      if (!parsed.ok) throw new Error(parsed.error.message);
+      setItemStatus((prev) => new Map(prev).set(item.key, parsed.data.results[0]?.status === "already_on_list" ? "merged" : "added"));
     } catch {
       setItemStatus((prev) => {
         const next = new Map(prev);
@@ -234,6 +236,7 @@ export function PlanDetail({ planId, onBack, onDuplicate, duplicating, atPlanLim
           <AddToListSheet
             open={listSheetOpen}
             ingredients={aggregated.map((i) => ({ name: capitalizeFirst(i.rawName), canonicalName: i.canonicalName }))}
+            planId={planId}
             onClose={() => setListSheetOpen(false)}
           />
         </div>
@@ -266,7 +269,7 @@ export function PlanDetail({ planId, onBack, onDuplicate, duplicating, atPlanLim
                       onClick={() => addToShop(item)}
                       aria-label={`Add ${item.displayName} to Shop list`}
                     >
-                      {status === "merged" ? "✓ In Fridge" : status === "added" ? "✓ Added" : "+"}
+                      {status === "merged" ? "✓ On list" : status === "added" ? "✓ Added" : "+"}
                     </button>
                   </li>
                 );
