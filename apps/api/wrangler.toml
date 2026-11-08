@@ -47,7 +47,7 @@ fallthrough = true
 #   CLOUDFLARE_ACCOUNT_ID  scope, used only so the daily digest can mention the latest deploy.
 #                       Unset -> that one info-level line is just omitted, nothing else breaks.
 #   IG_TOKEN_UIU        2026-11-07: System User token (uiu-publisher, never expires)
-#                       for @useitup.uk. Raw value: Key\ig_token_useitup_2026-11.txt.txt. (IG_ID_UIU
+#                       for @useitup.uk. Raw value: Key\ig_token_useitup_2026-11.txt. (IG_ID_UIU
 #                       itself is not sensitive — it's a [vars] entry below.)
 #   IG_TOKEN_AFFILIATE  Same for @kura.nook. Raw value: Key\ig_token_kuranook.txt. NEVER
 #                       used interchangeably with the UIU token — draft.targetAccount picks
