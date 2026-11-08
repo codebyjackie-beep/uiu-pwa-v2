@@ -5,6 +5,7 @@ import { costIsIncomplete, MEAL_PLAN_SET_LIMIT } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { loadEntryViewsForPlan } from "./mealPlan";
 import { generateMealPlan } from "../services/mealPlanGenerator";
+import { removePlanFromShoppingList } from "../services/shoppingListPlanSync";
 
 /**
  * Same defaults MealPlanWizard.tsx (HANDOFF_ai-meal-plan-generator.md Part B)
@@ -297,6 +298,8 @@ mealPlanSetsRouter.delete("/:id", async (c) => {
 
       await db.collection("meal_plans").deleteMany({ planId: objectId, userId });
       await db.collection("meal_plan_sets").deleteOne({ _id: objectId, userId });
+      // 購物清單方案 1 — the deleted plan's meals come off the unchecked plan lines.
+      await removePlanFromShoppingList(db, userId, id);
       return { wasActive: setDoc.isActive as boolean };
     });
 

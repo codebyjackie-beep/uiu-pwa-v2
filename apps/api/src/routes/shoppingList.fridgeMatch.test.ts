@@ -3,7 +3,7 @@
  * apps/web/app/recipes/[id]/cook/timer.test.ts). Run with:
  *   npx tsx apps/api/src/routes/shoppingList.fridgeMatch.test.ts
  */
-import { fridgeNameMatches, isUsableFridgeDoc, londonDay } from "./shoppingList";
+import { fridgeNameMatches, isUsableFridgeDoc, londonDay } from "../services/shoppingListMatch";
 
 const matchCases: Array<[string, string, boolean]> = [
   ["Garlic Clove, minced", "garlic", true],

@@ -14,6 +14,7 @@ import type {
 import { UK_ALLERGENS } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { buildPool, generateMealPlan } from "../services/mealPlanGenerator";
+import { syncEntriesToShoppingList } from "../services/shoppingListPlanSync";
 
 export const mealPlanRouter = new Hono<{ Bindings: DbEnv }>();
 
@@ -215,6 +216,8 @@ mealPlanRouter.post("/:id/refresh", async (c) => {
       const chosen = candidates[Math.floor(Math.random() * candidates.length)]!;
       const chosenObjectId = new ObjectId(chosen.id);
       await db.collection("meal_plans").updateOne({ _id: entryDoc._id, userId: c.var.clerkUserId }, { $set: { recipeId: chosenObjectId } });
+      // 購物清單方案 1 — old recipe's amounts off the unchecked plan lines, new recipe's on (only if this entry was on the list).
+      await syncEntriesToShoppingList(db, c.var.clerkUserId, { entryIds: [id], planId: String(entryDoc.planId), newRecipeId: chosenObjectId });
 
       const [recipe, costDoc] = await Promise.all([
         db.collection("recipes").findOne({ _id: chosenObjectId }),
@@ -326,6 +329,8 @@ mealPlanRouter.delete("/:id", async (c) => {
   try {
     const deleted = await withDb(c.env, async (db) => {
       const result = await db.collection("meal_plans").deleteOne({ _id: new ObjectId(id), userId: c.var.clerkUserId });
+      // 購物清單方案 1 — this meal's amounts come off the unchecked plan lines (checked / manual lines untouched).
+      if (result.deletedCount > 0) await syncEntriesToShoppingList(db, c.var.clerkUserId, { entryIds: [id] });
       return result.deletedCount > 0;
     });
     if (!deleted) {

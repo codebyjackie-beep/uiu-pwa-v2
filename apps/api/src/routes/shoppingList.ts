@@ -4,13 +4,17 @@
  * fridge_stock, a manual item doesn't need a history trail once bought).
  */
 import { nameCandidates } from "../services/shoppingListNames";
+import { fridgeMatchName, loadFridgeIndex, normalizeListText } from "../services/shoppingListMatch";
+import { addPlanContributions, planCoverageOnList, requestKey } from "../services/shoppingListPlanSync";
 import { Hono } from "hono";
 import type { Db, Document, ObjectId as ObjectIdType } from "mongodb";
 import type {
   ApiResponse,
+  ShoppingListCheckRequest,
   ShoppingListCheckResult,
-  ShoppingListFromIngredientRequest,
   ShoppingListFromIngredientResponse,
+  ShoppingListFromPlanRequest,
+  ShoppingListFromPlanResponse,
   ShoppingListItem,
   ShoppingListResponse,
 } from "@uiu/shared";
@@ -28,106 +32,20 @@ function toShoppingListItem(doc: Document): ShoppingListItem {
     checked: !!doc.checked,
     addedAt: doc.addedAt as string,
     ...(doc.canonicalName !== undefined ? { canonicalName: (doc.canonicalName as string | null) ?? null } : {}),
+    // 購物清單方案 1 — older docs have none of these: quantity / unit read as null, no sources (= manual line).
+    quantity: typeof doc.quantity === "number" ? doc.quantity : null,
+    unit: typeof doc.unit === "string" ? doc.unit : null,
+    ...(Array.isArray(doc.sources) && doc.sources.length
+      ? { sources: (doc.sources as Document[]).map((s) => ({ planId: String(s.planId), entryId: String(s.entryId), qty: Number(s.qty) || 0 })) }
+      : {}),
   };
 }
 
-/** One word to its singular: case / plural folding for "already on the list" matching
- * ("Prawns" == "prawn", "tomatoes" == "tomato", "cherries" == "cherry"). */
-function singularWord(w: string): string {
-  if (w.length > 3 && w.endsWith("ies")) return `${w.slice(0, -3)}y`;
-  if (w.length > 3 && /(oes|ches|shes|xes|sses)$/.test(w)) return w.slice(0, -2);
-  if (w.length > 2 && w.endsWith("s") && !/(ss|us|is)$/.test(w)) return w.slice(0, -1);
-  return w;
-}
-
-export function normalizeListText(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(singularWord)
-    .join(" ");
-}
-
-type FridgeIndex = { canonicalIds: Map<string, string>; names: string[] };
-
-/** Europe/London calendar day (YYYY-MM-DD) of an instant — "today" for expiry is the user's day, not UTC's. */
-export function londonDay(d: Date): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
-}
-
-/**
- * Part 0b — what the user can still use: not flagged needsRestock, and not expired. An item expiring today still counts; one whose
- * expiresAt day (Europe/London) is before today doesn't. A missing / unparseable expiresAt counts as in date.
- */
-export function isUsableFridgeDoc(doc: Document, today: string): boolean {
-  if (doc.needsRestock === true) return false;
-  if (typeof doc.expiresAt === "string" || doc.expiresAt instanceof Date) {
-    const t = new Date(doc.expiresAt);
-    if (!Number.isNaN(t.getTime()) && londonDay(t) < today) return false;
-  }
-  return true;
-}
-
-async function loadFridgeIndex(db: Db, userId: string, now: Date = new Date()): Promise<FridgeIndex> {
-  const today = londonDay(now);
-  const docs = (
-    await db
-      .collection("fridge_stock")
-      .find({ userId }, { projection: { ingredientName: 1, canonicalIngredientId: 1, needsRestock: 1, expiresAt: 1 } })
-      .toArray()
-  ).filter((d) => isUsableFridgeDoc(d, today));
-  return {
-    canonicalIds: new Map(docs.filter((d) => d.canonicalIngredientId).map((d) => [String(d.canonicalIngredientId), String(d.ingredientName ?? "")])),
-    names: docs.map((d) => d.ingredientName as string),
-  };
-}
-
-/** Words that describe the state of an ingredient, not what it is — ignored when comparing names. */
-const FRIDGE_DESCRIPTOR_WORDS = new Set(["fresh", "chopped", "minced", "diced", "sliced", "peeled", "large", "small"]);
-/** Words that turn one product into another (chicken -> chicken stock cube, milk -> coconut milk tin): extra ones on the longer name = no match. */
-const FRIDGE_TYPE_CHANGING_WORDS = new Set(["stock", "cube", "tin", "canned", "milk", "powder", "paste", "sauce", "oil", "juice", "extract", "flake", "seed"]);
-
-function fridgeTokens(name: string): string[] {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(singularWord)
-    .filter((w) => !FRIDGE_DESCRIPTOR_WORDS.has(w));
-}
-
-/**
- * Part 0b — does a fridge item's name cover this recipe ingredient? Whole words only: every word of the shorter name (singularised,
- * descriptor words dropped) must be a whole word of the longer one, and the longer one may not add a type-changing word the shorter
- * lacks. Replaces the old "normalised length > 8 => substring" rule, which let "chicken" cover a chicken stock cube.
- */
-export function fridgeNameMatches(ingredientName: string, fridgeName: string): boolean {
-  const a = fridgeTokens(ingredientName);
-  const b = fridgeTokens(fridgeName);
-  if (a.length === 0 || b.length === 0) return false;
-  const [short, long] = a.length <= b.length ? [a, b] : [b, a];
-  const longSet = new Set(long);
-  if (!short.every((w) => longSet.has(w))) return false;
-  const shortSet = new Set(short);
-  return !long.some((w) => !shortSet.has(w) && FRIDGE_TYPE_CHANGING_WORDS.has(w));
-}
-
-/** HANDOFF_meal-plan-shopping-list-fridge-merge.md §2 rule, shared by from-ingredient and check:
- * canonical id match first, then the whole-word name match above. Returns the fridge item's own name, or null. */
-function fridgeMatchName(fridge: FridgeIndex, ingredientName: string, canonicalDoc: Document | null | undefined): string | null {
-  if (canonicalDoc) {
-    const byId = fridge.canonicalIds.get(String(canonicalDoc._id));
-    if (byId !== undefined) return byId;
-  }
-  return fridge.names.find((n) => fridgeNameMatches(ingredientName, n)) ?? null;
-}
-
-/** Normalised texts of the user's unchecked shopping-list items. */
-async function loadOnListTexts(db: Db, userId: string): Promise<Set<string>> {
-  const docs = await db.collection("shopping_list_items").find({ userId, checked: false }, { projection: { text: 1 } }).toArray();
+/** Normalised texts of the user's unchecked shopping-list items. `manualOnly` — skip lines added from a meal plan (sources set):
+ * the plan sheet decides those per entry (planCoverageOnList), so a newly added meal can still merge its amount in. */
+async function loadOnListTexts(db: Db, userId: string, manualOnly = false): Promise<Set<string>> {
+  const filter = manualOnly ? { userId, checked: false, "sources.0": { $exists: false } } : { userId, checked: false };
+  const docs = await db.collection("shopping_list_items").find(filter, { projection: { text: 1 } }).toArray();
   return new Set(docs.map((d) => normalizeListText(String(d.text ?? ""))).filter(Boolean));
 }
 
@@ -198,8 +116,9 @@ shoppingListRouter.post("/", async (c) => {
 
 /** cc_prompt_guest_browse.md Part D2 — read-only flags for the recipe "Add to shopping list" sheet. */
 shoppingListRouter.post("/check", async (c) => {
-  const payload = (await c.req.json().catch(() => null)) as { ingredients?: ShoppingListFromIngredientRequest[] } | null;
+  const payload = (await c.req.json().catch(() => null)) as ShoppingListCheckRequest | null;
   const ingredients = payload?.ingredients;
+  const planId = typeof payload?.planId === "string" ? payload.planId : null;
   if (!Array.isArray(ingredients) || ingredients.length > 100 || ingredients.some((i) => typeof i?.ingredientName !== "string")) {
     const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "ingredients[] (max 100) is required" } };
     return c.json(body, 400);
@@ -209,10 +128,11 @@ shoppingListRouter.post("/check", async (c) => {
     const results = await withDb(c.env, async (db) => {
       const userId = c.var.clerkUserId;
       const canonicalNames = [...new Set(ingredients.map((i) => i.canonicalName).filter((n): n is string => typeof n === "string" && n !== ""))];
-      const [canonicalDocs, fridge, onList] = await Promise.all([
+      const [canonicalDocs, fridge, onList, planCovered] = await Promise.all([
         canonicalNames.length ? db.collection("canonical_ingredients").find({ canonical_name: { $in: canonicalNames } }).toArray() : Promise.resolve([] as Document[]),
         loadFridgeIndex(db, userId),
-        loadOnListTexts(db, userId),
+        loadOnListTexts(db, userId, planId !== null),
+        planId ? planCoverageOnList(db, userId, planId) : Promise.resolve(new Set<string>()),
       ]);
       const canonicalByName = new Map(canonicalDocs.map((d) => [d.canonical_name as string, d]));
       return ingredients.map((ing): ShoppingListCheckResult => {
@@ -223,7 +143,7 @@ shoppingListRouter.post("/check", async (c) => {
           inFridge: fridgeMatch !== null,
           ...(fridgeMatch ? { fridgeMatch } : {}),
           pantry: !!canonicalDoc && (canonicalDoc.is_pantry === true || canonicalDoc.pantry_staple === true),
-          onList: keys.some((k) => k !== "" && onList.has(k)),
+          onList: keys.some((k) => k !== "" && onList.has(k)) || (planId !== null && planCovered.has(requestKey(ing))),
         };
       });
     });
@@ -284,6 +204,38 @@ shoppingListRouter.post("/from-ingredient", async (c) => {
   } catch (err) {
     console.error("[uiu-api] shopping-list from-ingredient error:", err instanceof Error ? err.message : String(err));
     const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to process ingredient" } };
+    return c.json(body, 502);
+  }
+});
+
+/** 購物清單方案 1 — the meal plan's "Create shopping list": add the ticked ingredients with amounts, merging same name + same unit
+ * and recording which plan entry each amount came from (services/shoppingListPlanSync.ts). The sheet already left fridge / pantry
+ * items unticked, so what's ticked is added as asked — no fridge skip here. */
+shoppingListRouter.post("/from-plan", async (c) => {
+  const payload = (await c.req.json().catch(() => null)) as ShoppingListFromPlanRequest | null;
+  const ingredients = payload?.ingredients;
+  if (
+    typeof payload?.planId !== "string" ||
+    !Array.isArray(ingredients) ||
+    ingredients.length === 0 ||
+    ingredients.length > 200 ||
+    ingredients.some((i) => typeof i?.ingredientName !== "string" || !i.ingredientName.trim())
+  ) {
+    const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: "planId and ingredients[] (1-200) are required" } };
+    return c.json(body, 400);
+  }
+
+  try {
+    const result = await withDb(c.env, (db) => addPlanContributions(db, c.var.clerkUserId, payload.planId, ingredients));
+    if (!result) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "not_found", message: "Plan not found" } };
+      return c.json(body, 404);
+    }
+    const body: ApiResponse<ShoppingListFromPlanResponse> = { ok: true, data: result };
+    return c.json(body, 201);
+  } catch (err) {
+    console.error("[uiu-api] shopping-list from-plan error:", err instanceof Error ? err.message : String(err));
+    const body: ApiResponse<never> = { ok: false, error: { code: "db_error", message: "Failed to add plan ingredients" } };
     return c.json(body, 502);
   }
 });

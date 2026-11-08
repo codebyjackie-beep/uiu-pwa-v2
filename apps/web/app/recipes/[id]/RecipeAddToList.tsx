@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import type { ApiResponse, ShoppingListCheckResult, ShoppingListFromIngredientResponse } from "@uiu/shared";
+import type { ApiResponse, ShoppingListCheckResult, ShoppingListFromIngredientResponse, ShoppingListFromPlanResponse } from "@uiu/shared";
 import { useGuestGate } from "../../components/GuestGate";
 
 export interface AddToListIngredient {
@@ -39,10 +39,12 @@ function flagFor(r: ShoppingListCheckResult | undefined): Flag | null {
 /**
  * cc_prompt_guest_browse.md Part D2 — the "Add to shopping list" bottom sheet. Controlled: the caller owns
  * `open` (Recipe detail's button, the Meal Planner's "Create shopping list"). Everything is ticked except what the
- * user already has (fridge / pantry) or has already queued. Adding calls from-ingredient one by one, no quantities.
+ * user already has (fridge / pantry) or has already queued. From a recipe, adding calls from-ingredient one by one, no quantities.
+ * 購物清單方案 1 — with `planId` (meal plan "Create shopping list") it makes one from-plan call instead: amounts, same name + unit
+ * merged, and each line remembers which meals it came from so swapping / deleting a meal updates it.
  * The toast lives here so it outlives the sheet closing.
  */
-export function AddToListSheet({ open, ingredients, onClose }: { open: boolean; ingredients: AddToListIngredient[]; onClose: () => void }) {
+export function AddToListSheet({ open, ingredients, onClose, planId }: { open: boolean; ingredients: AddToListIngredient[]; onClose: () => void; planId?: string }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +70,7 @@ export function AddToListSheet({ open, ingredients, onClose }: { open: boolean; 
         const res = await fetch("/api/shopping-list/check", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ingredients: list.map((i) => ({ ingredientName: i.name, canonicalName: i.canonicalName })) }),
+          body: JSON.stringify({ ingredients: list.map((i) => ({ ingredientName: i.name, canonicalName: i.canonicalName })), ...(planId ? { planId } : {}) }),
         });
         const parsed = (await res.json().catch(() => null)) as ApiResponse<{ results: ShoppingListCheckResult[] }> | null;
         if (parsed?.ok) results = parsed.data.results;
@@ -86,7 +88,7 @@ export function AddToListSheet({ open, ingredients, onClose }: { open: boolean; 
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, planId]);
 
   function toggleRow(index: number) {
     setRows((prev) => prev && prev.map((r, i) => (i === index ? { ...r, checked: !r.checked } : r)));
@@ -98,6 +100,28 @@ export function AddToListSheet({ open, ingredients, onClose }: { open: boolean; 
     if (adding || selected.length === 0) return;
     setAdding(true);
     setError(null);
+    if (planId) {
+      try {
+        const res = await fetch("/api/shopping-list/from-plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ planId, ingredients: selected.map((r) => ({ ingredientName: r.ingredient.name, canonicalName: r.ingredient.canonicalName })) }),
+        });
+        const parsed = (await res.json().catch(() => null)) as ApiResponse<ShoppingListFromPlanResponse> | null;
+        setAdding(false);
+        if (!parsed?.ok) {
+          setError("Couldn't add to your shopping list. Please try again.");
+          return;
+        }
+        const { added: a, merged: m } = parsed.data;
+        onClose();
+        setToast(`${a} item${a === 1 ? "" : "s"} added${m > 0 ? `, ${m} updated` : ""} on your shopping list`);
+      } catch {
+        setAdding(false);
+        setError("Couldn't add to your shopping list. Please try again.");
+      }
+      return;
+    }
     let added = 0;
     let failed = 0;
     for (const row of selected) {
