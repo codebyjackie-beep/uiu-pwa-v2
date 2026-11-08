@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   costDisplayTier,
@@ -75,6 +75,20 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
   const [dietary, setDietary] = useState<FilterDietary[]>([]);
   const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
   const [favouritesOnly, setFavouritesOnly] = useState(false);
+  // M4 (Jackie 10-29): the chip row is cut off on phones with no hint that it scrolls — a right-edge fade shows
+  // while there is more to the right and disappears once the row is scrolled to the end (or fits).
+  const chipRowRef = useRef<HTMLDivElement>(null);
+  const [chipRowAtEnd, setChipRowAtEnd] = useState(false);
+  const updateChipRowEnd = () => {
+    const el = chipRowRef.current;
+    if (!el) return;
+    setChipRowAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+  };
+  useEffect(() => {
+    updateChipRowEnd();
+    window.addEventListener("resize", updateChipRowEnd);
+    return () => window.removeEventListener("resize", updateChipRowEnd);
+  }, []);
   // "My recipes" — the signed-in user's own private recipes (imports + manual saves), via /api/recipes?mine=true.
   const [mineOnly, setMineOnly] = useState(false);
   const [myRecipes, setMyRecipes] = useState<RecipeListItem[] | null>(null);
@@ -297,7 +311,11 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
       ) : null}
 
       <div className="recipes-filters">
-        <div className="recipes-filters__chiprow">
+        <div
+          ref={chipRowRef}
+          className={`recipes-filters__chiprow${chipRowAtEnd ? " recipes-filters__chiprow--at-end" : ""}`}
+          onScroll={updateChipRowEnd}
+        >
           <button
             type="button"
             className={`chip${!mealOrFavouriteActive ? " chip--active" : ""}`}
@@ -520,7 +538,8 @@ export default function RecipesBrowser({ items }: { items: RecipeListItem[] }) {
           if (requireAccount()) setSaveFromLinkOpen(true);
         }}
       >
-        +
+        <span aria-hidden="true" className="recipes-fab__plus">+</span>
+        <span className="recipes-fab__label">Add recipe</span>
       </button>
     </div>
   );
