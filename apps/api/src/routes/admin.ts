@@ -18,6 +18,7 @@ import { planRemap, resolvePairs, rollbackRemap, scratchVerify, writeRemap, Rema
 import { withDb } from "../db";
 import { reviewPublishCandidates } from "../services/publishCandidates";
 import { evalSameDish, restoreWithdrawn, RecipeWithdrawInputError, withdrawRecipes } from "../services/recipeWithdraw";
+import { findIngredientLines, renameIngredientLines, RecipeIngredientRenameInputError, rollbackIngredientRename } from "../services/recipeIngredientRename";
 import { PUSH_SUBSCRIPTIONS, sendExpiryReminders, sendPush } from "../services/webPush";
 import { cleanupExpiredGuests } from "../services/guest";
 import { notify, setupChat, NotifyError } from "../services/cloudNotify";
@@ -691,6 +692,48 @@ adminRouter.post("/recipes/same-dish-eval", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return withdrawError(c, err, "recipes/same-dish-eval");
+  }
+});
+
+// Rename single recipe ingredient lines (services/recipeIngredientRename.ts). Dry run unless ?write=true.
+//   POST /api/admin/recipes/ingredient-lines           body { names: [name…≤10] }  — read-only lookup (recipeId + index)
+//   POST /api/admin/recipes/ingredient-rename          body { edits: [{ recipeId, index, from, to }…≤50], note? }
+//        each line must still read `from`, else write refused; rir-* backup batch in recipe_backups
+//   POST /api/admin/recipes/ingredient-rename/rollback body { batch }
+// Afterwards run POST /api/admin/recompute-costs (dry run first) or wait for the 03:00 UTC cron.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- same shape as withdrawError
+const renameError = (c: any, err: unknown, what: string) => {
+  if (err instanceof RecipeIngredientRenameInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${what} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${what} failed` } } satisfies ApiResponse<never>, 502);
+};
+adminRouter.post("/recipes/ingredient-lines", async (c) => {
+  const body = (await c.req.json().catch(() => null)) as { names?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => findIngredientLines(db, body?.names));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return renameError(c, err, "recipes/ingredient-lines");
+  }
+});
+adminRouter.post("/recipes/ingredient-rename", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { edits?: unknown; note?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => renameIngredientLines(db, body?.edits, body?.note, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return renameError(c, err, "recipes/ingredient-rename");
+  }
+});
+adminRouter.post("/recipes/ingredient-rename/rollback", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => rollbackIngredientRename(db, body?.batch, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return renameError(c, err, "recipes/ingredient-rename/rollback");
   }
 });
 
