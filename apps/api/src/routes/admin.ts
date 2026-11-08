@@ -25,6 +25,7 @@ import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "..
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
 import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
 import { PerUnitCountInputError, rollbackPerUnitCount, setPerUnitCount } from "../services/perUnitCountSet";
+import { applyAliasQuarantine, CanonicalAliasInputError, rollbackAliasQuarantine, type AliasQuarantineInput } from "../services/canonicalAliasQuarantine";
 import { eraseUserData, UserDeletionInputError } from "../services/userDeletion";
 import type { StripeEnv } from "../services/stripe";
 import { AI_USAGE } from "../services/premium";
@@ -603,6 +604,37 @@ adminRouter.post("/canonical-price/per-unit-count/rollback", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return perUnitCountError(c, err, "per-unit-count rollback");
+  }
+});
+
+// Add aliases / quarantine canonical_ingredients docs (services/canonicalAliasQuarantine.ts). Dry run unless ?write=true.
+//   POST /api/admin/canonical/alias-quarantine           body { addAliases: [{ alias, to }], quarantine: [name], note? }
+//        dry run simulates the alias index and lists conflicts; write refused while conflicts exist; caq-* backup batch
+//   POST /api/admin/canonical/alias-quarantine/rollback  body { batch }
+// Afterwards run POST /api/admin/recompute-costs (dry run first) or wait for the 03:00 UTC cron.
+function canonicalAliasError(c: any, err: unknown, where: string) {
+  if (err instanceof CanonicalAliasInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+adminRouter.post("/canonical/alias-quarantine", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as AliasQuarantineInput | null;
+  try {
+    const out = await withDb(c.env, (db) => applyAliasQuarantine(db, body, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return canonicalAliasError(c, err, "canonical alias-quarantine");
+  }
+});
+adminRouter.post("/canonical/alias-quarantine/rollback", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => rollbackAliasQuarantine(db, body?.batch, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return canonicalAliasError(c, err, "canonical alias-quarantine rollback");
   }
 });
 
