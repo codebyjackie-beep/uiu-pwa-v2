@@ -297,6 +297,12 @@ const VIDEO_RECIPE_PROMPT =
   "it actually shows: ingredients and amounts from what is said, shown on screen (captions, text overlays) or " +
   "clearly visible, and the steps in the order they happen. Do not invent ingredients that are not shown or " +
   "mentioned; when an amount is not given, estimate a sensible home-cook amount. " +
+  // Jackie 2026-11-04: Bang bang prawns came back with "plain flour 200 g" + a matching dredging step that the
+  // video never shows — the model filled in what the dish "usually" needs. Spell the rule out with that example.
+  "List ONLY ingredients you can actually see or hear in this video. Do not add ingredients because the dish " +
+  "usually has them (for example flour or breadcrumbs for coating, oil for frying, salt and pepper) unless they " +
+  "appear in the video, and do not write steps that use an ingredient that is not on your list. If you are not " +
+  "sure an ingredient appears, leave it out. " +
   "Regardless of what language is spoken or written (Cantonese, Mandarin, or any other language), write the " +
   "title, description, ingredient names and steps in English (UK spelling). " +
   `Each ingredient's "name" field MUST contain ONLY the ingredient's name — put every number and unit into ` +

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { ApiResponse } from "@uiu/shared";
+import { canShrinkVideo, shrinkVideo } from "./shrinkVideo";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -162,12 +163,30 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
     if (parsed.data.draft) openDraftForReview(parsed.data.draft);
   }
 
-  async function submitVideo(file: File) {
+  // null = not shrinking; 0..1 = progress of the in-browser shrink of a >14 MB video.
+  const [shrinkProgress, setShrinkProgress] = useState<number | null>(null);
+
+  async function submitVideo(original: File) {
     if (submitting) return;
     setError(null);
+    let file = original;
     if (file.size > MAX_VIDEO_BYTES) {
-      setError(`That video is ${(file.size / 1024 / 1024).toFixed(1)} MB — the limit is 14 MB. Trim it to the cooking part and try again.`);
-      return;
+      const tooBig = `That video is ${(file.size / 1024 / 1024).toFixed(1)} MB — the limit is 14 MB. Trim it to the cooking part and try again.`;
+      // Jackie 2026-11-07: shrink big videos in the browser instead of rejecting them straight away.
+      if (!canShrinkVideo()) {
+        setError(tooBig);
+        return;
+      }
+      setSubmitting(true);
+      setShrinkProgress(0);
+      const smaller = await shrinkVideo(file, (f) => setShrinkProgress(f));
+      setShrinkProgress(null);
+      if (!smaller || smaller.size > MAX_VIDEO_BYTES) {
+        setSubmitting(false);
+        setError(tooBig);
+        return;
+      }
+      file = smaller;
     }
     setSubmitting(true);
     const video = await fileToDataUrl(file);
@@ -372,7 +391,7 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
             <>
               <p className="admin-drafts-page__sub">
                 Choose a cooking video from your phone (for example a reel you saved). AI watches and listens to it,
-                in any language, and writes the recipe in English. Max 14 MB — about 1 minute.
+                in any language, and writes the recipe in English. Best under 14 MB (about 1 minute) — bigger videos are made smaller on your phone first, which takes about as long as the video.
               </p>
               <input
                 ref={videoInputRef}
@@ -392,7 +411,11 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
                 disabled={submitting}
                 onClick={() => videoInputRef.current?.click()}
               >
-                {submitting ? "Watching the video… (up to a minute)" : "Choose a video"}
+                {shrinkProgress !== null
+                  ? `Making the video smaller… ${Math.round(shrinkProgress * 100)}%`
+                  : submitting
+                    ? "Watching the video… (up to a minute)"
+                    : "Choose a video"}
               </button>
             </>
           ) : null}
