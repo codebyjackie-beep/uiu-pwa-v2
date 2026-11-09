@@ -63,7 +63,17 @@ export interface GatedRecompute {
   lineWeightedAdjustedPct: number;
   withBasket: number;
   priceCacheStamp: number;
+  /** only with opts.changedDetail: every recipe (public or not) whose perServing / basket / coverage differs from the stored doc */
+  changed?: RecipeCostChange[];
 }
+export interface RecipeCostSnap { perServing: number | null; basket: number | null; adjustedCoveragePct: number | null; tier: string }
+export interface RecipeCostChange { id: string; title: string; isPublic: boolean; before: RecipeCostSnap | null; after: RecipeCostSnap }
+const snapOf = (c: any): RecipeCostSnap => ({
+  perServing: psOf(c) != null ? r4(psOf(c) as number) : null,
+  basket: c && num(c.basket) != null ? r4(num(c.basket) as number) : null,
+  adjustedCoveragePct: covOf(c) != null ? Math.round((covOf(c) as number) * 10) / 10 : null,
+  tier: tierOf(covOf(c)),
+});
 
 function statsOf(
   publicIds: string[],
@@ -105,7 +115,7 @@ function statsOf(
  */
 export async function recomputeRecipeCostsGated(
   db: Db,
-  opts: { write: boolean; priceOverlay?: Map<string, Document>; allowIds?: Set<string> },
+  opts: { write: boolean; priceOverlay?: Map<string, Document>; allowIds?: Set<string>; changedDetail?: boolean },
 ): Promise<GatedRecompute> {
   const ingredientsCol = db.collection<Document>("canonical_ingredients");
   const recipeCostCol = db.collection<Document>("recipe_cost");
@@ -208,6 +218,19 @@ export async function recomputeRecipeCostsGated(
     wrote = true;
   }
 
+  let changed: RecipeCostChange[] | undefined;
+  if (opts.changedDetail) {
+    changed = [];
+    for (const r of allRecipes) {
+      const id = String(r._id);
+      const st = storedById.get(id) ?? null;
+      const b = st ? snapOf(st) : null;
+      const a = snapOf(freshById.get(id));
+      if (b && b.perServing === a.perServing && b.basket === a.basket && b.adjustedCoveragePct === a.adjustedCoveragePct) continue;
+      changed.push({ id, title: titleById.get(id) ?? id, isPublic: r.isPublic === true, before: b, after: a });
+    }
+  }
+
   return {
     write: opts.write,
     wrote,
@@ -223,6 +246,7 @@ export async function recomputeRecipeCostsGated(
     lineWeightedAdjustedPct: adjustedTotalSum ? (adjustedPriceableTotal / adjustedTotalSum) * 100 : 0,
     withBasket,
     priceCacheStamp,
+    ...(changed ? { changed } : {}),
   };
 }
 

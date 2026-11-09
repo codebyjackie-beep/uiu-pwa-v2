@@ -26,6 +26,7 @@ import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "..
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
 import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
 import { PerUnitCountInputError, rollbackPerUnitCount, setPerUnitCount } from "../services/perUnitCountSet";
+import { PriceSeedInputError, rollbackCanonicalPriceSeed, seedCanonicalPrices, type PriceSeedInput } from "../services/canonicalPriceSeed";
 import { applyAliasQuarantine, CanonicalAliasInputError, rollbackAliasQuarantine, type AliasQuarantineInput } from "../services/canonicalAliasQuarantine";
 import { eraseUserData, UserDeletionInputError } from "../services/userDeletion";
 import type { StripeEnv } from "../services/stripe";
@@ -605,6 +606,38 @@ adminRouter.post("/canonical-price/per-unit-count/rollback", async (c) => {
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return perUnitCountError(c, err, "per-unit-count rollback");
+  }
+});
+
+// Seed a canonical_price_cache doc for a canonical that has none (services/canonicalPriceSeed.ts). Dry run unless ?write=true.
+//   POST /api/admin/canonical-price/seed            body { names: [name], copyFrom?: priceDocName }  — dry run: guarded listings,
+//        recipe_cost projection, returns previewId (no copyFrom = Serper fetch, ~2-4 credits per name)
+//   POST /api/admin/canonical-price/seed?write=true body { previewId, note? }  — inserts exactly the preview; cps-* batch
+//   POST /api/admin/canonical-price/seed/rollback   body { batch }  — deletes seeded docs not refreshed since
+// Afterwards run POST /api/admin/recompute-costs (dry run first).
+function priceSeedError(c: any, err: unknown, where: string) {
+  if (err instanceof PriceSeedInputError) return c.json({ ok: false, error: { code: "bad_request", message: err.message } } satisfies ApiResponse<never>, 400);
+  console.error(`[uiu-api] ${where} error:`, err instanceof Error ? err.message : String(err));
+  return c.json({ ok: false, error: { code: "db_error", message: `${where} failed` } } satisfies ApiResponse<never>, 502);
+}
+adminRouter.post("/canonical-price/seed", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as PriceSeedInput | null;
+  try {
+    const out = await withDb(c.env, (db) => seedCanonicalPrices(db, c.env, body, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return priceSeedError(c, err, "canonical-price seed");
+  }
+});
+adminRouter.post("/canonical-price/seed/rollback", async (c) => {
+  const write = c.req.query("write") === "true";
+  const body = (await c.req.json().catch(() => null)) as { batch?: unknown } | null;
+  try {
+    const out = await withDb(c.env, (db) => rollbackCanonicalPriceSeed(db, body?.batch, write));
+    return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+  } catch (err) {
+    return priceSeedError(c, err, "canonical-price seed rollback");
   }
 });
 
