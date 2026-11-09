@@ -83,7 +83,7 @@ const SEED_OVERRIDES: Array<{ name: string; decision: "keep_old" | "skip"; note:
 // ------------------------------------------------------------------------------------------------
 // types
 // ------------------------------------------------------------------------------------------------
-interface FetchRow {
+export interface FetchRow {
   name: string;
   listings: Array<{ store?: string; title?: string; price?: unknown }>;
   calls: Array<{ attempt: number; credits: number; serperResults: number; whitelisted: number }>;
@@ -121,6 +121,8 @@ interface RunDoc extends Document {
   cursor: number;
   docsTotal: number;
   skipped: Record<string, number>;
+  /** non-quarantined canonicals with no price doc (never refreshed; seed via POST /api/admin/canonical-price/seed) */
+  missingPriceDoc?: string[];
   results: ResultRow[];
   creditsUsed: number;
   serperCalls: number;
@@ -191,7 +193,14 @@ async function seedOverrides(db: Db): Promise<{ seeded: boolean; count: number }
   return { seeded: true, count: SEED_OVERRIDES.length };
 }
 
-async function buildQueue(db: Db, restrictTo?: string[]): Promise<{ queue: string[]; skipped: Record<string, number>; ineligibleRequested: string[] }> {
+/**
+ * The queue is built from EXISTING canonical_price_cache docs: a refresh updates prices, it never creates a doc. A canonical that
+ * was added later (e.g. the 2026-09-09 split of "single or double cream") therefore never gets a price from here. Those are reported
+ * as `missingPriceDoc` (non-quarantined canonical, no price doc, no override) so the Telegram summary shows them; seed them with
+ * POST /api/admin/canonical-price/seed (dry run first) — a new doc has no current value for the rise/drop guards to compare with,
+ * so it is not created unattended.
+ */
+async function buildQueue(db: Db, restrictTo?: string[]): Promise<{ queue: string[]; skipped: Record<string, number>; ineligibleRequested: string[]; missingPriceDoc: string[] }> {
   const canon = await db.collection<Document>("canonical_ingredients").find({}).project({ canonical_name: 1, quarantine: 1 }).toArray();
   const canonByName = new Map(canon.map((c) => [String(c.canonical_name), c]));
   const overrides = new Set((await db.collection<Document>(OVERRIDES).find({ canonical_name: { $exists: true } }).toArray()).map((o) => String(o.canonical_name)));
@@ -213,12 +222,17 @@ async function buildQueue(db: Db, restrictTo?: string[]): Promise<{ queue: strin
     else eligible.push(name);
   }
   eligible.sort();
-  if (!restrictTo) return { queue: eligible, skipped, ineligibleRequested: [] };
+  const missingPriceDoc = canon
+    .filter((c) => c.quarantine !== true && !why.has(String(c.canonical_name)) && !overrides.has(String(c.canonical_name)) && !String(c.canonical_name).startsWith("__"))
+    .map((c) => String(c.canonical_name))
+    .sort();
+  if (!restrictTo) return { queue: eligible, skipped, ineligibleRequested: [], missingPriceDoc };
   const el = new Set(eligible);
   return {
     queue: restrictTo.filter((n) => el.has(n)),
     skipped,
     ineligibleRequested: restrictTo.filter((n) => !el.has(n)).map((n) => `${n}:${why.get(n) ?? "no_price_doc"}`),
+    missingPriceDoc,
   };
 }
 
@@ -251,7 +265,7 @@ async function openRun(env: PriceRefreshEnv, db: Db, o: OpenOptions): Promise<Op
 
   await seedOverrides(db);
   const limited = Boolean((o.names && o.names.length) || o.limit);
-  let { queue, skipped, ineligibleRequested } = await buildQueue(db, o.names && o.names.length ? o.names : undefined);
+  let { queue, skipped, ineligibleRequested, missingPriceDoc } = await buildQueue(db, o.names && o.names.length ? o.names : undefined);
   if (o.limit && o.limit > 0) queue = queue.slice(0, o.limit);
   if (!queue.length) return { opened: false, reason: "no_eligible_docs" };
 
@@ -274,6 +288,7 @@ async function openRun(env: PriceRefreshEnv, db: Db, o: OpenOptions): Promise<Op
     cursor: 0,
     docsTotal: queue.length,
     skipped,
+    missingPriceDoc,
     results: [],
     creditsUsed: 0,
     serperCalls: 0,
@@ -341,7 +356,8 @@ async function serperShopping(apiKey: string, q: string): Promise<{ shopping: Ar
   const shopping = Array.isArray(body?.shopping) ? (body!.shopping as Array<{ source?: string; title?: string; price?: unknown }>) : [];
   return { shopping, credits: typeof body?.credits === "number" ? body.credits : null };
 }
-async function fetchDoc(apiKey: string, name: string): Promise<FetchRow> {
+/** exported for services/canonicalPriceSeed.ts (seeding a canonical that has no price doc yet) */
+export async function fetchDoc(apiKey: string, name: string): Promise<FetchRow> {
   const row: FetchRow = { name, listings: [], calls: [] };
   try {
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
@@ -642,6 +658,8 @@ function summaryText(run: RunDoc, rows: ResultRow[], headline: string): string {
     `hold\\_drop (already-refreshed docs, drop >23%, not written): ${actions.hold_drop ?? 0}`,
     `Credits ${run.creditsUsed} (${run.serperCalls} calls), fetch errors ${run.fetchErrors}`,
   ];
+  const missing = run.missingPriceDoc ?? [];
+  if (missing.length) lines.push(`ℹ️ ${missing.length} canonical(s) have no price doc (not refreshed; seed via canonical-price/seed): ${missing.slice(0, 15).map(md).join(", ")}${missing.length > 15 ? " …" : ""}`);
   const wouldAbort = (run.checks?.wouldAbort as string[] | undefined) ?? [];
   if (wouldAbort.length) lines.push(`⚠️ would abort a real run: ${wouldAbort.map(md).join("; ")}`);
   if (rc) {
