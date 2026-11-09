@@ -19,6 +19,7 @@ import { findRecipePhoto, type PexelsEnv } from "./pexels";
 import { findNearDuplicateRecipe, type NearDuplicateMatch } from "@uiu/shared";
 import type { OpenRouterEnv } from "./openrouter";
 import { findSameDishLLM } from "./sameDish";
+import { sanitizeRecipeText, stripRecipePlaceholders } from "./recipeTextSanitize";
 
 export type ApproveDraftResult =
   | { notFound: true }
@@ -67,9 +68,27 @@ export async function approveRecipeDraft(
     if (sameDish) return { nearDuplicate: sameDish };
   }
 
+  // 2026-11-09: last gate before `recipes` — fixes `_egg_` / `tomatoe` (pending drafts made before the
+  // generator fix still carry them). Other `_word_` markup is stripped, logged, and the recipe held for review.
+  const sanitized = sanitizeRecipeText({
+    title: String(draft.title ?? ""),
+    description: (draft.description as string) ?? "",
+    ingredients: (draft.ingredients as Recipe["ingredients"]) ?? [],
+    steps: (draft.steps as string[]) ?? [],
+  });
+  const hasUnknownPlaceholder = sanitized.unknownPlaceholders.length > 0;
+  const clean = hasUnknownPlaceholder ? stripRecipePlaceholders(sanitized.recipe) : sanitized.recipe;
+  if (sanitized.changes.length > 0 || hasUnknownPlaceholder) {
+    console.log("[uiu-api] approve text fixed:", JSON.stringify({
+      draftId,
+      fields: sanitized.changes.map((c) => c.field),
+      unknownPlaceholders: sanitized.unknownPlaceholders,
+    }));
+  }
+
   const now = new Date().toISOString();
   const draftImageUrl = draft.imageUrl as string | null | undefined;
-  const imageUrl = draftImageUrl ? draftImageUrl : await findRecipePhoto(env, draft.title as string).catch(() => null);
+  const imageUrl = draftImageUrl ? draftImageUrl : await findRecipePhoto(env, clean.title).catch(() => null);
 
   const ingredientsCol = db.collection<Document>("canonical_ingredients");
   const priceCol = db.collection<Document>("canonical_price_cache");
@@ -85,20 +104,21 @@ export async function approveRecipeDraft(
   // Nutrition is recomputed here with the shared gram conversion (nutritionGrams.ts) instead of
   // trusting draft.nutrition, which older drafts computed with the ml/pc-blind formula.
   const nutrition = computeRecipeNutrition(
-    draft.ingredients as Recipe["ingredients"],
+    clean.ingredients,
     draft.servings as number,
     resolveFn,
     ingredientsMap,
   ).nutrition;
-  const guardResult = ingredientTextGuard(draft.ingredients as { quantity: number; unit: string; name: string }[]);
+  const guardResult = ingredientTextGuard(clean.ingredients as { quantity: number; unit: string; name: string }[]);
+  const holdForReview = guardResult.suspicious || hasUnknownPlaceholder;
   const recipeDoc: Omit<Recipe, "_id"> = {
-    title: draft.title as string,
-    description: (draft.description as string) ?? "",
-    isPublic: !guardResult.suspicious,
-    needs_review: guardResult.suspicious || undefined,
+    title: clean.title,
+    description: clean.description ?? "",
+    isPublic: !holdForReview,
+    needs_review: holdForReview || undefined,
     userId: null,
-    ingredients: draft.ingredients as Recipe["ingredients"],
-    steps: draft.steps as string[],
+    ingredients: clean.ingredients,
+    steps: clean.steps,
     tags: draft.tags as string[],
     servings: draft.servings as number,
     prepTimeMinutes: draft.prepTimeMinutes as number,
