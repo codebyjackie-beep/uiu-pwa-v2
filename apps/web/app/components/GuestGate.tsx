@@ -181,6 +181,28 @@ export function GuestGateProvider({ serverSignedIn, children }: { serverSignedIn
   );
 }
 
+/**
+ * Perf (AuthProviders.tsx): the guest context for a signed-out visitor on a page rendered without ClerkProvider
+ * (/how-it-works). Same values GuestGateProvider gives a server-"signed out" visitor; an account-only action just
+ * sends them to sign-up (none exist on those pages today).
+ */
+export function SignedOutGuestGateProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const value = useMemo<GuestGateValue>(
+    () => ({
+      isSignedIn: false,
+      authResolved: true,
+      requireAuth: () => true,
+      requireAccount: () => {
+        window.location.assign(authUrl("sign-up", pathname));
+        return false;
+      },
+    }),
+    [pathname],
+  );
+  return <GuestGateContext.Provider value={value}>{children}</GuestGateContext.Provider>;
+}
+
 /** Guest mode: slim banner on every app page while signed out — states that guest data is not saved. Hidden in full-screen cook mode. */
 const GUEST_BANNER_PREFIXES = ["/recipes", "/meal-planner", "/fridge", "/shop", "/health"];
 export function GuestBanner() {

@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import { ClerkProvider } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/fraunces";
@@ -8,7 +7,8 @@ import "@fontsource/bricolage-grotesque/800.css";
 import "./globals.css";
 import { AppHeader } from "./components/AppHeader";
 import { BottomNav } from "./components/BottomNav";
-import { AppShell, GuestBanner, GuestGateProvider } from "./components/GuestGate";
+import { AppShell, GuestBanner } from "./components/GuestGate";
+import { AuthProviders, type ClerkClientProps } from "./components/AuthProviders";
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
 import { PremiumGate } from "./components/PremiumGate";
 import { SiteFooter } from "./components/SiteFooter";
@@ -55,23 +55,30 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // shop.useitup.uk is a public marketing page, not part of the app shell — no bottom nav / SW.
   const isPublicShop = (hdrs.get("host") ?? "") === "shop.useitup.uk";
   const { userId } = isPublicShop ? { userId: null } : await auth();
+  // Read at request time (Workers vars, wrangler.toml) — the CI build has no NEXT_PUBLIC_CLERK_* to inline.
+  const clerkProps: ClerkClientProps = {
+    publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "",
+    signInUrl: "/sign-in",
+    signUpUrl: "/sign-up",
+    afterSignOutUrl: "/how-it-works",
+    signInFallbackRedirectUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL || undefined,
+    signUpFallbackRedirectUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL || undefined,
+  };
 
   return (
     <html lang="en">
       <body>
-        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up" afterSignOutUrl="/how-it-works">
-          <GuestGateProvider serverSignedIn={!!userId}>
-            {!isPublicShop && <ServiceWorkerKillSwitch />}
-            {!isPublicShop && <AppHeader />}
-            <AppShell publicShop={isPublicShop}>
-              {!isPublicShop && <GuestBanner />}
-              {children}
-            </AppShell>
-            {!isPublicShop && <PremiumGate />}
-            {!isPublicShop && <SiteFooter />}
-            {!isPublicShop && <BottomNav />}
-          </GuestGateProvider>
-        </ClerkProvider>
+        <AuthProviders serverSignedIn={!!userId} clerkProps={clerkProps}>
+          {!isPublicShop && <ServiceWorkerKillSwitch />}
+          {!isPublicShop && <AppHeader />}
+          <AppShell publicShop={isPublicShop}>
+            {!isPublicShop && <GuestBanner />}
+            {children}
+          </AppShell>
+          {!isPublicShop && <PremiumGate />}
+          {!isPublicShop && <SiteFooter />}
+          {!isPublicShop && <BottomNav />}
+        </AuthProviders>
       </body>
     </html>
   );
