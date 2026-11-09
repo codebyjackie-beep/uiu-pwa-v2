@@ -197,9 +197,12 @@ export type MatchResult =
 
 // Guard 3 is deliberately lenient: ANY content token of canonical_name / query_alias / aliases may appear in the title
 // (it exists to drop non-food and wrong-category listings, not to demand an exact product name).
+const MARKUP_ALIAS_RE = /_[a-z][a-z ]*_/i;
 export function makeTitleMatcher(canon: any, priceDoc?: any): (title: string | undefined) => MatchResult {
   const name = canon?.canonical_name ?? priceDoc?.canonical_name;
-  const aliasList: string[] = Array.isArray(canon?.aliases) ? canon.aliases.filter((x: unknown) => typeof x === "string") : [];
+  // markup aliases such as "single cream (_milk_)" (kept so old recipe lines still resolve after a quarantine) are not product names:
+  // their "_milk_" token would let milk listings pass Guard 3 for "single cream", so they never feed the title matcher.
+  const aliasList: string[] = Array.isArray(canon?.aliases) ? canon.aliases.filter((x: unknown) => typeof x === "string" && !MARKUP_ALIAS_RE.test(x)) : [];
   const phrases = [name, canon?.query_alias, ...aliasList].filter((x) => typeof x === "string");
   const tokens = new Set<string>();
   for (const p of phrases) for (const h of tokenStems(p)) tokens.add(h);
