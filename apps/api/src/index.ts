@@ -34,7 +34,7 @@ import { billingRouter } from "./routes/billing";
 import { clerkWebhookRouter } from "./routes/clerkWebhook";
 import { igMediaRouter } from "./routes/igMedia";
 import { recordCronRun } from "./services/cronHealthMonitor";
-import { withDb } from "./db";
+import { withDb, withRequestDb } from "./db";
 import { PUSH_SUBSCRIPTIONS, saveSubscription, sendExpiryReminders, validSubscription, type PushSubscriptionInput } from "./services/webPush";
 import { claimGuestData, cleanupExpiredGuests, mintGuestToken, verifyGuestToken } from "./services/guest";
 import { maybeStartScheduledRun, processPriceRefresh } from "./jobs/priceRefresh";
@@ -51,6 +51,10 @@ const app = new Hono<{ Bindings: Bindings }>();
 // Same-origin in production (web + api both on Cloudflare). CORS is permissive here only
 // to keep local `wrangler dev` + `next dev` on separate ports talking during development.
 app.use("*", cors());
+
+// Perf (2026-11-09): one shared Mongo client per incoming request instead of one per withDb()
+// call — see db.ts. Never cached across requests (Workers I/O-context rule).
+app.use("*", (_c, next) => withRequestDb(() => next()));
 
 // M2: every per-user route requires a verified Clerk session — apps/api has its own public
 // workers.dev URL, so the web layer alone is not a gate. userId is taken from the token `sub` only.
