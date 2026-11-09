@@ -105,7 +105,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           </>
         ) : (
           <p className="cost-hero__price cost-hero__price--pending">
-            {costPendingLabel({ enrichmentAttempted: recipe.enrichmentAttempted, ingredientCount: recipe.ingredients.length })}
+            {costPendingLabel({ enrichmentAttempted: recipe.enrichmentAttempted, ingredientCount: recipe.ingredients.length, cost: recipe.cost })}
           </p>
         )}
         {isNutritionUnavailable(recipe) ? (

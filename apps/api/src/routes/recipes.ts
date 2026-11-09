@@ -34,8 +34,10 @@ function toRecipe(doc: Document): Recipe {
   };
 }
 
+// A computed doc with basket 0 (no line priced, e.g. a user recipe of "1 pc avocado") is still returned, so the
+// page can say "Price unavailable" instead of "calculating…"; the page only shows a £ when basket > 0.
 function toDetailCost(costDoc: Document | null, pantryNames: Set<string> = new Set()): RecipeDetailCost | null {
-  if (!costDoc || (costDoc.basket as number) <= 0) return null;
+  if (!costDoc) return null;
   const lines: RecipeDetailCostLine[] = ((costDoc.lines as Document[]) ?? []).map((line) => ({
     rawName: line.rawName as string,
     quantity: line.quantity as number,

@@ -1,4 +1,4 @@
-import { PANTRY_STAPLE_LABEL, RECIPE_MEAL_CLASS_PRIORITY, type RecipeDetailCostLine } from "@uiu/shared";
+import { COST_UNAVAILABLE_LABEL, PANTRY_STAPLE_LABEL, RECIPE_MEAL_CLASS_PRIORITY, type RecipeDetailCostLine } from "@uiu/shared";
 import { classifyMealTypes, type FilterMealType } from "./recipeFilters";
 
 interface MealTagged {
@@ -11,8 +11,11 @@ interface MealTagged {
  * "calculating…" should only appear while a cost is genuinely pending — for recipes where
  * enrichment already ran and found zero ingredients, cost will never arrive, so show a
  * permanent "not available" label instead (HANDOFF_recipe-missing-ingredients-enrichment.md §3).
+ * Callers only reach this when there's no £ to show; if a recipe_cost doc exists (`cost` non-null)
+ * the cost was already computed and simply found no price, so it is "Price unavailable", not pending.
  */
-export function costPendingLabel(recipe: { enrichmentAttempted?: boolean; ingredientCount?: number }): string {
+export function costPendingLabel(recipe: { enrichmentAttempted?: boolean; ingredientCount?: number; cost?: unknown }): string {
+  if (recipe.cost != null) return COST_UNAVAILABLE_LABEL;
   const noIngredients = (recipe.ingredientCount ?? 0) === 0;
   if (recipe.enrichmentAttempted && noIngredients) return "Ingredients not available";
   return "calculating…";
