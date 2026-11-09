@@ -31,5 +31,10 @@ eq("doc metadata.source", (ev.doc?.metadata as { source?: string })?.source, "se
 eq("doc seed_source", (ev.doc?.metadata as { seed_source?: string })?.seed_source, "copy:single cream (_milk_)");
 eq("doc has no non-standard top-level keys", Object.keys(ev.doc ?? {}).filter((k) => !["canonical_name", "per_unit_metric", "per_unit_count", "cheapest", "n_supermarkets", "listings", "confidence", "needs_review", "metadata"].includes(k)), []);
 eq("one listing only -> hold", evaluateSeed({ canonical_name: "single cream" }, listings.slice(0, 1), { label: "x", attempts: 1 }).doc, null);
+const prodCanon = { canonical_name: "single cream", aliases: ["single cream", "single cream (_milk_)"] }; // Atlas 2026-11-09
+const ev2 = evaluateSeed(prodCanon, listings, { label: "copy:single cream (_milk_)", attempts: null });
+eq("markup alias does not let milk through", ev2.dropped.map((d) => d.title).sort(), ["Graham's Gold Smooth Jersey Milk", "Morrisons British Semi Skimmed Milk"]);
+eq("markup alias: cheapest is cream", /cream/i.test(String((ev2.g.cheapest as { title?: string })?.title)), true);
+eq("markup alias: metric", ev2.g.per_unit_metric, { value: 0.0045, unit: "g_or_ml", n: 3 });
 if (fail) throw new Error(`${fail} failed`);
 console.log("all passed");
