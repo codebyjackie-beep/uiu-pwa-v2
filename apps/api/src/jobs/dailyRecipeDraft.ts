@@ -24,6 +24,7 @@ import {
 } from "../services/recipeDraftGenerator";
 import { fetchSpoonacularIdeas, type SpoonacularEnv } from "../services/spoonacular";
 import { draftRecipe, type OpenRouterEnv } from "../services/openrouter";
+import { cleanCanonicalNamesForPrompt, sanitizeRecipeText } from "../services/recipeTextSanitize";
 import { buildAliasIndex, resolve } from "../services/ingredientResolver";
 import { costRecipe } from "../services/recipeCost";
 import { computeRecipeNutrition } from "../services/nutritionGrams";
@@ -138,7 +139,8 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     const allIngredientDocs = (await ingredientsCol.find({}).toArray()) as unknown as CanonicalIngredient[];
     const allPriceDocs = (await priceCol.find({}).toArray()) as unknown as CanonicalPriceCacheEntry[];
     return {
-      canonicalNames: allIngredientDocs.filter((d) => !d.quarantine).map((d) => d.canonical_name),
+      // Markup names (`_egg_`, `_celery_`) are left out: the prompt says "use verbatim", so the model copied them into recipes.
+      canonicalNames: cleanCanonicalNamesForPrompt(allIngredientDocs.filter((d) => !d.quarantine).map((d) => d.canonical_name)),
       aliasIndex: await buildAliasIndex(ingredientsCol),
       ingredientsMap: new Map(allIngredientDocs.map((d) => [d.canonical_name, d])),
       priceMap: new Map(allPriceDocs.map((d) => [d.canonical_name, d])),
@@ -197,7 +199,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
         // 2026-11-08: the first auto-triage rejected 9/10 drafts as same_dish (salmon crêpe drafted 3x in 10 days).
         // Tell the model which similar dishes already exist (public + pending + this run) so it steers away up front.
         const avoidDishes = rankSimilarRecipes({ title: idea.title, ingredientNames: [] }, similarityCorpus, AVOID_DISHES_IN_PROMPT).map((r) => r.title);
-        const candidate = await draftRecipe(env, {
+        const rawCandidate = await draftRecipe(env, {
           dishIdea: idea.title,
           avoidDishes,
           cuisineHint: spec.kind === "rotation" ? spec.cuisine : undefined,
@@ -205,6 +207,16 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
           canonicalNames,
           gapConstraint: spec.kind === "gap" ? { slot: spec.slot, dietary: spec.dietary } : undefined,
         });
+        // 2026-11-09: fix `_egg_` / `tomatoe` before anything else sees the text; reject other `_word_` markup.
+        const sanitized = sanitizeRecipeText(rawCandidate);
+        if (sanitized.changes.length > 0) {
+          console.log("[uiu-api] draft text fixed:", JSON.stringify({ candidate: rawCandidate.title, fields: sanitized.changes.map((c) => c.field) }));
+        }
+        if (sanitized.unknownPlaceholders.length > 0) {
+          console.log("[uiu-api] draft skip (placeholder):", JSON.stringify({ candidate: rawCandidate.title, placeholders: sanitized.unknownPlaceholders }));
+          continue; // substitute another idea next attempt
+        }
+        const candidate = sanitized.recipe;
         const draftedMatch = findTitleMatch(candidate.title, usedTitlesThisRun);
         if (draftedMatch) {
           console.log("[uiu-api] dedup skip (drafted):", JSON.stringify({ candidate: candidate.title, matchedTitle: draftedMatch.matchedTitle, rule: draftedMatch.rule }));
