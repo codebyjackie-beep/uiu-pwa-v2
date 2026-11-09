@@ -13,10 +13,15 @@ import { authUrl, isAppHeaderHidden, useGuestGate } from "./GuestGate";
  * /recipes/[id]/cook (future cook-mode, full-bleed). */
 
 export function AppHeader() {
+  const pathname = usePathname();
+  // Checked before any Clerk hook: /how-it-works can render without ClerkProvider (AuthProviders.tsx).
+  if (isAppHeaderHidden(pathname)) return null;
+  return <AppHeaderBar pathname={pathname} />;
+}
+
+function AppHeaderBar({ pathname }: { pathname: string }) {
   const { isSignedIn, authResolved } = useGuestGate();
   const { user } = useUser();
-  const pathname = usePathname();
-  if (isAppHeaderHidden(pathname)) return null;
 
   // Guest mode: guests get the same header with a Sign up button instead of the avatar.
   if (!isSignedIn) {
