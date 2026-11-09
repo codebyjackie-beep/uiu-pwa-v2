@@ -3,7 +3,7 @@
  *   npx tsx apps/api/test/recipeDraftTriage.test.ts
  * Rule thresholds must match scripts/triage_recipe_drafts.cjs (the 2026-10-08 run).
  */
-import { cleanTags, isValidBatchId, newBatchId, normalizeTitle, passesApproveGate, rejectReasonsFor } from "../src/services/recipeDraftTriage";
+import { TRIAGE_PENDING_FILTER, cleanTags, isValidBatchId, newBatchId, normalizeTitle, passesApproveGate, rejectReasonsFor } from "../src/services/recipeDraftTriage";
 
 let failures = 0;
 function eq(name: string, actual: unknown, expected: unknown) {
@@ -39,6 +39,9 @@ eq("2026-10-08 batch id valid", isValidBatchId("triage_2026-10-08_aca5bfe1"), tr
 eq("bad batch id", isValidBatchId("triage_2026-10-08_ACA5"), false);
 eq("injection batch id", isValidBatchId({ $ne: null }), false);
 eq("newBatchId format", isValidBatchId(newBatchId(new Date("2026-10-29T12:00:00Z"))), true);
+
+eq("triage only takes pending", TRIAGE_PENDING_FILTER.status, "pending");
+eq("triage skips admin-reopened drafts", TRIAGE_PENDING_FILTER.reopenHistory, { $exists: false });
 
 if (failures) {
   console.error(`${failures} failure(s)`);

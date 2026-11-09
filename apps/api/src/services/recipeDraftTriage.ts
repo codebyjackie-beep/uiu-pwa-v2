@@ -36,6 +36,12 @@ export const SANITY_MAX_AUTO_APPROVE = 600;
 export const SANITY_MAX_AUTO_REJECT = 500;
 export const APPLY_CHUNK_MAX = 10;
 const NUTRITION_COVERAGE_MIN = 0.7;
+/**
+ * Pending drafts the auto-triage may touch. A draft an admin reopened (has `reopenHistory`) is a
+ * human call: the triage must not re-reject it (2026-11-09: the 07:02 cron re-rejected 2 drafts
+ * reopened the night before as same_dish, before they could be force-approved).
+ */
+export const TRIAGE_PENDING_FILTER = { status: "pending", reopenHistory: { $exists: false } } as const;
 const SPOONACULAR_DEAD_HOST = "img.spoonacular.com";
 const FETCH_TIMEOUT_MS = 8000;
 const BATCH_ID_RE = /^triage_\d{4}-\d{2}-\d{2}_[0-9a-f]{8}$/;
@@ -118,10 +124,10 @@ export function passesApproveGate(e: { adjustedCoveragePct: number; calories: nu
   return e.adjustedCoveragePct >= 80 && e.calories >= 150 && e.calories <= 1200 && e.steps >= 3 && e.ingredients >= 4 && !!e.mealType;
 }
 
-/** Loads every pending draft and evaluates it with the live cost + nutrition engines. */
+/** Loads every pending draft (except admin-reopened ones, see TRIAGE_PENDING_FILTER) and evaluates it with the live cost + nutrition engines. */
 export async function evaluatePendingDrafts(db: Db): Promise<Evaluated[]> {
   const [pendingDocs, liveRecipes] = await Promise.all([
-    db.collection("recipe_drafts").find({ status: "pending" }).toArray(),
+    db.collection("recipe_drafts").find(TRIAGE_PENDING_FILTER).toArray(),
     db.collection("recipes").find({}, { projection: { title: 1, isPublic: 1, "ingredients.name": 1 } }).toArray(),
   ]);
   const toSim = (d: Document): SimilarityRecipe => ({
