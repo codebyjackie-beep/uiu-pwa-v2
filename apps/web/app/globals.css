@@ -5957,3 +5957,92 @@ a.wizard-primary-button {
   color: var(--uiu-red);
   border-color: var(--uiu-red);
 }
+
+/* Cookie consent banner (PostHog analytics, app/components/Analytics.tsx). Fixed at the bottom, but sits *above* the
+   bottom nav and the /how-it-works sticky sign-up bar so it never covers them. Accept and Reject share one style (ICO:
+   equal prominence). */
+.consent-banner {
+  --consent-offset: 0px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--consent-offset) + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  padding: 0 12px 12px;
+  pointer-events: none;
+  transition: bottom 0.2s ease;
+}
+body:has(.bottom-nav) .consent-banner {
+  --consent-offset: 64px;
+}
+@media (max-width: 767px) {
+  /* .hiw-sticky-cta: 10px + 49px button + 10px padding + 1px border (bottom safe-area is added above). */
+  body:has(.hiw-sticky-cta--visible) .consent-banner {
+    --consent-offset: 70px;
+  }
+}
+.consent-banner__inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 14px var(--space);
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--uiu-border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 24px var(--uiu-border);
+  pointer-events: auto;
+}
+.consent-banner__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.consent-banner__link {
+  color: var(--fg);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.consent-banner__current {
+  color: var(--uiu-muted);
+}
+.consent-banner__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.consent-banner__btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.consent-banner__close {
+  display: block;
+  margin: 8px auto 0;
+  padding: 6px 8px;
+  border: none;
+  background: none;
+  color: var(--uiu-muted);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.cookie-settings-button {
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--accent);
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}

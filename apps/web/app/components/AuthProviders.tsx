@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ClerkProvider } from "@clerk/nextjs";
 import { GuestGateProvider, SignedOutGuestGateProvider } from "./GuestGate";
+import { AnalyticsIdentity } from "./Analytics";
 
 /**
  * Perf (2026-11-09, Home PageSpeed 70): a fresh visitor to "/" is redirected to /how-it-works, and the root
@@ -51,6 +52,8 @@ export function AuthProviders({
   return (
     <ClerkProvider {...clerkProps}>
       <GuestGateProvider serverSignedIn={serverSignedIn}>{children}</GuestGateProvider>
+      {/* identify / reset / sign_up_completed need Clerk, so they only run where ClerkProvider is mounted; no-op without consent. */}
+      <AnalyticsIdentity />
     </ClerkProvider>
   );
 }

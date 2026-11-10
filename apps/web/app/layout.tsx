@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/fraunces";
@@ -12,6 +12,8 @@ import { AuthProviders, type ClerkClientProps } from "./components/AuthProviders
 import { ServiceWorkerKillSwitch } from "./components/ServiceWorkerKillSwitch";
 import { PremiumGate } from "./components/PremiumGate";
 import { SiteFooter } from "./components/SiteFooter";
+import { AnalyticsProvider } from "./components/Analytics";
+import { CONSENT_COOKIE, parseConsent } from "./lib/analytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://useitup.uk"),
@@ -65,20 +67,35 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     signUpFallbackRedirectUrl: process.env.NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL || undefined,
   };
 
+  // PostHog: runtime Workers vars, like the Clerk props above. Not on shop.useitup.uk (no banner, no tracking).
+  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "";
+  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "";
+  const initialConsent = parseConsent((await cookies()).get(CONSENT_COOKIE)?.value);
+
+  const app = (
+    <AuthProviders serverSignedIn={!!userId} clerkProps={clerkProps}>
+      {!isPublicShop && <ServiceWorkerKillSwitch />}
+      {!isPublicShop && <AppHeader />}
+      <AppShell publicShop={isPublicShop}>
+        {!isPublicShop && <GuestBanner />}
+        {children}
+      </AppShell>
+      {!isPublicShop && <PremiumGate />}
+      {!isPublicShop && <SiteFooter />}
+      {!isPublicShop && <BottomNav />}
+    </AuthProviders>
+  );
+
   return (
     <html lang="en">
       <body>
-        <AuthProviders serverSignedIn={!!userId} clerkProps={clerkProps}>
-          {!isPublicShop && <ServiceWorkerKillSwitch />}
-          {!isPublicShop && <AppHeader />}
-          <AppShell publicShop={isPublicShop}>
-            {!isPublicShop && <GuestBanner />}
-            {children}
-          </AppShell>
-          {!isPublicShop && <PremiumGate />}
-          {!isPublicShop && <SiteFooter />}
-          {!isPublicShop && <BottomNav />}
-        </AuthProviders>
+        {isPublicShop ? (
+          app
+        ) : (
+          <AnalyticsProvider posthogKey={posthogKey} posthogHost={posthogHost} initialConsent={initialConsent}>
+            {app}
+          </AnalyticsProvider>
+        )}
       </body>
     </html>
   );
