@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CookieSettingsButton } from "../components/Analytics";
 
 export const metadata: Metadata = { title: "Privacy policy · UseItUp" };
 
 /** cc_prompt_meal_grid_profile.md Part PP — public privacy policy (Google Auth Platform branding needs the link).
  * Processors listed are the ones the code actually calls with user data (checked 2026-10-20). */
-const LAST_UPDATED = "4 November 2026";
+const LAST_UPDATED = "10 November 2026";
 
 export default function PrivacyPage() {
   return (
@@ -58,7 +59,10 @@ export default function PrivacyPage() {
       </p>
 
       <h2>How we use it</h2>
-      <p>Only to run the features you use. We do not sell your data, and we do not use advertising trackers.</p>
+      <p>
+        To run the features you use and, only if you allow analytics cookies, to understand which pages people use (see Analytics below).
+        We do not sell your data, and we do not use advertising trackers.
+      </p>
 
       <h2>Who processes it for us</h2>
       <ul>
@@ -79,6 +83,9 @@ export default function PrivacyPage() {
         <li>
           <strong>OpenRouter</strong> — routes AI requests to the model providers (including Google Gemini for photos). Used for photo
           analysis, recipe import and the nutrition coach.
+        </li>
+        <li>
+          <strong>PostHog</strong> — product analytics, only if you accept analytics cookies. Data is stored on its EU servers.
         </li>
         <li>
           <strong>Open Food Facts</strong> — when you scan a barcode, your browser looks the barcode number up there.
@@ -102,11 +109,42 @@ export default function PrivacyPage() {
         and we will reply within one month. You can also complain to the Information Commissioner&apos;s Office (ico.org.uk).
       </p>
 
-      <h2>Cookies</h2>
+      <h2 id="cookies">Cookies</h2>
       <p>
-        We only use the cookies needed to keep you signed in (set by Clerk) and, if you use the app as a guest, one cookie
-        holding your temporary guest ID. There are no analytics or advertising cookies. When you pay, Stripe&apos;s checkout page sets its
-        own cookies for payment security.
+        These cookies are always on, because the app needs them: the ones that keep you signed in (set by Clerk), one cookie holding
+        your temporary guest ID if you use the app as a guest, and <code>uiu_consent</code>, which remembers your cookie choice for 12
+        months. When you pay, Stripe&apos;s checkout page sets its own cookies for payment security.
+      </p>
+      <p>Analytics cookies are only set if you tap Accept on the cookie banner. There are no advertising cookies.</p>
+
+      <h2 id="analytics">Analytics (PostHog)</h2>
+      <p>
+        If you accept analytics cookies, we use PostHog to see how people use UseItUp, so we can improve it. PostHog stores this data on
+        its EU servers. If you reject them, or never choose, PostHog is not loaded at all.
+      </p>
+      <ul>
+        <li>
+          <strong>What it collects:</strong> which pages you visit (the page address only, plus any <code>utm_</code> campaign tags in the
+          link you came from), when you leave a page, that you signed up, and basic anonymous device details such as browser, operating
+          system, screen size and rough location from your IP address. If you are signed in, events are linked to your account ID, not
+          your name or email.
+        </li>
+        <li>
+          <strong>What it does not collect:</strong> any health information, anything you type or add in the app, and no screen
+          recordings.
+        </li>
+        <li>
+          <strong>Cookies it uses:</strong> <code>ph_phc_…_posthog</code> (a cookie and a matching browser storage entry with a random
+          device ID and your visit session), and short-lived browser storage entries starting with <code>ph_</code> or{" "}
+          <code>__ph_</code>. We also keep <code>uiu_signup_tracked</code> in browser storage so a sign-up is only counted once.
+        </li>
+        <li>
+          <strong>Changing your mind:</strong> tap Cookie settings below at any time. If you reject, we stop PostHog straight away and
+          delete its cookies and browser storage from your device.
+        </li>
+      </ul>
+      <p>
+        <CookieSettingsButton />
       </p>
 
       <h2>Amazon links</h2>
