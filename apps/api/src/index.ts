@@ -28,6 +28,7 @@ import { checkIgTokenHealth } from "./jobs/igTokenHealth";
 import { runInsightsSnapshotCron } from "./jobs/igInsights";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
+import { adminIgPublishRouter } from "./routes/adminIgPublish";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { usersRouter } from "./routes/users";
 import { billingRouter } from "./routes/billing";
@@ -220,6 +221,7 @@ app.route("/api/recipe-import", recipeImportRouter);
 app.route("/api/recipe-browse", recipeBrowseStateRouter);
 app.route("/api/ig-webhook", igWebhookRouter);
 app.route("/api/admin/ig-drafts", adminIgDraftsRouter);
+app.route("/api/admin/ig-publish", adminIgPublishRouter);
 app.route("/api/admin", adminRouter); // inline admin endpoints (routes/admin.ts)
 app.route("/api/affiliate-products", affiliateProductsRouter);
 app.route("/api/ig-media", igMediaRouter);

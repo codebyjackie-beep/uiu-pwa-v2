@@ -54,6 +54,7 @@ const mounts: Array<[string, string]> = [
   ["routes/adminRecipeDrafts.ts", "/api/admin/recipe-drafts"],
   ["routes/adminRecipes.ts", "/api/admin/recipes"],
   ["routes/adminIgDrafts.ts", "/api/admin/ig-drafts"],
+  ["routes/adminIgPublish.ts", "/api/admin/ig-publish"],
 ];
 for (const [f, base] of mounts) {
   const re = new RegExp(String.raw`^\w+Router\.${verb}\("([^"]+)"`, "gm");
