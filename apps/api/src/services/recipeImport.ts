@@ -1,3 +1,4 @@
+import { openrouterChat } from "./openrouterChat";
 /**
  * HANDOFF_recipe-social-import.md — social-link recipe import, §0/§2.
  * Three-tier fallback: JSON-LD (Tier 1, no AI) -> platform oEmbed caption + LLM
@@ -322,18 +323,10 @@ export async function parseRecipeFromText(env: OpenRouterEnv, text: string, debu
       `{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ` +
       `"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}.`;
 
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: env.OPENROUTER_MODEL,
+    const res = await openrouterChat(env, {
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-      }),
-    });
+      });
     if (!res.ok) { if (debug) debug.reason = `http ${res.status}`; return null; }
     const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     const content = json.choices?.[0]?.message?.content;

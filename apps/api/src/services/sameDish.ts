@@ -1,3 +1,4 @@
+import { openrouterChat, type OpenRouterChatEnv } from "./openrouterChat";
 /**
  * AI same-dish check (Jackie 2026-11-06). The token rules in findNearDuplicateRecipe (G1) let 159 renamed duplicates
  * go public in the 10-08 / 10-29 triage batches — e.g. 8 prawn biryanis, 13 spinach frittatas — because the AI
@@ -57,16 +58,11 @@ export async function findSameDishLLM(
 
   let content: string | undefined;
   try {
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: env.OPENROUTER_MODEL,
+    const res = await openrouterChat(env as OpenRouterChatEnv, {
         temperature: 0,
         messages: [{ role: "user", content: buildPrompt(candidate, shortlist) }],
         response_format: { type: "json_object" },
-      }),
-    });
+      });
     if (!res.ok) throw new SameDishCheckError(`OpenRouter ${res.status}`);
     const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     content = json.choices?.[0]?.message?.content;

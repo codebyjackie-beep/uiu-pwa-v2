@@ -1,3 +1,4 @@
+import { openrouterChat } from "./openrouterChat";
 /**
  * HANDOFF_fridge-ai-recipe-generator.md §1 — generate a wholly new recipe from a
  * user-picked subset of fridge_stock item names. Reuses the same OpenRouter
@@ -48,18 +49,10 @@ export async function generateRecipeFromFridge(env: OpenRouterEnv, ingredientNam
       `{"title": string, "description": string, "ingredients": [{"name": string, "quantity": number, "unit": string}], ` +
       `"steps": [string], "tags": [string], "mealType": string, "servings": number, "prepTimeMinutes": number, "cookTimeMinutes": number}.`;
 
-    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: env.OPENROUTER_MODEL,
+    const res = await openrouterChat(env, {
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" },
-      }),
-    });
+      });
     if (!res.ok) return null;
     const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
     const content = json.choices?.[0]?.message?.content;

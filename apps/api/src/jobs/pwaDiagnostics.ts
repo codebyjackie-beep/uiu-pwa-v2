@@ -1,3 +1,4 @@
+import { openrouterChat } from "../services/openrouterChat";
 /**
  * PWA diagnostics + monitor (HANDOFF_pwa-diagnostics-monitor.md). Cloudflare
  * Cron Trigger job: no VM, no fixed persona — this replaces an earlier
@@ -209,17 +210,9 @@ async function callOpenRouterForSummary(env: PwaDiagnosticsEnv, checks: Diagnost
     `講清楚系統整體係咪健康、有冇需要留意嘅地方，唔使逐條讀出全部細節，唔好用JSON格式回覆，淨係普通文字：\n\n` +
     JSON.stringify(checks, null, 2);
 
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: env.OPENROUTER_MODEL,
+  const res = await openrouterChat(env, {
       messages: [{ role: "user", content: prompt }],
-    }),
-  });
+    });
   if (!res.ok) throw new Error(`OpenRouter request failed: ${res.status} ${res.statusText}`);
   const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const content = json.choices?.[0]?.message?.content;

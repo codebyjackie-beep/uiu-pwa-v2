@@ -1,3 +1,4 @@
+import { openrouterChat } from "./openrouterChat";
 /**
  * HANDOFF_health-tab-v1.md §2 — AI Nutrition Coach (Part B). Text-only
  * OpenRouter chat, same key/endpoint pattern as recipe drafting
@@ -17,14 +18,7 @@ export interface CoachChatMessage {
 }
 
 export async function chatWithCoach(env: NutritionCoachEnv, messages: CoachChatMessage[]): Promise<string> {
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ model: env.OPENROUTER_MODEL, messages }),
-  });
+  const res = await openrouterChat(env, { messages });
   if (!res.ok) {
     throw new Error(`OpenRouter coach request failed: ${res.status} ${res.statusText}`);
   }

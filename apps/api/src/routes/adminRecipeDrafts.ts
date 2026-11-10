@@ -1,3 +1,4 @@
+import { openrouterChat } from "../services/openrouterChat";
 /**
  * Admin API for recipe_drafts review (HANDOFF_daily-recipe-draft-agent.md Part C).
  * X-Admin-Token protected, same convention as /api/admin/recompute-costs.
@@ -245,15 +246,10 @@ adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
             ingredients: draft.ingredients as Array<{ name: string; quantity: number; unit: string }>,
             steps: draft.steps as string[],
           });
-          const tagRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: { Authorization: `Bearer ${c.env.OPENROUTER_API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model: c.env.OPENROUTER_MODEL,
+          const tagRes = await openrouterChat(c.env, {
               messages: [{ role: "user", content: prompt }],
               response_format: { type: "json_object" },
-            }),
-          });
+            });
           if (!tagRes.ok) throw new Error(`OpenRouter ${tagRes.status}`);
           const tagJson = (await tagRes.json()) as { choices?: Array<{ message?: { content?: string } }> };
           const content = tagJson.choices?.[0]?.message?.content;

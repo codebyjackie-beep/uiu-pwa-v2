@@ -3,6 +3,8 @@ export type Bindings = {
   API_ENV: string;
   MONGODB_DB: string;
   OPENROUTER_MODEL: string;
+  /** Optional text-model fallback after retries on 429/5xx/timeout (services/openrouterChat.ts). Default deepseek/deepseek-chat. */
+  OPENROUTER_FALLBACK_MODEL?: string;
   /** "true" = the 07:00 UTC cron auto-triages pending recipe drafts after generating them (jobs/dailyAutoTriage.ts). */
   AUTO_TRIAGE_CRON?: string;
   OPENROUTER_VISION_MODEL: string;

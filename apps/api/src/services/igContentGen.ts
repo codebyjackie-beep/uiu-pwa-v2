@@ -1,3 +1,4 @@
+import { openrouterChat } from "./openrouterChat";
 /**
  * HANDOFF_ig-marketing-affiliate-agent-design.md §1 — shared research +
  * content generation, with explicit isolation guardrails (2026-08-24
@@ -82,21 +83,13 @@ function extractJson(text: string): unknown {
 }
 
 async function callOpenRouterJson(env: OpenRouterEnv, systemPrompt: string, userPrompt: string): Promise<unknown> {
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: env.OPENROUTER_MODEL,
+  const res = await openrouterChat(env, {
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
       response_format: { type: "json_object" },
-    }),
-  });
+    });
   if (!res.ok) throw new Error(`OpenRouter request failed: ${res.status} ${res.statusText}`);
   const json = (await res.json()) as { choices?: Array<{ message?: { content?: string } }> };
   const content = json.choices?.[0]?.message?.content;

@@ -1,3 +1,4 @@
+import { openrouterChat } from "./openrouterChat";
 /**
  * OpenRouter recipe drafting (HANDOFF_daily-recipe-draft-agent.md Part B).
  * Model-agnostic — OPENROUTER_MODEL is a wrangler.toml [vars] entry, not
@@ -104,18 +105,10 @@ function extractJson(text: string): unknown {
 
 export async function draftRecipe(env: OpenRouterEnv, input: DraftPromptInput): Promise<DraftedRecipe> {
   const prompt = buildPrompt(input);
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: env.OPENROUTER_MODEL,
+  const res = await openrouterChat(env, {
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
-    }),
-  });
+    });
   if (!res.ok) {
     throw new Error(`OpenRouter request failed: ${res.status} ${res.statusText}`);
   }
