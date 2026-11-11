@@ -9,6 +9,7 @@ import {
   loadedPostHog,
   loadPostHog,
   setCapturingAllowed,
+  SIGNUP_TRACKED_KEY,
   writeConsentCookie,
   type ConsentState,
 } from "../lib/analytics";
@@ -154,7 +155,6 @@ export function CookieSettingsButton({ className }: { className?: string }) {
   );
 }
 
-const SIGNUP_TRACKED_KEY = "uiu_signup_tracked";
 const FIRST_SESSION_WINDOW_MS = 2 * 60 * 1000;
 const RECENT_SIGNUP_MS = 24 * 60 * 60 * 1000;
 

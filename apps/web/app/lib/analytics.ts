@@ -18,6 +18,9 @@ export type ConsentState = "granted" | "denied" | "unset";
 export const CONSENT_COOKIE = "uiu_consent";
 const CONSENT_MAX_AGE_S = 60 * 60 * 24 * 365; // ask again after 12 months
 
+/** localStorage flag (value = Clerk user id) so `sign_up_completed` is sent once per browser. Removed on Reject. */
+export const SIGNUP_TRACKED_KEY = "uiu_signup_tracked";
+
 export const EU_UI_HOST = "https://eu.posthog.com";
 
 /** The only events allowed out of the browser. */
@@ -27,23 +30,22 @@ export function parseConsent(value: string | undefined | null): ConsentState {
   return value === "granted" || value === "denied" ? value : "unset";
 }
 
-export function readConsentCookie(): ConsentState {
-  if (typeof document === "undefined") return "unset";
-  const match = document.cookie.split("; ").find((c) => c.startsWith(`${CONSENT_COOKIE}=`));
-  return parseConsent(match?.slice(CONSENT_COOKIE.length + 1));
-}
-
 export function writeConsentCookie(state: "granted" | "denied"): void {
   const secure = window.location.protocol === "https:" ? "; Secure" : "";
   document.cookie = `${CONSENT_COOKIE}=${state}; Max-Age=${CONSENT_MAX_AGE_S}; Path=/; SameSite=Lax${secure}`;
 }
 
+/** Any absolute URL with a scheme, e.g. `https://…` or a TWA referrer like `android-app://…`. */
+const SCHEME_URL = /^[a-z][a-z0-9+.-]*:\/\//i;
+
 /**
  * Absolute URL → origin + path, keeping only `utm_*` query parameters and dropping the #hash.
- * Anything that is not an absolute http(s) URL is returned unchanged.
+ * Works for any scheme, not only http(s). Fails closed: if the URL can't be parsed, the whole query + hash is dropped.
+ * Anything that is not an absolute URL with a scheme is returned unchanged.
  */
 export function stripUrl(value: string): string {
-  if (!/^https?:\/\//i.test(value)) return value;
+  if (!SCHEME_URL.test(value)) return value;
+  const base = value.split(/[?#]/)[0];
   try {
     const url = new URL(value);
     const kept = new URLSearchParams();
@@ -51,9 +53,11 @@ export function stripUrl(value: string): string {
       if (k.toLowerCase().startsWith("utm_")) kept.append(k, v);
     });
     const query = kept.toString();
-    return `${url.origin}${url.pathname}${query ? `?${query}` : ""}`;
+    // Non-http(s) schemes have an opaque origin ("null"), so use the raw part before ?/# instead.
+    const path = /^https?:$/i.test(url.protocol) ? `${url.origin}${url.pathname}` : base;
+    return `${path}${query ? `?${query}` : ""}`;
   } catch {
-    return value;
+    return base;
   }
 }
 
@@ -139,13 +143,15 @@ function parentDomains(hostname: string): string[] {
 }
 
 /**
- * Remove every cookie / storage key posthog-js writes (`ph_*`, `__ph_*`). Our own `uiu_consent` cookie is kept.
+ * Remove every cookie / storage key posthog-js writes (`ph_*`, `__ph_*`), plus our own `uiu_signup_tracked` flag (it
+ * holds a Clerk user id). Our own `uiu_consent` cookie is kept.
  * `keepOptOut`: while posthog is still loaded in this page, keep its `__ph_opt_in_out_*` opt-out flag (localStorage, no
  * tracking data) so the live instance stays opted out; it is removed on the next page load, when posthog is not loaded.
  */
 export function clearPostHogStorage({ keepOptOut = false }: { keepOptOut?: boolean } = {}): void {
   const isPostHogKey = (k: string) =>
-    (k.startsWith("ph_") || k.startsWith("__ph")) && !(keepOptOut && k.startsWith("__ph_opt_in_out_"));
+    k === SIGNUP_TRACKED_KEY ||
+    ((k.startsWith("ph_") || k.startsWith("__ph")) && !(keepOptOut && k.startsWith("__ph_opt_in_out_")));
   try {
     for (const c of document.cookie.split("; ")) {
       const name = c.split("=")[0];

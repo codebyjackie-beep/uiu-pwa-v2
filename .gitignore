@@ -33,3 +33,7 @@ Thumbs.db
 # misc
 coverage/
 *.tsbuildinfo
+
+# Next.js auto-generated agent docs (never commit)
+apps/web/AGENTS.md
+apps/web/CLAUDE.md
