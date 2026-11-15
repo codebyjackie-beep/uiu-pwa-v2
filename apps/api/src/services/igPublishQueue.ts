@@ -14,7 +14,7 @@
  */
 import type { Db, Document } from "mongodb";
 import { getMongoModule, withDb, type DbEnv } from "../db";
-import { accountFor, type PublishEnv } from "../jobs/igContentAgent";
+import type { PublishEnv } from "../jobs/igContentAgent"; // type-only: keeps the cron path (and tests) free of the image/wasm deps
 import { contentHash, executePublish, GraphError, pausedRefusal, type IgPublishRequest } from "./igPublish";
 
 export const QUEUE = "ig_publish_queue";
@@ -112,8 +112,9 @@ export interface QueueRunSummary {
 }
 
 /** Called by the hourly cron. Never throws for a single job's failure. */
-export async function processDuePosts(env: QueueEnv, now: number = Date.now(), deps: { publish?: typeof executePublish } = {}): Promise<QueueRunSummary> {
+export async function processDuePosts(env: QueueEnv, now: number = Date.now(), deps: { publish?: typeof executePublish; withDb?: typeof withDb } = {}): Promise<QueueRunSummary> {
   const publish = deps.publish ?? executePublish;
+  const run = deps.withDb ?? withDb;
   const sum: QueueRunSummary = { paused: false, due: 0, published: 0, failed: 0, missed: 0, refusedPaused: 0 };
   const nowIso = new Date(now).toISOString();
   const pausedReason = pausedRefusal(env.IG_AUTOMATION_PAUSED);
@@ -121,7 +122,7 @@ export async function processDuePosts(env: QueueEnv, now: number = Date.now(), d
 
   for (let i = 0; i < MAX_PER_FIRE; i++) {
     // Atomic claim: only one fire can move a given job scheduled -> publishing.
-    const job = await withDb(env, (db) =>
+    const job = await run(env, (db) =>
       db.collection(QUEUE).findOneAndUpdate({ status: "scheduled", publishAt: { $lte: nowIso } }, { $set: { status: "publishing", startedAt: nowIso } }, { sort: { publishAt: 1 }, returnDocument: "after" }),
     );
     if (!job) break;
@@ -130,17 +131,17 @@ export async function processDuePosts(env: QueueEnv, now: number = Date.now(), d
     const overdue = now - Date.parse(String(job.publishAt)) > MISSED_AFTER_MS;
     if (pausedReason) {
       sum.refusedPaused++;
-      await withDb(env, (db) => fail(db, id, "refused_paused", { code: "ig_automation_paused", message: pausedReason, retryable: false }));
+      await run(env, (db) => fail(db, id, "refused_paused", { code: "ig_automation_paused", message: pausedReason, retryable: false }));
       continue;
     }
     if (overdue) {
       sum.missed++;
-      await withDb(env, (db) => fail(db, id, "missed", { code: "missed_window", message: `publishAt ${String(job.publishAt)} was more than 2h before the scheduler ran; not posted late — reschedule`, retryable: false }));
+      await run(env, (db) => fail(db, id, "missed", { code: "missed_window", message: `publishAt ${String(job.publishAt)} was more than 2h before the scheduler ran; not posted late — reschedule`, retryable: false }));
       continue;
     }
     if (!env.IG_TOKEN_UIU || !env.IG_ID_UIU) {
       sum.failed++;
-      await withDb(env, (db) => fail(db, id, "failed", { code: "ig_not_configured", message: "IG_TOKEN_UIU / IG_ID_UIU missing", retryable: false }));
+      await run(env, (db) => fail(db, id, "failed", { code: "ig_not_configured", message: "IG_TOKEN_UIU / IG_ID_UIU missing", retryable: false }));
       continue;
     }
     const req = { ...(job.req as IgPublishRequest), write: true };
@@ -149,14 +150,14 @@ export async function processDuePosts(env: QueueEnv, now: number = Date.now(), d
     let auditId: unknown;
     try {
       const since = new Date(now - 24 * 3600 * 1000).toISOString();
-      const dup = await withDb(env, (db) => db.collection(AUDIT).findOne({ contentHash: hash, status: { $in: ["published", "publishing"] }, createdAt: { $gte: since } }));
+      const dup = await run(env, (db) => db.collection(AUDIT).findOne({ contentHash: hash, status: { $in: ["published", "publishing"] }, createdAt: { $gte: since } }));
       if (dup) {
         sum.failed++;
-        await withDb(env, (db) => fail(db, id, "failed", { code: "duplicate_publish", message: "Identical content was published (or is publishing) in the last 24h", retryable: false }));
+        await run(env, (db) => fail(db, id, "failed", { code: "duplicate_publish", message: "Identical content was published (or is publishing) in the last 24h", retryable: false }));
         continue;
       }
       auditId = (
-        await withDb(env, (db) =>
+        await run(env, (db) =>
           db.collection(AUDIT).insertOne({
             type: req.type,
             caption: req.caption,
@@ -175,14 +176,14 @@ export async function processDuePosts(env: QueueEnv, now: number = Date.now(), d
     } catch (err) {
       sum.failed++;
       console.error("[uiu-api] ig-queue audit failed:", err instanceof Error ? err.message : String(err));
-      await withDb(env, (db) => fail(db, id, "failed", { code: "db_error", message: "Could not write audit record; refusing to publish without one", retryable: false })).catch(() => undefined);
+      await run(env, (db) => fail(db, id, "failed", { code: "db_error", message: "Could not write audit record; refusing to publish without one", retryable: false })).catch(() => undefined);
       continue;
     }
     try {
-      const result = await publish(accountFor(env, "uiu"), req);
+      const result = await publish({ igUserId: env.IG_ID_UIU, accessToken: env.IG_TOKEN_UIU }, req);
       sum.published++;
       const finishedAt = new Date().toISOString();
-      await withDb(env, async (db) => {
+      await run(env, async (db) => {
         await db.collection(QUEUE).updateOne({ _id: id as never }, { $set: { status: "published", mediaId: result.mediaId, commentId: result.commentId ?? null, commentError: result.commentError ?? null, finishedAt } });
         await db.collection(AUDIT).updateOne({ _id: auditId as never }, { $set: { status: "published", mediaId: result.mediaId, finishedAt } });
       }).catch(() => undefined);
@@ -191,7 +192,7 @@ export async function processDuePosts(env: QueueEnv, now: number = Date.now(), d
       const message = (err instanceof Error ? err.message : String(err)).slice(0, 500); // GraphError text is already token-redacted
       const error: QueueError = { code: "graph_error", kind: err instanceof GraphError ? err.kind : "unknown", graphCode: err instanceof GraphError ? err.graphCode : undefined, message, retryable: false };
       console.error("[uiu-api] ig-queue publish failed:", message);
-      await withDb(env, async (db) => {
+      await run(env, async (db) => {
         await fail(db, id, "failed", error);
         await db.collection(AUDIT).updateOne({ _id: auditId as never }, { $set: { status: "failed", error: message, finishedAt: new Date().toISOString() } });
       }).catch(() => undefined);
