@@ -115,17 +115,58 @@ async function sha256Hex(s: string): Promise<string> {
   return Array.from(new Uint8Array(buf), (x) => x.toString(16).padStart(2, "0")).join("");
 }
 
+export const NOTIFY_LOG_TTL_SECONDS = 24 * 60 * 60; // log docs only need to outlive the 5-min window
+
+function isDuplicateKey(err: unknown): boolean {
+  return !!err && typeof err === "object" && (err as { code?: unknown }).code === 11000;
+}
+
 /**
  * Sends a structured notification unless the same title was sent in the last 5 minutes.
- * Only a hash of the title is stored (same idea as igPublish's contentHash audit); the record is
- * written after a successful send, so a failed send can be retried straight away.
+ *
+ * Atomic claim-before-send: one doc per title (unique index on titleHash). The claim is a single
+ * upsert whose filter only matches a doc older than the window; if a recent doc exists the upsert
+ * tries to insert a second doc with the same titleHash and the unique index rejects it (E11000),
+ * so two concurrent calls with the same title can never both send.
+ *
+ * Trade-off: the claim is taken before Telegram is called. A failed send releases the claim (so
+ * an immediate retry works), but if the Worker dies between claim and send, that title is blocked
+ * for up to 5 minutes with no message sent. We prefer a rare missed ping over a double ping.
+ *
+ * Only a hash of the title is stored, never the title/body/url text.
  */
 export async function notifyStructured(env: CloudNotifyEnv, db: Db, req: NotifyRequest, now: Date = new Date()) {
+  const log = db.collection(LOG);
+  await log.createIndex({ titleHash: 1 }, { unique: true });
+  await log.createIndex({ sentAt: 1 }, { expireAfterSeconds: NOTIFY_LOG_TTL_SECONDS });
+
   const titleHash = await sha256Hex(req.title);
   const since = new Date(now.getTime() - NOTIFY_DEDUPE_MS);
-  const recent = await db.collection(LOG).findOne({ titleHash, sentAt: { $gte: since } });
-  if (recent) return { sent: false, deduped: true, lastSentAt: (recent.sentAt as Date).toISOString() };
-  const out = await notify(env, db, formatNotifyText(req));
-  await db.collection(LOG).insertOne({ titleHash, sentAt: now, messageId: out.messageId });
+  const claimId = crypto.randomUUID();
+  try {
+    await log.updateOne(
+      { titleHash, sentAt: { $lt: since } },
+      { $set: { titleHash, sentAt: now, claimId }, $unset: { messageId: "" } },
+      { upsert: true },
+    );
+  } catch (err) {
+    if (!isDuplicateKey(err)) throw err;
+    const recent = await log.findOne({ titleHash }, { projection: { sentAt: 1 } }).catch(() => null);
+    const lastSentAt = recent?.sentAt instanceof Date ? recent.sentAt.toISOString() : null;
+    return { sent: false, deduped: true, lastSentAt };
+  }
+
+  let out: Awaited<ReturnType<typeof notify>>;
+  try {
+    out = await notify(env, db, formatNotifyText(req));
+  } catch (err) {
+    // Release our claim so the caller can retry straight away. Best effort: if this fails the
+    // title is blocked for at most the 5-min window.
+    await log.deleteOne({ titleHash, claimId }).catch(() => {});
+    throw err;
+  }
+
+  // The message is already out — a failed bookkeeping write must not turn this into an error.
+  await log.updateOne({ titleHash, claimId }, { $set: { messageId: out.messageId } }).catch(() => {});
   return { ...out, deduped: false };
 }
