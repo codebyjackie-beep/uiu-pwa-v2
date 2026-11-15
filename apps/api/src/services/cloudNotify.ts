@@ -51,3 +51,122 @@ export async function notify(env: CloudNotifyEnv, db: Db, text: string) {
   const msg = await tg(env, "sendMessage", { chat_id: cfg.chatId, text: text.slice(0, 4000), disable_web_page_preview: true });
   return { sent: true, messageId: msg.message_id };
 }
+
+// ---------------------------------------------------------------------------
+// Structured AI Office notifications (2026-11-15): { title, body?, url? } -> plain-text message.
+// Telegram only pings Jackie; approval still happens on the Jarvis page (no buttons here).
+
+export const NOTIFY_TITLE_MAX = 100;
+export const NOTIFY_BODY_MAX = 400;
+export const NOTIFY_URL_MAX = 500;
+export const NOTIFY_DEDUPE_MS = 5 * 60 * 1000;
+const URL_PREFIX = "https://claude.ai/";
+const LOG = "cloud_notify_log";
+
+export interface NotifyRequest {
+  title: string;
+  body?: string;
+  url?: string;
+}
+
+type Validation = { ok: true; value: NotifyRequest } | { ok: false; message: string };
+
+/** Strict validation — wrong types are rejected, never coerced. */
+export function validateNotifyRequest(raw: unknown): Validation {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, message: "body must be a JSON object" };
+  const r = raw as Record<string, unknown>;
+  if (typeof r.title !== "string") return { ok: false, message: "title must be a string" };
+  const title = r.title.trim();
+  if (!title) return { ok: false, message: "title is required" };
+  if (title.length > NOTIFY_TITLE_MAX) return { ok: false, message: `title must be <= ${NOTIFY_TITLE_MAX} chars` };
+  const out: NotifyRequest = { title };
+  if (r.body !== undefined) {
+    if (typeof r.body !== "string") return { ok: false, message: "body must be a string" };
+    const body = r.body.trim();
+    if (body.length > NOTIFY_BODY_MAX) return { ok: false, message: `body must be <= ${NOTIFY_BODY_MAX} chars` };
+    if (body) out.body = body;
+  }
+  if (r.url !== undefined) {
+    if (typeof r.url !== "string") return { ok: false, message: "url must be a string" };
+    const url = r.url;
+    if (url.length > NOTIFY_URL_MAX) return { ok: false, message: `url must be <= ${NOTIFY_URL_MAX} chars` };
+    if (!url.startsWith(URL_PREFIX) || /\s/.test(url)) return { ok: false, message: `url must start with ${URL_PREFIX}` };
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return { ok: false, message: "url is not a valid URL" };
+    }
+    if (parsed.protocol !== "https:" || parsed.hostname !== "claude.ai" || parsed.username || parsed.password || parsed.port) {
+      return { ok: false, message: `url must start with ${URL_PREFIX}` };
+    }
+    out.url = url;
+  }
+  return { ok: true, value: out };
+}
+
+/** Plain text (no parse_mode): title, blank line, body, blank line, url. */
+export function formatNotifyText(req: NotifyRequest): string {
+  return [req.title, req.body, req.url].filter((x): x is string => !!x).join("\n\n");
+}
+
+async function sha256Hex(s: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf), (x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+export const NOTIFY_LOG_TTL_SECONDS = 24 * 60 * 60; // log docs only need to outlive the 5-min window
+
+function isDuplicateKey(err: unknown): boolean {
+  return !!err && typeof err === "object" && (err as { code?: unknown }).code === 11000;
+}
+
+/**
+ * Sends a structured notification unless the same title was sent in the last 5 minutes.
+ *
+ * Atomic claim-before-send: one doc per title (unique index on titleHash). The claim is a single
+ * upsert whose filter only matches a doc older than the window; if a recent doc exists the upsert
+ * tries to insert a second doc with the same titleHash and the unique index rejects it (E11000),
+ * so two concurrent calls with the same title can never both send.
+ *
+ * Trade-off: the claim is taken before Telegram is called. A failed send releases the claim (so
+ * an immediate retry works), but if the Worker dies between claim and send, that title is blocked
+ * for up to 5 minutes with no message sent. We prefer a rare missed ping over a double ping.
+ *
+ * Only a hash of the title is stored, never the title/body/url text.
+ */
+export async function notifyStructured(env: CloudNotifyEnv, db: Db, req: NotifyRequest, now: Date = new Date()) {
+  const log = db.collection(LOG);
+  await log.createIndex({ titleHash: 1 }, { unique: true });
+  await log.createIndex({ sentAt: 1 }, { expireAfterSeconds: NOTIFY_LOG_TTL_SECONDS });
+
+  const titleHash = await sha256Hex(req.title);
+  const since = new Date(now.getTime() - NOTIFY_DEDUPE_MS);
+  const claimId = crypto.randomUUID();
+  try {
+    await log.updateOne(
+      { titleHash, sentAt: { $lt: since } },
+      { $set: { titleHash, sentAt: now, claimId }, $unset: { messageId: "" } },
+      { upsert: true },
+    );
+  } catch (err) {
+    if (!isDuplicateKey(err)) throw err;
+    const recent = await log.findOne({ titleHash }, { projection: { sentAt: 1 } }).catch(() => null);
+    const lastSentAt = recent?.sentAt instanceof Date ? recent.sentAt.toISOString() : null;
+    return { sent: false, deduped: true, lastSentAt };
+  }
+
+  let out: Awaited<ReturnType<typeof notify>>;
+  try {
+    out = await notify(env, db, formatNotifyText(req));
+  } catch (err) {
+    // Release our claim so the caller can retry straight away. Best effort: if this fails the
+    // title is blocked for at most the 5-min window.
+    await log.deleteOne({ titleHash, claimId }).catch(() => {});
+    throw err;
+  }
+
+  // The message is already out — a failed bookkeeping write must not turn this into an error.
+  await log.updateOne({ titleHash, claimId }, { $set: { messageId: out.messageId } }).catch(() => {});
+  return { ...out, deduped: false };
+}
