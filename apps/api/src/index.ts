@@ -29,6 +29,9 @@ import { runInsightsSnapshotCron } from "./jobs/igInsights";
 import { igWebhookRouter } from "./routes/igWebhook";
 import { adminIgDraftsRouter } from "./routes/adminIgDrafts";
 import { adminIgPublishRouter } from "./routes/adminIgPublish";
+import { adminIgMediaRouter } from "./routes/adminIgMedia";
+import { processDuePosts } from "./services/igPublishQueue";
+import { purgeExpiredMedia } from "./services/igUploadedMedia";
 import { affiliateProductsRouter } from "./routes/affiliateProducts";
 import { usersRouter } from "./routes/users";
 import { billingRouter } from "./routes/billing";
@@ -222,6 +225,7 @@ app.route("/api/recipe-browse", recipeBrowseStateRouter);
 app.route("/api/ig-webhook", igWebhookRouter);
 app.route("/api/admin/ig-drafts", adminIgDraftsRouter);
 app.route("/api/admin/ig-publish", adminIgPublishRouter);
+app.route("/api/admin/ig-media", adminIgMediaRouter);
 app.route("/api/admin", adminRouter); // inline admin endpoints (routes/admin.ts)
 app.route("/api/affiliate-products", affiliateProductsRouter);
 app.route("/api/ig-media", igMediaRouter);
@@ -261,6 +265,12 @@ export default {
             .catch((err) => console.error("[uiu-api] cron pushReminders failed:", err instanceof Error ? err.message : String(err))),
         );
       }
+      // Scheduled Instagram posts (services/igPublishQueue.ts): fires at :00 UTC. Cheap no-op (one Mongo read) when nothing is due.
+      ctx.waitUntil(
+        processDuePosts(env as never, event.scheduledTime)
+          .then((r) => { if (r.due) console.log("[uiu-api] cron igQueue:", JSON.stringify(r)); })
+          .catch((err) => console.error("[uiu-api] cron igQueue failed:", err instanceof Error ? err.message : String(err))),
+      );
       ctx.waitUntil(
         runDiagnostics(env)
           .then((result) => {
@@ -285,6 +295,7 @@ export default {
           console.error("[uiu-api] cron igTokenHealth failed:", err instanceof Error ? err.message : String(err));
         }),
       );
+      ctx.waitUntil(purgeExpiredMedia(env).then((n) => { if (n) console.log("[uiu-api] cron igMediaPurge:", n); }).catch(() => undefined));
       // Guest mode: daily delete of guest data older than 7 days (services/guest.ts).
       ctx.waitUntil(
         withDb(env, (db) => cleanupExpiredGuests(db, true))

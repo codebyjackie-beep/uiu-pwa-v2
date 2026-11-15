@@ -7,9 +7,10 @@
  * - executePublish(): the real Graph API calls (container -> poll -> media_publish [-> first comment]).
  *
  * Instagram's Content Publishing API has NO scheduling parameter (unlike Facebook Pages'
- * scheduled_publish_time), so scheduled posting is intentionally not supported here: the caller
- * (AI Office / cron) decides *when* to call this endpoint. Media must be fetchable by Instagram
- * from a public HTTPS URL (IG's servers download it) — see routes/adminIgPublish.ts header.
+ * scheduled_publish_time; checked against Meta's Content Publishing guide 2026-11-15), so a future
+ * `publishAt` is implemented by us: the request is queued in Mongo (services/igPublishQueue.ts) and
+ * the hourly cron publishes it. Media must be fetchable by Instagram from a public HTTPS URL
+ * (IG's servers download it) — see routes/adminIgPublish.ts header.
  */
 import type { InstagramAccount } from "./instagram";
 
@@ -26,6 +27,8 @@ export interface IgPublishRequest {
   videoUrl?: string;
   coverUrl?: string;
   firstComment?: string;
+  /** Normalised UTC ISO instant (on the hour). Present => queue for the hourly cron instead of publishing now. */
+  publishAt?: string;
   /** Real publish only when exactly `true`. */
   write: boolean;
 }
@@ -56,12 +59,32 @@ export function checkPublicUrl(raw: unknown, label: string): string | null {
   return null;
 }
 
-export function validatePublishRequest(body: unknown): Validation {
+export const MAX_SCHEDULE_AHEAD_MS = 30 * 24 * 3600 * 1000;
+const ISO_WITH_OFFSET = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+
+/** Parse `publishAt`: ISO-8601 WITH offset, on a UTC hour boundary (the cron fires at :00), 1 min .. 30 days ahead. */
+export function parsePublishAt(raw: unknown, now: number): { ok: true; iso: string } | { ok: false; error: string } {
+  if (typeof raw !== "string" || !ISO_WITH_OFFSET.test(raw)) return { ok: false, error: 'publishAt must be an ISO-8601 time WITH offset, e.g. "2026-11-16T18:00:00+00:00" or "...Z"' };
+  const t = Date.parse(raw);
+  if (Number.isNaN(t)) return { ok: false, error: "publishAt is not a valid time" };
+  if (t % 3600000 !== 0) return { ok: false, error: "publishAt must be on a UTC hour boundary (the scheduler fires hourly at :00 UTC; 18:00 UK = 18:00Z in winter / 17:00Z in summer)" };
+  if (t < now + 60000) return { ok: false, error: "publishAt must be in the future" };
+  if (t > now + MAX_SCHEDULE_AHEAD_MS) return { ok: false, error: "publishAt is more than 30 days ahead" };
+  return { ok: true, iso: new Date(t).toISOString() };
+}
+
+export function validatePublishRequest(body: unknown, now: number = Date.now()): Validation {
   const errors: string[] = [];
   if (!body || typeof body !== "object" || Array.isArray(body)) return { ok: false, errors: ["body must be a JSON object"] };
   const b = body as Record<string, unknown>;
-  const allowed = new Set(["type", "caption", "imageUrl", "imageUrls", "videoUrl", "coverUrl", "firstComment", "write"]);
-  for (const k of Object.keys(b)) if (!allowed.has(k)) errors.push(`unknown field "${k}" (scheduling is not supported by the Instagram API)`);
+  const allowed = new Set(["type", "caption", "imageUrl", "imageUrls", "videoUrl", "coverUrl", "firstComment", "publishAt", "write"]);
+  for (const k of Object.keys(b)) if (!allowed.has(k)) errors.push(`unknown field "${k}"`);
+  let publishAt: string | undefined;
+  if (b.publishAt !== undefined) {
+    const pa = parsePublishAt(b.publishAt, now);
+    if (pa.ok) publishAt = pa.iso;
+    else errors.push(pa.error);
+  }
 
   const type = b.type;
   if (type !== "image" && type !== "carousel" && type !== "reel") errors.push('type must be "image", "carousel" or "reel"');
@@ -121,6 +144,7 @@ export function validatePublishRequest(body: unknown): Validation {
       videoUrl: b.videoUrl as string | undefined,
       coverUrl: b.coverUrl as string | undefined,
       firstComment: typeof b.firstComment === "string" ? b.firstComment.trim() : undefined,
+      publishAt,
       write: b.write === true,
     },
   };
@@ -162,8 +186,27 @@ export function buildGraphPlan(req: IgPublishRequest, igUserId: string): Planned
   return [...kids, parent, publish, ...comment];
 }
 
+export type GraphErrorKind = "auth" | "permission" | "rate_limit" | "media" | "unknown";
+
+/** Classify a Graph error body so callers (AI Office publisher) can raise needs_jackie with a clear reason. Never retry on any kind. */
+export function classifyGraphError(text: string): { kind: GraphErrorKind; graphCode?: number } {
+  let code: number | undefined;
+  try {
+    const j = JSON.parse(text) as { error?: { code?: number } };
+    code = typeof j.error?.code === "number" ? j.error.code : undefined;
+  } catch {
+    /* non-JSON body */
+  }
+  if (code === undefined) return { kind: "unknown" };
+  if (code === 190 || code === 102) return { kind: "auth", graphCode: code };
+  if (code === 10 || code === 200 || code === 3) return { kind: "permission", graphCode: code };
+  if (code === 4 || code === 17 || code === 32 || code === 613 || code === 9) return { kind: "rate_limit", graphCode: code };
+  if (code === 9004 || code === 9007 || code === 36000 || code === 36001 || code === 36003) return { kind: "media", graphCode: code };
+  return { kind: "unknown", graphCode: code };
+}
+
 export class GraphError extends Error {
-  constructor(message: string, readonly status: number) {
+  constructor(message: string, readonly status: number, readonly kind: GraphErrorKind = "unknown", readonly graphCode?: number) {
     super(message);
   }
 }
@@ -183,7 +226,10 @@ async function graphPost(account: InstagramAccount, path: string, params: Record
   url.searchParams.set("access_token", account.accessToken);
   const res = await f(url, { method: "POST" });
   const text = await res.text();
-  if (!res.ok) throw new GraphError(`Graph ${path} failed: ${res.status} ${redact(text, account.accessToken)}`, res.status);
+  if (!res.ok) {
+    const c = classifyGraphError(text);
+    throw new GraphError(`Graph ${path} failed: ${res.status} ${redact(text, account.accessToken)}`, res.status, c.kind, c.graphCode);
+  }
   let json: { id?: string };
   try {
     json = JSON.parse(text) as { id?: string };
