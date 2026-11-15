@@ -33,7 +33,7 @@ ok("image valid", v1.ok);
 eq("write defaults false", v1.ok && v1.value.write, false);
 eq("write true only when true", validatePublishRequest({ ...img, write: true }).ok && (validatePublishRequest({ ...img, write: true }) as { value: IgPublishRequest }).value.write, true);
 ok("write string rejected", !validatePublishRequest({ ...img, write: "true" }).ok);
-ok("scheduledAt rejected", !validatePublishRequest({ ...img, scheduledAt: "2026-11-12T18:00:00Z" }).ok);
+ok("unknown scheduledAt field rejected", !validatePublishRequest({ ...img, scheduledAt: "2026-11-12T18:00:00Z" }).ok);
 ok("missing caption", !validatePublishRequest({ ...img, caption: "  " }).ok);
 ok("caption too long", !validatePublishRequest({ ...img, caption: "a".repeat(2201) }).ok);
 ok("31 hashtags", !validatePublishRequest({ ...img, caption: Array.from({ length: 31 }, (_, i) => `#t${i}`).join(" ") }).ok);

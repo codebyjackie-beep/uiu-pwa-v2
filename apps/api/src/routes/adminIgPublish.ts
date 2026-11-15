@@ -8,20 +8,24 @@
  *   - Identical content already published in the last 24h is refused (409) — no accidental double posts.
  *   - Every request writes an `ig_publish_audit` record (never the token, no health data).
  *
- * Media URLs: Instagram's servers download the media from a public HTTPS URL. Today the API can
- * only host PNGs it rendered itself (services/igMediaStore.ts -> /api/ig-media/<id>.png, stored in
- * Mongo). There is NO upload route and NO video hosting (R2 is not enabled on the Cloudflare
- * account), so Bella's mp4/jpg files on Jackie's PC cannot be published until a public host exists
- * (enable R2 + upload route, or any public HTTPS host). Note IG's docs say image_url must be JPEG.
+ * Media URLs: Instagram's servers download the media from a public HTTPS URL. Admin uploads go
+ * through POST /api/admin/ig-media (routes/adminIgMedia.ts; JPEG/PNG <= 8 MB, MP4/MOV <= 15 MB, Mongo-backed
+ * because R2 is not enabled) and are served at /api/ig-media/u/<id>.<ext>. IG's docs say image_url must be JPEG.
  *
- * Scheduling: the Instagram Graph API has no scheduled-publish parameter, so none is offered.
- * The caller (AI Office / cron) invokes this endpoint at the desired time.
+ * Scheduling: the Instagram Graph API has no scheduled-publish parameter, so `publishAt` (ISO with offset,
+ * on a UTC hour boundary, <= 30 days ahead) queues the post in Mongo and the hourly cron publishes it
+ * (services/igPublishQueue.ts). Queue results: GET /queue/:id. Failures are terminal (never retried) and
+ * carry error.code/kind so the AI Office publisher can raise needs_jackie.
+ *
+ * GET /diagnostics = read-only token/scope check (never returns the token).
  */
 import { Hono } from "hono";
 import type { ApiResponse } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 import { requireAdmin } from "../adminAuth";
 import { accountFor, type PublishEnv } from "../jobs/igContentAgent";
+import { enqueuePost, getJob, cancelJob, listJobs, serializeJob, QUEUE as QUEUE_COLLECTION } from "../services/igPublishQueue";
+import { runIgDiagnostics } from "../services/igDiagnostics";
 import { buildGraphPlan, contentHash, executePublish, GraphError, pausedRefusal, validatePublishRequest } from "../services/igPublish";
 
 type Bindings = DbEnv & {
@@ -58,6 +62,7 @@ adminIgPublishRouter.post("/", async (c) => {
     caption: req.caption,
     mediaUrls: req.type === "image" ? [req.imageUrl] : req.type === "carousel" ? req.imageUrls : [req.videoUrl, ...(req.coverUrl ? [req.coverUrl] : [])],
     hasFirstComment: !!req.firstComment,
+    publishAt: req.publishAt ?? null,
     igUserId: account.igUserId,
     contentHash: hash,
     createdAt: new Date().toISOString(),
@@ -74,7 +79,7 @@ adminIgPublishRouter.post("/", async (c) => {
     }
     const body: ApiResponse<unknown> = {
       ok: true,
-      data: { dryRun: true, wouldRefuseRealPublish: pausedReason, graphCalls: plan, auditId, note: "No Graph API call made. Send write:true to publish for real." },
+      data: { dryRun: true, wouldRefuseRealPublish: pausedReason, graphCalls: plan, auditId, schedule: req.publishAt ? { publishAt: req.publishAt, mode: "queued", firedBy: "hourly cron at :00 UTC (never retried)" } : { mode: "immediate" }, note: "No Graph API call made. Send write:true to publish (or queue, when publishAt is set) for real." },
     };
     return c.json(body);
   }
@@ -86,11 +91,29 @@ adminIgPublishRouter.post("/", async (c) => {
   }
   if (!c.env.IG_TOKEN_UIU || !c.env.IG_ID_UIU) return fail(c, 500, "ig_not_configured", "IG_TOKEN_UIU / IG_ID_UIU missing");
 
+  if (req.publishAt) {
+    try {
+      const since = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
+      const published = await withDb(c.env, (db) => db.collection(AUDIT).findOne({ contentHash: hash, status: { $in: ["published", "publishing"] }, createdAt: { $gte: since } }));
+      if (published) return fail(c, 409, "duplicate_publish", "Identical content was published (or is publishing) in the last 24h", { auditId: String(published._id) });
+      const queued = await enqueuePost(c.env, req, hash);
+      if ("duplicate" in queued) return fail(c, 409, "duplicate_scheduled", "Identical content is already scheduled", { queueId: String(queued.duplicate._id), publishAt: queued.duplicate.publishAt });
+      const body: ApiResponse<unknown> = { ok: true, data: { dryRun: false, scheduled: true, queueId: queued.id, publishAt: req.publishAt, note: "Queued; the hourly cron publishes at publishAt. Poll GET /api/admin/ig-publish/queue/<queueId>." } };
+      return c.json(body);
+    } catch (err) {
+      console.error("[uiu-api] ig-publish enqueue failed:", err instanceof Error ? err.message : String(err));
+      return fail(c, 502, "db_error", "Could not queue the scheduled post");
+    }
+  }
+
   let auditId: unknown;
   try {
     const since = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
     const dup = await withDb(c.env, (db) => db.collection(AUDIT).findOne({ contentHash: hash, status: { $in: ["published", "publishing"] }, createdAt: { $gte: since } }));
     if (dup) return fail(c, 409, "duplicate_publish", "Identical content was published (or is publishing) in the last 24h", { auditId: String(dup._id), mediaId: dup.mediaId ?? null });
+    // An identical post already waiting in the schedule queue would publish a second copy later (outside the 24h window).
+    const pending = await withDb(c.env, (db) => db.collection(QUEUE_COLLECTION).findOne({ contentHash: hash, status: { $in: ["scheduled", "publishing"] } }));
+    if (pending) return fail(c, 409, "duplicate_scheduled", "Identical content is already scheduled; cancel the queued post first", { queueId: String(pending._id), publishAt: pending.publishAt });
     auditId = (await withDb(c.env, (db) => db.collection(AUDIT).insertOne({ ...auditBase, dryRun: false, status: "publishing" }))).insertedId;
   } catch (err) {
     console.error("[uiu-api] ig-publish audit start failed:", err instanceof Error ? err.message : String(err));
@@ -109,6 +132,40 @@ adminIgPublishRouter.post("/", async (c) => {
     const message = err instanceof Error ? err.message : String(err);
     await withDb(c.env, (db) => db.collection(AUDIT).updateOne({ _id: auditId as never }, { $set: { status: "failed", error: message.slice(0, 500), finishedAt: new Date().toISOString() } })).catch(() => undefined);
     console.error("[uiu-api] ig-publish failed:", message);
-    return fail(c, err instanceof GraphError && err.status >= 400 && err.status < 500 ? 400 : 502, "graph_error", message, { auditId: String(auditId) });
+    return fail(c, err instanceof GraphError && err.status >= 400 && err.status < 500 ? 400 : 502, "graph_error", message, {
+      auditId: String(auditId),
+      kind: err instanceof GraphError ? err.kind : "unknown",
+      graphCode: err instanceof GraphError ? err.graphCode : undefined,
+      retryable: false,
+    });
   }
+});
+
+// ---- scheduled queue (read / cancel) ----
+adminIgPublishRouter.get("/queue", async (c) => {
+  const jobs = await listJobs(c.env, c.req.query("status") || undefined).catch(() => null);
+  if (!jobs) return fail(c, 502, "db_error", "Could not read the queue");
+  return c.json({ ok: true, data: { jobs: jobs.map(serializeJob) } } satisfies ApiResponse<unknown>);
+});
+
+adminIgPublishRouter.get("/queue/:id", async (c) => {
+  const job = await getJob(c.env, c.req.param("id")).catch(() => null);
+  if (!job) return fail(c, 404, "not_found", "No such queued post");
+  return c.json({ ok: true, data: serializeJob(job) } satisfies ApiResponse<unknown>);
+});
+
+// Cancel only works while still "scheduled" (dry-run default: ?write=true to actually cancel).
+adminIgPublishRouter.post("/queue/:id/cancel", async (c) => {
+  const job = await getJob(c.env, c.req.param("id")).catch(() => null);
+  if (!job) return fail(c, 404, "not_found", "No such queued post");
+  if (c.req.query("write") !== "true") return c.json({ ok: true, data: { dryRun: true, wouldCancel: job.status === "scheduled", status: job.status } } satisfies ApiResponse<unknown>);
+  const done = await cancelJob(c.env, c.req.param("id"));
+  if (!done) return fail(c, 409, "not_cancellable", `Post is "${String(job.status)}", only "scheduled" posts can be cancelled`);
+  return c.json({ ok: true, data: { cancelled: true } } satisfies ApiResponse<unknown>);
+});
+
+// ---- read-only token / scope diagnostics (GET only; never returns the token) ----
+adminIgPublishRouter.get("/diagnostics", async (c) => {
+  const diag = await runIgDiagnostics(c.env.IG_ID_UIU, c.env.IG_TOKEN_UIU);
+  return c.json({ ok: true, data: { ...diag, automationPaused: c.env.IG_AUTOMATION_PAUSED ?? null } } satisfies ApiResponse<unknown>);
 });
