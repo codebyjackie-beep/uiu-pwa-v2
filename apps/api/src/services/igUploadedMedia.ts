@@ -23,6 +23,8 @@ export const MEDIA_TTL_DAYS = 35;
 
 export type SniffedMedia = { kind: "image" | "video"; contentType: "image/jpeg" | "image/png" | "video/mp4" | "video/quicktime"; ext: "jpg" | "png" | "mp4" | "mov"; igCompatible: boolean; note?: string };
 
+const MP4_BRANDS = new Set(["isom", "iso2", "iso4", "iso5", "iso6", "mp41", "mp42", "avc1", "M4V ", "M4VH", "dash"]);
+
 /** Identify the file from its first bytes. Returns null for anything we don't accept. */
 export function sniffMedia(b: Uint8Array): SniffedMedia | null {
   if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return { kind: "image", contentType: "image/jpeg", ext: "jpg", igCompatible: true };
@@ -32,7 +34,8 @@ export function sniffMedia(b: Uint8Array): SniffedMedia | null {
   if (b.length >= 12 && b[4] === 0x66 && b[5] === 0x74 && b[6] === 0x79 && b[7] === 0x70) {
     const brand = String.fromCharCode(b[8]!, b[9]!, b[10]!, b[11]!);
     if (brand === "qt  ") return { kind: "video", contentType: "video/quicktime", ext: "mov", igCompatible: true };
-    return { kind: "video", contentType: "video/mp4", ext: "mp4", igCompatible: true };
+    if (MP4_BRANDS.has(brand)) return { kind: "video", contentType: "video/mp4", ext: "mp4", igCompatible: true };
+    return null; // other ISO-BMFF (HEIC/AVIF photos etc.)
   }
   return null;
 }

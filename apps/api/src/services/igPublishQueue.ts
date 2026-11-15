@@ -51,11 +51,22 @@ export function serializeJob(d: Document) {
 
 export async function enqueuePost(env: DbEnv, req: IgPublishRequest, hash: string): Promise<{ id: string } | { duplicate: Document }> {
   return withDb(env, async (db) => {
-    const dup = await db.collection(QUEUE).findOne({ contentHash: hash, status: { $in: ["scheduled", "publishing"] } });
+    const col = db.collection(QUEUE);
+    // DB-level guard: at most one *scheduled* job per contentHash (closes the findOne/insertOne race).
+    await col.createIndex({ contentHash: 1 }, { unique: true, partialFilterExpression: { status: "scheduled" }, name: "uniq_scheduled_hash" }).catch(() => undefined);
+    const dup = await col.findOne({ contentHash: hash, status: { $in: ["scheduled", "publishing"] } });
     if (dup) return { duplicate: dup };
     const { write: _w, ...stored } = req;
-    const res = await db.collection(QUEUE).insertOne({ req: stored, publishAt: req.publishAt!, status: "scheduled", contentHash: hash, createdAt: new Date().toISOString() });
-    return { id: String(res.insertedId) };
+    try {
+      const res = await col.insertOne({ req: stored, publishAt: req.publishAt!, status: "scheduled", contentHash: hash, createdAt: new Date().toISOString() });
+      return { id: String(res.insertedId) };
+    } catch (err) {
+      if ((err as { code?: number }).code === 11000) {
+        const again = await col.findOne({ contentHash: hash, status: "scheduled" });
+        if (again) return { duplicate: again };
+      }
+      throw err;
+    }
   });
 }
 

@@ -39,6 +39,7 @@ eq("png not IG compatible", sniffMedia(png)?.igCompatible, false);
 eq("mp4", sniffMedia(mp4)?.ext, "mp4");
 eq("mov", sniffMedia(mov)?.ext, "mov");
 eq("html rejected", sniffMedia(new TextEncoder().encode("<html>")), null);
+eq("heic (ftyp heic) rejected", sniffMedia(Uint8Array.from([0, 0, 0, 0x18, 0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63])), null);
 eq("empty rejected", checkUpload(new Uint8Array(0)).ok, false);
 const bigImg = new Uint8Array(8 * 1024 * 1024 + 1);
 bigImg.set(jpeg);

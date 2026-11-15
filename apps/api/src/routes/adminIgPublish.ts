@@ -24,7 +24,7 @@ import type { ApiResponse } from "@uiu/shared";
 import { withDb, type DbEnv } from "../db";
 import { requireAdmin } from "../adminAuth";
 import { accountFor, type PublishEnv } from "../jobs/igContentAgent";
-import { enqueuePost, getJob, cancelJob, listJobs, serializeJob } from "../services/igPublishQueue";
+import { enqueuePost, getJob, cancelJob, listJobs, serializeJob, QUEUE as QUEUE_COLLECTION } from "../services/igPublishQueue";
 import { runIgDiagnostics } from "../services/igDiagnostics";
 import { buildGraphPlan, contentHash, executePublish, GraphError, pausedRefusal, validatePublishRequest } from "../services/igPublish";
 
@@ -111,6 +111,9 @@ adminIgPublishRouter.post("/", async (c) => {
     const since = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
     const dup = await withDb(c.env, (db) => db.collection(AUDIT).findOne({ contentHash: hash, status: { $in: ["published", "publishing"] }, createdAt: { $gte: since } }));
     if (dup) return fail(c, 409, "duplicate_publish", "Identical content was published (or is publishing) in the last 24h", { auditId: String(dup._id), mediaId: dup.mediaId ?? null });
+    // An identical post already waiting in the schedule queue would publish a second copy later (outside the 24h window).
+    const pending = await withDb(c.env, (db) => db.collection(QUEUE_COLLECTION).findOne({ contentHash: hash, status: { $in: ["scheduled", "publishing"] } }));
+    if (pending) return fail(c, 409, "duplicate_scheduled", "Identical content is already scheduled; cancel the queued post first", { queueId: String(pending._id), publishAt: pending.publishAt });
     auditId = (await withDb(c.env, (db) => db.collection(AUDIT).insertOne({ ...auditBase, dryRun: false, status: "publishing" }))).insertedId;
   } catch (err) {
     console.error("[uiu-api] ig-publish audit start failed:", err instanceof Error ? err.message : String(err));
