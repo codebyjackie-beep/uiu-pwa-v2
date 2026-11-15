@@ -21,7 +21,7 @@ import { evalSameDish, restoreWithdrawn, RecipeWithdrawInputError, withdrawRecip
 import { findIngredientLines, renameIngredientLines, RecipeIngredientRenameInputError, rollbackIngredientRename } from "../services/recipeIngredientRename";
 import { PUSH_SUBSCRIPTIONS, sendExpiryReminders, sendPush } from "../services/webPush";
 import { cleanupExpiredGuests } from "../services/guest";
-import { notify, setupChat, NotifyError } from "../services/cloudNotify";
+import { notify, notifyStructured, setupChat, validateNotifyRequest, NotifyError } from "../services/cloudNotify";
 import { priceRefreshRollback, recipeCostRollback, RollbackInputError } from "../services/adminRollbacks";
 import { openManualRun, processPriceRefresh, getRun } from "../jobs/priceRefresh";
 import { addOverride, listOverrides, OverrideInputError, removeOverrides } from "../services/priceRefreshOverrides";
@@ -220,7 +220,10 @@ adminRouter.post("/recipe-cost/rollback", async (c) => {
 
 // Cloud-session -> Jackie Telegram notifications (dedicated bot, services/cloudNotify.ts).
 //   POST /api/admin/notify/setup  — saves the chat id after Jackie has messaged the bot once.
-//   POST /api/admin/notify        body { text } — sends a plain-text message.
+//   POST /api/admin/notify        body { title (<=100), body? (<=400), url? (https://claude.ai/...) }
+//                                 — AI Office final/needs_jackie ping; same title within 5 min is not re-sent.
+//                                 Legacy body { text } still accepted (no limits/dedupe); never both shapes at once.
+//   Never log title/body/url or the chat id.
 function notifyError(c: any, err: unknown) {
   if (err instanceof NotifyError) return c.json({ ok: false, error: { code: "notify_error", message: err.message } } satisfies ApiResponse<never>, 400);
   console.error("[uiu-api] notify error:", err instanceof Error ? err.message : String(err));
@@ -235,10 +238,23 @@ adminRouter.post("/notify/setup", async (c) => {
   }
 });
 adminRouter.post("/notify", async (c) => {
-  const body = (await c.req.json().catch(() => null)) as { text?: string } | null;
-  if (!body?.text?.trim()) return c.json({ ok: false, error: { code: "bad_request", message: "text is required" } } satisfies ApiResponse<never>, 400);
+  const raw = (await c.req.json().catch(() => null)) as Record<string, unknown> | null;
+  const bad = (message: string) => c.json({ ok: false, error: { code: "bad_request", message } } satisfies ApiResponse<never>, 400);
+  if (raw && typeof raw === "object" && "title" in raw) {
+    if ("text" in raw) return bad("send either { title, body?, url? } or { text }, not both");
+    const v = validateNotifyRequest(raw);
+    if (!v.ok) return bad(v.message);
+    try {
+      const out = await withDb(c.env, (db) => notifyStructured(c.env, db, v.value));
+      return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
+    } catch (err) {
+      return notifyError(c, err);
+    }
+  }
+  const text = raw && typeof raw.text === "string" ? raw.text : "";
+  if (!text.trim()) return bad("title (or legacy text) is required");
   try {
-    const out = await withDb(c.env, (db) => notify(c.env, db, body.text!));
+    const out = await withDb(c.env, (db) => notify(c.env, db, text));
     return c.json({ ok: true, data: out } satisfies ApiResponse<typeof out>);
   } catch (err) {
     return notifyError(c, err);
