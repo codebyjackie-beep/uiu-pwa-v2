@@ -1892,13 +1892,17 @@ a {
   text-transform: uppercase;
   color: var(--accent);
 }
+.kitchen-tip-card__stack {
+  display: grid;
+}
 .kitchen-tip-card__text {
+  grid-area: 1 / 1;
   margin: 0;
   font-size: 15px;
   line-height: 1.45;
   color: var(--fg);
 }
-.kitchen-tip-card__text--pending {
+.kitchen-tip-card__text--hidden {
   visibility: hidden;
 }
 

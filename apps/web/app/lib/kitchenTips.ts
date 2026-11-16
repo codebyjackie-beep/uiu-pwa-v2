@@ -3,8 +3,9 @@
  * Every day (UK date) three tips are picked for everyone; each app open shows one of the three.
  *
  * Content rules: no prices, no absolute food-safety promises. Storage, date-label and reheating
- * tips follow Food Standards Agency / Love Food Hate Waste wording. Ids are stable — add new
- * tips at the end, never renumber.
+ * tips are written to follow Food Standards Agency / Love Food Hate Waste advice (not checked
+ * line by line against the source — food-safety ids to review: 27, 29, 30, 32, 33, 36-39, 78).
+ * Ids are stable — add new tips at the end, never renumber.
  */
 export type KitchenTip = { id: number; text: string };
 

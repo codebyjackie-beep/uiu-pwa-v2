@@ -21,7 +21,7 @@ function readIndex(store: Storage, key: string, dateKey: string, count: number):
 }
 
 export function KitchenTipCard({ tips, dateKey }: { tips: string[]; dateKey: string }) {
-  // null until mounted: the tip to show depends on browser storage, so the text is hidden (space kept) to avoid a flash.
+  // null until mounted: the tip to show depends on browser storage, so no tip is visible yet (space is kept) to avoid a flash.
   const [index, setIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -47,9 +47,19 @@ export function KitchenTipCard({ tips, dateKey }: { tips: string[]; dateKey: str
   return (
     <section className="kitchen-tip-card" aria-label="Kitchen tip">
       <h2 className="kitchen-tip-card__title">Kitchen tip</h2>
-      <p className={index === null ? "kitchen-tip-card__text kitchen-tip-card__text--pending" : "kitchen-tip-card__text"}>
-        {tips[index ?? 0]}
-      </p>
+      {/* All of today's tips sit in the same grid cell, so the card is always as tall as the longest one
+          and nothing below it moves when the tip to show is known. Only the active tip is visible / read out. */}
+      <div className="kitchen-tip-card__stack">
+        {tips.map((tip, i) => (
+          <p
+            key={tip}
+            className={i === index ? "kitchen-tip-card__text" : "kitchen-tip-card__text kitchen-tip-card__text--hidden"}
+            aria-hidden={i === index ? undefined : true}
+          >
+            {tip}
+          </p>
+        ))}
+      </div>
     </section>
   );
 }
