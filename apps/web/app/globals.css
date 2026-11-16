@@ -1875,6 +1875,33 @@ a {
 }
 
 /* Home "This week" card (UI refresh A) */
+/* Home "Kitchen tip" card (Jackie 2026-11-16): one short tip under the greeting. */
+.kitchen-tip-card {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kitchen-tip-card__title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.kitchen-tip-card__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--fg);
+}
+.kitchen-tip-card__text--pending {
+  visibility: hidden;
+}
+
 .home-week-card {
   background: var(--card);
   border-radius: 22px;
