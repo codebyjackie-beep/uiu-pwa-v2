@@ -1885,12 +1885,9 @@ a {
   gap: 6px;
 }
 .kitchen-tip-card__title {
+  /* Same look as the "This week" card title. */
   margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-size: 20px;
 }
 .kitchen-tip-card__stack {
   display: grid;
