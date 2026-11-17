@@ -8,6 +8,8 @@ import { apiGet, apiPost } from "./lib/api";
 import { dayIndexLabel, todayDayIndex } from "./lib/dates";
 import { InstallButton } from "./InstallButton";
 import { OnboardingOverlay } from "./OnboardingOverlay";
+import { KitchenTipCard } from "./components/KitchenTipCard";
+import { londonDateKey, tipsForDay } from "./lib/kitchenTips";
 
 // The Recipes hint is filled in at render time from the live recipe total (see Home()).
 type ImpactBucket = { items: number; valueGbp: number };
@@ -92,6 +94,9 @@ export default async function Home() {
     : firstName
       ? `Good ${ukHour < 12 ? "morning" : ukHour < 18 ? "afternoon" : "evening"}, ${firstName}`
       : "Welcome back";
+  // Kitchen tip card: today's three tips (UK date, same for everyone); the card rotates through them per app open.
+  const tipDateKey = londonDateKey(now);
+  const kitchenTips = tipsForDay(tipDateKey).map((t) => t.text);
   const expiredCount = expiring.filter((i) => daysLeft(i.expiresAt) < 0).length;
   const today = todayDayIndex();
   const plannedDays = new Set(activeDetail ? activeDetail.days.filter((d) => d.entries.length > 0).map((d) => d.dayIndex) : []);
@@ -106,6 +111,8 @@ export default async function Home() {
         <h1 className="home-hero__title">{greeting}</h1>
         <InstallButton />
       </section>
+
+      <KitchenTipCard tips={kitchenTips} dateKey={tipDateKey} />
 
       {expiring.length ? (
         <section className="use-soon-card" aria-label="Use it up soon">
