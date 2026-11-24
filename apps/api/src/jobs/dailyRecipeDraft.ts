@@ -19,9 +19,21 @@ import {
   readDraftState,
   savePendingQueue,
   selectPriorityGapTargets,
+  ROTATION_CUISINES,
+  ROTATION_DIETS,
   type DraftQueue,
   type IdeaSpec,
 } from "../services/recipeDraftGenerator";
+import {
+  buildRefillSpecs,
+  emptyStats,
+  PEXELS_RESERVE,
+  recordError,
+  refillCount,
+  SPOONACULAR_COST,
+  SubrequestBudget,
+  type DraftRunStats,
+} from "./dailyRecipeDraftOutcome";
 import { fetchSpoonacularIdeas, type SpoonacularEnv } from "../services/spoonacular";
 import { draftRecipe, type OpenRouterEnv } from "../services/openrouter";
 import { cleanCanonicalNamesForPrompt, sanitizeRecipeText } from "../services/recipeTextSanitize";
@@ -46,7 +58,10 @@ export interface DailyRecipeDraftSummary {
   priorityTargets: GapMatrixCell[];
   draftedTargets: GapTarget[];
   created: number;
+  /** Specs (incl. refill specs) that ended without a draft — dedup OR API error; see `stats` for which. */
   skippedDuplicates: number;
+  /** Dedup rule counts, real API errors, refill/budget usage — feeds classifyDraftRun() for cron_run_log. */
+  stats: DraftRunStats;
   drafts: Array<{ title: string; sourceInspiration: string; gapTarget?: GapTarget }>;
   /** Batching status (see DEFAULT_DRAFTS_PER_DAY below) — normally one invocation drains the whole day's quota (RECIPE_DRAFTS_PER_DAY); the resume machinery only kicks in if the quota is ever raised above what one invocation can safely attempt under Cloudflare's subrequest cap. */
   batch: { attempted: number; remainingAfterThisRun: number; queueDate: string; alreadyCompletedToday: boolean };
@@ -103,6 +118,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       draftedTargets: [],
       created: 0,
       skippedDuplicates: 0,
+      stats: emptyStats(),
       drafts: [],
       batch: { attempted: 0, remainingAfterThisRun: 0, queueDate: today, alreadyCompletedToday: true },
     };
@@ -152,9 +168,13 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
   const drafts: RecipeDraft[] = [];
   const summaryDrafts: DailyRecipeDraftSummary["drafts"] = [];
   let skippedDuplicates = 0;
+  const stats = emptyStats();
+  // One subrequest budget for the day's specs AND refill specs (see SUBREQUEST_BUDGET).
+  const budget = new SubrequestBudget();
+  let specsRun = 0;
 
-  for (let i = 0; i < specs.length; i++) {
-    const spec = specs[i]!;
+  const runSpec = async (spec: IdeaSpec): Promise<void> => {
+    const i = specsRun++;
     const gapTarget = spec.kind === "gap" ? { slot: spec.slot as MealSlot, dietary: spec.dietary, countBefore: spec.countBefore } : undefined;
 
     // "Skip too-similar ideas, substitute another" (handoff) — up to
@@ -172,6 +192,10 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
     const MAX_ATTEMPTS = 3;
     for (let attempt = 0; attempt < MAX_ATTEMPTS && !drafted; attempt++) {
+      if (!budget.canAttempt()) {
+        stats.budgetExhausted = true;
+        break;
+      }
       // Spacing calls out avoids RapidAPI's free-tier per-second throttling
       // (observed live 2026-07-31 as 429s when requests fire back-to-back) —
       // distinct from fetchSpoonacularIdeas' own single-retry-on-429 backoff.
@@ -180,6 +204,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
       idea = null;
       try {
         const q = ideaQuery(spec);
+        budget.charge(SPOONACULAR_COST);
         const ideas = await fetchSpoonacularIdeas(env, { ...q, number: 5, offset: attempt * 5 });
         for (const candidate of ideas) {
           const match = findTitleMatch(candidate.title, usedTitlesThisRun);
@@ -187,10 +212,13 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
             idea = candidate;
             break;
           }
+          stats.ideaSkips[match.rule] += 1;
           console.log("[uiu-api] dedup skip (idea):", JSON.stringify({ candidate: candidate.title, matchedTitle: match.matchedTitle, rule: match.rule }));
         }
+        if (ideas.length === 0) stats.emptyIdeaBatches += 1;
         if (!idea && ideas.length > 0 && attempt === MAX_ATTEMPTS - 1) idea = ideas[0]!; // last attempt: best-effort fallback, still logged as a real inspiration
       } catch (err) {
+        recordError(stats, "spoonacular", err);
         console.error("[uiu-api] spoonacular fetch failed for spec", JSON.stringify(spec), "attempt", attempt, err instanceof Error ? err.message : String(err));
       }
       if (!idea) continue;
@@ -199,6 +227,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
         // 2026-11-08: the first auto-triage rejected 9/10 drafts as same_dish (salmon crêpe drafted 3x in 10 days).
         // Tell the model which similar dishes already exist (public + pending + this run) so it steers away up front.
         const avoidDishes = rankSimilarRecipes({ title: idea.title, ingredientNames: [] }, similarityCorpus, AVOID_DISHES_IN_PROMPT).map((r) => r.title);
+        budget.charge(1);
         const rawCandidate = await draftRecipe(env, {
           dishIdea: idea.title,
           avoidDishes,
@@ -213,40 +242,47 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
           console.log("[uiu-api] draft text fixed:", JSON.stringify({ candidate: rawCandidate.title, fields: sanitized.changes.map((c) => c.field) }));
         }
         if (sanitized.unknownPlaceholders.length > 0) {
+          stats.draftSkips.placeholder += 1;
           console.log("[uiu-api] draft skip (placeholder):", JSON.stringify({ candidate: rawCandidate.title, placeholders: sanitized.unknownPlaceholders }));
           continue; // substitute another idea next attempt
         }
         const candidate = sanitized.recipe;
         const draftedMatch = findTitleMatch(candidate.title, usedTitlesThisRun);
         if (draftedMatch) {
+          stats.draftSkips[draftedMatch.rule] += 1;
           console.log("[uiu-api] dedup skip (drafted):", JSON.stringify({ candidate: candidate.title, matchedTitle: draftedMatch.matchedTitle, rule: draftedMatch.rule }));
           continue; // substitute another idea next attempt, per handoff
         }
         const near = findNearDuplicateRecipe({ title: candidate.title, ingredientNames: candidate.ingredients.map((g) => g.name) }, similarityCorpus);
         if (near) {
+          stats.draftSkips.near_duplicate += 1;
           console.log("[uiu-api] dedup skip (near-duplicate):", JSON.stringify({ candidate: candidate.title, ...near }));
           continue; // substitute another idea next attempt
         }
         // Same AI same-dish check auto-triage uses (services/sameDish.ts), so renamed repeats never reach the queue.
         // On API failure keep the draft — auto-triage re-checks before anything goes public.
         const candidateSim = { title: candidate.title, ingredientNames: candidate.ingredients.map((g) => g.name) };
+        budget.charge(1);
         const sameDish = await findSameDishLLM(env, candidateSim, similarityCorpus).catch((err) => {
+          stats.sameDishCheckErrors += 1;
           console.error("[uiu-api] same-dish check failed (draft kept):", candidate.title, err instanceof Error ? err.message : String(err));
           return null;
         });
         if (sameDish) {
+          stats.draftSkips.same_dish += 1;
           console.log("[uiu-api] dedup skip (same-dish):", JSON.stringify({ candidate: candidate.title, ...sameDish }));
           continue; // substitute another idea next attempt
         }
         drafted = candidate;
       } catch (err) {
+        recordError(stats, "openrouter", err);
         console.error("[uiu-api] OpenRouter draft failed for idea", idea.title, "attempt", attempt, err instanceof Error ? err.message : String(err));
       }
     }
 
     if (!idea || !drafted) {
       skippedDuplicates += 1;
-      continue;
+      return;
     }
     usedTitlesThisRun.push(drafted.title);
     similarityCorpus.push({ title: drafted.title, ingredientNames: drafted.ingredients.map((g) => g.name) });
@@ -265,6 +301,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
     // Fetch the photo at creation time (HANDOFF_recipe-image-gaps.md §2) — lets the review
     // UI show an image before approve, and lets approve reuse it instead of re-calling Pexels.
+    budget.charge(PEXELS_RESERVE);
     const imageUrl = await findRecipePhoto(env, drafted.title, { used: usedPhotos }).catch(() => null);
 
     const draft: RecipeDraft = {
@@ -290,7 +327,31 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     };
     drafts.push(draft);
     summaryDrafts.push({ title: draft.title, sourceInspiration: draft.sourceInspiration, gapTarget: draft.gapTarget });
+  };
+
+  for (const spec of specs) await runSpec(spec);
+
+  // Refill (2026-11-24): when dedup leaves the run short of its target, try fresh rotation
+  // specs — at most MAX_REFILL_ROUNDS rounds / MAX_REFILL_SPECS specs, and only while the
+  // shared SubrequestBudget still fits a worst-case attempt. No infinite loop, no extra spend
+  // beyond the job's pre-existing worst case.
+  const target = specs.length;
+  for (;;) {
+    const count = refillCount({ target, created: drafts.length, roundsDone: stats.refillRounds, refillSpecsSoFar: stats.refillSpecs, budget });
+    if (count === 0) {
+      if (drafts.length < target && !budget.canAttempt()) stats.budgetExhausted = true;
+      break;
+    }
+    const refill = buildRefillSpecs(ROTATION_CUISINES, ROTATION_DIETS, state.lastCuisineIndex, state.lastDietIndex, queue.specs.length + stats.refillSpecs, count);
+    stats.refillRounds += 1;
+    stats.refillSpecs += refill.length;
+    console.log("[uiu-api] dailyRecipeDraft refill round:", JSON.stringify({ round: stats.refillRounds, specs: refill, created: drafts.length, target, subrequestsUsed: budget.used }));
+    for (const spec of refill) {
+      if (drafts.length >= target) break;
+      await runSpec(spec);
+    }
   }
+  stats.subrequestsUsed = budget.used;
 
   if (!dryRun && drafts.length > 0) {
     await withDb(env, async (db) => {
@@ -318,6 +379,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     draftedTargets,
     created: drafts.length,
     skippedDuplicates,
+    stats,
     drafts: summaryDrafts,
     batch: { attempted: specs.length, remainingAfterThisRun: remainingAfterThisRun.length, queueDate: today, alreadyCompletedToday: false },
   };

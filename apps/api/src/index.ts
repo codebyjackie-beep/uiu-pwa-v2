@@ -20,6 +20,7 @@ import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts } from "./jobs/precomputeRecipeCosts";
 import { anomalyAlertText } from "./jobs/recipeCostGate";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
+import { classifyDraftRun } from "./jobs/dailyRecipeDraftOutcome";
 import { dailyAutoTriage } from "./jobs/dailyAutoTriage";
 import { runDiagnostics } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
@@ -369,16 +370,26 @@ export default {
       ctx.waitUntil(
         dailyRecipeDraft(env, false)
           .then((summary) => {
-            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates, batch: summary.batch }));
             // Same "resolves normally with zero output" risk as igContentAgent — each spec's
             // OpenRouter/Spoonacular calls are caught per-attempt inside dailyRecipeDraft, so a
-            // billing/API outage shows up as created:0 here, not a rejection.
-            const ok = summary.batch.alreadyCompletedToday || summary.batch.attempted === 0 || summary.created > 0;
+            // billing/API outage shows up as created:0 here, not a rejection. classifyDraftRun()
+            // separates that (ok:false + real HTTP status) from "every idea was a duplicate"
+            // (ok:true, reason all_deduped) using the per-run stats.
+            const outcome = classifyDraftRun({
+              created: summary.created,
+              target: summary.batch.attempted,
+              alreadyCompletedToday: summary.batch.alreadyCompletedToday,
+              stats: summary.stats,
+            });
+            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates, batch: summary.batch, outcome }));
             return recordCronRun(env, {
               jobName: "dailyRecipeDraft",
-              ok,
+              ok: outcome.ok,
               itemsProcessed: summary.created,
-              errorMessage: ok ? undefined : `${summary.batch.attempted} specs attempted, 0 created — check wrangler tail for the underlying error`,
+              errorMessage: outcome.errorMessage,
+              reason: outcome.reason,
+              note: outcome.note,
+              detail: outcome.detail,
             }).catch(() => {});
           })
           .catch((err) => {
