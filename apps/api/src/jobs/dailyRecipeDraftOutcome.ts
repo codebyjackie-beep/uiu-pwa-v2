@@ -64,12 +64,13 @@ export function emptyStats(): DraftRunStats {
 }
 
 /**
- * Model-output failures: draftRecipe() throws these when the HTTP call succeeded but the content
- * was empty / not JSON / not the Recipe shape (services/openrouter.ts). Everything else, notably
- * "<API> request failed: <status> ..." and network errors, is treated as a real API error.
+ * Model-output failures: draftRecipe() throws "OpenRouter response ..." when the HTTP call
+ * succeeded but the model's content was empty / not JSON / not the Recipe shape
+ * (services/openrouter.ts). Everything else is a real API error, including
+ * "<API> request failed: <status>", network errors, and a bare SyntaxError from res.json()
+ * (HTTP 200 but the body isn't JSON, e.g. an HTML error page from Spoonacular/RapidAPI).
  */
 export function isModelOutputError(err: unknown): boolean {
-  if (err instanceof SyntaxError) return true;
   const message = err instanceof Error ? err.message : String(err);
   return /^OpenRouter response\b/.test(message);
 }
@@ -161,8 +162,12 @@ export function buildRefillSpecs(cuisines: readonly string[], diets: readonly st
 export const INVOCATION_SUBREQUEST_CAP = 50;
 /** Headroom for anything not charged explicitly (e.g. Mongo connects, recordCronRun). */
 export const INVOCATION_SAFETY_MARGIN = 5;
-/** Triage worst case per draft (services/recipeDraftTriage.ts approve path): image check, Pexels fallback, re-check, same-dish LLM, approve-time Pexels. */
-export const TRIAGE_PER_ITEM_WORST_CASE = 5;
+/**
+ * Triage worst case per draft (services/recipeDraftTriage.ts): original image check 2 (imageLoads
+ * HEAD, then GET on 405/501) + Pexels fallback search 1 + fallback image check 2 + same-dish LLM
+ * at approve 1 = 6. (Rex 2026-11-24: 5 allowed draftUsed=4 -> 8 items -> 53 > 50.)
+ */
+export const TRIAGE_PER_ITEM_WORST_CASE = 6;
 /** Triage fixed cost: one Telegram message (summary or sanity-gate warning). */
 export const TRIAGE_FIXED_COST = 1;
 
@@ -179,7 +184,7 @@ export function triageItemLimit(draftSubrequestsUsed: number, maxPerRun: number)
 // cron_run_log classification
 // ---------------------------------------------------------------------------
 
-export type DraftRunReason = "already_completed" | "nothing_to_do" | "created" | "partial" | "all_deduped" | "all_dropped" | "no_candidates" | "api_error";
+export type DraftRunReason = "already_completed" | "nothing_to_do" | "created" | "partial" | "all_deduped" | "all_dropped" | "model_output_error" | "no_candidates" | "api_error";
 
 export interface DraftRunClassification {
   ok: boolean;
@@ -235,6 +240,9 @@ export function classifyDraftRun(run: { created: number; target: number; already
   if (created >= target) return { ok: true, reason: "created", note: head + tail, detail };
   if (created > 0) return { ok: true, reason: "partial", note: head + tail, detail };
   if (stats.errorCount > 0) return { ok: false, reason: "api_error", errorMessage: `api_error: ${head}${tail}`, detail };
+  // Model errors with zero dedup = the model itself is broken (delisted model, 200 + {"error":..}):
+  // ok:false so the health monitor alerts instead of staying silently ok:true forever.
+  if (stats.modelOutputErrors > 0 && totalDedupSkips(stats) === 0) return { ok: false, reason: "model_output_error", errorMessage: `model_output_error: ${head}${tail}`, detail };
   if (stats.modelOutputErrors > 0) return { ok: true, reason: "all_dropped", note: `all_dropped (dedup + model output errors): ${head}${tail}`, detail };
   if (totalDedupSkips(stats) > 0) return { ok: true, reason: "all_deduped", note: `all_deduped: ${head}`, detail };
   return { ok: false, reason: "no_candidates", errorMessage: `no_candidates: Spoonacular returned 0 ideas (${stats.emptyIdeaBatches} empty batches); ${head}`, detail };

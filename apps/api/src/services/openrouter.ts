@@ -99,7 +99,13 @@ function extractJson(text: string): unknown {
   const trimmed = text.trim();
   const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
   const candidate = fenced ? fenced[1]! : trimmed;
-  return JSON.parse(candidate);
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    // Distinct message so cron logging can tell bad MODEL output apart from a non-JSON HTTP body
+    // (res.json() SyntaxError = API problem). See jobs/dailyRecipeDraftOutcome.ts isModelOutputError.
+    throw new Error("OpenRouter response content was not valid JSON");
+  }
 }
 
 export async function draftRecipe(env: OpenRouterEnv, input: DraftPromptInput): Promise<DraftedRecipe> {

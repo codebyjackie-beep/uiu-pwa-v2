@@ -166,18 +166,28 @@ eq("refill: api error → 0", refillCount({ target: 3, created: 0, roundsDone: 0
 {
   eq("isModelOutputError: no content", isModelOutputError(new Error("OpenRouter response had no message content")), true);
   eq("isModelOutputError: bad shape", isModelOutputError(new Error("OpenRouter response did not match the expected Recipe shape")), true);
-  eq("isModelOutputError: SyntaxError", isModelOutputError(new SyntaxError("Unexpected token")), true);
+  eq("isModelOutputError: content not JSON", isModelOutputError(new Error("OpenRouter response content was not valid JSON")), true);
+  eq("isModelOutputError: bare SyntaxError (res.json on HTML body) is API", isModelOutputError(new SyntaxError("Unexpected token '<'")), false);
   eq("isModelOutputError: 402 is API", isModelOutputError(new Error("OpenRouter request failed: 402")), false);
   eq("isModelOutputError: Spoonacular 403 is API", isModelOutputError(new Error("Spoonacular request failed: 403")), false);
   const stats = emptyStats();
   recordError(stats, "openrouter", new Error("OpenRouter response did not match the expected Recipe shape"));
-  recordError(stats, "openrouter", new SyntaxError("Unexpected end of JSON input"));
+  recordError(stats, "openrouter", new Error("OpenRouter response content was not valid JSON"));
   eq("model errors not in errorCount", stats.errorCount, 0);
   eq("modelOutputErrors counted", stats.modelOutputErrors, 2);
+  const m = classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats });
+  eq("only model errors, 0 dedup → ok:false", m.ok, false);
+  eq("only model errors, 0 dedup → model_output_error", m.reason, "model_output_error");
+  has("model_output_error errorMessage", m.errorMessage, "model output errors 2");
+  stats.draftSkips.same_dish = 1;
   const r = classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats });
-  eq("only model errors → ok", r.ok, true);
-  eq("only model errors → all_dropped", r.reason, "all_dropped");
+  eq("model errors + dedup → ok", r.ok, true);
+  eq("model errors + dedup → all_dropped", r.reason, "all_dropped");
   has("all_dropped note", r.note, "model output errors 2");
+  const s2 = emptyStats();
+  recordError(s2, "spoonacular", new SyntaxError("Unexpected token '<'"));
+  eq("res.json SyntaxError → errorCount", s2.errorCount, 1);
+  eq("res.json SyntaxError → api_error", classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats: s2 }).reason, "api_error");
   eq("model errors don't block refill", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: new SubrequestBudget(), apiErrorCount: stats.errorCount }), 3);
   recordError(stats, "openrouter", new Error("OpenRouter request failed: 429"));
   eq("model + API error → api_error", classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats }).reason, "api_error");
@@ -197,9 +207,11 @@ eq("refill: api error → 0", refillCount({ target: 3, created: 0, roundsDone: 0
   const per = TRIAGE_PER_ITEM_WORST_CASE;
   const fixed = INVOCATION_SAFETY_MARGIN + TRIAGE_FIXED_COST;
   eq("triage: draft used 0 → capped at max 10", triageItemLimit(0, 10), Math.min(10, Math.floor((INVOCATION_SUBREQUEST_CAP - fixed) / per)));
-  eq("triage: draft used 15 → 5", triageItemLimit(15, 10), 5);
-  eq("triage: draft used full 39 → 1", triageItemLimit(SUBREQUEST_BUDGET, 10), 1);
-  eq("triage: draft used 41 → 0 (skip)", triageItemLimit(41, 10), 0);
+  eq("triage per-item worst case = 6", per, 6);
+  eq("triage: draft used 0 → 7", triageItemLimit(0, 10), 7);
+  eq("triage: Rex counterexample draft 4 → 6 (4+36+1=41)", triageItemLimit(4, 10), 6);
+  eq("triage: draft used 15 → 4", triageItemLimit(15, 10), 4);
+  eq("triage: draft used full 39 → 0 (skip)", triageItemLimit(SUBREQUEST_BUDGET, 10), 0);
   for (let used = 0; used <= SUBREQUEST_BUDGET; used++) {
     const n = triageItemLimit(used, 10);
     if (used + TRIAGE_FIXED_COST + n * per > INVOCATION_SUBREQUEST_CAP - INVOCATION_SAFETY_MARGIN) eq(`triage: total under cap at used=${used}`, false, true);

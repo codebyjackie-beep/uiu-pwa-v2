@@ -354,6 +354,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     console.log("[uiu-api] dailyRecipeDraft refill round:", JSON.stringify({ round: stats.refillRounds, specs: refill, created: drafts.length, target, subrequestsUsed: budget.used }));
     for (const spec of refill) {
       if (drafts.length >= target) break;
+      if (stats.errorCount > 0) break; // API error mid-round: don't run the rest of this round
       await runSpec(spec, true);
     }
   }
