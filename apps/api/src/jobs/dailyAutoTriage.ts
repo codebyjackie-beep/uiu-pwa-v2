@@ -27,9 +27,16 @@ export interface DailyAutoTriageSummary {
   stayedPending: number;
 }
 
-export async function dailyAutoTriage(env: DailyAutoTriageEnv): Promise<DailyAutoTriageSummary> {
+/**
+ * `maxItems` (2026-11-24): the 07:00 cron passes what's left of the per-invocation subrequest cap
+ * after dailyRecipeDraft (triageItemLimit in jobs/dailyRecipeDraftOutcome.ts). 0 = skip before
+ * any external call. Omitted = AUTO_TRIAGE_MAX_PER_RUN (unchanged behaviour).
+ */
+export async function dailyAutoTriage(env: DailyAutoTriageEnv, maxItems: number = AUTO_TRIAGE_MAX_PER_RUN): Promise<DailyAutoTriageSummary> {
   const empty = { approved: 0, rejected: 0, needsReview: 0, stayedPending: 0 };
   if (env.AUTO_TRIAGE_CRON !== "true") return { enabled: false, skipped: "AUTO_TRIAGE_CRON is not \"true\"", ...empty };
+  const limit = Math.min(AUTO_TRIAGE_MAX_PER_RUN, Math.max(0, Math.floor(maxItems)));
+  if (limit === 0) return { enabled: true, skipped: "subrequest budget", ...empty };
 
   return withDb(env, async (db) => {
     const plan = await planTriage(db);
@@ -37,7 +44,7 @@ export async function dailyAutoTriage(env: DailyAutoTriageEnv): Promise<DailyAut
       await sendTelegram(env, `⚠️ Auto-triage skipped: sanity gate (approve ${plan.counts.approve_candidate}, reject ${plan.counts.reject}).`).catch(() => {});
       return { enabled: true, skipped: "sanity gate", ...empty };
     }
-    const ids = [...plan.ids.approve_candidate, ...plan.ids.reject, ...plan.ids.needs_review].slice(0, AUTO_TRIAGE_MAX_PER_RUN);
+    const ids = [...plan.ids.approve_candidate, ...plan.ids.reject, ...plan.ids.needs_review].slice(0, limit);
     if (ids.length === 0) return { enabled: true, skipped: "nothing to triage", ...empty };
 
     const batchId = newBatchId();

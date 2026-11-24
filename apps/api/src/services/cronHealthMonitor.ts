@@ -21,6 +21,12 @@ interface CronRunLogDoc {
   ok: boolean;
   errorMessage?: string;
   itemsProcessed?: number;
+  /** Short machine reason, e.g. dailyRecipeDraft "all_deduped" / "api_error" (2026-11-24). */
+  reason?: string;
+  /** Human summary for ok:true runs (errorMessage stays reserved for failures / Telegram alert). */
+  note?: string;
+  /** Small counts object (no health data, no secrets). */
+  detail?: Record<string, unknown>;
 }
 
 const TTL_SECONDS = 30 * 24 * 60 * 60; // "3. cron_run_log唔使無限長" — keep 30 days, Mongo TTL index does the sweep.
@@ -28,7 +34,7 @@ const TTL_SECONDS = 30 * 24 * 60 * 60; // "3. cron_run_log唔使無限長" — k
 /** Called from index.ts's scheduled() .then()/.catch() for each monitored job — records every run, success or failure. */
 export async function recordCronRun(
   env: DbEnv,
-  record: { jobName: MonitoredJobName; ok: boolean; errorMessage?: string; itemsProcessed?: number },
+  record: Omit<CronRunLogDoc, "firedAt">,
 ): Promise<void> {
   await withDb(env, async (db) => {
     const col = db.collection<Document>("cron_run_log");

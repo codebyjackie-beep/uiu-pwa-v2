@@ -20,7 +20,8 @@ import { recipeBrowseStateRouter } from "./routes/recipeBrowseState";
 import { precomputeRecipeCosts } from "./jobs/precomputeRecipeCosts";
 import { anomalyAlertText } from "./jobs/recipeCostGate";
 import { dailyRecipeDraft } from "./jobs/dailyRecipeDraft";
-import { dailyAutoTriage } from "./jobs/dailyAutoTriage";
+import { classifyDraftRun, SUBREQUEST_BUDGET, triageItemLimit } from "./jobs/dailyRecipeDraftOutcome";
+import { AUTO_TRIAGE_MAX_PER_RUN, dailyAutoTriage } from "./jobs/dailyAutoTriage";
 import { runDiagnostics } from "./jobs/pwaDiagnostics";
 import { sendTelegram } from "./services/telegram";
 import { runAffiliateCron } from "./jobs/igContentAgent";
@@ -366,19 +367,33 @@ export default {
       return;
     }
     if (event.cron === "0 7 * * *") {
+      // Draft job + auto-triage + Telegram share ONE invocation's subrequest cap (50). Triage only
+      // gets what the draft job left over; if the draft job threw, assume it used its full budget.
+      let draftSubrequestsUsed = SUBREQUEST_BUDGET;
       ctx.waitUntil(
         dailyRecipeDraft(env, false)
           .then((summary) => {
-            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates, batch: summary.batch }));
+            draftSubrequestsUsed = summary.stats.subrequestsUsed;
             // Same "resolves normally with zero output" risk as igContentAgent — each spec's
             // OpenRouter/Spoonacular calls are caught per-attempt inside dailyRecipeDraft, so a
-            // billing/API outage shows up as created:0 here, not a rejection.
-            const ok = summary.batch.alreadyCompletedToday || summary.batch.attempted === 0 || summary.created > 0;
+            // billing/API outage shows up as created:0 here, not a rejection. classifyDraftRun()
+            // separates that (ok:false + real HTTP status) from "every idea was a duplicate"
+            // (ok:true, reason all_deduped) using the per-run stats.
+            const outcome = classifyDraftRun({
+              created: summary.created,
+              target: summary.batch.attempted,
+              alreadyCompletedToday: summary.batch.alreadyCompletedToday,
+              stats: summary.stats,
+            });
+            console.log("[uiu-api] cron dailyRecipeDraft:", JSON.stringify({ created: summary.created, skippedDuplicates: summary.skippedDuplicates, batch: summary.batch, outcome }));
             return recordCronRun(env, {
               jobName: "dailyRecipeDraft",
-              ok,
+              ok: outcome.ok,
               itemsProcessed: summary.created,
-              errorMessage: ok ? undefined : `${summary.batch.attempted} specs attempted, 0 created — check wrangler tail for the underlying error`,
+              errorMessage: outcome.errorMessage,
+              reason: outcome.reason,
+              note: outcome.note,
+              detail: outcome.detail,
             }).catch(() => {});
           })
           .catch((err) => {
@@ -387,10 +402,20 @@ export default {
             return recordCronRun(env, { jobName: "dailyRecipeDraft", ok: false, errorMessage }).catch(() => {});
           })
           // Then auto-triage pending drafts (jobs/dailyAutoTriage.ts) — no-op unless AUTO_TRIAGE_CRON = "true".
-          .then(() => dailyAutoTriage(env))
+          .then(() => {
+            const maxItems = triageItemLimit(draftSubrequestsUsed, AUTO_TRIAGE_MAX_PER_RUN);
+            console.log("[uiu-api] cron dailyAutoTriage budget:", JSON.stringify({ draftSubrequestsUsed, maxItems }));
+            return dailyAutoTriage(env, maxItems);
+          })
           .then((t) => {
             console.log("[uiu-api] cron dailyAutoTriage:", JSON.stringify(t));
-            return recordCronRun(env, { jobName: "dailyAutoTriage", ok: true, itemsProcessed: t.approved + t.rejected + t.needsReview }).catch(() => {});
+            return recordCronRun(env, {
+              jobName: "dailyAutoTriage",
+              ok: true,
+              itemsProcessed: t.approved + t.rejected + t.needsReview,
+              reason: t.skipped === "subrequest budget" ? "skipped_budget" : t.skipped ? "skipped" : undefined,
+              note: t.skipped ? `skipped: ${t.skipped}${t.skipped === "subrequest budget" ? ` (draft job used ~${draftSubrequestsUsed} subrequests)` : ""}` : undefined,
+            }).catch(() => {});
           })
           .catch((err) => {
             const errorMessage = err instanceof Error ? err.message : String(err);
