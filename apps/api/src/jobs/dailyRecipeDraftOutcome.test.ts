@@ -7,10 +7,16 @@ import {
   MAX_REFILL_ROUNDS,
   MAX_REFILL_SPECS,
   PEXELS_RESERVE,
+  INVOCATION_SUBREQUEST_CAP,
+  INVOCATION_SAFETY_MARGIN,
+  isModelOutputError,
   recordError,
   refillCount,
   SUBREQUEST_BUDGET,
   SubrequestBudget,
+  TRIAGE_FIXED_COST,
+  TRIAGE_PER_ITEM_WORST_CASE,
+  triageItemLimit,
 } from "./dailyRecipeDraftOutcome";
 
 let fail = 0;
@@ -31,11 +37,11 @@ const has = (label: string, s: string | undefined, needle: string) => eq(`${labe
   eq("all-deduped → ok", r.ok, true);
   eq("all-deduped → reason", r.reason, "all_deduped");
   eq("all-deduped → no errorMessage", r.errorMessage, undefined);
-  has("all-deduped note", r.note, "skippedDuplicates 8");
+  has("all-deduped note", r.note, "dedupSkips 8");
   has("all-deduped note", r.note, "idea exact 4");
   has("all-deduped note", r.note, "idea substring 2");
   has("all-deduped note", r.note, "drafted same_dish 2");
-  eq("all-deduped detail.skippedDuplicates", r.detail?.skippedDuplicates, 8);
+  eq("all-deduped detail.dedupSkips", r.detail?.dedupSkips, 8);
   eq("no 'check wrangler tail' text", (r.note ?? "").includes("wrangler tail"), false);
 }
 
@@ -112,13 +118,13 @@ eq("target 0 → nothing_to_do", classifyDraftRun({ created: 0, target: 0, alrea
   eq("one short → cannot attempt", b.canAttempt(), false);
 
   const fresh = () => new SubrequestBudget();
-  eq("refill: missing 3 → 3", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: fresh() }), 3);
-  eq("refill: missing 1 → 1", refillCount({ target: 3, created: 2, roundsDone: 0, refillSpecsSoFar: 0, budget: fresh() }), 1);
-  eq("refill: target met → 0", refillCount({ target: 3, created: 3, roundsDone: 0, refillSpecsSoFar: 0, budget: fresh() }), 0);
-  eq("refill: max rounds → 0", refillCount({ target: 3, created: 0, roundsDone: MAX_REFILL_ROUNDS, refillSpecsSoFar: 0, budget: fresh() }), 0);
-  eq("refill: spec cap trims", refillCount({ target: 3, created: 0, roundsDone: 1, refillSpecsSoFar: MAX_REFILL_SPECS - 1, budget: fresh() }), 1);
-  eq("refill: spec cap reached → 0", refillCount({ target: 3, created: 0, roundsDone: 1, refillSpecsSoFar: MAX_REFILL_SPECS, budget: fresh() }), 0);
-  eq("refill: budget gone → 0", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: b }), 0);
+  eq("refill: missing 3 → 3", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: fresh(), apiErrorCount: 0 }), 3);
+  eq("refill: missing 1 → 1", refillCount({ target: 3, created: 2, roundsDone: 0, refillSpecsSoFar: 0, budget: fresh(), apiErrorCount: 0 }), 1);
+  eq("refill: target met → 0", refillCount({ target: 3, created: 3, roundsDone: 0, refillSpecsSoFar: 0, budget: fresh(), apiErrorCount: 0 }), 0);
+  eq("refill: max rounds → 0", refillCount({ target: 3, created: 0, roundsDone: MAX_REFILL_ROUNDS, refillSpecsSoFar: 0, budget: fresh(), apiErrorCount: 0 }), 0);
+  eq("refill: spec cap trims", refillCount({ target: 3, created: 0, roundsDone: 1, refillSpecsSoFar: MAX_REFILL_SPECS - 1, budget: fresh(), apiErrorCount: 0 }), 1);
+  eq("refill: spec cap reached → 0", refillCount({ target: 3, created: 0, roundsDone: 1, refillSpecsSoFar: MAX_REFILL_SPECS, budget: fresh(), apiErrorCount: 0 }), 0);
+  eq("refill: budget gone → 0", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: b, apiErrorCount: 0 }), 0);
 
   // Simulate the loop as dailyRecipeDraft runs it, with every attempt deduped (worst cost):
   // it must stop, and never exceed SUBREQUEST_BUDGET.
@@ -127,7 +133,7 @@ eq("target 0 → nothing_to_do", classifyDraftRun({ created: 0, target: 0, alrea
   const runSpec = () => { for (let a = 0; a < 3 && sim.canAttempt(); a++) { sim.charge(ATTEMPT_WORST_CASE); attempts++; } };
   for (let i = 0; i < 3; i++) runSpec();
   for (let guard = 0; guard < 100; guard++) {
-    const n = refillCount({ target: 3, created: 0, roundsDone: rounds, refillSpecsSoFar: refillSpecs, budget: sim });
+    const n = refillCount({ target: 3, created: 0, roundsDone: rounds, refillSpecsSoFar: refillSpecs, budget: sim, apiErrorCount: 0 });
     if (n === 0) break;
     rounds++; refillSpecs += n;
     for (let i = 0; i < n; i++) runSpec();
@@ -139,7 +145,7 @@ eq("target 0 → nothing_to_do", classifyDraftRun({ created: 0, target: 0, alrea
   // Cheap dedup (idea-only skips cost just the Spoonacular call): refill does get budget.
   const cheap = new SubrequestBudget();
   for (let i = 0; i < 9; i++) cheap.charge(2);
-  eq("cheap dedup leaves room for refill", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: cheap }), 3);
+  eq("cheap dedup leaves room for refill", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: cheap, apiErrorCount: 0 }), 3);
 }
 
 // --- refill specs continue the rotation, differ from the day's lockstep pairs ---
@@ -151,6 +157,54 @@ eq("target 0 → nothing_to_do", classifyDraftRun({ created: 0, target: 0, alrea
     { kind: "rotation", cuisine: "e", diet: "x" },
     { kind: "rotation", cuisine: "a", diet: "w" },
   ]);
+}
+
+// --- B: no refill after an API error ---
+eq("refill: api error → 0", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: new SubrequestBudget(), apiErrorCount: 1 }), 0);
+
+// --- E: model-output errors are not API errors ---
+{
+  eq("isModelOutputError: no content", isModelOutputError(new Error("OpenRouter response had no message content")), true);
+  eq("isModelOutputError: bad shape", isModelOutputError(new Error("OpenRouter response did not match the expected Recipe shape")), true);
+  eq("isModelOutputError: SyntaxError", isModelOutputError(new SyntaxError("Unexpected token")), true);
+  eq("isModelOutputError: 402 is API", isModelOutputError(new Error("OpenRouter request failed: 402")), false);
+  eq("isModelOutputError: Spoonacular 403 is API", isModelOutputError(new Error("Spoonacular request failed: 403")), false);
+  const stats = emptyStats();
+  recordError(stats, "openrouter", new Error("OpenRouter response did not match the expected Recipe shape"));
+  recordError(stats, "openrouter", new SyntaxError("Unexpected end of JSON input"));
+  eq("model errors not in errorCount", stats.errorCount, 0);
+  eq("modelOutputErrors counted", stats.modelOutputErrors, 2);
+  const r = classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats });
+  eq("only model errors → ok", r.ok, true);
+  eq("only model errors → all_dropped", r.reason, "all_dropped");
+  has("all_dropped note", r.note, "model output errors 2");
+  eq("model errors don't block refill", refillCount({ target: 3, created: 0, roundsDone: 0, refillSpecsSoFar: 0, budget: new SubrequestBudget(), apiErrorCount: stats.errorCount }), 3);
+  recordError(stats, "openrouter", new Error("OpenRouter request failed: 429"));
+  eq("model + API error → api_error", classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats }).reason, "api_error");
+}
+
+// --- C: detail carries day/refill split ---
+{
+  const stats = emptyStats();
+  stats.ideaSkips.exact = 1; stats.daySpecsSkipped = 3; stats.refillSpecsSkipped = 2;
+  const d = classifyDraftRun({ created: 0, target: 3, alreadyCompletedToday: false, stats }).detail;
+  eq("detail.daySpecsSkipped", d?.daySpecsSkipped, 3);
+  eq("detail.refillSpecsSkipped", d?.refillSpecsSkipped, 2);
+}
+
+// --- A: triage gets only what the draft job left of the 50 cap ---
+{
+  const per = TRIAGE_PER_ITEM_WORST_CASE;
+  const fixed = INVOCATION_SAFETY_MARGIN + TRIAGE_FIXED_COST;
+  eq("triage: draft used 0 → capped at max 10", triageItemLimit(0, 10), Math.min(10, Math.floor((INVOCATION_SUBREQUEST_CAP - fixed) / per)));
+  eq("triage: draft used 15 → 5", triageItemLimit(15, 10), 5);
+  eq("triage: draft used full 39 → 1", triageItemLimit(SUBREQUEST_BUDGET, 10), 1);
+  eq("triage: draft used 41 → 0 (skip)", triageItemLimit(41, 10), 0);
+  for (let used = 0; used <= SUBREQUEST_BUDGET; used++) {
+    const n = triageItemLimit(used, 10);
+    if (used + TRIAGE_FIXED_COST + n * per > INVOCATION_SUBREQUEST_CAP - INVOCATION_SAFETY_MARGIN) eq(`triage: total under cap at used=${used}`, false, true);
+  }
+  eq("triage: total under cap for all draft spends", true, true);
 }
 
 console.log(fail === 0 ? "\nALL PASS" : `\n${fail} FAIL`);

@@ -6,7 +6,10 @@
  *
  * 2026-11-22/23: 3 specs attempted, 0 created, every candidate dropped by dedup — logged as
  * ok:false "check wrangler tail" with no reason. All-dedup is now ok:true reason "all_deduped";
- * only real Spoonacular/OpenRouter errors make a 0-created run ok:false (with the HTTP status text).
+ * only real Spoonacular/OpenRouter API errors (HTTP status / network) make a 0-created run ok:false.
+ * Model-output errors (no content, bad JSON, wrong shape) are counted separately and never fail the run.
+ * - triageItemLimit: the 07:00 invocation also runs dailyAutoTriage, which shares the same
+ *   per-invocation subrequest cap, so triage only gets what the draft job left over.
  */
 import type { RotationIdeaSpec } from "../services/recipeDraftGenerator";
 
@@ -22,9 +25,16 @@ export interface DraftRunStats {
   emptyIdeaBatches: number;
   /** same-dish check API failures — the draft is kept, so these never fail the run. */
   sameDishCheckErrors: number;
-  /** Real API errors (message already carries the HTTP status), first MAX_ERRORS_KEPT only. */
+  /** Real API errors (HTTP status / network; message carries the status), first MAX_ERRORS_KEPT only. */
   errors: Array<{ source: ErrorSource; message: string }>;
+  /** API errors only: these make a 0-created run ok:false and stop refill. */
   errorCount: number;
+  /** Model-output errors (OpenRouter returned no content / unparseable JSON / wrong shape). Never fail the run. */
+  modelOutputErrors: number;
+  /** Day's own specs that ended without a draft (dedup OR error). */
+  daySpecsSkipped: number;
+  /** Refill specs that ended without a draft (dedup OR error). */
+  refillSpecsSkipped: number;
   refillRounds: number;
   refillSpecs: number;
   /** Conservative subrequest estimate charged against SUBREQUEST_BUDGET. */
@@ -43,6 +53,9 @@ export function emptyStats(): DraftRunStats {
     sameDishCheckErrors: 0,
     errors: [],
     errorCount: 0,
+    modelOutputErrors: 0,
+    daySpecsSkipped: 0,
+    refillSpecsSkipped: 0,
     refillRounds: 0,
     refillSpecs: 0,
     subrequestsUsed: 0,
@@ -50,7 +63,22 @@ export function emptyStats(): DraftRunStats {
   };
 }
 
+/**
+ * Model-output failures: draftRecipe() throws these when the HTTP call succeeded but the content
+ * was empty / not JSON / not the Recipe shape (services/openrouter.ts). Everything else, notably
+ * "<API> request failed: <status> ..." and network errors, is treated as a real API error.
+ */
+export function isModelOutputError(err: unknown): boolean {
+  if (err instanceof SyntaxError) return true;
+  const message = err instanceof Error ? err.message : String(err);
+  return /^OpenRouter response\b/.test(message);
+}
+
 export function recordError(stats: DraftRunStats, source: ErrorSource, err: unknown): void {
+  if (isModelOutputError(err)) {
+    stats.modelOutputErrors += 1;
+    return;
+  }
   stats.errorCount += 1;
   if (stats.errors.length >= MAX_ERRORS_KEPT) return;
   const message = (err instanceof Error ? err.message : String(err)).slice(0, MAX_ERROR_MESSAGE_LENGTH);
@@ -70,10 +98,11 @@ export const MAX_REFILL_ROUNDS = 3;
 /** Hard cap on refill specs per invocation (each round adds at most `target - created`). */
 export const MAX_REFILL_SPECS = 6;
 /**
- * Per-invocation subrequest budget shared by the day's specs AND all refill specs. 39 = the
- * worst case the job was already sized for (3 specs x 3 attempts x 4 + 3 Pexels, see
- * dailyRecipeDraft.ts) and stays under Cloudflare's 50/invocation cap (hit live 2026-08-04).
- * So refill never raises the worst-case API spend; it only uses budget the dedup skips left unused.
+ * Draft-job subrequest budget, shared by the day's specs AND all refill specs. 39 = the worst
+ * case the draft job alone was already sized for (3 specs x 3 attempts x 4 + 3 Pexels). Refill
+ * never raises the DRAFT JOB's worst case. The whole 07:00 invocation (draft + dailyAutoTriage +
+ * Telegram) is kept under Cloudflare's 50/invocation cap (hit live 2026-08-04) by triageItemLimit():
+ * triage only gets what the draft job left over.
  */
 export const SUBREQUEST_BUDGET = 39;
 /** Worst-case cost of one attempt: Spoonacular (x2 if its 429 retry fires) + OpenRouter draft + same-dish check. */
@@ -95,10 +124,11 @@ export class SubrequestBudget {
   }
 }
 
-/** How many refill specs to add for the next round, or 0 to stop. */
-export function refillCount(args: { target: number; created: number; roundsDone: number; refillSpecsSoFar: number; budget: SubrequestBudget }): number {
+/** How many refill specs to add for the next round, or 0 to stop. No refill once any API error was seen (don't keep hitting a broken API). */
+export function refillCount(args: { target: number; created: number; roundsDone: number; refillSpecsSoFar: number; budget: SubrequestBudget; apiErrorCount: number }): number {
   const missing = args.target - args.created;
   if (missing <= 0) return 0;
+  if (args.apiErrorCount > 0) return 0;
   if (args.roundsDone >= MAX_REFILL_ROUNDS) return 0;
   if (!args.budget.canAttempt()) return 0;
   return Math.max(0, Math.min(missing, MAX_REFILL_SPECS - args.refillSpecsSoFar));
@@ -124,10 +154,32 @@ export function buildRefillSpecs(cuisines: readonly string[], diets: readonly st
 }
 
 // ---------------------------------------------------------------------------
+// Whole-invocation cap: dailyRecipeDraft + dailyAutoTriage run in the same 07:00 cron fire
+// ---------------------------------------------------------------------------
+
+/** Cloudflare per-invocation subrequest cap (observed live 2026-08-04). */
+export const INVOCATION_SUBREQUEST_CAP = 50;
+/** Headroom for anything not charged explicitly (e.g. Mongo connects, recordCronRun). */
+export const INVOCATION_SAFETY_MARGIN = 5;
+/** Triage worst case per draft (services/recipeDraftTriage.ts approve path): image check, Pexels fallback, re-check, same-dish LLM, approve-time Pexels. */
+export const TRIAGE_PER_ITEM_WORST_CASE = 5;
+/** Triage fixed cost: one Telegram message (summary or sanity-gate warning). */
+export const TRIAGE_FIXED_COST = 1;
+
+/**
+ * How many drafts dailyAutoTriage may process after the draft job used `draftSubrequestsUsed`
+ * subrequests in the same invocation. 0 = skip triage this run (recorded as skipped_budget).
+ */
+export function triageItemLimit(draftSubrequestsUsed: number, maxPerRun: number): number {
+  const left = INVOCATION_SUBREQUEST_CAP - INVOCATION_SAFETY_MARGIN - TRIAGE_FIXED_COST - Math.max(0, draftSubrequestsUsed);
+  return Math.max(0, Math.min(maxPerRun, Math.floor(left / TRIAGE_PER_ITEM_WORST_CASE)));
+}
+
+// ---------------------------------------------------------------------------
 // cron_run_log classification
 // ---------------------------------------------------------------------------
 
-export type DraftRunReason = "already_completed" | "nothing_to_do" | "created" | "partial" | "all_deduped" | "no_candidates" | "api_error";
+export type DraftRunReason = "already_completed" | "nothing_to_do" | "created" | "partial" | "all_deduped" | "all_dropped" | "no_candidates" | "api_error";
 
 export interface DraftRunClassification {
   ok: boolean;
@@ -136,7 +188,7 @@ export interface DraftRunClassification {
   errorMessage?: string;
   /** Human summary for ok:true runs. */
   note?: string;
-  detail?: { skippedDuplicates: number; ideaSkips: DraftRunStats["ideaSkips"]; draftSkips: DraftRunStats["draftSkips"]; errorCount: number; refillRounds: number; refillSpecs: number; subrequestsUsed: number };
+  detail?: { dedupSkips: number; ideaSkips: DraftRunStats["ideaSkips"]; draftSkips: DraftRunStats["draftSkips"]; errorCount: number; modelOutputErrors: number; daySpecsSkipped: number; refillSpecsSkipped: number; refillRounds: number; refillSpecs: number; subrequestsUsed: number };
 }
 
 function describeSkips(stats: DraftRunStats): string {
@@ -144,7 +196,7 @@ function describeSkips(stats: DraftRunStats): string {
   if (stats.ideaSkips.exact) parts.push(`idea exact ${stats.ideaSkips.exact}`);
   if (stats.ideaSkips.substring) parts.push(`idea substring ${stats.ideaSkips.substring}`);
   for (const [rule, n] of Object.entries(stats.draftSkips)) if (n) parts.push(`drafted ${rule} ${n}`);
-  return `skippedDuplicates ${totalDedupSkips(stats)}${parts.length ? ` (${parts.join(", ")})` : ""}`;
+  return `dedupSkips ${totalDedupSkips(stats)}${parts.length ? ` (${parts.join(", ")})` : ""}`;
 }
 
 function describeRefill(stats: DraftRunStats): string {
@@ -153,7 +205,10 @@ function describeRefill(stats: DraftRunStats): string {
 
 function describeErrors(stats: DraftRunStats): string {
   const msgs = stats.errors.map((e) => `${e.source}: ${e.message}`).join("; ");
-  return `errors ${stats.errorCount}${msgs ? ` [${msgs}]` : ""}`;
+  const parts: string[] = [];
+  if (stats.errorCount > 0) parts.push(`api errors ${stats.errorCount}${msgs ? ` [${msgs}]` : ""}`);
+  if (stats.modelOutputErrors > 0) parts.push(`model output errors ${stats.modelOutputErrors}`);
+  return parts.join("; ");
 }
 
 export function classifyDraftRun(run: { created: number; target: number; alreadyCompletedToday: boolean; stats: DraftRunStats }): DraftRunClassification {
@@ -162,20 +217,25 @@ export function classifyDraftRun(run: { created: number; target: number; already
   if (target === 0) return { ok: true, reason: "nothing_to_do", note: "0 specs to attempt" };
 
   const detail = {
-    skippedDuplicates: totalDedupSkips(stats),
+    dedupSkips: totalDedupSkips(stats),
     ideaSkips: stats.ideaSkips,
     draftSkips: stats.draftSkips,
     errorCount: stats.errorCount,
+    modelOutputErrors: stats.modelOutputErrors,
+    daySpecsSkipped: stats.daySpecsSkipped,
+    refillSpecsSkipped: stats.refillSpecsSkipped,
     refillRounds: stats.refillRounds,
     refillSpecs: stats.refillSpecs,
     subrequestsUsed: stats.subrequestsUsed,
   };
   const head = `created ${created}/${target}; ${describeSkips(stats)}; ${describeRefill(stats)}`;
-  const tail = stats.errorCount > 0 ? `; ${describeErrors(stats)}` : "";
+  const errs = describeErrors(stats);
+  const tail = errs ? `; ${errs}` : "";
 
   if (created >= target) return { ok: true, reason: "created", note: head + tail, detail };
   if (created > 0) return { ok: true, reason: "partial", note: head + tail, detail };
   if (stats.errorCount > 0) return { ok: false, reason: "api_error", errorMessage: `api_error: ${head}${tail}`, detail };
+  if (stats.modelOutputErrors > 0) return { ok: true, reason: "all_dropped", note: `all_dropped (dedup + model output errors): ${head}${tail}`, detail };
   if (totalDedupSkips(stats) > 0) return { ok: true, reason: "all_deduped", note: `all_deduped: ${head}`, detail };
   return { ok: false, reason: "no_candidates", errorMessage: `no_candidates: Spoonacular returned 0 ideas (${stats.emptyIdeaBatches} empty batches); ${head}`, detail };
 }

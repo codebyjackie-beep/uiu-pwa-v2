@@ -58,7 +58,11 @@ export interface DailyRecipeDraftSummary {
   priorityTargets: GapMatrixCell[];
   draftedTargets: GapTarget[];
   created: number;
-  /** Specs (incl. refill specs) that ended without a draft — dedup OR API error; see `stats` for which. */
+  /**
+   * Kept for admin API compatibility: specs (day's + refill) that ended without a draft for ANY
+   * reason (dedup, API error, model output error), so not a pure dedup count despite the name.
+   * Breakdown: stats.daySpecsSkipped / stats.refillSpecsSkipped + the dedup/error counts in `stats`.
+   */
   skippedDuplicates: number;
   /** Dedup rule counts, real API errors, refill/budget usage — feeds classifyDraftRun() for cron_run_log. */
   stats: DraftRunStats;
@@ -173,7 +177,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
   const budget = new SubrequestBudget();
   let specsRun = 0;
 
-  const runSpec = async (spec: IdeaSpec): Promise<void> => {
+  const runSpec = async (spec: IdeaSpec, isRefill = false): Promise<void> => {
     const i = specsRun++;
     const gapTarget = spec.kind === "gap" ? { slot: spec.slot as MealSlot, dietary: spec.dietary, countBefore: spec.countBefore } : undefined;
 
@@ -282,6 +286,8 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
     if (!idea || !drafted) {
       skippedDuplicates += 1;
+      if (isRefill) stats.refillSpecsSkipped += 1;
+      else stats.daySpecsSkipped += 1;
       return;
     }
     usedTitlesThisRun.push(drafted.title);
@@ -333,13 +339,13 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
 
   // Refill (2026-11-24): when dedup leaves the run short of its target, try fresh rotation
   // specs — at most MAX_REFILL_ROUNDS rounds / MAX_REFILL_SPECS specs, and only while the
-  // shared SubrequestBudget still fits a worst-case attempt. No infinite loop, no extra spend
-  // beyond the job's pre-existing worst case.
+  // shared SubrequestBudget still fits a worst-case attempt, and never after an API error.
+  // No infinite loop; the draft job's worst case is unchanged (triage gets the leftover, see index.ts).
   const target = specs.length;
   for (;;) {
-    const count = refillCount({ target, created: drafts.length, roundsDone: stats.refillRounds, refillSpecsSoFar: stats.refillSpecs, budget });
+    const count = refillCount({ target, created: drafts.length, roundsDone: stats.refillRounds, refillSpecsSoFar: stats.refillSpecs, budget, apiErrorCount: stats.errorCount });
     if (count === 0) {
-      if (drafts.length < target && !budget.canAttempt()) stats.budgetExhausted = true;
+      if (drafts.length < target && stats.errorCount === 0 && !budget.canAttempt()) stats.budgetExhausted = true;
       break;
     }
     const refill = buildRefillSpecs(ROTATION_CUISINES, ROTATION_DIETS, state.lastCuisineIndex, state.lastDietIndex, queue.specs.length + stats.refillSpecs, count);
@@ -348,7 +354,7 @@ export async function dailyRecipeDraft(env: DailyRecipeDraftEnv, dryRun = false)
     console.log("[uiu-api] dailyRecipeDraft refill round:", JSON.stringify({ round: stats.refillRounds, specs: refill, created: drafts.length, target, subrequestsUsed: budget.used }));
     for (const spec of refill) {
       if (drafts.length >= target) break;
-      await runSpec(spec);
+      await runSpec(spec, true);
     }
   }
   stats.subrequestsUsed = budget.used;
