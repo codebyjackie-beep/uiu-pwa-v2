@@ -53,7 +53,9 @@ export function recipeMetaDescription(r: RecipeMetaInput): string {
   ].filter((p): p is string => !!p);
   const facts = parts.length ? parts.join(", ").replace(/^./, (c) => c.toUpperCase()) + "." : "";
 
-  const lead = (r.description ?? "").trim().replace(/\s+/g, " ").split(/(?<=[.!?])\s/)[0] ?? "";
+  const firstSentence = (r.description ?? "").trim().replace(/\s+/g, " ").split(/(?<=[.!?])\s/)[0] ?? "";
+  // "Quick and easy weeknight curry" → "Quick and easy weeknight curry." so it doesn't run into "Serves 4".
+  const lead = firstSentence && !/[.!?…]$/.test(firstSentence) ? `${firstSentence}.` : firstSentence;
   const room = DESCRIPTION_MAX - (facts ? facts.length + 1 : 0);
   const leadFit = lead && room >= 20 ? clamp(lead, room) : "";
 

@@ -42,7 +42,14 @@ function costDisplayFor(recipe: RecipeDetail) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const res = await getRecipe(id);
-  if (!res.ok) return { title: "Recipe not found · UseItUp", robots: { index: false, follow: false } };
+  if (!res.ok) {
+    // Only a definite "no such recipe" is noindexed: 404 (missing / not yours) or 400 (malformed id, never valid).
+    // A 5xx / fetch failure is transient — no robots tag, so a blip can't get a real recipe dropped from Google.
+    if (res.error.code === "http_404" || res.error.code === "http_400") {
+      return { title: "Recipe not found · UseItUp", robots: { index: false, follow: false } };
+    }
+    return { title: "Recipe · UseItUp" };
+  }
 
   const r = res.data;
   const title = recipeMetaTitle(r.title);
@@ -54,7 +61,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     cookTimeMinutes: r.cookTimeMinutes,
     cost: costDisplayFor(r),
   });
-  const url = `/recipes/${id}`;
+  // Prefer the API's own _id over the URL segment (same doc, canonical spelling).
+  const url = `/recipes/${r._id || id}`;
 
   return {
     title,

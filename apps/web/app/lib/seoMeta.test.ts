@@ -57,6 +57,23 @@ const longLead = recipeMetaDescription({
 check("desc: long lead ≤ 155", longLead.length <= DESCRIPTION_MAX, longLead.length);
 check("desc: long lead keeps the price fact whole", longLead.endsWith("about £0.95 per serving at UK supermarkets."), longLead);
 
+const noStop = recipeMetaDescription({
+  description: "Quick and easy weeknight curry",
+  servings: 4,
+  prepTimeMinutes: 10,
+  cookTimeMinutes: 20,
+  cost: { tier: "full", text: "£1.50" },
+});
+check(
+  "desc: lead without full stop gets one",
+  noStop === "Quick and easy weeknight curry. Serves 4, ready in 30 min, about £1.50 per serving at UK supermarkets.",
+  noStop,
+);
+const bang = recipeMetaDescription({ description: "So good!", servings: 2 });
+check("desc: lead ending in ! is left alone", bang === "So good! Serves 2.", bang);
+const leadOnly = recipeMetaDescription({ description: "Just a simple salad" });
+check("desc: lead only, no facts, still gets a full stop", leadOnly === "Just a simple salad.", leadOnly);
+
 check("desc: empty everything → fallback", recipeMetaDescription({}) === RECIPE_DESCRIPTION_FALLBACK);
 const factsOnly = recipeMetaDescription({ servings: 2, cookTimeMinutes: 15, cost: { tier: "full", text: "£2.00" } });
 check("desc: no description → facts only", factsOnly === "Serves 2, ready in 15 min, about £2.00 per serving at UK supermarkets.", factsOnly);
