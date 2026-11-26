@@ -115,9 +115,21 @@ async function main() {
       const items = Array.from({ length: limit }, (_, i) => item(hexId(page * 100000 + i)));
       return okPage(items, 1_000_000, page);
     };
-    const entries = await buildSitemapEntries(fetchPage, silent);
+    const warnings: string[] = [];
+    const entries = await buildSitemapEntries(fetchPage, { ...silent, onWarn: (m) => warnings.push(m) });
     check("paging: capped at SITEMAP_MAX_PAGES calls", calls.length === SITEMAP_MAX_PAGES, calls);
     check("paging: all pages' recipes included", entries.length === 4 + SITEMAP_MAX_PAGES * SITEMAP_PAGE_SIZE, entries.length);
+    check("paging: truncation past the cap warns once", warnings.length === 1 && /truncated/.test(warnings[0]) && warnings[0].includes("1000000"), warnings);
+  }
+  {
+    // Exactly at the cap (total === MAX_PAGES × PAGE_SIZE): nothing truncated → no warning.
+    const warnings: string[] = [];
+    const exact = SITEMAP_MAX_PAGES * SITEMAP_PAGE_SIZE;
+    await buildSitemapEntries(
+      async (page, limit) => okPage(Array.from({ length: limit }, (_, i) => item(hexId(page * 100000 + i))), exact, page),
+      { ...silent, onWarn: (m) => warnings.push(m) },
+    );
+    check("paging: total exactly at the cap → no warning", warnings.length === 0, warnings);
   }
   {
     const calls: number[] = [];

@@ -58,7 +58,12 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 }
 
 /** Public recipe entries, or null on any failure (caller falls back to static pages only). */
-async function recipeEntries(fetchPage: FetchRecipePage, timeoutMs: number): Promise<SitemapEntry[] | null> {
+async function recipeEntries(
+  fetchPage: FetchRecipePage,
+  timeoutMs: number,
+  onWarn?: (message: string) => void,
+): Promise<SitemapEntry[] | null> {
+  let fetched = 0;
   const seen = new Set<string>();
   const entries: SitemapEntry[] = [];
   for (let page = 1; page <= SITEMAP_MAX_PAGES; page++) {
@@ -79,19 +84,25 @@ async function recipeEntries(fetchPage: FetchRecipePage, timeoutMs: number): Pro
         priority: 0.6,
       });
     }
+    fetched += items.length;
     const totalNum = typeof total === "number" && Number.isFinite(total) ? total : 0;
     if (items.length < SITEMAP_PAGE_SIZE || page * SITEMAP_PAGE_SIZE >= totalNum) break;
+    if (page === SITEMAP_MAX_PAGES && totalNum > fetched) {
+      onWarn?.(
+        `public recipes (${totalNum}) exceed the sitemap cap (${SITEMAP_MAX_PAGES} pages x ${SITEMAP_PAGE_SIZE}); truncated after ${fetched}`,
+      );
+    }
   }
   return entries;
 }
 
 export async function buildSitemapEntries(
   fetchPage: FetchRecipePage,
-  opts: { timeoutMs?: number; onError?: (message: string) => void } = {},
+  opts: { timeoutMs?: number; onError?: (message: string) => void; onWarn?: (message: string) => void } = {},
 ): Promise<SitemapEntry[]> {
   const base = staticSitemapEntries();
   try {
-    const recipes = await recipeEntries(fetchPage, opts.timeoutMs ?? SITEMAP_FETCH_TIMEOUT_MS);
+    const recipes = await recipeEntries(fetchPage, opts.timeoutMs ?? SITEMAP_FETCH_TIMEOUT_MS, opts.onWarn);
     if (!recipes) {
       opts.onError?.("recipes API returned a non-ok response");
       return base;

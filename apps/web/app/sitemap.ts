@@ -13,7 +13,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     return await buildSitemapEntries(
       (page, limit) => apiGetPublic<RecipeListPage>(`/api/recipes?limit=${limit}&page=${page}`),
-      { onError: (message) => console.error("[uiu-web] sitemap recipes fallback:", message) },
+      {
+        onError: (message) => console.error("[uiu-web] sitemap recipes fallback:", message),
+        onWarn: (message) => console.warn("[uiu-web] sitemap truncated:", message),
+      },
     );
   } catch {
     return staticSitemapEntries();
