@@ -255,6 +255,11 @@ export interface RecipeListItem {
   enrichmentAttempted?: boolean;
   /** Projected from Recipe.nutritionUnavailable — see that field's doc comment. */
   nutritionUnavailable?: boolean;
+  /** recipes.updatedAt normalised to an ISO-8601 string (stored as BSON Date on older docs,
+   * ISO string on v2-written ones); omitted when missing/unparseable. Tracks recipe-content
+   * writes (create, admin edit, image change, owner edit) — NOT price refreshes, which only
+   * touch recipe_cost. Used for sitemap lastmod. */
+  updatedAt?: ISODate;
 }
 
 export interface RecipeListPage {
