@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Terms of service · UseItUp" };
+export const metadata: Metadata = {
+  title: "Terms of service · UseItUp",
+  description: "The terms that apply when you use the UseItUp app and website.",
+};
 
 /** cc_prompt_terms_page.md — public terms. Content limited to what Jackie confirmed on 2026-10-31
  * (prices, 7-day trial, end-of-period cancellation, 14-day refund, contact, England and Wales). Reuses the privacy-page styles. */

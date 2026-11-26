@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { cache } from "react";
 import {
   formatCostWithCoverage,
   isStockLikeName,
@@ -23,6 +25,56 @@ import {
   mealTypeBadge,
   NUTRITION_NOT_AVAILABLE,
 } from "../../lib/recipeDisplay";
+import { recipeMetaDescription, recipeMetaTitle } from "../../lib/seoMeta";
+
+const DEFAULT_OG_IMAGE = "/og-image.png?v=1";
+
+// One API call per request, shared by generateMetadata and the page.
+const getRecipe = cache((id: string) => apiGet<RecipeDetail>(`/api/recipes/${id}`));
+
+/** Same rule as the cost hero below: only a priced basket gets a cost display. */
+function costDisplayFor(recipe: RecipeDetail) {
+  return recipe.cost && recipe.cost.basket > 0
+    ? formatCostWithCoverage(recipe.cost.perServing, recipe.cost.adjustedCoveragePct)
+    : null;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const res = await getRecipe(id);
+  if (!res.ok) return { title: "Recipe not found · UseItUp", robots: { index: false, follow: false } };
+
+  const r = res.data;
+  const title = recipeMetaTitle(r.title);
+  // Price only when coverage tier is "full" (handled in recipeMetaDescription); partial / unavailable → no £.
+  const description = recipeMetaDescription({
+    description: r.description,
+    servings: r.servings,
+    prepTimeMinutes: r.prepTimeMinutes,
+    cookTimeMinutes: r.cookTimeMinutes,
+    cost: costDisplayFor(r),
+  });
+  const url = `/recipes/${id}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    // The API only returns a non-public recipe to its owner — never index someone's private recipe.
+    robots: r.isPublic === false ? { index: false, follow: false } : undefined,
+    // openGraph / twitter replace the root objects wholesale, so siteName / locale / images are repeated here.
+    openGraph: {
+      type: "article",
+      siteName: "UseItUp",
+      locale: "en_GB",
+      title: r.title,
+      description,
+      url,
+      images: r.imageUrl ? [{ url: r.imageUrl, alt: r.title }] : [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630 }],
+    },
+    twitter: { card: "summary_large_image", title: r.title, description, images: [r.imageUrl || DEFAULT_OG_IMAGE] },
+  };
+}
 
 function lineFor(recipe: RecipeDetail, ingredient: RecipeDetail["ingredients"][number]): RecipeDetailCostLine | undefined {
   return recipe.cost?.lines.find(
@@ -37,7 +89,7 @@ function slotFromBadge(badge: string | null): MealSlot {
 
 export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const res = await apiGet<RecipeDetail>(`/api/recipes/${id}`);
+  const res = await getRecipe(id);
 
   if (!res.ok) {
     return (
@@ -51,13 +103,13 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   const mealBadge = mealTypeBadge(recipe);
   const dietBadgeList = dietaryBadges(recipe);
   const hasCost = recipe.cost && recipe.cost.basket > 0;
-  const costDisplay = hasCost ? formatCostWithCoverage(recipe.cost!.perServing, recipe.cost!.adjustedCoveragePct) : null;
+  const costDisplay = costDisplayFor(recipe);
 
   return (
     <div className="recipe-detail">
       {recipe.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="recipe-detail__image" src={recipe.imageUrl} alt="" />
+        <img className="recipe-detail__image" src={recipe.imageUrl} alt={recipe.title} />
       ) : (
         <div className="recipe-detail__image" />
       )}

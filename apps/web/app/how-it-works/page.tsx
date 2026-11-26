@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { HOW_IT_WORKS } from "../lib/onboardingContent";
@@ -14,6 +15,12 @@ import { StickySignUpBar } from "./StickySignUpBar";
  * public/images/how-it-works/. Plain <img> with explicit dimensions rather than next/image:
  * they are already pre-sized WebP, and the Workers build has no image-optimisation binding.
  */
+export const metadata: Metadata = {
+  title: "How UseItUp Works – Fridge, Meal Plan & Shopping List",
+  description:
+    "Track what’s in your fridge, plan your week and get one shopping list with UK supermarket prices. See what each recipe costs per serving. Free to try.",
+};
+
 const HERO_ID = "how-it-works-hero";
 
 const FEATURES = [

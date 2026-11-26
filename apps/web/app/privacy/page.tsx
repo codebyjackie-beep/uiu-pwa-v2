@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CookieSettingsButton } from "../components/Analytics";
 
-export const metadata: Metadata = { title: "Privacy policy · UseItUp" };
+export const metadata: Metadata = {
+  title: "Privacy policy · UseItUp",
+  description: "How UseItUp collects, uses and protects your personal data.",
+};
 
 /** cc_prompt_meal_grid_profile.md Part PP — public privacy policy (Google Auth Platform branding needs the link).
  * Processors listed are the ones the code actually calls with user data (checked 2026-10-20). */
