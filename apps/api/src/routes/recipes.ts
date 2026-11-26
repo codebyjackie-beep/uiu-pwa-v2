@@ -11,6 +11,7 @@ import type {
 } from "@uiu/shared";
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { optionalClerkUserId, type ClerkAuthEnv } from "../clerkAuth";
+import { toIsoTimestamp } from "../services/isoTimestamp";
 
 export const recipesRouter = new Hono<{ Bindings: DbEnv & ClerkAuthEnv }>();
 
@@ -62,6 +63,7 @@ function toDetailCost(costDoc: Document | null, pantryNames: Set<string> = new S
 }
 
 function toListItem(doc: Document, cost: RecipeListItem["cost"]): RecipeListItem {
+  const updatedAt = toIsoTimestamp(doc.updatedAt);
   return {
     _id: (doc._id as ObjectIdType).toString(),
     title: doc.title as string,
@@ -77,10 +79,11 @@ function toListItem(doc: Document, cost: RecipeListItem["cost"]): RecipeListItem
     ingredientCount: Array.isArray(doc.ingredients) ? doc.ingredients.length : 0,
     enrichmentAttempted: doc.enrichmentAttempted as boolean | undefined,
     nutritionUnavailable: doc.nutritionUnavailable as boolean | undefined,
+    ...(updatedAt ? { updatedAt } : {}),
   };
 }
 
-recipesRouter.get("/", async (c) => {
+recipesRouter.get("/",async (c) => {
   const limitParam = Number(c.req.query("limit"));
   const limit = Number.isFinite(limitParam) && limitParam > 0 ? Math.min(limitParam, MAX_LIMIT) : DEFAULT_LIMIT;
   const pageParam = Number(c.req.query("page"));
