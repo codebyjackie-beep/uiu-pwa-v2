@@ -26,6 +26,7 @@ import {
   NUTRITION_NOT_AVAILABLE,
 } from "../../lib/recipeDisplay";
 import { recipeMetaDescription, recipeMetaTitle } from "../../lib/seoMeta";
+import { buildRecipeJsonLd, serializeJsonLd } from "../../lib/recipeJsonLd";
 
 const DEFAULT_OG_IMAGE = "/og-image.png?v=1";
 
@@ -112,9 +113,28 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   const dietBadgeList = dietaryBadges(recipe);
   const hasCost = recipe.cost && recipe.cost.basket > 0;
   const costDisplay = costDisplayFor(recipe);
+  // schema.org Recipe — public recipes only (helper returns null otherwise); same strings the page renders.
+  const jsonLd = buildRecipeJsonLd({
+    _id: recipe._id || id,
+    title: recipe.title,
+    description: recipe.description,
+    isPublic: recipe.isPublic,
+    imageUrl: recipe.imageUrl,
+    servings: recipe.servings,
+    prepTimeMinutes: recipe.prepTimeMinutes,
+    cookTimeMinutes: recipe.cookTimeMinutes,
+    steps: recipe.steps,
+    ingredientLines: recipe.ingredients.map((ing) => {
+      const line = lineFor(recipe, ing);
+      return `${formatIngredientQuantity(line, { quantity: ing.quantity, unit: ing.unit })} ${ingredientName(line, ing.name)}`;
+    }),
+  });
 
   return (
     <div className="recipe-detail">
+      {jsonLd ? (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
+      ) : null}
       {recipe.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img className="recipe-detail__image" src={recipe.imageUrl} alt={recipe.title} />
