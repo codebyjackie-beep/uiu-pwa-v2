@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ApiResponse, RecipeListItem, RecipeListPage } from "@uiu/shared";
 import { apiGet } from "../lib/api";
 import { Suspense } from "react";
@@ -5,7 +6,11 @@ import RecipesBrowser from "./RecipesBrowser";
 import { pickRandom, RANDOM_BROWSE_SIZE, toBrowseRecipe } from "../lib/recipeBrowse";
 import { FridgeMatches } from "./FridgeMatches";
 
-export const metadata = { title: "Recipes · UseItUp" };
+export const metadata: Metadata = {
+  title: "Recipes with Cost Per Serving · UseItUp",
+  description:
+    "Browse recipes priced at UK supermarkets. See the cost per serving before you shop, filter by meal type and diet, and use up what’s already in your fridge.",
+};
 
 // Page size per API call (the API caps `limit` at 250). The full set is assembled by paging
 // through `total`, so the client-side filter UI below keeps working as the library grows —

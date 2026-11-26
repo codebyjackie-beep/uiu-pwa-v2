@@ -17,12 +17,15 @@ import { CONSENT_COOKIE, parseConsent } from "./lib/analytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://useitup.uk"),
-  title: "UseItUp",
-  description: "Plan meals, track your fridge, shop smart, stay healthy.",
+  // No title.template: pages already set full "X · UseItUp" titles.
+  title: "UseItUp – Recipes with UK Supermarket Prices",
+  description:
+    "Cook what’s about to go off. See what each recipe costs per serving at UK supermarkets, track your fridge and plan your week. Free to try.",
+  // "./" resolves against each request's pathname → every page canonicalises to itself.
+  alternates: { canonical: "./" },
   // Link previews (IG bio, WhatsApp, iMessage, X) — 1200×630 share card.
   openGraph: {
     type: "website",
-    url: "https://useitup.uk",
     siteName: "UseItUp",
     title: "UseItUp — cook what's about to go off",
     description: "See what to use first, what to cook, and what it costs at UK supermarkets. Free, no sign-up to try.",
