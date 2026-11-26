@@ -68,10 +68,22 @@ export async function mintGuestToken(): Promise<{ token: string; expiresAt: stri
 }
 
 export async function apiGet<T>(path: string, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  return apiGetWith<T>(path, await withAuth(headers));
+}
+
+/**
+ * Anonymous GET — no Clerk session / guest cookie lookup. For routes with no user context
+ * (e.g. /sitemap.xml): avoids touching auth()/cookies() and only ever sees public data.
+ */
+export async function apiGetPublic<T>(path: string): Promise<ApiResponse<T>> {
+  return apiGetWith<T>(path, undefined);
+}
+
+async function apiGetWith<T>(path: string, headers: Record<string, string> | undefined): Promise<ApiResponse<T>> {
   try {
     const env = await resolveEnv();
     const url = `${apiBaseUrl(env)}${path}`;
-    const init: RequestInit = { cache: "no-store", headers: await withAuth(headers) };
+    const init: RequestInit = { cache: "no-store", headers };
     const res = env.API ? await env.API.fetch(url, init) : await fetch(url, init);
     if (!res.ok) {
       console.error("[uiu-web] apiGet non-ok response:", path, res.status);
