@@ -337,7 +337,8 @@ export async function applyTriageChunk(db: Db, env: PexelsEnv & Partial<OpenRout
         const rr = await rejectRecipeDraft(db, id, { rejectedReason: reasons.join("; "), triage: { batchId, reasons } });
         if ("ok" in rr) out.rejected.push(id);
         else out.stayedPending.push({ id, reason: "near_duplicate" });
-      } else out.stayedPending.push({ id, reason: "alreadyDecided" in r ? "already_decided" : "not_found" });
+      } else if ("noSteps" in r) out.stayedPending.push({ id, reason: "no_steps" });
+      else out.stayedPending.push({ id, reason: "alreadyDecided" in r ? "already_decided" : "not_found" });
     } else {
       out.stayedPending.push({ id, reason: "rules_not_met" });
     }

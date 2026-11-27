@@ -34,6 +34,56 @@ export function normalizeRecipeSteps(steps: unknown): string[] {
   return steps.map(stepToString).filter((s) => s.length > 0);
 }
 
+/**
+ * Admin PATCH guard for a `steps` value from a request body. Normalizes it (objects → text) and
+ * refuses anything that would leave the recipe with no steps — a non-array, `[]`, or an array with
+ * no usable text — instead of silently writing `[]`.
+ */
+export function parseStepsPatch(raw: unknown): { ok: true; steps: string[] } | { ok: false; message: string } {
+  if (!Array.isArray(raw)) return { ok: false, message: "steps must be an array of strings" };
+  const steps = normalizeRecipeSteps(raw);
+  if (steps.length === 0) return { ok: false, message: "steps must contain at least 1 non-empty step" };
+  return { ok: true, steps };
+}
+
+export interface LlmRecipeShape {
+  title: string;
+  ingredients: Array<{ name: string; quantity: number; unit: string }>;
+  steps: string[];
+}
+
+/**
+ * Shape gate for a recipe JSON object parsed from an LLM reply (draft / fridge / photo / video / text
+ * import). The model sometimes returns a number or object where a string belongs; those values later
+ * crash string code (`.replace`, `.toLowerCase`) far from here. Checks:
+ *   - title is a non-empty string
+ *   - ingredients is an array of ≥ minIngredients objects, each with a non-empty string `name`
+ *   - steps, after normalizeRecipeSteps, has ≥ 1 entry (gate on the NORMALIZED count — an array of
+ *     text-less objects must not pass)
+ * Returns the trimmed title + normalized steps, or a short reason (no recipe content in it).
+ */
+export function checkLlmRecipeShape(
+  parsed: unknown,
+  minIngredients = 0,
+): { ok: true; recipe: LlmRecipeShape } | { ok: false; reason: string } {
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { ok: false, reason: "not an object" };
+  const p = parsed as Record<string, unknown>;
+  if (typeof p.title !== "string" || !p.title.trim()) return { ok: false, reason: "title not a non-empty string" };
+  if (!Array.isArray(p.ingredients)) return { ok: false, reason: "ingredients not an array" };
+  if (p.ingredients.length < minIngredients) return { ok: false, reason: `ingredients < ${minIngredients}` };
+  const badIngredient = p.ingredients.some(
+    (i) => !i || typeof i !== "object" || Array.isArray(i) || typeof (i as Record<string, unknown>).name !== "string" || !((i as Record<string, unknown>).name as string).trim(),
+  );
+  if (badIngredient) return { ok: false, reason: "ingredient name not a non-empty string" };
+  if (!Array.isArray(p.steps)) return { ok: false, reason: "steps not an array" };
+  const steps = normalizeRecipeSteps(p.steps);
+  if (steps.length === 0) return { ok: false, reason: "no usable steps" };
+  return {
+    ok: true,
+    recipe: { title: p.title.trim(), ingredients: p.ingredients as LlmRecipeShape["ingredients"], steps },
+  };
+}
+
 /** True when `steps` is already a string[] with no blank / untrimmed entries (i.e. normalizing changes nothing). */
 export function stepsAreNormalized(steps: unknown): boolean {
   if (!Array.isArray(steps)) return false;

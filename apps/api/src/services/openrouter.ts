@@ -3,7 +3,7 @@
  * Model-agnostic — OPENROUTER_MODEL is a wrangler.toml [vars] entry, not
  * hardcoded, so Jackie can change model without touching code/secrets.
  */
-import { normalizeRecipeSteps } from "./recipeSteps";
+import { checkLlmRecipeShape } from "./recipeSteps";
 export interface OpenRouterEnv {
   OPENROUTER_API_KEY: string;
   OPENROUTER_MODEL: string;
@@ -131,18 +131,19 @@ export async function draftRecipe(env: OpenRouterEnv, input: DraftPromptInput): 
   if (!content) throw new Error("OpenRouter response had no message content");
 
   const parsed = extractJson(content) as Partial<DraftedRecipe>;
-  if (!parsed.title || !Array.isArray(parsed.ingredients) || !Array.isArray(parsed.steps)) {
-    throw new Error("OpenRouter response did not match the expected Recipe shape");
+  // Shape gate: title / ingredients[].name must be real strings (a number/object here used to crash later
+  // as "text.replace is not a function" — counted as an API error, which stopped refill). Steps are
+  // normalized ({name, quantity, unit:"step"}, {text}, ... → string[]) and must not end up empty.
+  // Every failure keeps the "OpenRouter response ..." prefix so isModelOutputError() counts it as bad model output.
+  const shape = checkLlmRecipeShape(parsed);
+  if (!shape.ok) {
+    throw new Error(`OpenRouter response did not match the expected Recipe shape (${shape.reason})`);
   }
-  // The model sometimes returns steps as objects ({name, quantity, unit:"step"}, {text}, ...) — coerce to string[].
-  const steps = normalizeRecipeSteps(parsed.steps);
-  if (steps.length === 0) {
-    throw new Error("OpenRouter response did not match the expected Recipe shape (no usable steps)");
-  }
+  const steps = shape.recipe.steps;
   return {
-    title: parsed.title,
+    title: shape.recipe.title,
     description: parsed.description ?? "",
-    ingredients: parsed.ingredients as DraftRecipeIngredient[],
+    ingredients: shape.recipe.ingredients,
     steps,
     tags: Array.isArray(parsed.tags) ? parsed.tags : [],
     mealType: parsed.mealType,

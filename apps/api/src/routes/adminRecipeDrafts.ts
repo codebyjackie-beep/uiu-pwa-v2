@@ -14,6 +14,8 @@ import { approveRecipeDraft, rejectRecipeDraft } from "../services/recipeDraftAp
 import { requireAdmin } from "../adminAuth";
 import { forceApproveRecipeDraft, parseBy, parseNote, reopenRecipeDraft } from "../services/recipeDraftOverride";
 import { APPLY_CHUNK_MAX, applyTriageChunk, isValidBatchId, newBatchId, planTriage, rollbackTriageBatch } from "../services/recipeDraftTriage";
+import { parseStepsPatch } from "../services/recipeSteps";
+import { buildTagClassifyPrompt } from "../services/recipeTagClassifyPrompt";
 
 export const adminRecipeDraftsRouter = new Hono<{ Bindings: DailyRecipeDraftEnv & PexelsEnv & { ADMIN_TOKEN: string } }>();
 
@@ -75,6 +77,17 @@ adminRecipeDraftsRouter.patch("/:id", async (c) => {
   if (Object.keys(patch).length === 0) {
     const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: `No editable fields in body — allowed: ${EDITABLE_FIELDS.join(", ")}` } };
     return c.json(body, 400);
+  }
+
+  // Steps must stay a non-empty string[]: normalize objects → text, and refuse (400) a value that would
+  // leave no steps instead of silently writing [] (checked before any DB connection is opened).
+  if ("steps" in patch) {
+    const parsedSteps = parseStepsPatch((patch as Record<string, unknown>).steps);
+    if (!parsedSteps.ok) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: parsedSteps.message } };
+      return c.json(body, 400);
+    }
+    patch.steps = parsedSteps.steps;
   }
 
   try {
@@ -168,28 +181,6 @@ function extractTagJson(text: string): unknown {
   return JSON.parse(candidate);
 }
 
-/** HANDOFF_recipe-drafts-batch-regenerate.md §1 — same dietary self-check rule as
- * HANDOFF_recipe-draft-tag-accuracy.md §1's draft-generation prompt, applied here as a
- * classify-only pass (existing ingredients/steps are input, never rewritten). */
-function buildTagClassifyPrompt(draft: { title: string; description: string; ingredients: Array<{ name: string; quantity: number; unit: string }>; steps: string[] }): string {
-  return (
-    `Here is an existing recipe (do NOT rewrite it, only classify it):\n` +
-    `Title: ${draft.title}\n` +
-    `Description: ${draft.description}\n` +
-    `Ingredients: ${draft.ingredients.map((i) => `${i.quantity} ${i.unit} ${i.name}`).join(", ")}\n` +
-    `Steps: ${draft.steps.join(" ")}\n\n` +
-    `Based ONLY on the above, output corrected tags. Cross-check every dietary tag against the ` +
-    `actual ingredients — only include "vegetarian" if no meat/poultry/fish ingredient is present, ` +
-    `"vegan" only if no animal product at all, "gluten-free" only if no wheat/flour/pasta/bread/ ` +
-    `barley/rye/non-GF-oats ingredient is present, "dairy-free" only if no milk/cheese/butter/cream/ ` +
-    `yoghurt ingredient is present. If uncertain, leave the tag out. Ensure "mealType" is exactly one ` +
-    `of: breakfast, lunch, dinner, snack, dessert. Besides mealType/dietary tags, include at least ` +
-    `5-8 additional specific tags (cuisine, cooking method, standout ingredients, texture/mood, ` +
-    `occasion) — avoid only-generic filler like "easy"/"dinner".\n\n` +
-    `Respond with ONLY a JSON object: {"tags": [string], "mealType": string}.`
-  );
-}
-
 interface BackfillTagsAndImagesResult {
   id: string;
   title: string;
@@ -243,7 +234,8 @@ adminRecipeDraftsRouter.post("/backfill-tags-and-images", async (c) => {
             title,
             description: (draft.description as string) ?? "",
             ingredients: draft.ingredients as Array<{ name: string; quantity: number; unit: string }>,
-            steps: draft.steps as string[],
+            // Old drafts can hold object steps — the builder normalizes them (no "[object Object]" in the prompt).
+            steps: draft.steps,
           });
           const tagRes = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
@@ -340,6 +332,10 @@ adminRecipeDraftsRouter.post("/:id/approve", async (c) => {
       };
       return c.json(body, 409);
     }
+    if ("noSteps" in result) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "no_steps", message: "Draft has no usable steps — edit the steps before approving" } };
+      return c.json(body, 409);
+    }
     const body: ApiResponse<{ recipeId: string }> = { ok: true, data: { recipeId: result.insertedId } };
     return c.json(body);
   } catch (err) {
@@ -420,6 +416,9 @@ adminRecipeDraftsRouter.post("/:id/force-approve", async (c) => {
   try {
     const result = await withDb(c.env, (db) => forceApproveRecipeDraft(db, c.env, id, { by: parseBy(payload.by), note: parsedNote.note!, write }));
     if ("notFound" in result || "wrongStatus" in result) return overrideStatusError(c, result, "pending");
+    if ("noSteps" in result) {
+      return c.json({ ok: false, error: { code: "no_steps", message: "Draft has no usable steps — edit the steps before approving" } } satisfies ApiResponse<never>, 409);
+    }
     return c.json({ ok: true, data: result } satisfies ApiResponse<typeof result>);
   } catch (err) {
     console.error("[uiu-api] recipe-drafts force-approve error:", err instanceof Error ? err.message : String(err));
