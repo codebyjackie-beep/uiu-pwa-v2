@@ -20,6 +20,7 @@ export function toHubRecipe(r: HubSource): HubRecipe {
   };
 }
 
+/** Drops anything explicitly non-public (same rule as the sitemap) — hubs only ever list public recipes. */
 export function toHubRecipes(items: HubSource[]): HubRecipe[] {
-  return items.map(toHubRecipe);
+  return items.filter((r) => (r as { isPublic?: unknown }).isPublic !== false).map(toHubRecipe);
 }
