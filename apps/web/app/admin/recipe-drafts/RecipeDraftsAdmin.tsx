@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { ApiResponse, RecipeCostLine, RecipeDraft, RecipeIngredient, RecipeDraftStatus } from "@uiu/shared";
 import { MealTagPicker } from "../_shared/MealTagPicker";
 import { TriagePanel } from "./TriagePanel";
+import { normalizeSteps } from "../../lib/recipeSteps";
 
 type Session = "loading" | "authed" | "anon";
 
@@ -41,7 +42,7 @@ function toEdit(d: RecipeDraft): DraftEdit {
     title: d.title,
     description: d.description,
     ingredients: d.ingredients.map((i) => ({ ...i })),
-    steps: [...d.steps],
+    steps: normalizeSteps(d.steps),
     tags: [...d.tags],
     servings: d.servings,
     prepTimeMinutes: d.prepTimeMinutes,
@@ -552,7 +553,7 @@ export function RecipeDraftsAdmin() {
                     </ul>
                     <h4>做法</h4>
                     <ol className="admin-drafts-step-list">
-                      {d.steps.map((s, i) => (
+                      {normalizeSteps(d.steps).map((s, i) => (
                         <li key={i}>{s}</li>
                       ))}
                     </ol>

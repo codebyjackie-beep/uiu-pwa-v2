@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { ApiResponse, FridgeStockItem } from "@uiu/shared";
+import { normalizeSteps } from "../lib/recipeSteps";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -139,7 +140,7 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
 
               <p className="admin-drafts-page__sub">Steps</p>
               <ol>
-                {recipe.steps.map((s, i) => (
+                {normalizeSteps(recipe.steps).map((s, i) => (
                   <li key={i}>{s}</li>
                 ))}
               </ol>

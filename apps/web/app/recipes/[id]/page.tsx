@@ -27,6 +27,7 @@ import {
 } from "../../lib/recipeDisplay";
 import { recipeMetaDescription, recipeMetaTitle } from "../../lib/seoMeta";
 import { buildRecipeJsonLd, serializeJsonLd } from "../../lib/recipeJsonLd";
+import { normalizeSteps } from "../../lib/recipeSteps";
 
 const DEFAULT_OG_IMAGE = "/og-image.png?v=1";
 
@@ -113,6 +114,8 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   const dietBadgeList = dietaryBadges(recipe);
   const hasCost = recipe.cost && recipe.cost.basket > 0;
   const costDisplay = costDisplayFor(recipe);
+  // Guard: some AI-draft recipes store steps as objects; rendering one as a React child 500s the page.
+  const steps = normalizeSteps(recipe.steps);
   // schema.org Recipe — public recipes only (helper returns null otherwise); same strings the page renders.
   const jsonLd = buildRecipeJsonLd({
     _id: recipe._id || id,
@@ -123,7 +126,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
     servings: recipe.servings,
     prepTimeMinutes: recipe.prepTimeMinutes,
     cookTimeMinutes: recipe.cookTimeMinutes,
-    steps: recipe.steps,
+    steps,
     ingredientLines: recipe.ingredients.map((ing) => {
       const line = lineFor(recipe, ing);
       return `${formatIngredientQuantity(line, { quantity: ing.quantity, unit: ing.unit })} ${ingredientName(line, ing.name)}`;
@@ -159,7 +162,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
       {/* Jackie 2026-11-05: add straight from the recipe; meal defaults to the recipe's own meal type. */}
       <AddToTodayButton recipeId={id} defaultSlot={slotFromBadge(mealBadge)} />
 
-      {recipe.steps.length > 0 && (
+      {steps.length > 0 && (
         <Link href={`/recipes/${id}/cook`} className="recipe-detail__cook-cta">
           Start cooking
         </Link>
@@ -274,7 +277,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
       <details className="recipe-detail__instructions">
         <summary>Instructions</summary>
         <ol>
-          {recipe.steps.map((step, i) => (
+          {steps.map((step, i) => (
             <li key={i}>{step}</li>
           ))}
         </ol>
