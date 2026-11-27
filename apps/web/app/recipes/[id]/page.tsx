@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import {
   formatCostWithCoverage,
   isStockLikeName,
@@ -28,6 +28,7 @@ import {
 import { recipeMetaDescription, recipeMetaTitle } from "../../lib/seoMeta";
 import { buildRecipeJsonLd, serializeJsonLd } from "../../lib/recipeJsonLd";
 import { normalizeSteps } from "../../lib/recipeSteps";
+import { RecipeHubLinks } from "./RecipeHubLinks";
 
 const DEFAULT_OG_IMAGE = "/og-image.png?v=1";
 
@@ -282,6 +283,15 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
           ))}
         </ol>
       </details>
+
+      {/* SEO hub links (ingredient / price pages) — public recipes only; streamed so a cold list cache can't delay the recipe. */}
+      {recipe.isPublic === true ? (
+        <Suspense fallback={null}>
+          <RecipeHubLinks
+            recipe={{ _id: recipe._id || id, title: recipe.title, tags: recipe.tags ?? [], cost: recipe.cost ?? null }}
+          />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

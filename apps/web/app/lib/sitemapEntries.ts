@@ -6,7 +6,7 @@
  *
  * No imports with runtime side effects (Clerk / next/headers / opennext) so the test can run under plain Node.
  */
-import type { ApiResponse, RecipeListPage } from "@uiu/shared";
+import type { ApiResponse, RecipeListItem, RecipeListPage } from "@uiu/shared";
 
 export const SITE_BASE = "https://useitup.uk";
 
@@ -76,17 +76,18 @@ function withTimeout<T>(run: (signal: AbortSignal) => Promise<T>, ms: number): P
   return Promise.race([work, timeout]).finally(() => clearTimeout(timer));
 }
 
-/** Public recipe entries, or null on any failure (caller falls back to static pages only). */
+/** Public recipe entries (+ the raw items, for hub entries), or null on any failure (caller falls back to static pages only). */
 async function recipeEntries(
   fetchPage: FetchRecipePage,
   timeoutMs: number,
   totalTimeoutMs: number,
   onWarn?: (message: string) => void,
-): Promise<SitemapEntry[] | null> {
+): Promise<{ entries: SitemapEntry[]; items: RecipeListItem[] } | null> {
   const deadline = Date.now() + totalTimeoutMs;
   let fetched = 0;
   const seen = new Set<string>();
   const entries: SitemapEntry[] = [];
+  const kept: RecipeListItem[] = [];
   for (let page = 1; page <= SITEMAP_MAX_PAGES; page++) {
     const remaining = deadline - Date.now();
     if (remaining <= 0) throw new Error(`sitemap build exceeded ${totalTimeoutMs}ms`);
@@ -99,6 +100,7 @@ async function recipeEntries(
       const id = typeof item?._id === "string" ? item._id : "";
       if (!OBJECT_ID.test(id) || seen.has(id)) continue;
       seen.add(id);
+      kept.push(item);
       const lastModified = parseLastModified(item);
       entries.push({
         url: `${SITE_BASE}/recipes/${id}`,
@@ -116,7 +118,7 @@ async function recipeEntries(
       );
     }
   }
-  return entries;
+  return { entries, items: kept };
 }
 
 export interface SitemapBuildOptions {
@@ -124,6 +126,8 @@ export interface SitemapBuildOptions {
   totalTimeoutMs?: number;
   onError?: (message: string) => void;
   onWarn?: (message: string) => void;
+  /** Extra URLs (SEO hub pages) built from the recipe items already fetched — no extra API calls. Only used on success. */
+  extraEntries?: (items: RecipeListItem[]) => SitemapEntry[];
 }
 
 /** `ok:false` means the static fallback was returned because the API failed (not because there are 0 recipes). */
@@ -143,7 +147,14 @@ export async function buildSitemapResult(
       opts.onError?.("recipes API returned a non-ok response");
       return { entries: base, ok: false };
     }
-    return { entries: [...base, ...recipes], ok: true };
+    let extra: SitemapEntry[] = [];
+    try {
+      extra = opts.extraEntries?.(recipes.items) ?? [];
+    } catch (err) {
+      // A hub bug must never cost us the recipe URLs.
+      opts.onError?.(`sitemap extra entries failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+    return { entries: [...base, ...recipes.entries, ...extra], ok: true };
   } catch (err) {
     opts.onError?.(err instanceof Error ? err.message : String(err));
     return { entries: base, ok: false };

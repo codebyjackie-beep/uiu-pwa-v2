@@ -6074,3 +6074,48 @@ body:has(.bottom-nav) .consent-banner {
   font-weight: 700;
   cursor: pointer;
 }
+
+/* SEO hub pages (/recipes/ingredient/*, /recipes/price/*) + their link rows on /recipes and recipe pages. Tokens only. */
+.recipes-page__intro {
+  margin: calc(var(--space) * 0.5) 0 0;
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.recipes-page__back {
+  display: inline-block;
+  margin-bottom: calc(var(--space) * 0.5);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.recipe-hubs {
+  margin-top: calc(var(--space) * 2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+}
+
+.recipe-hubs--detail {
+  margin-top: calc(var(--space) * 1.5);
+}
+
+.recipe-hubs__title {
+  margin: 0 0 calc(var(--space) * 0.5);
+  font-size: 18px;
+}
+
+.recipe-hubs__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 0.5);
+}
+
+.recipe-hubs__chip {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}

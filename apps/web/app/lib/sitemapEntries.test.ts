@@ -261,6 +261,41 @@ async function main() {
     check("cache: static fallback never stuck for a full TTL", builds === 2 && b.length === 5, { builds, len: b.length });
   }
 
+  // Hub extra entries: appended after recipes, built from the same (filtered) items, never cost the recipes.
+  {
+    const a = hexId(40);
+    const priv = hexId(41);
+    let seenIds: string[] = [];
+    const res = await buildSitemapResult(async () => okPage([item(a), item(priv, { isPublic: false })], 2), {
+      ...silent,
+      extraEntries: (items) => {
+        seenIds = items.map((x) => x._id);
+        return [{ url: "https://useitup.uk/recipes/ingredient/chicken" }];
+      },
+    });
+    check("extra: appended last", res.ok && urls(res.entries).at(-1) === "https://useitup.uk/recipes/ingredient/chicken", urls(res.entries));
+    check("extra: gets only kept (public, valid) items", seenIds.join(",") === a, seenIds);
+
+    const errors: string[] = [];
+    const thrown = await buildSitemapResult(async () => okPage([item(a)], 1), {
+      onError: (m) => errors.push(m),
+      extraEntries: () => {
+        throw new Error("hub bug");
+      },
+    });
+    check("extra: throwing hub keeps recipe URLs, ok stays true", thrown.ok && thrown.entries.length === 5 && errors.length === 1, { thrown, errors });
+
+    let called = false;
+    const down = await buildSitemapResult(async () => ({ ok: false, error: { code: "x", message: "x" } }), {
+      ...silent,
+      extraEntries: () => {
+        called = true;
+        return [{ url: "https://useitup.uk/recipes/ingredient/chicken" }];
+      },
+    });
+    check("extra: not used on API failure (static fallback only)", !down.ok && down.entries.length === 4 && !called, down);
+  }
+
   if (failures) {
     console.log(`\n${failures} failure(s)`);
     process.exit(1);

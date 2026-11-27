@@ -23,6 +23,9 @@ const isPublicRoute = createRouteMatcher([
   "/recipes",
   "/recipes/:id",
   "/recipes/:id/cook",
+  // SEO hub pages (two segments, so /recipes/:id doesn't cover them): /recipes/ingredient/<slug>, /recipes/price/<slug>.
+  "/recipes/ingredient/:slug",
+  "/recipes/price/:slug",
   // Guest mode (claude/plan_guest_mode.md): every app tab is open to guests; Premium is gated in apps/api.
   "/meal-planner(.*)",
   "/fridge(.*)",
@@ -37,6 +40,9 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 const isShareTarget = createRouteMatcher(["/recipes/share-target(.*)"]);
+
+/** SEO hub pages only read the public recipe list — no user data, so crawler hits don't need a guest token minted. */
+const isRecipeHubPage = createRouteMatcher(["/recipes/ingredient/:slug", "/recipes/price/:slug"]);
 
 /** App pages where a signed-out visitor gets a guest token (not "/" — a first visit there is the welcome page). */
 const isGuestAppPage = createRouteMatcher(["/meal-planner(.*)", "/fridge(.*)", "/shop(.*)", "/health(.*)", "/recipes(.*)"]);
@@ -62,7 +68,7 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
     return;
   }
-  if (!isGuestAppPage(req)) return;
+  if (!isGuestAppPage(req) || isRecipeHubPage(req)) return;
   const { userId } = await auth();
   if (userId) return;
   const existing = req.cookies.get(GUEST_COOKIE)?.value;
