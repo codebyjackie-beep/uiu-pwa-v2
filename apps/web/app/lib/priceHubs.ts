@@ -1,7 +1,8 @@
 /**
  * Price hub pages: /recipes/price/<slug> — "recipes under £1 / £2 / £3 per serving".
  *
- * Only cost tier "full" recipes (every ingredient line priced, see hubPricing.ts) ever count: a partial
+ * Only cost tier "full" recipes (>= 80% of ingredient lines priced, the same rule as recipe pages; see
+ * hubPricing.ts) ever count — copy must not claim "every ingredient" is priced. A partial
  * price is a floor, not a real cost, so it can't prove "under £X". Comparison is on the figure the
  * site shows (rounded to the penny), so a £0.996 recipe — shown as £1.00 — is not "under £1".
  * Hubs are nested (under £3 includes under £1). A hub exists only with >= PRICE_HUB_MIN_RECIPES members;
@@ -91,7 +92,7 @@ export function priceHubMeta(def: PriceHubDef, recipes: Pick<HubRecipe, "fullTie
   return {
     title: `Recipes Under ${cap} Per Serving, UK Prices · UseItUp`,
     heading: `Recipes under ${cap} per serving`,
-    description: `${n} recipes under ${cap} a serving at UK supermarkets${from}. Every ingredient priced, so you see the cost before you shop.`,
-    intro: `${n} recipes where every ingredient is priced at UK supermarkets and a serving costs under ${cap}${cheapest ? ` (cheapest ${cheapest})` : ""}.`,
+    description: `${n} recipes under ${cap} a serving at UK supermarkets${from}. See what a meal costs before you shop.`,
+    intro: `${n} recipes that cost under ${cap} a serving at UK supermarket prices${cheapest ? ` (cheapest ${cheapest})` : ""}.`,
   };
 }

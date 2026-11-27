@@ -69,6 +69,7 @@ check("title", m.title === "Recipes Under £1 Per Serving, UK Prices · UseItUp"
 check("description has count, cap and real cheapest", m.description.startsWith("5 recipes under £1 a serving at UK supermarkets, from £0.50."), m.description);
 check("intro has cheapest", m.intro.includes("(cheapest £0.50)"), m.intro);
 const big = PRICE_HUBS.map((d) => priceHubMeta(d, Array.from({ length: 999 }, (_, i) => r(`x${i}`, 0.01 + i / 1000))));
+check("never claims every ingredient is priced (tier full = >=80%)", big.concat(m).every((x) => !/every ingredient/i.test(`${x.description} ${x.intro}`)));
 check("every title ≤ 60", big.every((x) => x.title.length <= 60), big.map((x) => x.title.length));
 check("every description ≤ 155", big.every((x) => x.description.length <= 155), big.map((x) => x.description.length));
 check("no £ figures other than cap + cheapest", (m.description.match(/£\d+(?:\.\d{2})?/g) ?? []).join() === "£1,£0.50");
