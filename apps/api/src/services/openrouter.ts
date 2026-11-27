@@ -3,6 +3,7 @@
  * Model-agnostic — OPENROUTER_MODEL is a wrangler.toml [vars] entry, not
  * hardcoded, so Jackie can change model without touching code/secrets.
  */
+import { normalizeRecipeSteps } from "./recipeSteps";
 export interface OpenRouterEnv {
   OPENROUTER_API_KEY: string;
   OPENROUTER_MODEL: string;
@@ -133,11 +134,16 @@ export async function draftRecipe(env: OpenRouterEnv, input: DraftPromptInput): 
   if (!parsed.title || !Array.isArray(parsed.ingredients) || !Array.isArray(parsed.steps)) {
     throw new Error("OpenRouter response did not match the expected Recipe shape");
   }
+  // The model sometimes returns steps as objects ({name, quantity, unit:"step"}, {text}, ...) — coerce to string[].
+  const steps = normalizeRecipeSteps(parsed.steps);
+  if (steps.length === 0) {
+    throw new Error("OpenRouter response did not match the expected Recipe shape (no usable steps)");
+  }
   return {
     title: parsed.title,
     description: parsed.description ?? "",
     ingredients: parsed.ingredients as DraftRecipeIngredient[],
-    steps: parsed.steps,
+    steps,
     tags: Array.isArray(parsed.tags) ? parsed.tags : [],
     mealType: parsed.mealType,
     servings: parsed.servings ?? 2,

@@ -20,6 +20,7 @@ import { findNearDuplicateRecipe, type NearDuplicateMatch } from "@uiu/shared";
 import type { OpenRouterEnv } from "./openrouter";
 import { findSameDishLLM } from "./sameDish";
 import { sanitizeRecipeText, stripRecipePlaceholders } from "./recipeTextSanitize";
+import { normalizeRecipeSteps, stepsAreNormalized } from "./recipeSteps";
 
 export type ApproveDraftResult =
   | { notFound: true }
@@ -74,8 +75,12 @@ export async function approveRecipeDraft(
     title: String(draft.title ?? ""),
     description: (draft.description as string) ?? "",
     ingredients: (draft.ingredients as Recipe["ingredients"]) ?? [],
-    steps: (draft.steps as string[]) ?? [],
+    // Older drafts can hold object steps ({name, quantity, unit:"step"} etc.) — coerce to string[] before insert.
+    steps: normalizeRecipeSteps(draft.steps),
   });
+  if (!stepsAreNormalized(draft.steps)) {
+    console.log("[uiu-api] approve steps normalized:", JSON.stringify({ draftId }));
+  }
   const hasUnknownPlaceholder = sanitized.unknownPlaceholders.length > 0;
   const clean = hasUnknownPlaceholder ? stripRecipePlaceholders(sanitized.recipe) : sanitized.recipe;
   if (sanitized.changes.length > 0 || hasUnknownPlaceholder) {
