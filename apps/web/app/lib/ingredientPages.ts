@@ -137,7 +137,7 @@ export function ingredientHubMeta(def: IngredientHubDef, recipes: Pick<HubRecipe
   const cost = range ? (formatGbp(range.min) === formatGbp(range.max) ? formatGbp(range.min) : `${formatGbp(range.min)}–${formatGbp(range.max)}`) : null;
   const intro =
     cost && range
-      ? `${n} recipes with ${name}. For the ${range.count} with every ingredient priced, a serving costs ${cost} at UK supermarkets.`
+      ? `${n} recipes with ${name}. For the ${range.count} with most ingredients priced, a serving costs ${cost} at UK supermarkets.`
       : `${n} recipes with ${name}. Ingredients are priced at UK supermarkets where we have prices.`;
   return { title, heading, description, intro };
 }

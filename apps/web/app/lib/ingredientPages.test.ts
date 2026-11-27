@@ -73,7 +73,8 @@ const priced = [
 ];
 const m = ingredientHubMeta(hub("chicken"), priced);
 check("meta: £ range from full tier only", m.description.includes("£0.93–£2.40 per serving") && m.description.startsWith("5 chicken recipes"), m.description);
-check("meta: intro says how many are fully priced", m.intro.includes("For the 3 with every ingredient priced, a serving costs £0.93–£2.40 at UK"), m.intro);
+check("meta: intro says how many are fully priced", m.intro.includes("For the 3 with most ingredients priced, a serving costs £0.93–£2.40 at UK"), m.intro);
+check("meta: never claims every ingredient is priced (tier full = >=80%)", !/every ingredient/i.test(`${m.description} ${m.intro}`));
 check("meta: 'per serving' never doubled", !/per serving.*per serving/.test(m.intro + m.description), m);
 const unpriced = ingredientHubMeta(hub("chicken"), [r("Chicken C"), r("Chicken D")]);
 check("meta: no full-tier recipe → no £ anywhere", !/£/.test(unpriced.description + unpriced.title + unpriced.intro), unpriced);
