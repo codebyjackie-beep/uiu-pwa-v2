@@ -14,8 +14,14 @@ export const SITE_BASE = "https://useitup.uk";
 export const SITEMAP_PAGE_SIZE = 250;
 /** Hard cap on API calls per sitemap request (Workers subrequest budget). 4 × 250 = 1,000 recipes. */
 export const SITEMAP_MAX_PAGES = 4;
-/** Per-call timeout; apiGet itself has none. */
+/** Per-call timeout; the in-flight request is aborted (AbortSignal) when it fires, not just abandoned. */
 export const SITEMAP_FETCH_TIMEOUT_MS = 8000;
+/** Whole-build deadline across all pages, so a slow API cannot stack 4 x 8s = 32s. */
+export const SITEMAP_TOTAL_TIMEOUT_MS = 15000;
+/** How long a successful build is reused. New recipes show up in /sitemap.xml at most this long after publish. */
+export const SITEMAP_CACHE_TTL_MS = 60 * 60 * 1000;
+/** After a failed build, don't hit the API again for this long (serve stale / static meanwhile). */
+export const SITEMAP_FAILURE_BACKOFF_MS = 30 * 1000;
 
 export interface SitemapEntry {
   url: string;
@@ -33,7 +39,8 @@ export function staticSitemapEntries(): SitemapEntry[] {
   ];
 }
 
-export type FetchRecipePage = (page: number, limit: number) => Promise<ApiResponse<RecipeListPage>>;
+/** `signal` is aborted when the per-call / total timeout fires; implementations should pass it to fetch. */
+export type FetchRecipePage = (page: number, limit: number, signal?: AbortSignal) => Promise<ApiResponse<RecipeListPage>>;
 
 const OBJECT_ID = /^[0-9a-f]{24}$/i;
 
@@ -49,25 +56,41 @@ function parseLastModified(item: unknown): Date | undefined {
   return new Date(ms);
 }
 
-function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+/**
+ * Rejects after `ms` AND aborts `controller`, so a hung request is cancelled rather than left running.
+ * The race is kept as a backstop for fetchers that ignore the signal. Reject first, then abort: the
+ * abort makes the fetcher settle later, and the timeout error must win the race.
+ */
+function withTimeout<T>(run: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
+  const controller = new AbortController();
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(() => reject(new Error(`sitemap fetch timed out after ${ms}ms`)), ms);
+    timer = setTimeout(() => {
+      reject(new Error(`sitemap fetch timed out after ${ms}ms`));
+      controller.abort();
+    }, ms);
   });
-  return Promise.race([p, timeout]).finally(() => clearTimeout(timer));
+  // run() may throw synchronously; Promise.resolve().then keeps that inside the promise chain.
+  const work = Promise.resolve().then(() => run(controller.signal));
+  work.catch(() => {}); // a late rejection after the timeout won must not surface as unhandled
+  return Promise.race([work, timeout]).finally(() => clearTimeout(timer));
 }
 
 /** Public recipe entries, or null on any failure (caller falls back to static pages only). */
 async function recipeEntries(
   fetchPage: FetchRecipePage,
   timeoutMs: number,
+  totalTimeoutMs: number,
   onWarn?: (message: string) => void,
 ): Promise<SitemapEntry[] | null> {
+  const deadline = Date.now() + totalTimeoutMs;
   let fetched = 0;
   const seen = new Set<string>();
   const entries: SitemapEntry[] = [];
   for (let page = 1; page <= SITEMAP_MAX_PAGES; page++) {
-    const res = await withTimeout(fetchPage(page, SITEMAP_PAGE_SIZE), timeoutMs);
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) throw new Error(`sitemap build exceeded ${totalTimeoutMs}ms`);
+    const res = await withTimeout((signal) => fetchPage(page, SITEMAP_PAGE_SIZE, signal), Math.min(timeoutMs, remaining));
     if (!res || !res.ok || !Array.isArray(res.data?.items)) return null;
     const { items, total } = res.data;
     for (const item of items) {
@@ -96,20 +119,78 @@ async function recipeEntries(
   return entries;
 }
 
-export async function buildSitemapEntries(
+export interface SitemapBuildOptions {
+  timeoutMs?: number;
+  totalTimeoutMs?: number;
+  onError?: (message: string) => void;
+  onWarn?: (message: string) => void;
+}
+
+/** `ok:false` means the static fallback was returned because the API failed (not because there are 0 recipes). */
+export async function buildSitemapResult(
   fetchPage: FetchRecipePage,
-  opts: { timeoutMs?: number; onError?: (message: string) => void; onWarn?: (message: string) => void } = {},
-): Promise<SitemapEntry[]> {
+  opts: SitemapBuildOptions = {},
+): Promise<{ entries: SitemapEntry[]; ok: boolean }> {
   const base = staticSitemapEntries();
   try {
-    const recipes = await recipeEntries(fetchPage, opts.timeoutMs ?? SITEMAP_FETCH_TIMEOUT_MS, opts.onWarn);
+    const recipes = await recipeEntries(
+      fetchPage,
+      opts.timeoutMs ?? SITEMAP_FETCH_TIMEOUT_MS,
+      opts.totalTimeoutMs ?? SITEMAP_TOTAL_TIMEOUT_MS,
+      opts.onWarn,
+    );
     if (!recipes) {
       opts.onError?.("recipes API returned a non-ok response");
-      return base;
+      return { entries: base, ok: false };
     }
-    return [...base, ...recipes];
+    return { entries: [...base, ...recipes], ok: true };
   } catch (err) {
     opts.onError?.(err instanceof Error ? err.message : String(err));
-    return base;
+    return { entries: base, ok: false };
   }
+}
+
+export async function buildSitemapEntries(fetchPage: FetchRecipePage, opts: SitemapBuildOptions = {}): Promise<SitemapEntry[]> {
+  return (await buildSitemapResult(fetchPage, opts)).entries;
+}
+
+/**
+ * Per-isolate in-memory cache around a sitemap build.
+ *
+ * Why not Next `revalidate` / fetch cache: open-next.config.ts configures no incremental cache, so ISR
+ * does nothing on Workers (see the comment in sitemap.ts). Instead we keep the last good result in module
+ * scope. Each Worker isolate has its own copy, so worst-case staleness is still `ttlMs`.
+ *
+ * - Only successful builds are cached; the 4-page static fallback is never stored as "good".
+ * - On failure we serve the last good (stale) result if there is one, else the static fallback, and back
+ *   off `failureBackoffMs` before touching the API again.
+ * - No in-flight sharing between requests: a promise created in one request must not be awaited by another
+ *   on Workers (cross-request I/O). A concurrent miss just builds its own copy; cached values are plain data.
+ */
+export function createCachedSitemap(
+  build: () => Promise<{ entries: SitemapEntry[]; ok: boolean }>,
+  opts: { ttlMs?: number; failureBackoffMs?: number; now?: () => number } = {},
+): () => Promise<SitemapEntry[]> {
+  const ttlMs = opts.ttlMs ?? SITEMAP_CACHE_TTL_MS;
+  const backoffMs = opts.failureBackoffMs ?? SITEMAP_FAILURE_BACKOFF_MS;
+  const now = opts.now ?? Date.now;
+  let good: { entries: SitemapEntry[]; at: number } | null = null;
+  let retryAfter = 0;
+  let lastFallback: SitemapEntry[] | null = null;
+
+  return async () => {
+    const t = now();
+    if (good && t - good.at < ttlMs) return good.entries;
+    if (t < retryAfter) return good?.entries ?? lastFallback ?? staticSitemapEntries();
+    const result = await build();
+    if (result.ok) {
+      good = { entries: result.entries, at: now() };
+      retryAfter = 0;
+      lastFallback = null;
+      return result.entries;
+    }
+    retryAfter = now() + backoffMs;
+    lastFallback = result.entries;
+    return good?.entries ?? result.entries;
+  };
 }

@@ -3,7 +3,14 @@
  *   npx tsx apps/web/app/lib/sitemapEntries.test.ts
  */
 import type { ApiResponse, RecipeListItem, RecipeListPage } from "@uiu/shared";
-import { buildSitemapEntries, SITEMAP_MAX_PAGES, SITEMAP_PAGE_SIZE, type FetchRecipePage } from "./sitemapEntries";
+import {
+  buildSitemapEntries,
+  buildSitemapResult,
+  createCachedSitemap,
+  SITEMAP_MAX_PAGES,
+  SITEMAP_PAGE_SIZE,
+  type FetchRecipePage,
+} from "./sitemapEntries";
 
 let failures = 0;
 function check(name: string, cond: boolean, detail?: unknown) {
@@ -149,6 +156,109 @@ async function main() {
       page === 1 ? okPage(Array.from({ length: limit }, (_, i) => item(hexId(i))), limit * 2) : { ok: false, error: { code: "fetch_failed", message: "x" } };
     const entries = await buildSitemapEntries(fetchPage, silent);
     check("fallback: page 2 failure → 4 static pages", entries.length === 4, entries.length);
+  }
+
+  // 10. Timeout really aborts the in-flight request (signal), and the build has a total deadline.
+  {
+    let aborted = false;
+    let sawSignal = false;
+    const fetchPage: FetchRecipePage = (_p, _l, signal) => {
+      sawSignal = signal !== undefined;
+      return new Promise((_, reject) => {
+        signal?.addEventListener("abort", () => {
+          aborted = true;
+          reject(new Error("aborted"));
+        });
+      });
+    };
+    const entries = await buildSitemapEntries(fetchPage, { ...silent, timeoutMs: 50 });
+    check("abort: fetcher receives an AbortSignal", sawSignal);
+    check("abort: signal fired on timeout", aborted);
+    check("abort: still falls back to 4 static pages", entries.length === 4, entries.length);
+  }
+  {
+    // Fast per-call but slow overall: total deadline stops page 3+ instead of stacking per-call timeouts.
+    const calls: number[] = [];
+    const fetchPage: FetchRecipePage = async (page, limit) => {
+      calls.push(page);
+      await new Promise((r) => setTimeout(r, 40));
+      return okPage(Array.from({ length: limit }, (_, i) => item(hexId(page * 100000 + i))), 1_000_000, page);
+    };
+    const errors: string[] = [];
+    const entries = await buildSitemapEntries(fetchPage, { timeoutMs: 1000, totalTimeoutMs: 100, onError: (m) => errors.push(m) });
+    check("total deadline: stops before MAX_PAGES", calls.length < SITEMAP_MAX_PAGES, calls);
+    check("total deadline: falls back to 4 static pages and reports", entries.length === 4 && errors.length === 1, { n: entries.length, errors });
+  }
+  {
+    const ok = await buildSitemapResult(async () => okPage([item(hexId(1))], 1), silent);
+    const bad = await buildSitemapResult(async () => ({ ok: false, error: { code: "x", message: "x" } }), silent);
+    const empty = await buildSitemapResult(async () => okPage([], 0), silent);
+    check("result: ok flag true on success", ok.ok && ok.entries.length === 5);
+    check("result: ok flag false on API failure", !bad.ok && bad.entries.length === 4);
+    check("result: zero recipes is still ok (not a failure)", empty.ok && empty.entries.length === 4);
+  }
+
+  // 11. Cache: reuse within TTL, refresh after, stale-if-error, back-off, failures not cached as good.
+  {
+    let t = 1_000_000;
+    let builds = 0;
+    let mode: "ok" | "fail" = "ok";
+    let n = 1;
+    const build = async () => {
+      builds++;
+      if (mode === "fail") return { entries: staticFallback(), ok: false };
+      return { entries: [...staticFallback(), { url: `https://useitup.uk/recipes/${hexId(n++)}` }], ok: true };
+    };
+    const staticFallback = () => STATIC_URLS.map((url) => ({ url }));
+    const get = createCachedSitemap(build, { ttlMs: 1000, failureBackoffMs: 100, now: () => t });
+
+    const a = await get();
+    const b = await get();
+    check("cache: second call within TTL reuses (1 build)", builds === 1 && a === b && a.length === 5, builds);
+
+    t += 999;
+    await get();
+    check("cache: still fresh at TTL-1ms", builds === 1, builds);
+
+    t += 2;
+    const c = await get();
+    check("cache: rebuilds after TTL", builds === 2 && c.length === 5 && c[4].url.endsWith(hexId(2)), { builds, c });
+
+    mode = "fail";
+    t += 1001;
+    const d = await get();
+    check("cache: API failure after TTL serves stale good result", builds === 3 && d === c, { builds, len: d.length });
+
+    t += 50;
+    const e = await get();
+    check("cache: failure back-off avoids hammering the API", builds === 3 && e === c, builds);
+
+    t += 100;
+    mode = "ok";
+    const f = await get();
+    check("cache: recovers after back-off", builds === 4 && f.length === 5 && f[4].url.endsWith(hexId(3)), { builds, f });
+  }
+  {
+    // Cold start + API down: static fallback, NOT cached as good → next call after back-off retries.
+    let t = 0;
+    let builds = 0;
+    let mode: "ok" | "fail" = "fail";
+    const build = async () => {
+      builds++;
+      return mode === "fail"
+        ? { entries: STATIC_URLS.map((url) => ({ url })), ok: false }
+        : { entries: [...STATIC_URLS.map((url) => ({ url })), { url: "https://useitup.uk/recipes/x" }], ok: true };
+    };
+    const get = createCachedSitemap(build, { ttlMs: 10_000, failureBackoffMs: 100, now: () => t });
+    const a = await get();
+    check("cache: cold + failure → static fallback", a.length === 4 && builds === 1);
+    t += 50;
+    await get();
+    check("cache: cold + failure → back-off holds", builds === 1, builds);
+    t += 100;
+    mode = "ok";
+    const b = await get();
+    check("cache: static fallback never stuck for a full TTL", builds === 2 && b.length === 5, { builds, len: b.length });
   }
 
   if (failures) {
