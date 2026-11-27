@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import type { ApiResponse } from "@uiu/shared";
 import { canShrinkVideo, shrinkVideo } from "./shrinkVideo";
+import { normalizeSteps } from "../lib/recipeSteps";
 
 async function fetchJson<T>(path: string, init?: RequestInit): Promise<{ res: Response; parsed: ApiResponse<T> | null }> {
   const res = await fetch(path, init);
@@ -106,7 +107,8 @@ export function SaveFromLinkModal({ onClose, onSaved, initialUrl, initialText }:
         ? draft.ingredients.map((ing) => ({ name: ing.name, quantity: numberToFormString(ing.quantity), unit: ing.unit }))
         : [{ name: "", quantity: "", unit: "" }],
     );
-    setManualSteps(draft.steps.length > 0 ? draft.steps : [""]);
+    const draftSteps = normalizeSteps(draft.steps);
+    setManualSteps(draftSteps.length > 0 ? draftSteps : [""]);
     setManualTags(draft.tags.join(", "));
     setManualMealType(draft.mealType && MEAL_TYPE_OPTIONS.includes(draft.mealType) ? draft.mealType : "");
     setManualServings(numberToFormString(draft.servings));

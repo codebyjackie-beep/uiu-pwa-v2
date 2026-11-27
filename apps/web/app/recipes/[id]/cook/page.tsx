@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import type { RecipeDetail, RecipeDetailCostLine } from "@uiu/shared";
 import { apiGet } from "../../../lib/api";
 import { formatIngredientQuantity, formatIngredientStorePrice, ingredientName } from "../../../lib/recipeDisplay";
+import { normalizeSteps } from "../../../lib/recipeSteps";
 import { CookMode, type CookIngredient } from "./CookMode";
 
 function lineFor(recipe: RecipeDetail, ingredient: RecipeDetail["ingredients"][number]): RecipeDetailCostLine | undefined {
@@ -25,7 +26,7 @@ export default async function CookPage({ params }: { params: Promise<{ id: strin
   if (!res.ok) notFound();
 
   const recipe = res.data;
-  const steps = recipe.steps.map(cleanStep).filter((s) => s.length > 0);
+  const steps = normalizeSteps(recipe.steps).map(cleanStep).filter((s) => s.length > 0);
   if (steps.length === 0) redirect(`/recipes/${id}`);
 
   const ingredients: CookIngredient[] = recipe.ingredients.map((ing, i) => {

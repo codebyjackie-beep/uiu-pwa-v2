@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ApiResponse, Recipe, RecipeIngredient } from "@uiu/shared";
 import { MealTagPicker } from "../../../_shared/MealTagPicker";
+import { normalizeSteps } from "../../../../lib/recipeSteps";
 
 type Session = "loading" | "authed" | "anon";
 
@@ -23,7 +24,7 @@ function toEdit(r: Recipe): RecipeEdit {
     title: r.title,
     description: r.description,
     ingredients: r.ingredients.map((i) => ({ ...i })),
-    steps: [...r.steps],
+    steps: normalizeSteps(r.steps),
     tags: [...r.tags],
     servings: r.servings,
     prepTimeMinutes: r.prepTimeMinutes,

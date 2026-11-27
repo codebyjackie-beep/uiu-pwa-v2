@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ApiResponse, RecipeDetail } from "@uiu/shared";
+import { normalizeSteps } from "../../lib/recipeSteps";
 
 /**
  * Jackie 2026-11-07 — Edit / Delete on a recipe the user saved themselves (only rendered for non-public recipes,
@@ -30,7 +31,10 @@ export function RecipeOwnerActions({ recipe }: { recipe: RecipeDetail }) {
       ? recipe.ingredients.map((i) => ({ name: i.name, quantity: numToField(i.quantity), unit: i.unit ?? "" }))
       : [{ name: "", quantity: "", unit: "" }],
   );
-  const [steps, setSteps] = useState<string[]>(() => (recipe.steps.length ? [...recipe.steps] : [""]));
+  const [steps, setSteps] = useState<string[]>(() => {
+    const initial = normalizeSteps(recipe.steps);
+    return initial.length ? initial : [""];
+  });
   const [tags, setTags] = useState((recipe.tags ?? []).join(", "));
   const [mealType, setMealType] = useState(recipe.mealType ?? "");
   const [servings, setServings] = useState(numToField(recipe.servings));
