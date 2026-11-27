@@ -5,27 +5,36 @@
  *
  * Each hub family adds one entry per function below. Pure — no Next / React imports.
  */
-import type { HubLink, HubNavGroup, HubRecipe } from "./recipeHub";
+import { latestUpdatedAt, type HubLink, type HubNavGroup, type HubRecipe } from "./recipeHub";
 import type { SitemapEntry } from "./sitemapEntries";
+import { SITE_BASE } from "./sitemapEntries";
+import { ingredientHubPath, liveIngredientHubs, recipeMatchesIngredient } from "./ingredientPages";
 
 /** Chip rows shown on /recipes. */
 export function hubNavGroups(items: HubRecipe[]): HubNavGroup[] {
-  void items;
   const groups: HubNavGroup[] = [];
+  groups.push({
+    title: "Recipes by main ingredient",
+    links: liveIngredientHubs(items).map(({ def }) => ({ href: ingredientHubPath(def.slug), label: def.label })),
+  });
   return groups.filter((g) => g.links.length > 0);
 }
 
 /** Hub links for one recipe's detail page (only hubs that contain this recipe and are live). */
 export function hubLinksForRecipe(recipe: HubRecipe, items: HubRecipe[]): HubLink[] {
-  void recipe;
-  void items;
   const links: HubLink[] = [];
+  for (const { def } of liveIngredientHubs(items)) {
+    if (recipeMatchesIngredient(def, recipe)) links.push({ href: ingredientHubPath(def.slug), label: `${def.label} recipes` });
+  }
   return links;
 }
 
 /** Extra /sitemap.xml entries, built from the same items the sitemap already fetched (no extra API calls). */
 export function hubSitemapEntries(items: HubRecipe[]): SitemapEntry[] {
-  void items;
   const entries: SitemapEntry[] = [];
+  for (const { def, recipes } of liveIngredientHubs(items)) {
+    const lastModified = latestUpdatedAt(recipes);
+    entries.push({ url: `${SITE_BASE}${ingredientHubPath(def.slug)}`, ...(lastModified ? { lastModified } : {}) });
+  }
   return entries;
 }
