@@ -7,6 +7,7 @@
  * No imports with runtime side effects (Clerk / next/headers / opennext) so the test can run under plain Node.
  */
 import type { ApiResponse, RecipeListItem, RecipeListPage } from "@uiu/shared";
+import { recipePath } from "./recipeSlug";
 
 export const SITE_BASE = "https://useitup.uk";
 
@@ -103,7 +104,8 @@ async function recipeEntries(
       kept.push(item);
       const lastModified = parseLastModified(item);
       entries.push({
-        url: `${SITE_BASE}/recipes/${id}`,
+        // SEO PR3: canonical "/recipes/<slug>-<id>", same builder as the page canonical.
+        url: `${SITE_BASE}${recipePath(id, item.title)}`,
         ...(lastModified ? { lastModified } : {}),
         changeFrequency: "weekly",
         priority: 0.6,

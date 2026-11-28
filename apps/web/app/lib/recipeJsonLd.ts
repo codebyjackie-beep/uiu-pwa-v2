@@ -10,6 +10,8 @@
  * Pure (no Next / React / Clerk imports) so the test runs under plain Node via tsx.
  */
 
+import { recipePath } from "./recipeSlug";
+
 export const JSON_LD_SITE_BASE = "https://useitup.uk";
 
 export interface RecipeJsonLdInput {
@@ -60,7 +62,7 @@ export function buildRecipeJsonLd(recipe: RecipeJsonLdInput | null | undefined):
   const id = clean(recipe._id);
   if (!name || !id) return null;
 
-  const url = `${JSON_LD_SITE_BASE}/recipes/${encodeURIComponent(id)}`;
+  const url = `${JSON_LD_SITE_BASE}${recipePath(id, name)}`;
   const out: RecipeJsonLd = {
     "@context": "https://schema.org",
     "@type": "Recipe",

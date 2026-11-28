@@ -55,7 +55,7 @@ async function main() {
     };
     const entries = await buildSitemapEntries(fetchPage, silent);
     check("success: static pages kept first", JSON.stringify(urls(entries).slice(0, 4)) === JSON.stringify(STATIC_URLS), urls(entries));
-    check("success: recipe URLs use /recipes/<_id>", urls(entries).slice(4).join(",") === `https://useitup.uk/recipes/${a},https://useitup.uk/recipes/${b}`, urls(entries));
+    check("success: recipe URLs use /recipes/<slug>-<_id>", urls(entries).slice(4).join(",") === `https://useitup.uk/recipes/recipe-${a}-${a},https://useitup.uk/recipes/recipe-${b}-${b}`, urls(entries));
     check("success: single API call when total fits one page", calls.length === 1, calls);
     const ea = entries.find((e) => e.url.endsWith(a));
     const eb = entries.find((e) => e.url.endsWith(b));

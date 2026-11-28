@@ -37,7 +37,7 @@ check("full: not null", ld !== null);
 check("full: @context", ld["@context"] === "https://schema.org");
 check("full: @type Recipe", ld["@type"] === "Recipe");
 check("full: name", ld.name === "Red Lentil Soup");
-check("full: url is canonical absolute", ld.url === "https://useitup.uk/recipes/6650a1b2c3d4e5f6a7b8c9d0", ld.url);
+check("full: url is canonical absolute", ld.url === "https://useitup.uk/recipes/red-lentil-soup-6650a1b2c3d4e5f6a7b8c9d0", ld.url);
 check("full: mainEntityOfPage = url", ld.mainEntityOfPage === ld.url);
 check("full: image", JSON.stringify(ld.image) === JSON.stringify(["https://images.example.com/soup.jpg"]), ld.image);
 check("full: recipeYield", ld.recipeYield === "4 servings", ld.recipeYield);

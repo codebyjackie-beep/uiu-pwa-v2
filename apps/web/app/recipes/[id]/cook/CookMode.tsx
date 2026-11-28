@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { recipePath } from "../../../lib/recipeSlug";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { extractTimerSeconds, formatMmSs } from "./timer";
 
@@ -358,7 +359,7 @@ export function CookMode({ recipeId, title, imageUrl, steps, ingredients }: Prop
           <button type="button" className="cook-mode__prompt-button" onClick={startOver}>
             Start over
           </button>
-          <Link href={`/recipes/${recipeId}`} className="cook-mode__prompt-close">
+          <Link href={recipePath(recipeId, title)} className="cook-mode__prompt-close">
             Cancel
           </Link>
         </div>
@@ -372,7 +373,7 @@ export function CookMode({ recipeId, title, imageUrl, steps, ingredients }: Prop
         <div className="cook-mode__done-card">
           <p className="cook-mode__done-emoji">All done 🎉</p>
           <p className="cook-mode__done-title">{title}</p>
-          <Link href={`/recipes/${recipeId}`} className="cook-mode__done-button">
+          <Link href={recipePath(recipeId, title)} className="cook-mode__done-button">
             Back to recipe
           </Link>
         </div>
@@ -387,7 +388,7 @@ export function CookMode({ recipeId, title, imageUrl, steps, ingredients }: Prop
 
       <div className="cook-mode__content">
         <div className="cook-mode__top">
-          <Link href={`/recipes/${recipeId}`} className="cook-mode__close" aria-label="Close cook mode">
+          <Link href={recipePath(recipeId, title)} className="cook-mode__close" aria-label="Close cook mode">
             ✕
           </Link>
           <div className="cook-mode__progress-track">

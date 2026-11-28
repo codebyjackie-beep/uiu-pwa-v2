@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { recipePath } from "../lib/recipeSlug";
 import type { ApiResponse, FridgeStockItem } from "@uiu/shared";
 import { normalizeSteps } from "../lib/recipeSteps";
 
@@ -162,7 +163,7 @@ export function FridgeRecipeGenModal({ items, onClose }: FridgeRecipeGenModalPro
               <p className="admin-drafts-page__sub">Saved! Added to your recipes.</p>
               <div className="fridge-scan-review__actions">
                 {savedRecipeId ? (
-                  <Link href={`/recipes/${savedRecipeId}`} className="wizard-primary-button" onClick={onClose}>
+                  <Link href={recipePath(savedRecipeId, recipe?.title)} className="wizard-primary-button" onClick={onClose}>
                     View recipe
                   </Link>
                 ) : null}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { recipePath } from "../lib/recipeSlug";
 import { formatCostWithCoverage, formatTotalWithIncomplete, recipePerServingPrice } from "@uiu/shared";
 import type {
   ApiResponse,
@@ -375,7 +376,7 @@ export function MealPlannerBoard({ planId, days, weekTotalCost, onChanged }: Pro
                 </div>
               ) : (
                 <div className="meal-cell-sheet__actions">
-                  <Link href={`/recipes/${activeEntry.recipeId}`} className="meal-cell-sheet__action">
+                  <Link href={recipePath(activeEntry.recipeId, activeEntry.recipe.title)} className="meal-cell-sheet__action">
                     View recipe
                   </Link>
                   <button type="button" className="meal-cell-sheet__action" disabled={pendingId === activeEntry._id} onClick={() => refreshMeal(activeEntry._id)}>

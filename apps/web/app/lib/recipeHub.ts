@@ -10,6 +10,8 @@
  * made once in hubPricing.ts (toHubRecipe) with the shared costDisplayTier and passed in as `fullTierPrice`.
  */
 
+import { recipePath } from "./recipeSlug";
+
 export const HUB_SITE_BASE = "https://useitup.uk";
 
 /** The list-item fields a hub needs. Build with toHubRecipe (hubPricing.ts). */
@@ -78,7 +80,7 @@ export function latestUpdatedAt(recipes: { updatedAt?: unknown }[]): Date | unde
  * schema.org ItemList (summary-page pattern): ListItem with position + url only, each url a recipe
  * detail page that carries its own Recipe JSON-LD. Serialise with serializeJsonLd (recipeJsonLd.ts).
  */
-export function buildItemListJsonLd(input: { name: string; path: string; recipes: Pick<HubRecipe, "_id">[] }): Record<string, unknown> {
+export function buildItemListJsonLd(input: { name: string; path: string; recipes: Pick<HubRecipe, "_id" | "title">[] }): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -88,7 +90,7 @@ export function buildItemListJsonLd(input: { name: string; path: string; recipes
     itemListElement: input.recipes.map((r, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `${HUB_SITE_BASE}/recipes/${encodeURIComponent(r._id)}`,
+      url: `${HUB_SITE_BASE}${recipePath(r._id, r.title)}`,
     })),
   };
 }

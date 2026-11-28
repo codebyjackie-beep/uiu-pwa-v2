@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { recipePath } from "../lib/recipeSlug";
 import { recipePerServingPrice, type RecipeListItem } from "@uiu/shared";
 import { CoveragePrice } from "../components/CoveragePrice";
 import { costPendingLabel, mealTypeBadge } from "../lib/recipeDisplay";
@@ -17,7 +18,7 @@ export function RecipeHubList({ recipes }: { recipes: RecipeListItem[] }) {
         const totalMin = (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
         const price = recipePerServingPrice(recipe.cost);
         return (
-          <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card recipe-card--browse">
+          <Link key={recipe._id} href={recipePath(recipe._id, recipe.title)} className="recipe-card recipe-card--browse">
             {recipe.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { recipePath } from "../lib/recipeSlug";
 import {
   costDisplayTier,
   recipePerServingPrice,
@@ -442,7 +443,7 @@ export default function RecipesBrowser({ items, initialRandom }: { items: Browse
           const totalMin = totalTimeMinutes(recipe);
           const isFavourite = favouriteIds.has(recipe._id);
           return (
-            <Link key={recipe._id} href={`/recipes/${recipe._id}`} className="recipe-card recipe-card--browse">
+            <Link key={recipe._id} href={recipePath(recipe._id, recipe.title)} className="recipe-card recipe-card--browse">
               {recipe.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
