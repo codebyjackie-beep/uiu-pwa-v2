@@ -31,6 +31,7 @@ import { computeRecipeNutrition } from "./nutritionGrams";
 import { findRecipePhoto, type PexelsEnv } from "./pexels";
 import type { OpenRouterEnv } from "./openrouter";
 import { approveRecipeDraft, rejectRecipeDraft } from "./recipeDraftApproval";
+import { normalizeRecipeSteps } from "./recipeSteps";
 
 export const SANITY_MAX_AUTO_APPROVE = 600;
 export const SANITY_MAX_AUTO_REJECT = 500;
@@ -120,6 +121,16 @@ export function rejectReasonsFor(input: {
 }
 
 /** Approve gate (all must pass), applied only after no reject reason fired. Image is checked later. */
+/**
+ * Step count the triage rules use: steps AFTER normalizeRecipeSteps(), the same normalization
+ * approveRecipeDraft() applies. Raw `steps.length` let object steps with no usable text pass the
+ * approve gate, then approve refused them (409 no_steps) and the draft re-entered triage daily
+ * (Rex, PR #72). 0/1 usable steps now hit the existing too_few_steps reject (rollback-able).
+ */
+export function triageStepCount(steps: unknown): number {
+  return normalizeRecipeSteps(steps).length;
+}
+
 export function passesApproveGate(e: { adjustedCoveragePct: number; calories: number; steps: number; ingredients: number; mealType?: unknown }): boolean {
   return e.adjustedCoveragePct >= 80 && e.calories >= 150 && e.calories <= 1200 && e.steps >= 3 && e.ingredients >= 4 && !!e.mealType;
 }
@@ -150,7 +161,7 @@ export async function evaluatePendingDrafts(db: Db): Promise<Evaluated[]> {
   const rows = pendingDocs.map((doc) => {
     const draft = doc as unknown as RecipeDraft & { _id: { toString(): string }; mealType?: string; imageUrl?: string; createdAt?: string };
     const ingredients = Array.isArray(draft.ingredients) ? draft.ingredients : [];
-    const steps = Array.isArray(draft.steps) ? draft.steps : [];
+    const stepCount = triageStepCount(draft.steps);
     const cost = costRecipe(draft as unknown as Recipe, resolveFn, ingredientsMap, priceMap, quarantinedNames);
     const n = computeRecipeNutrition(ingredients, draft.servings, resolveFn, ingredientsMap).nutrition;
     const calories = n.calories ?? 0;
@@ -159,13 +170,13 @@ export async function evaluatePendingDrafts(db: Db): Promise<Evaluated[]> {
       protein: n.protein ?? 0,
       carbs: n.carbs ?? 0,
       fat: n.fat ?? 0,
-      steps: steps.length,
+      steps: stepCount,
       ingredientNames: ingredients.map((i) => (i && i.name) || ""),
       servings: draft.servings ?? 0,
     });
     const normTitle = normalizeTitle(draft.title);
     if (liveTitles.has(normTitle)) reasons.push("duplicate_title_live_recipe");
-    return { draft, cost, calories, steps: steps.length, ingredients: ingredients.length, reasons, normTitle, lineCoverage: n.nutritionLineCoverage ?? 0 };
+    return { draft, cost, calories, steps: stepCount, ingredients: ingredients.length, reasons, normTitle, lineCoverage: n.nutritionLineCoverage ?? 0 };
   });
 
   // Intra-pending duplicate titles: keep the best-covered (then newest), reject the rest.
@@ -337,7 +348,8 @@ export async function applyTriageChunk(db: Db, env: PexelsEnv & Partial<OpenRout
         const rr = await rejectRecipeDraft(db, id, { rejectedReason: reasons.join("; "), triage: { batchId, reasons } });
         if ("ok" in rr) out.rejected.push(id);
         else out.stayedPending.push({ id, reason: "near_duplicate" });
-      } else out.stayedPending.push({ id, reason: "alreadyDecided" in r ? "already_decided" : "not_found" });
+      } else if ("noSteps" in r) out.stayedPending.push({ id, reason: "no_steps" });
+      else out.stayedPending.push({ id, reason: "alreadyDecided" in r ? "already_decided" : "not_found" });
     } else {
       out.stayedPending.push({ id, reason: "rules_not_met" });
     }

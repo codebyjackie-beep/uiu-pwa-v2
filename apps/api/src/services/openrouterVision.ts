@@ -5,6 +5,7 @@
  * separate [vars] model id so the two don't collide if either changes).
  */
 import type { DraftedRecipe } from "./openrouter";
+import { checkLlmRecipeShape } from "./recipeSteps";
 
 export interface OpenRouterVisionEnv {
   OPENROUTER_API_KEY: string;
@@ -271,15 +272,16 @@ export async function extractRecipeFromPhotos(env: OpenRouterVisionEnv, imageDat
     if (!content) return null;
 
     const parsed = extractJson(content) as Partial<DraftedRecipe>;
-    if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < 2 || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
+    const shape = checkLlmRecipeShape(parsed, 2);
+    if (!shape.ok) {
       return null;
     }
 
     return {
-      title: parsed.title,
+      title: shape.recipe.title,
       description: parsed.description ?? "",
-      ingredients: parsed.ingredients,
-      steps: parsed.steps,
+      ingredients: shape.recipe.ingredients,
+      steps: shape.recipe.steps,
       tags: Array.isArray(parsed.tags) ? parsed.tags : [],
       mealType: parsed.mealType,
       servings: parsed.servings ?? 2,
@@ -347,14 +349,15 @@ export async function extractRecipeFromVideo(env: OpenRouterVisionEnv, videoData
     if (!content) return null;
 
     const parsed = extractJson(content) as Partial<DraftedRecipe>;
-    if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < 2 || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
+    const shape = checkLlmRecipeShape(parsed, 2);
+    if (!shape.ok) {
       return null;
     }
     return {
-      title: parsed.title,
+      title: shape.recipe.title,
       description: parsed.description ?? "",
-      ingredients: parsed.ingredients,
-      steps: parsed.steps,
+      ingredients: shape.recipe.ingredients,
+      steps: shape.recipe.steps,
       tags: Array.isArray(parsed.tags) ? parsed.tags : [],
       mealType: parsed.mealType,
       servings: parsed.servings ?? 2,

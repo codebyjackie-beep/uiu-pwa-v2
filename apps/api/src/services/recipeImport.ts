@@ -7,6 +7,7 @@
  */
 import type { RecipeDraft } from "@uiu/shared";
 import type { DraftedRecipe, OpenRouterEnv } from "./openrouter";
+import { checkLlmRecipeShape } from "./recipeSteps";
 
 export interface OembedEnv {
   YOUTUBE_API_KEY?: string;
@@ -344,16 +345,17 @@ export async function parseRecipeFromText(env: OpenRouterEnv, text: string, debu
     const candidate = fenced ? fenced[1]! : content.trim();
     const parsed = JSON.parse(candidate) as Partial<DraftedRecipe>;
 
-    if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < MIN_INGREDIENTS || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
-      if (debug) debug.reason = `gate: title=${!!parsed.title} ing=${Array.isArray(parsed.ingredients) ? parsed.ingredients.length : "x"} steps=${Array.isArray(parsed.steps) ? parsed.steps.length : "x"}`;
+    const shape = checkLlmRecipeShape(parsed, MIN_INGREDIENTS);
+    if (!shape.ok) {
+      if (debug) debug.reason = `gate: ${shape.reason} (ing=${Array.isArray(parsed.ingredients) ? parsed.ingredients.length : "x"} steps=${Array.isArray(parsed.steps) ? parsed.steps.length : "x"} raw)`;
       return null;
     }
 
     return {
-      title: parsed.title,
+      title: shape.recipe.title,
       description: parsed.description ?? "",
-      ingredients: parsed.ingredients,
-      steps: parsed.steps,
+      ingredients: shape.recipe.ingredients,
+      steps: shape.recipe.steps,
       tags: Array.isArray(parsed.tags) ? parsed.tags : [],
       mealType: parsed.mealType,
       servings: parsed.servings ?? 2,

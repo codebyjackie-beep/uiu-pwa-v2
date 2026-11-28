@@ -13,6 +13,7 @@ import { ingredientTextGuard, type ApiResponse, type Recipe } from "@uiu/shared"
 import { withDb, getMongoModule, type DbEnv } from "../db";
 import { findRecipePhoto, type PexelsEnv } from "../services/pexels";
 import { requireAdmin } from "../adminAuth";
+import { parseStepsPatch } from "../services/recipeSteps";
 
 export const adminRecipesRouter = new Hono<{ Bindings: DbEnv & { ADMIN_TOKEN: string } & PexelsEnv }>();
 
@@ -106,6 +107,17 @@ adminRecipesRouter.patch("/:id", async (c) => {
   if (Object.keys(patch).length === 0) {
     const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: `No editable fields in body — allowed: ${EDITABLE_FIELDS.join(", ")}` } };
     return c.json(body, 400);
+  }
+
+  // Steps must stay a non-empty string[]: normalize objects → text, and refuse (400) a value that would
+  // leave no steps instead of silently writing [] (checked before any DB connection is opened).
+  if ("steps" in patch) {
+    const parsedSteps = parseStepsPatch((patch as Record<string, unknown>).steps);
+    if (!parsedSteps.ok) {
+      const body: ApiResponse<never> = { ok: false, error: { code: "bad_request", message: parsedSteps.message } };
+      return c.json(body, 400);
+    }
+    patch.steps = parsedSteps.steps;
   }
 
   // HANDOFF_recipe-import-french-label-bug-execute.md decision 2: an edit that leaves a

@@ -7,6 +7,7 @@
  * instead of a 500, same convention as parseRecipeFromText().
  */
 import type { DraftedRecipe, OpenRouterEnv } from "./openrouter";
+import { checkLlmRecipeShape } from "./recipeSteps";
 
 const MIN_INGREDIENTS = 2;
 
@@ -66,15 +67,16 @@ export async function generateRecipeFromFridge(env: OpenRouterEnv, ingredientNam
     if (!content) return null;
 
     const parsed = extractJson(content) as Partial<DraftedRecipe>;
-    if (!parsed.title || !Array.isArray(parsed.ingredients) || parsed.ingredients.length < MIN_INGREDIENTS || !Array.isArray(parsed.steps) || parsed.steps.length === 0) {
+    const shape = checkLlmRecipeShape(parsed, MIN_INGREDIENTS);
+    if (!shape.ok) {
       return null;
     }
 
     return {
-      title: parsed.title,
+      title: shape.recipe.title,
       description: parsed.description ?? "",
-      ingredients: parsed.ingredients,
-      steps: parsed.steps,
+      ingredients: shape.recipe.ingredients,
+      steps: shape.recipe.steps,
       tags: Array.isArray(parsed.tags) ? parsed.tags : [],
       mealType: parsed.mealType,
       servings: parsed.servings ?? 2,

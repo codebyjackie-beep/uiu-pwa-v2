@@ -18,6 +18,7 @@ import { approveRecipeDraft } from "./recipeDraftApproval";
 import { findSameDishLLM } from "./sameDish";
 import type { PexelsEnv } from "./pexels";
 import type { OpenRouterEnv } from "./openrouter";
+import { normalizeRecipeSteps } from "./recipeSteps";
 
 export const AUDIT_COLLECTION = "recipe_draft_audit";
 export const NOTE_MIN = 5;
@@ -120,13 +121,15 @@ export async function forceApproveRecipeDraft(
   env: PexelsEnv & Partial<OpenRouterEnv>,
   draftId: string,
   opts: { by: string; note: string; write: boolean },
-): Promise<OverrideResult<ForceApproveResult>> {
+): Promise<OverrideResult<ForceApproveResult> | { noSteps: true }> {
   const { ObjectId } = await getMongoModule();
   const draft = await db.collection("recipe_drafts").findOne({ _id: new ObjectId(draftId) });
   if (!draft) return { notFound: true };
   if (draft.status !== "pending") return { wrongStatus: String(draft.status) };
   const title = String(draft.title ?? "");
   const base: ForceApproveResult = { dryRun: !opts.write, id: draftId, title, by: opts.by, note: opts.note };
+  // Same 0-step refusal as approveRecipeDraft — reported on the dry run too, so the admin sees it before writing.
+  if (normalizeRecipeSteps(draft.steps).length === 0) return { noSteps: true };
 
   if (!opts.write) {
     const publicRecipes = await db.collection("recipes").find({ isPublic: true }, { projection: { title: 1, "ingredients.name": 1 } }).toArray();
@@ -142,6 +145,7 @@ export async function forceApproveRecipeDraft(
   if ("notFound" in r) return { notFound: true };
   if ("alreadyDecided" in r) return { wrongStatus: "changed_concurrently" };
   if ("nearDuplicate" in r) throw new Error("force-approve unexpectedly ran the duplicate check");
+  if ("noSteps" in r) return { noSteps: true };
   const audit = await db.collection(AUDIT_COLLECTION).insertOne({
     action: "force_approve",
     draftId,

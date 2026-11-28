@@ -67,7 +67,7 @@ async function main() {
   const db = fakeDb({
     recipe_drafts: [
       { _id: rejectedId, title: "Sunomono bowl", status: "rejected", rejectedReason: "near_duplicate:same_dish:Cucumber Salad", triage },
-      { _id: pendingId, title: "Mushroom crêpe", status: "pending", ingredients: [{ name: "mushroom" }] },
+      { _id: pendingId, title: "Mushroom crêpe", status: "pending", ingredients: [{ name: "mushroom" }], steps: ["Fry the mushrooms."] },
     ],
     recipes: [],
   });

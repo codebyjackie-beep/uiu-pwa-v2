@@ -26,6 +26,8 @@ export type ApproveDraftResult =
   | { notFound: true }
   | { alreadyDecided: true }
   | { nearDuplicate: NearDuplicateMatch }
+  /** Draft has no usable step after normalizeRecipeSteps — nothing inserted, draft stays pending for a human to fix. */
+  | { noSteps: true }
   | { insertedId: string };
 
 export interface TriageTag {
@@ -55,6 +57,13 @@ export async function approveRecipeDraft(
   const draft = await db.collection("recipe_drafts").findOne({ _id: new ObjectId(draftId) });
   if (!draft) return { notFound: true };
   if (draft.status !== "pending") return { alreadyDecided: true };
+
+  // Never insert a 0-step recipe (steps with no usable text normalize to []). Checked before the
+  // duplicate checks so it costs no AI same-dish call. The draft is left pending for an admin edit.
+  if (normalizeRecipeSteps(draft.steps).length === 0) {
+    console.log("[uiu-api] approve refused, no usable steps:", JSON.stringify({ draftId }));
+    return { noSteps: true };
+  }
 
   // G1: refuse a draft that near-duplicates a public recipe (same rules as the 10-10 Part 11 clean-up).
   // Skipped only for an admin force-approve (a human already judged it is not the same dish).
