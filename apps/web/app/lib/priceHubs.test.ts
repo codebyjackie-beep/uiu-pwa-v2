@@ -66,13 +66,21 @@ check("threshold counts fully priced only", livePriceHubs(fourPlusPartials).leng
 // Meta
 const m = priceHubMeta(one, five);
 check("title", m.title === "Recipes Under £1 Per Serving, UK Prices · UseItUp", m.title);
-check("description has count, cap and real cheapest", m.description.startsWith("5 recipes under £1 a serving at UK supermarkets, from £0.50."), m.description);
-check("intro has cheapest", m.intro.includes("(cheapest £0.50)"), m.intro);
+check("description has count and cap", m.description === "5 recipes under £1 a serving at UK supermarkets. See what a meal costs before you shop.", m.description);
+check("intro has count and cap only", m.intro === "5 recipes that cost under £1 a serving at UK supermarket prices.", m.intro);
 const big = PRICE_HUBS.map((d) => priceHubMeta(d, Array.from({ length: 999 }, (_, i) => r(`x${i}`, 0.01 + i / 1000))));
 check("never claims every ingredient is priced (tier full = >=80%)", big.concat(m).every((x) => !/every ingredient/i.test(`${x.description} ${x.intro}`)));
 check("every title ≤ 60", big.every((x) => x.title.length <= 60), big.map((x) => x.title.length));
 check("every description ≤ 155", big.every((x) => x.description.length <= 155), big.map((x) => x.description.length));
-check("no £ figures other than cap + cheapest", (m.description.match(/£\d+(?:\.\d{2})?/g) ?? []).join() === "£1,£0.50");
+check("no £ figures other than the cap", (m.description.match(/£\d+(?:\.\d{2})?/g) ?? []).join() === "£1");
+// Regression (Rex PR #74 review): no tier may surface a cheapest-member price ("from £0.10" for a 16-serving batch).
+const withOutlier = PRICE_HUBS.map((d) => priceHubMeta(d, [...five, r("batch wontons", 0.1)]));
+check(
+  "no tier's description/intro contains 'from £' or 'cheapest'",
+  withOutlier.concat(big, m).every((x) => !/from\s*£|cheapest/i.test(`${x.description} ${x.intro}`)),
+  withOutlier.map((x) => x.description),
+);
+check("outlier price never appears in copy", withOutlier.every((x) => !`${x.description} ${x.intro}`.includes("£0.10")));
 
 // Registry glue
 const lib = [...five, r("mid 1", 1.5), r("mid 2", 1.6), r("dear", 2.9), r("partial", null)];

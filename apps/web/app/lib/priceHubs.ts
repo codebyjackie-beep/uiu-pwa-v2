@@ -80,19 +80,17 @@ export interface PriceHubMeta {
 }
 
 /**
- * Copy for one hub. Every £ here is either the hub's own cap or the cheapest member's real tier-"full"
- * per-serving price. Title ≤ 60 and description ≤ 155 chars (tested).
+ * Copy for one hub. The only £ here is the hub's own cap — no "from £X" cheapest-member figure, because a
+ * single odd per-serving price (e.g. a 16-serving batch recipe) gets amplified in search snippets.
+ * Title ≤ 60 and description ≤ 155 chars (tested).
  */
 export function priceHubMeta(def: PriceHubDef, recipes: Pick<HubRecipe, "fullTierPrice">[]): PriceHubMeta {
   const n = recipes.length;
   const cap = priceHubAmount(def);
-  const prices = recipes.map(fullTierPerServing).filter((p): p is number => p != null);
-  const cheapest = prices.length ? formatGbp(Math.min(...prices)) : null;
-  const from = cheapest ? `, from ${cheapest}` : "";
   return {
     title: `Recipes Under ${cap} Per Serving, UK Prices · UseItUp`,
     heading: `Recipes under ${cap} per serving`,
-    description: `${n} recipes under ${cap} a serving at UK supermarkets${from}. See what a meal costs before you shop.`,
-    intro: `${n} recipes that cost under ${cap} a serving at UK supermarket prices${cheapest ? ` (cheapest ${cheapest})` : ""}.`,
+    description: `${n} recipes under ${cap} a serving at UK supermarkets. See what a meal costs before you shop.`,
+    intro: `${n} recipes that cost under ${cap} a serving at UK supermarket prices.`,
   };
 }
