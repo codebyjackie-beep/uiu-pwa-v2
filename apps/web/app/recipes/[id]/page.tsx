@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cache, Suspense } from "react";
+import { permanentRedirect } from "next/navigation";
 import {
   formatCostWithCoverage,
   isStockLikeName,
@@ -29,11 +30,37 @@ import { recipeMetaDescription, recipeMetaTitle } from "../../lib/seoMeta";
 import { buildRecipeJsonLd, serializeJsonLd } from "../../lib/recipeJsonLd";
 import { normalizeSteps } from "../../lib/recipeSteps";
 import { RecipeHubLinks } from "./RecipeHubLinks";
+import { parseRecipeParam, queryStringFrom, recipePath, recipeSegment } from "../../lib/recipeSlug";
 
 const DEFAULT_OG_IMAGE = "/og-image.png?v=1";
 
 // One API call per request, shared by generateMetadata and the page.
 const getRecipe = cache((id: string) => apiGet<RecipeDetail>(`/api/recipes/${id}`));
+
+type Params = Promise<{ id: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/**
+ * SEO PR3: the [id] segment is "<slug>-<24hex>" (canonical) or the old bare "<24hex>". The id is the
+ * trailing 24 hex only. A segment with no valid id is passed through unchanged so the API answers 400
+ * exactly as before (→ "Recipe not found" + noindex).
+ */
+async function loadRecipe(params: Params) {
+  const { id: segment } = await params;
+  const id = parseRecipeParam(segment) ?? segment;
+  return { segment, id, res: await getRecipe(id) };
+}
+
+/**
+ * Old bare-id URL or a stale / wrong slug → permanent redirect (308, Next's permanentRedirect) to the
+ * canonical "<slug>-<id>", query string kept. Only on a successful fetch; 4xx / 5xx never redirect.
+ */
+async function redirectToCanonical(segment: string, recipe: RecipeDetail, id: string, searchParams: SearchParams) {
+  const canonicalId = recipe._id || id;
+  const canonical = recipeSegment(canonicalId, recipe.title);
+  if (segment === canonical) return;
+  permanentRedirect(`${recipePath(canonicalId, recipe.title)}${queryStringFrom(await searchParams)}`);
+}
 
 /** Same rule as the cost hero below: only a priced basket gets a cost display. */
 function costDisplayFor(recipe: RecipeDetail) {
@@ -42,9 +69,8 @@ function costDisplayFor(recipe: RecipeDetail) {
     : null;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const res = await getRecipe(id);
+export async function generateMetadata({ params, searchParams }: { params: Params; searchParams: SearchParams }): Promise<Metadata> {
+  const { segment, id, res } = await loadRecipe(params);
   if (!res.ok) {
     // Only a definite "no such recipe" is noindexed: 404 (missing / not yours) or 400 (malformed id, never valid).
     // A 5xx / fetch failure is transient — no robots tag, so a blip can't get a real recipe dropped from Google.
@@ -55,6 +81,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   const r = res.data;
+  await redirectToCanonical(segment, r, id, searchParams);
   const title = recipeMetaTitle(r.title);
   // Price only when coverage tier is "full" (handled in recipeMetaDescription); partial / unavailable → no £.
   const description = recipeMetaDescription({
@@ -64,8 +91,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     cookTimeMinutes: r.cookTimeMinutes,
     cost: costDisplayFor(r),
   });
-  // Prefer the API's own _id over the URL segment (same doc, canonical spelling).
-  const url = `/recipes/${r._id || id}`;
+  // Prefer the API's own _id over the URL segment (same doc, canonical spelling); slug from the title.
+  const url = recipePath(r._id || id, r.title);
 
   return {
     title,
@@ -98,9 +125,8 @@ function slotFromBadge(badge: string | null): MealSlot {
   return v === "breakfast" || v === "lunch" || v === "dinner" || v === "snack" ? v : "dinner";
 }
 
-export default async function RecipeDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const res = await getRecipe(id);
+export default async function RecipeDetailPage({ params, searchParams }: { params: Params; searchParams: SearchParams }) {
+  const { segment, id, res } = await loadRecipe(params);
 
   if (!res.ok) {
     return (
@@ -111,6 +137,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
   }
 
   const recipe = res.data;
+  await redirectToCanonical(segment, recipe, id, searchParams);
   const mealBadge = mealTypeBadge(recipe);
   const dietBadgeList = dietaryBadges(recipe);
   const hasCost = recipe.cost && recipe.cost.basket > 0;
@@ -164,7 +191,7 @@ export default async function RecipeDetailPage({ params }: { params: Promise<{ i
       <AddToTodayButton recipeId={id} defaultSlot={slotFromBadge(mealBadge)} />
 
       {steps.length > 0 && (
-        <Link href={`/recipes/${id}/cook`} className="recipe-detail__cook-cta">
+        <Link href={`${recipePath(recipe._id || id, recipe.title)}/cook`} className="recipe-detail__cook-cta">
           Start cooking
         </Link>
       )}

@@ -55,6 +55,12 @@ check(
 check("latestUpdatedAt: none → undefined", latestUpdatedAt([{}, { updatedAt: 5 }]) === undefined);
 
 const ld = buildItemListJsonLd({ name: "Chicken recipes", path: "/recipes/ingredient/chicken", recipes: [full1, full2] });
+{
+  const realId = "6650a1b2c3d4e5f6a7b8c9d0";
+  const one = buildItemListJsonLd({ name: "x", path: "/recipes/price/under-1-pound", recipes: [{ _id: realId, title: "Red Lentil Soup" }] });
+  const u = (one.itemListElement as { url: string }[])[0].url;
+  check("ItemList: slug URL for real ObjectId", u === `https://useitup.uk/recipes/red-lentil-soup-${realId}`, u);
+}
 const items = ld.itemListElement as { position: number; url: string; "@type": string }[];
 check("ItemList: type + absolute url", ld["@type"] === "ItemList" && ld.url === "https://useitup.uk/recipes/ingredient/chicken");
 check("ItemList: numberOfItems matches", ld.numberOfItems === 2);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { recipePath } from "../lib/recipeSlug";
 import { useSearchParams } from "next/navigation";
 import type { ApiResponse, MealSuggestion, MealSuggestionsResponse } from "@uiu/shared";
 import { CoveragePrice } from "../components/CoveragePrice";
@@ -62,7 +63,7 @@ export function FridgeMatches() {
         <div className="tonight-suggestion__grid">
           {state.items.map((s) => (
             <div key={s.recipeId} className="recipe-card tonight-suggestion__card">
-              <Link href={`/recipes/${s.recipeId}`} className="tonight-suggestion__card-link">
+              <Link href={recipePath(s.recipeId, s.title)} className="tonight-suggestion__card-link">
                 {s.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img className="recipe-card__image" src={s.imageUrl} alt="" />

@@ -4,6 +4,7 @@ import { apiGet } from "../../../lib/api";
 import { formatIngredientQuantity, formatIngredientStorePrice, ingredientName } from "../../../lib/recipeDisplay";
 import { normalizeSteps } from "../../../lib/recipeSteps";
 import { CookMode, type CookIngredient } from "./CookMode";
+import { parseRecipeParam, recipePath } from "../../../lib/recipeSlug";
 
 function lineFor(recipe: RecipeDetail, ingredient: RecipeDetail["ingredients"][number]): RecipeDetailCostLine | undefined {
   return recipe.cost?.lines.find(
@@ -21,13 +22,16 @@ function cleanStep(raw: string): string {
 }
 
 export default async function CookPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  // SEO PR3: accepts "<slug>-<id>" and the old bare "<id>" (no redirect here). The parsed id — not the
+  // URL segment — is passed on, because CookMode keys saved progress in localStorage by recipe id.
+  const { id: segment } = await params;
+  const id = parseRecipeParam(segment) ?? segment;
   const res = await apiGet<RecipeDetail>(`/api/recipes/${id}`);
   if (!res.ok) notFound();
 
   const recipe = res.data;
   const steps = normalizeSteps(recipe.steps).map(cleanStep).filter((s) => s.length > 0);
-  if (steps.length === 0) redirect(`/recipes/${id}`);
+  if (steps.length === 0) redirect(recipePath(recipe._id || id, recipe.title));
 
   const ingredients: CookIngredient[] = recipe.ingredients.map((ing, i) => {
     const line = lineFor(recipe, ing);
@@ -44,7 +48,7 @@ export default async function CookPage({ params }: { params: Promise<{ id: strin
 
   return (
     <CookMode
-      recipeId={id}
+      recipeId={recipe._id || id}
       title={recipe.title}
       imageUrl={recipe.imageUrl ?? null}
       steps={steps}
