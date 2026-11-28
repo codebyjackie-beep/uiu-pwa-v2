@@ -3,7 +3,7 @@
  *   npx tsx apps/api/test/recipeDraftTriage.test.ts
  * Rule thresholds must match scripts/triage_recipe_drafts.cjs (the 2026-10-08 run).
  */
-import { TRIAGE_PENDING_FILTER, cleanTags, isValidBatchId, newBatchId, normalizeTitle, passesApproveGate, rejectReasonsFor } from "../src/services/recipeDraftTriage";
+import { TRIAGE_PENDING_FILTER, cleanTags, isValidBatchId, newBatchId, normalizeTitle, passesApproveGate, rejectReasonsFor, triageStepCount } from "../src/services/recipeDraftTriage";
 
 let failures = 0;
 function eq(name: string, actual: unknown, expected: unknown) {
@@ -39,6 +39,20 @@ eq("2026-10-08 batch id valid", isValidBatchId("triage_2026-10-08_aca5bfe1"), tr
 eq("bad batch id", isValidBatchId("triage_2026-10-08_ACA5"), false);
 eq("injection batch id", isValidBatchId({ $ne: null }), false);
 eq("newBatchId format", isValidBatchId(newBatchId(new Date("2026-10-29T12:00:00Z"))), true);
+
+// PR #72 follow-up: triage counts NORMALIZED steps (same as approve), not raw array length.
+const noTextObjSteps = [{ name: "", quantity: 1, unit: "step" }, { quantity: 2 }, { foo: "bar" }, {}];
+eq("object steps without text -> 0 usable steps", triageStepCount(noTextObjSteps), 0);
+eq("object steps without text -> too_few_steps reject", rejectReasonsFor({ ...ok, steps: triageStepCount(noTextObjSteps) }), ["too_few_steps:0"]);
+eq("object steps without text fail approve gate", passesApproveGate({ ...gate, steps: triageStepCount(noTextObjSteps) }), false);
+eq("blank/null/array steps -> 0", triageStepCount(["", "   ", null, ["x"]]), 0);
+eq("non-array steps -> 0 -> too_few_steps", rejectReasonsFor({ ...ok, steps: triageStepCount("Boil water") }), ["too_few_steps:0"]);
+eq("only 1 usable step of 4 -> too_few_steps:1", rejectReasonsFor({ ...ok, steps: triageStepCount([{ text: "Boil pasta" }, {}, "", { quantity: 1 }]) }), ["too_few_steps:1"]);
+eq("object steps WITH text still count", triageStepCount([{ text: "Chop" }, { instruction: "Fry" }, { name: "Serve" }]), 3);
+const strSteps = ["Chop onion", "Fry", "Simmer", "Serve"];
+eq("string steps unchanged: count = length", triageStepCount(strSteps), strSteps.length);
+eq("string steps unchanged: no reject", rejectReasonsFor({ ...ok, steps: triageStepCount(strSteps) }), []);
+eq("string steps unchanged: passes gate", passesApproveGate({ ...gate, steps: triageStepCount(strSteps) }), true);
 
 eq("triage only takes pending", TRIAGE_PENDING_FILTER.status, "pending");
 eq("triage skips admin-reopened drafts", TRIAGE_PENDING_FILTER.reopenHistory, { $exists: false });
