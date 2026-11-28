@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import type { RecipeListPage } from "@uiu/shared";
 import { apiGetPublic } from "./lib/api";
 import { buildSitemapResult, createCachedSitemap, staticSitemapEntries } from "./lib/sitemapEntries";
+import { hubSitemapEntries } from "./lib/recipeHubRegistry";
+import { toHubRecipes } from "./lib/hubPricing";
 
 // Must run per request: prerendering at build time would bake in the static-only fallback
 // (no Cloudflare bindings at build), and open-next.config.ts has no incremental cache for ISR.
@@ -14,6 +16,7 @@ const getEntries = createCachedSitemap(() =>
     {
       onError: (message) => console.error("[uiu-web] sitemap recipes fallback:", message),
       onWarn: (message) => console.warn("[uiu-web] sitemap truncated:", message),
+      extraEntries: (items) => hubSitemapEntries(toHubRecipes(items)),
     },
   ),
 );
